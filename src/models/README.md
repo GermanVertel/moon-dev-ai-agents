@@ -11,6 +11,7 @@ GROQ_API_KEY=your_key_here     # For Groq models (includes Mixtral, Llama, etc.)
 OPENAI_KEY=your_key_here       # For OpenAI models (GPT-4, O1, etc.)
 GEMINI_KEY=your_key_here       # For Gemini models
 DEEPSEEK_KEY=your_key_here     # For DeepSeek models
+OPENROUTER_API_KEY=your_key_here  # For OpenRouter (one key for many providers)
 ```
 
 ## 🤖 Available Models
@@ -60,6 +61,17 @@ Preview Models:
 - `deepseek-chat`: Fast chat model (Good for conversational tasks)
 - `deepseek-reasoner`: Enhanced reasoning model (Better for complex problem-solving)
 - `deepseek-r1`: DeepSeek's first-generation reasoning model (Excellent for trading strategies)
+
+### OpenRouter Models
+One `OPENROUTER_API_KEY` gives access to models from many providers. Use any slug from https://openrouter.ai/models (format `provider/model`), e.g.:
+- `openai/gpt-4o-mini`: Default - fast and cheap
+- `anthropic/claude-sonnet-4`: Balanced Claude model
+- `deepseek/deepseek-r1`: DeepSeek reasoning model
+- `x-ai/grok-4`: xAI Grok model
+
+```python
+model = model_factory.get_model("openrouter", "anthropic/claude-sonnet-4")
+```
 
 ### Local Ollama: Free, Fast, Private LLMs 🚀
 

@@ -9,11 +9,18 @@ from termcolor import cprint
 from dotenv import load_dotenv
 import time
 from datetime import datetime, timedelta
-from config import *
-
-# Add project root to Python path
+# Add project root and src directory to Python path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(project_root)
+src_dir = os.path.dirname(os.path.abspath(__file__))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
+
+try:
+    from src.config import *
+except ImportError:
+    from config import *
 
 # Import agents
 from src.agents.trading_agent import TradingAgent
