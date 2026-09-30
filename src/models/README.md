@@ -58,9 +58,9 @@ Preview Models:
 - `llama-3.2-3b-preview`: Llama 3.2 3B (128k context)
 
 ### DeepSeek Models
-- `deepseek-chat`: Fast chat model (Good for conversational tasks)
-- `deepseek-reasoner`: Enhanced reasoning model (Better for complex problem-solving)
-- `deepseek-r1`: DeepSeek's first-generation reasoning model (Excellent for trading strategies)
+- `deepseek-chat`: DeepSeek-V3 general chat & coding model (Fast & cost-effective)
+- `deepseek-reasoner`: DeepSeek-R1 enhanced reasoning model with thinking process (Chain-of-Thought)
+- `deepseek-r1`: DeepSeek-R1 alias (automatically routes to `deepseek-reasoner`)
 
 ### OpenRouter Models
 One `OPENROUTER_API_KEY` gives access to models from many providers. Use any slug from https://openrouter.ai/models (format `provider/model`), e.g.:

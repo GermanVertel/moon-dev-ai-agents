@@ -19,6 +19,7 @@ class ModelResponse:
     raw_response: Any  # Original response object
     model_name: str
     usage: Optional[Dict] = None
+    reasoning_content: Optional[str] = None
     
 class BaseModel(ABC):
     """Base interface for all AI models"""
