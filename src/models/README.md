@@ -27,9 +27,11 @@ Latest Models:
 
 ### Claude Models (Anthropic)
 Latest Models:
-- `claude-3-opus-20240229`: Most powerful Claude model (Best for complex tasks)
-- `claude-3-sonnet-20240229`: Balanced Claude model (Good for most use cases)
-- `claude-3-haiku-20240307`: Fast, efficient Claude model (Best for quick responses)
+- `claude-3-7-sonnet-latest`: Most intelligent Claude model with hybrid reasoning/extended thinking
+- `claude-3-5-sonnet-latest`: Industry-leading intelligence and speed for coding & reasoning
+- `claude-3-5-haiku-latest`: Fastest, most cost-effective Claude model
+- `claude-3-opus-latest`: Deep complex analysis model
+- `claude-3-haiku-20240307`: Legacy fast model
 
 ### Gemini Models (Google)
 Latest Models:
