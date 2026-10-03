@@ -3,6 +3,7 @@
 Built with love by Moon Dev 🚀
 """
 
+# pyrefly: ignore [missing-import]
 from anthropic import Anthropic
 from termcolor import cprint
 from .base_model import BaseModel, ModelResponse
