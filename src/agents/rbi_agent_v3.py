@@ -51,20 +51,29 @@ STATE_LOG_PATH = RBI_V3_DATA_DIR / "state.jsonl"
 IDEAS_FILE_V3 = RBI_V3_DATA_DIR / "ideas.txt"
 IDEAS_FILE_V2 = PROJECT_ROOT / "src" / "data" / "rbi_v2" / "ideas.txt"
 
-# Model Configurations
-BASE_MODEL_CONFIG = {
-    "type": "deepseek",
-    "name": "deepseek-chat"
-}
+# Model Configurations (OpenRouter unified routing or direct API keys)
+USE_OPENROUTER_FOR_ALL = os.getenv("USE_OPENROUTER_FOR_ALL", "false").lower() in ("true", "1")
+HAS_OPENROUTER_KEY = bool(os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENROUTER_KEY"))
+
+# Base Model (DeepSeek chat for research and initial code generation)
+if USE_OPENROUTER_FOR_ALL and HAS_OPENROUTER_KEY:
+    BASE_MODEL_CONFIG = {"type": "openrouter", "name": "deepseek/deepseek-chat"}
+else:
+    BASE_MODEL_CONFIG = {"type": "deepseek", "name": "deepseek-chat"}
+
+# Escalation Model (GPT-4o or Claude 3.5 Sonnet for difficult debugging)
+DEFAULT_ESCALATION = "openai/gpt-4o" if HAS_OPENROUTER_KEY else "gpt-4o"
+ESCALATION_MODEL_NAME = os.getenv("RBI_ESCALATION_MODEL", DEFAULT_ESCALATION)
+ESCALATION_TYPE = "openrouter" if ("/" in ESCALATION_MODEL_NAME or HAS_OPENROUTER_KEY) else "openai"
 
 ESCALATION_MODEL_CONFIG = {
-    "type": "openai",
-    "name": "gpt-4o"
+    "type": ESCALATION_MODEL_TYPE,
+    "name": ESCALATION_MODEL_NAME
 }
 
 MAX_DEBUG_ITERATIONS = 4        # Reduced from 5 for efficiency
-ESCALATE_ON_ATTEMPT = 3         # Escalate to OpenAI after 2 failed DeepSeek attempts
-GLOBAL_MODEL_TIMEOUT = 60       # Timeout for LLM calls (seconds)
+ESCALATE_ON_ATTEMPT = 3         # Escalate to OpenRouter/GPT-4o/Claude after 2 failed base attempts
+GLOBAL_MODEL_TIMEOUT = 90       # Timeout for LLM calls (seconds)
 
 
 class RBIEngineV3:
