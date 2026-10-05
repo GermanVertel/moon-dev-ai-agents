@@ -12,6 +12,7 @@ import pandas as pd
 from datetime import datetime, timezone
 from pathlib import Path
 from termcolor import cprint
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 # Default directory structure
 ROOT_DIR = Path(__file__).parent.parent.parent.parent
@@ -41,8 +42,9 @@ class DataManager:
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
+    @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=2, max=10))
     def _fetch_binance_klines(self, symbol: str, interval: str, start_time_ms: int, end_time_ms: int, limit: int = 1000):
-        """Fetch a single batch of klines from Binance public API."""
+        """Fetch a single batch of klines from Binance public API with exponential backoff retry."""
         params = {
             "symbol": symbol,
             "interval": interval,
@@ -51,18 +53,18 @@ class DataManager:
             "limit": limit
         }
         headers = {"User-Agent": "Mozilla/5.0 (MoonDev-RBI-v3)"}
-        
+
         for url in [BINANCE_API_URL, BINANCE_VISION_URL]:
             try:
                 response = requests.get(url, params=params, headers=headers, timeout=15)
                 if response.status_code == 200:
                     return response.json()
                 elif response.status_code == 429:
-                    cprint("⚠️ Rate limited by Binance, sleeping 5s...", "yellow")
-                    time.sleep(5)
-            except Exception as e:
-                time.sleep(1)
-        return []
+                    cprint("⚠️ Rate limited by Binance, retrying with exponential backoff...", "yellow")
+                    raise Exception("Rate limit 429")
+            except requests.exceptions.RequestException:
+                pass
+        raise Exception(f"Failed to fetch {symbol} from Binance after retries")
 
     def download_symbol_history(self, symbol: str, interval: str, start_dt: str = START_DATE) -> Path:
         """Download complete history from start_dt to present and save to disk."""

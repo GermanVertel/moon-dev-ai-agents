@@ -62,8 +62,9 @@ ESCALATION_MODEL_CONFIG = {
     "name": "gpt-4o"
 }
 
-MAX_DEBUG_ITERATIONS = 5
-ESCALATE_ON_ATTEMPT = 4
+MAX_DEBUG_ITERATIONS = 4        # Reduced from 5 for efficiency
+ESCALATE_ON_ATTEMPT = 3         # Escalate to OpenAI after 2 failed DeepSeek attempts
+GLOBAL_MODEL_TIMEOUT = 60       # Timeout for LLM calls (seconds)
 
 
 class RBIEngineV3:
@@ -116,14 +117,24 @@ class RBIEngineV3:
         self.processed_hashes.add(idea_hash)
 
     def _call_model(self, system_prompt: str, user_content: str, model_config: dict) -> str:
-        """Call LLM via unified ModelFactory with fallback resilience."""
+        """Call LLM via unified ModelFactory with fallback resilience and timeout."""
         model = model_factory.get_model(model_config["type"], model_config["name"])
         if not model:
-            # Fallback to DeepSeek if OpenAI not configured
             cprint(f"⚠️ Model {model_config['name']} unavailable, falling back to deepseek-chat", "yellow")
             model = model_factory.get_model("deepseek", "deepseek-chat")
 
-        res = model.generate_response(system_prompt=system_prompt, user_content=user_content)
+        try:
+            res = model.generate_response(
+                system_prompt=system_prompt,
+                user_content=user_content,
+                temperature=0.7,
+                max_tokens=4000,
+                timeout=GLOBAL_MODEL_TIMEOUT
+            )
+        except Exception as e:
+            cprint(f"⚠️ Model timeout or error: {str(e)[:100]}", "yellow")
+            raise
+
         if isinstance(res, str):
             return res
         return getattr(res, "content", str(res))
@@ -360,7 +371,7 @@ class RBIEngineV3:
         self._log_state(idea_hash, strategy_name, "CERTIFIED_WINNER", {"score": total_score})
 
     def run(self):
-        """Execute RBI v3 loop over ideas file."""
+        """Execute RBI v3 loop over ideas file with exponential backoff on errors."""
         ideas_file = IDEAS_FILE_V3 if IDEAS_FILE_V3.exists() else IDEAS_FILE_V2
         if not ideas_file.exists():
             cprint(f"❌ ideas.txt not found at {ideas_file}", "red")
@@ -375,6 +386,8 @@ class RBIEngineV3:
         max_ideas_env = os.getenv("RBI_MAX_IDEAS")
         max_ideas = int(max_ideas_env) if max_ideas_env and max_ideas_env.isdigit() else None
         processed_count = 0
+        consecutive_errors = 0
+        max_consecutive_errors = 3
 
         for idx, idea in enumerate(ideas, 1):
             idea_hash = hashlib.md5(idea.encode("utf-8")).hexdigest()[:8]
@@ -384,12 +397,19 @@ class RBIEngineV3:
             try:
                 self.process_idea(idea, idx, total_ideas)
                 processed_count += 1
+                consecutive_errors = 0  # Reset error counter on success
                 if max_ideas and processed_count >= max_ideas:
                     cprint(f"\n🛑 Reached RBI_MAX_IDEAS limit ({max_ideas}). Stopping.", "yellow")
                     break
             except Exception as e:
-                cprint(f"\n❌ Error in idea {idx}: {str(e)}", "red")
-                time.sleep(2)
+                consecutive_errors += 1
+                backoff_sec = min(300, 2 ** consecutive_errors)  # Max 5 min wait
+                cprint(f"\n❌ Error in idea {idx}: {str(e)[:100]}", "red")
+                cprint(f"⏳ Backing off {backoff_sec}s (error {consecutive_errors}/{max_consecutive_errors})...", "yellow")
+                time.sleep(backoff_sec)
+                if consecutive_errors >= max_consecutive_errors:
+                    cprint(f"🛑 Too many consecutive errors ({max_consecutive_errors}). Stopping.", "red")
+                    break
                 continue
 
 

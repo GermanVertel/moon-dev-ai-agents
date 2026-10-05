@@ -103,7 +103,7 @@ def run_backtest_harness(
     data_path: str,
     cash: float = 100_000.0,
     commission: float = 0.00045, # 0.045% Hyperliquid taker fee
-    timeout_sec: int = 180,
+    timeout_sec: int = 120,      # Reduced from 180 for pipeline efficiency
     conda_env: Optional[str] = "tflow"
 ) -> Dict[str, Any]:
     """Execute strategy inside harness and return structured metrics dictionary."""

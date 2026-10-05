@@ -70,3 +70,6 @@ twilio>=8.0.0
 twikit>=2.0.0
 google-api-python-client>=2.100.0
 
+# Retry logic & resilience
+tenacity>=8.2.0
+

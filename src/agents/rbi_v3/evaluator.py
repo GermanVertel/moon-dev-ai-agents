@@ -13,7 +13,7 @@ DEFAULT_GATES = {
     "max_drawdown_pct": -25.0,  # Maximum capital drawdown allowed
     "min_return_pct": 0.0,      # Must be strictly positive
     "min_multi_asset_pass": 2,  # Must be profitable in >= 2 assets out of 3
-    "min_oos_sharpe": 0.5,      # Must retain positive Sharpe in Out-Of-Sample test
+    "min_oos_sharpe": 0.7,      # Must retain strong Sharpe in Out-Of-Sample test (30% degradation tolerable)
     "min_oos_return": 0.0       # Must maintain positive return in Out-Of-Sample test
 }
 
