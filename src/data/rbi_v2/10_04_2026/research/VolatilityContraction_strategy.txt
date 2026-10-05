@@ -1,0 +1,57 @@
+STRATEGY_NAME: VolatilityContraction
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy exploits the tension between momentum (MACD) and volatility structure (Bollinger Bands). It targets long entries when bullish momentum emerges during a volatility expansion phase within a broader downtrend, betting on a sharp mean-reversion rally. The exit is mechanical and volatility-based, using the lower band as a trailing stop.
+
+**Key Strategy Components:**
+
+1. **MACD (Momentum Filter)**
+   - Standard settings: 12, 26, 9
+   - "Bullish" condition: MACD line crosses above the signal line, OR MACD histogram turns positive
+   - This confirms short-term upward momentum is building
+
+2. **Bollinger Bands (Volatility & Trend Context)**
+   - Standard settings: 20-period SMA, 2 standard deviations
+   - **Downtrend phase:** Middle band (20 SMA) is sloping downward
+   - **Expanding width:** Band width (upper - lower) is increasing compared to prior bars — signals rising volatility
+   - This combination identifies a falling market entering a high-volatility regime
+
+3. **Entry Logic (Long)**
+   - All must be true simultaneously:
+     - MACD bullish crossover or histogram flipped positive
+     - Bollinger middle band sloping down
+     - Bollinger band width expanding for 2+ consecutive bars
+   - Enter long at next bar open after signal confirmation
+
+4. **Exit Logic**
+   - Exit long when price closes below the lower Bollinger Band
+   - This acts as a volatility-adjusted trailing stop — as bands expand downward, the stop widens; as price recovers, the lower band trails up
+
+**Entry/Exit Rules Summary:**
+- **Entry:** MACD bullish + BB downtrend + BB width expanding → Buy
+- **Exit:** Close below lower Bollinger Band → Sell
+- **No short entries** in this variant (long-only mean-reversion)
+
+**Risk Management:**
+- Position sizing based on ATR or fixed % of equity (1–2% risk per trade)
+- Hard stop-loss optional: place at 1.5× ATR below entry as a safety net in case the lower band is far away
+- Avoid entries during low-liquidity sessions or major news events that can cause gap-throughs
+- Max concurrent positions: 1–2 to avoid correlated exposure
+- Re-entry filter: wait for a new MACD bullish cross before re-entering after a stop-out
+
+**Required Indicators:**
+- MACD (12, 26, 9) — line, signal, histogram
+- Bollinger Bands (20, 2) — upper, middle, lower, width
+- Optional: ATR(14) for stop sizing and volatility confirmation
+
+**Best Market Conditions:**
+- Choppy or sharply declining markets where volatility is expanding
+- Works best on liquid instruments (index futures, large-cap equities, major FX pairs)
+- Timeframes: 15m to 4H for intraday/swing; avoid very low timeframes due to noise
+
+**Potential Weaknesses:**
+- "Catching a falling knife" — MACD can flip bullish briefly during strong downtrends
+- Expanding bands can continue expanding, causing whipsaws
+- Requires strict discipline on the lower-band exit to avoid holding through further downside

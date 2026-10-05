@@ -1,0 +1,86 @@
+STRATEGY_NAME: StochasticMertonBands
+
+STRATEGY_DETAILS:
+This strategy fuses Bollinger Band volatility measurement with Merton's option-pricing framework to derive probability-weighted stop-loss and take-profit levels, then trades mean-reversion long entries during low-volatility compression and exits on divergence signals.
+
+1. CORE STRATEGY COMPONENTS
+
+A. Bollinger Band Setup
+- Period: 20 SMA on closing prices
+- Standard deviation multiplier: 2.0 (adjustable 1.5–2.5)
+- Bandwidth = (Upper Band − Lower Band) / Middle Band
+- Track a rolling percentile rank of bandwidth over the last 100 bars to classify "low volatility" regimes.
+
+B. Merton Option-Pricing Layer
+- Treat the instrument as the underlying of a synthetic option where the "strike" is the current price and the "expiry" is the expected holding horizon (e.g., 10 bars).
+- Inputs:
+  - S = current price
+  - K = current price (at-the-money anchor)
+  - σ = realized volatility (annualized from Bollinger bandwidth)
+  - r = risk-free rate (or 0 for short horizons)
+  - T = expected holding period in years
+- Compute d1 and d2 using Merton/Black-Scholes:
+  - d1 = [ln(S/K) + (r + σ²/2)T] / (σ√T)
+  - d2 = d1 − σ√T
+- Derive the probability of touching a given price level P before expiry using the reflection principle / first-passage probability:
+  - P_hit(P) = 2 · N(−|ln(P/S)| / (σ√T))
+- Use this to assign a probability weight to each candidate stop and target level.
+
+C. Probability-Weighted Stop-Loss and Limit Derivation
+- Candidate stop levels: 0.5σ, 1σ, 1.5σ, 2σ below entry.
+- Candidate limit levels: 0.5σ, 1σ, 1.5σ, 2σ above entry.
+- For each level, compute P_hit using the formula above.
+- Weighted stop = Σ (level_i · P_hit_i) / Σ P_hit_i — this yields a stop that sits where probability mass is highest but not at the extreme tail.
+- Weighted limit = Σ (level_j · (1 − P_hit_j)) / Σ (1 − P_hit_j) — this favors levels with lower touch probability for realistic profit capture.
+- This produces adaptive, probability-calibrated stop and limit distances rather than fixed multiples.
+
+2. ENTRY RULES (LONG ONLY)
+
+- Condition 1 (Low Volatility Regime): Current Bollinger Bandwidth percentile rank ≤ 25th percentile of the last 100 bars.
+- Condition 2 (Price Location): Close is at or below the lower Bollinger Band (or within 0.25σ of it) — indicating a compressed, oversold setup.
+- Condition 3 (Merton Confirmation): The probability that price stays within the lower band over the next T bars is > 60% (i.e., low expected downside continuation).
+- Enter long on the close of the bar that satisfies all three conditions.
+- Position size scaled inversely to σ: size = base_size × (target_vol / current_vol), capped at 2× base.
+
+3. EXIT RULES
+
+A. Take-Profit
+- Exit at the probability-weighted limit level computed at entry.
+- Optionally trail: recompute the Merton-weighted limit each bar and exit if price reaches it.
+
+B. Stop-Loss
+- Exit if price touches the probability-weighted stop level.
+- Hard stop also placed at 2σ below entry as a catastrophe backstop.
+
+C. Divergence Exit (Primary Signal)
+- Compute Bollinger %B = (Close − Lower) / (Upper − Lower).
+- Compute a 14-period RSI.
+- Bearish divergence: price makes a higher high in %B while RSI makes a lower high, AND price is above the middle band.
+- Exit immediately on confirmed divergence bar close, regardless of P/L.
+- Also exit if bandwidth percentile rank rises above 75th percentile (volatility expansion) — the edge has decayed.
+
+4. RISK MANAGEMENT
+
+- Max risk per trade: 1% of equity, enforced via the probability-weighted stop distance.
+- Max concurrent positions: 3 (to avoid correlated volatility exposure).
+- Daily loss limit: 3% — halt trading for the day.
+- Regime filter: no new longs if the 200-period SMA is declining and price is below it (avoid catching falling knives).
+- Recompute σ (and thus all Merton probabilities) every bar to keep stops/limits adaptive.
+
+5. REQUIRED INDICATORS
+
+- 20-period SMA (Bollinger middle)
+- 20-period standard deviation (Bollinger bands)
+- Bollinger Bandwidth and its 100-bar percentile rank
+- Bollinger %B
+- 14-period RSI (for divergence)
+- Realized volatility estimator (e.g., rolling std of log returns, annualized)
+- 200-period SMA (regime filter)
+- Merton/Black-Scholes first-passage probability calculator (custom function)
+
+6. IMPLEMENTATION NOTES
+
+- Use log returns for σ estimation to keep the Merton math consistent.
+- Set T (holding horizon) equal to the average bar count of the last 10 winning trades, refreshed monthly.
+- Backtest across multiple volatility regimes; the strategy is expected to underperform in strong trends and excel in range-bound, low-vol markets.
+- Validate that the probability-weighted stop is never tighter than 0.5σ or wider than 2.5σ to avoid degenerate outputs.

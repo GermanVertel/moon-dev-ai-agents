@@ -1,0 +1,60 @@
+STRATEGY_NAME: DivergentBandFlow
+
+STRATEGY_DETAILS:
+This strategy combines momentum divergence detection with volatility-based exits to capture trend continuations after temporary pullbacks. The core premise is that MACD divergence signals a weakening counter-trend move, RSI overbought/oversold levels confirm exhaustion, and Bollinger Band width changes signal when the trend has resumed or reversed.
+
+**Key Strategy Components:**
+
+1. **Primary Signal (MACD Divergence):**
+   - Monitor MACD histogram and signal line against price action.
+   - Bullish divergence: Price makes a lower low while MACD makes a higher low (hidden bullish divergence) — signals trend continuation in an uptrend.
+   - Bearish divergence: Price makes a higher high while MACD makes a lower high (hidden bearish divergence) — signals trend continuation in a downtrend.
+   - Use standard MACD settings (12, 26, 9) on the chosen timeframe (e.g., 1H or 4H for swing trading).
+
+2. **Confirmation Signal (RSI Overbought/Oversold):**
+   - For long entries: RSI should recover from oversold (<30) or dip into oversold while MACD shows bullish divergence, confirming buyer exhaustion on the pullback.
+   - For short entries: RSI should recover from overbought (>70) or dip into overbought while MACD shows bearish divergence, confirming seller exhaustion on the rally.
+   - RSI period: 14 (standard).
+
+3. **Entry Rules:**
+   - **Long Entry:** 
+     - MACD bullish divergence confirmed (price lower low, MACD higher low).
+     - RSI crosses back above 30 from oversold territory, or is rising from below 50.
+     - Price closes above the 20-period EMA (optional trend filter).
+     - Enter on the close of the candle that confirms the RSI recovery.
+   - **Short Entry:**
+     - MACD bearish divergence confirmed (price higher high, MACD lower high).
+     - RSI crosses back below 70 from overbought territory, or is falling from above 50.
+     - Price closes below the 20-period EMA (optional trend filter).
+     - Enter on the close of the candle that confirms the RSI decline.
+
+4. **Exit Rules (Bollinger Band Width Monitoring):**
+   - Use Bollinger Bands (20-period SMA, 2 standard deviations).
+   - Calculate Band Width = (Upper Band - Lower Band) / Middle Band.
+   - **Exit Long:** When Band Width expands significantly (e.g., >1.5x the 20-period average Band Width) and price touches or exceeds the upper band, indicating overextension. Alternatively, exit when price closes below the middle band (20 SMA).
+   - **Exit Short:** When Band Width expands significantly and price touches or exceeds the lower band, indicating overextension. Alternatively, exit when price closes above the middle band.
+   - Optional trailing exit: Use a trailing stop at the middle band or a fixed ATR-based stop.
+
+5. **Risk Management:**
+   - **Stop Loss:** 
+     - For longs: Place stop below the recent swing low or 1.5x ATR below entry.
+     - For shorts: Place stop above the recent swing high or 1.5x ATR above entry.
+   - **Position Sizing:** Risk no more than 1-2% of account equity per trade.
+   - **Take Profit:** Use Bollinger Band width expansion as a dynamic take-profit trigger; alternatively, set a 2:1 or 3:1 risk-reward ratio.
+   - **Avoid Choppy Markets:** Only take signals when Band Width is above its 20-period average (indicating a trending or volatile market), and avoid trades when Band Width is contracting (squeeze).
+
+6. **Required Indicators:**
+   - MACD (12, 26, 9)
+   - RSI (14)
+   - Bollinger Bands (20, 2)
+   - 20-period EMA (trend filter, optional)
+   - ATR (14) for stop-loss calculation
+   - Band Width = (Upper BB - Lower BB) / Middle BB
+
+**Timeframe & Market Conditions:**
+- Best suited for trending markets (stocks, forex, crypto) on 1H to Daily charts.
+- Avoid ranging markets where divergence signals are frequent but unreliable.
+- Confirm trend direction using a higher timeframe (e.g., 4H or Daily) before taking entries.
+
+**Summary:**
+DivergentBandFlow seeks to enter trend continuations after pullbacks by combining MACD divergence (momentum shift) with RSI exhaustion (overbought/oversold confirmation) and exits when Bollinger Band width signals overextension or a mean-reversion cross of the middle band. This creates a structured, rule-based system that balances trend-following with volatility-aware risk control.

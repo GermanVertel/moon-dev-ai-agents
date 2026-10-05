@@ -1,0 +1,44 @@
+STRATEGY_NAME: ExhaustionDivergence
+
+STRATEGY_DETAILS:
+This strategy identifies bearish RSI divergence during an uptrend as a signal to enter long positions, exploiting the phenomenon where momentum weakens even as price makes new highs. The setup requires three simultaneous conditions: price confirms a Higher High, RSI fails to confirm with a Lower High (bearish divergence), and volume declines on the new price high, signaling weakening participation.
+
+CORE LOGIC:
+- Bearish RSI divergence within an established uptrend often precedes a short-term pullback rather than a full reversal.
+- When volume contracts on the Higher High, it suggests the rally is running out of fuel, creating a favorable entry for a long trade anticipating a bounce off the pullback or continuation after a shakeout.
+- The strategy treats divergence as a warning of exhaustion, not a reversal signal, so it trades with the trend (long) on the dip rather than fading the trend.
+
+ENTRY RULES (LONG):
+1. Trend filter: Price must be above a rising 50-period EMA (or equivalent) to confirm an uptrend.
+2. Identify a Higher High in price over the last N bars (e.g., 20-40 bars).
+3. Confirm bearish RSI divergence: RSI (14-period) makes a Lower High while price makes a Higher High.
+4. Volume filter: Volume on the Higher High bar is lower than volume on the prior swing high.
+5. Entry trigger: Enter long on the first bullish confirmation candle after the divergence (e.g., close above prior candle high, or bullish engulfing/pin bar) OR on a pullback to a short-term support (e.g., 20-EMA or VWAP).
+
+EXIT RULES:
+1. ATR-based profit targets: Set take-profit at 1.5x, 2.5x, and 4x ATR from entry, scaling out at each level.
+2. ATR-based stop-loss: Initial stop at 1.5x ATR below entry (or below the divergence swing low).
+3. RSI convergence exit: Close remaining position when RSI converges with price (RSI makes a Higher High alongside price, or RSI crosses back above 70 without divergence).
+4. Trailing stop: After first ATR target hits, trail stop using 1x ATR or a rising 20-EMA.
+
+RISK MANAGEMENT:
+- Risk per trade: 1% of account equity, position size = (Account Risk) / (Entry − Stop).
+- Max 2 concurrent positions to avoid correlated exposure.
+- No new entries if RSI > 75 (overbought extreme) to avoid chasing.
+- Invalidate setup if volume expands sharply on the Higher High (contradicts exhaustion thesis).
+- Time stop: Exit if neither target nor stop is hit within 15 bars.
+
+REQUIRED INDICATORS:
+- RSI (14-period) for divergence detection.
+- Volume (raw or relative volume vs 20-period average).
+- ATR (14-period) for stops and targets.
+- EMA 50 (trend filter) and EMA 20 (trailing/support).
+- Swing high/low detection (fractal or pivot-based, e.g., 5-bar pivots).
+
+OPTIMAL CONDITIONS:
+- Best in trending markets with clear swing structure.
+- Avoid ranging/choppy markets where divergences produce false signals.
+- Higher timeframes (4H, Daily) produce more reliable divergence signals than 1H or lower.
+
+NOTES:
+This is a counterintuitive long strategy — it buys weakness signaled by divergence, betting that the exhaustion leads to a shallow pullback followed by trend continuation rather than a full reversal. The volume filter is critical to distinguish genuine exhaustion from healthy consolidation.

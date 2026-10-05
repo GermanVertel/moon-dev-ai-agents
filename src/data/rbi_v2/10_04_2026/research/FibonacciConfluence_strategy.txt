@@ -1,0 +1,78 @@
+STRATEGY_NAME: FibonacciConfluence
+
+STRATEGY_DETAILS:
+
+**Overview:**
+FibonacciConfluence is a long-only strategy that requires two independent bullish signals to align before entering: a momentum-based trend confirmation (price crossing above the 20-period SMA) and a mean-reversion/continuation trigger (price touching the 61.8% Fibonacci retracement level). The dual-condition requirement filters out weak setups, while RSI divergence and ATR-based risk management govern exits.
+
+---
+
+**1. Key Strategy Components**
+
+- **Trend Filter:** 20-period Simple Moving Average (SMA) on the trading timeframe.
+- **Retracement Anchor:** Fibonacci retracement drawn from a defined swing low to swing high (impulse leg). The 61.8% level is the "golden ratio" pullback zone.
+- **Momentum Confirmation:** RSI(14) used both for entry context and exit divergence detection.
+- **Volatility/Risk Measure:** ATR(14) for stop placement and position sizing.
+
+---
+
+**2. Entry Rules (Long)**
+
+All conditions must be true on a confirmed bar close:
+
+1. **Swing Identification:** Identify the most recent valid impulse leg — a swing low followed by a swing high (use fractal/pivot detection, e.g., 5-bar pivots). The 61.8% retracement level is calculated as:
+   `Fib_61.8 = SwingHigh − 0.618 × (SwingHigh − SwingLow)`
+2. **Momentum Cross:** Price closes **above** the 20-period SMA (previous close was at or below it, confirming a fresh cross — or price is reclaiming the SMA after being below).
+3. **Confluence Touch:** Price low touches or comes within a small tolerance (e.g., 0.1–0.3% or 0.25×ATR) of the 61.8% Fib level on the same bar or within a 1–3 bar window of the SMA cross.
+4. **Context Filter (optional but recommended):** RSI(14) > 40 (avoid deeply oversold breakdowns) and the impulse leg was bullish.
+
+→ **Enter long** at close of the confirming bar or on a break of the signal bar's high.
+
+---
+
+**3. Exit Rules**
+
+**Primary Exit — Bearish RSI Divergence:**
+- Price makes a **higher high** while RSI(14) makes a **lower high** (classic bearish divergence).
+- Divergence must be confirmed by a bearish reversal candle (e.g., bearish engulfing, shooting star, or close below prior bar's low).
+- Exit at close of the confirmation bar or on a break below the confirmation bar's low.
+
+**Protective Exits:**
+- **ATR Stop-Loss:** Initial stop = Entry − (1.5 × ATR14). Trail the stop as price advances (e.g., trail by 2×ATR or below recent swing lows).
+- **Hard Invalidation:** Close below the 61.8% Fib level or below the 20-period SMA invalidates the setup — exit immediately.
+- **Take-Profit (optional):** Scale out at prior swing high or at 1.618/2.618 Fib extensions.
+
+---
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk a fixed % of equity (e.g., 1%) per trade.
+  `Position Size = (Account Equity × Risk%) / (Entry − Stop)`
+- **ATR-Based Stops:** Stop distance = 1.5–2.0 × ATR(14), adapting to volatility.
+- **Risk/Reward:** Minimum 1:2 R:R targeting the prior swing high or Fib extension.
+- **Max Concurrent Risk:** Cap total open risk (e.g., 3% of equity).
+- **Trailing Logic:** Move stop to breakeven after +1×ATR profit; trail thereafter.
+
+---
+
+**5. Required Indicators**
+
+| Indicator | Setting | Purpose |
+|-----------|---------|---------|
+| SMA | 20 period | Trend filter / momentum cross trigger |
+| RSI | 14 period | Entry context + bearish divergence exit |
+| ATR | 14 period | Stop placement, sizing, tolerance band |
+| Fibonacci Retracement | 61.8% level | Confluence entry zone |
+| Pivot/Fractal Detector | 5-bar | Swing high/low identification for Fib anchor |
+
+---
+
+**6. Execution Notes & Edge Cases**
+
+- **Timeframe:** Best on 1H–4H or Daily for meaningful Fib swings; avoid <15m due to noise.
+- **Fib Validity:** Only use the most recent unbroken impulse leg; invalidate if price closes below the swing low.
+- **Divergence Confirmation:** Require a minimum RSI peak separation (e.g., 3+ bars) to avoid false divergence.
+- **Avoid Choppy Markets:** Skip signals when ATR is below its 20-period average (low volatility = unreliable Fib touches).
+- **No Trade Zone:** If the 61.8% level and SMA are more than 1×ATR apart, the confluence is weak — stand aside.
+
+**Summary:** FibonacciConfluence demands alignment between trend (SMA cross), structure (61.8% Fib touch), and momentum (RSI). Entries are filtered for quality; exits are driven by momentum exhaustion (bearish RSI divergence) with ATR enforcing disciplined risk.

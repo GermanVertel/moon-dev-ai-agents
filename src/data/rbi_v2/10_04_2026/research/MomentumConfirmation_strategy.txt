@@ -1,0 +1,37 @@
+STRATEGY_NAME: MomentumConfirmation
+
+STRATEGY_DETAILS:
+This strategy combines RSI momentum signals with ADX trend-strength confirmation to enter long positions during strong uptrends, using divergence and ADX weakening as exit triggers.
+
+**Key Strategy Components:**
+1. **RSI (Relative Strength Index)** — Used as the primary momentum/entry trigger. Notably, this strategy treats RSI overbought readings (typically >70) as a *bullish continuation signal* rather than a reversal warning, which aligns with momentum-trading philosophy (strength begets strength).
+2. **ADX (Average Directional Index)** — Used as the trend-strength filter and confidence gauge. Only enter when ADX confirms a strong uptrend (typically ADX > 25, and +DI > -DI).
+3. **Divergence Detection** — Bearish RSI divergence (price making higher highs while RSI makes lower highs) serves as an exit signal.
+4. **ADX Decline** — A falling ADX indicates waning trend strength and triggers exit.
+
+**Entry Rules (Long):**
+- RSI crosses above the overbought threshold (e.g., 70) OR remains sustained above it, signaling strong bullish momentum.
+- ADX is above 25 and rising, confirming a strong, strengthening uptrend.
+- +DI is above -DI (directional confirmation of bullish bias).
+- Optional: Enter on the RSI cross above 70 while ADX > 25, rather than chasing extended overbought readings.
+
+**Exit Rules:**
+- Exit when bearish RSI divergence is detected (price higher high, RSI lower high).
+- Exit when ADX begins to decline (e.g., ADX turns down or falls below its recent peak / below 25), indicating weakening trend confidence.
+- Optional hard stop: Exit if RSI drops back below 50 or a fixed ATR/percentage stop is hit.
+
+**Risk Management:**
+- Use an ATR-based or percentage stop-loss below the entry or recent swing low.
+- Consider trailing stops tied to ADX decline to lock in profits as momentum fades.
+- Position sizing based on volatility (ATR) to normalize risk across trades.
+- Avoid entries when ADX is flat or below 25, even if RSI is overbought (avoids choppy, range-bound false signals).
+
+**Required Indicators:**
+- RSI (period 14 recommended)
+- ADX with +DI and -DI (period 14 recommended)
+- Optional: ATR for stops and position sizing; price action for divergence confirmation
+
+**Notes & Caveats:**
+- This is a momentum-continuation strategy, so it performs best in trending markets and poorly in ranging/choppy conditions.
+- The interpretation of "overbought RSI" as a long entry is counter to classic mean-reversion logic — it relies on ADX to filter out the cases where overbought RSI precedes a reversal.
+- Divergence signals can be subjective; define them programmatically (e.g., using pivot highs on price and RSI) to avoid ambiguity.

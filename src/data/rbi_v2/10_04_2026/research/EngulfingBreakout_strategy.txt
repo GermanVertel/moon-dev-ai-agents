@@ -1,0 +1,48 @@
+STRATEGY_NAME: EngulfingBreakout
+
+STRATEGY_DETAILS:
+This strategy identifies and trades high-probability breakout opportunities that occur within bearish engulfing patterns. The core premise is that a bearish engulfing candle—where a red candle's body completely engulfs the prior green candle's body—signals strong bearish momentum, and a subsequent breakdown below the pattern's low offers a high-probability short entry.
+
+**Key Strategy Components:**
+
+1. **Pattern Identification (Bearish Engulfing):**
+   - Candle 1 (prior): Bullish (close > open).
+   - Candle 2 (current): Bearish (close < open) with open ≥ prior close and close ≤ prior open (body fully engulfs candle 1's body).
+   - Confirmation: Candle 2 should ideally form after an uptrend or at a resistance zone to increase reliability.
+   - Optional filter: Require above-average volume on candle 2 to validate selling pressure.
+
+2. **Breakout Trigger:**
+   - After the bearish engulfing pattern forms, wait for price to break below the low of the engulfing candle (the pattern's low).
+   - Entry: Short at the close of the candle that breaks below the engulfing low, or on a retest of the broken level.
+   - Avoid entering on the pattern itself—only trade the confirmed breakout to filter false signals.
+
+3. **Entry Rules:**
+   - Short entry when price closes below the engulfing candle's low.
+   - Alternatively, enter on a retest of the engulfing low from below (now acting as resistance).
+
+4. **Exit Rules:**
+   - Stop Loss: Place above the high of the engulfing candle (or above the most recent swing high).
+   - Take Profit: 
+     - Target 1: 1.5x–2x the risk (measured from entry to stop).
+     - Target 2: Next major support level or prior swing low.
+     - Trailing stop: Use ATR-based trailing stop (e.g., 1.5x ATR) to capture extended moves.
+
+5. **Risk Management:**
+   - Risk per trade: 1–2% of account equity.
+   - Position sizing based on distance between entry and stop loss.
+   - Avoid trading during low-liquidity sessions or major news events.
+   - Require a minimum risk-to-reward ratio of 1:2.
+
+6. **Required Indicators:**
+   - Candlestick chart (primary).
+   - Volume (to confirm engulfing strength).
+   - ATR (for stop placement and trailing stops).
+   - Optional: 20/50 EMA to confirm broader bearish trend alignment.
+   - Optional: RSI to avoid entering oversold conditions (avoid shorting when RSI < 30).
+
+7. **Trade Filters:**
+   - Only take shorts when price is below the 50 EMA (trend alignment).
+   - Skip setups where the engulfing candle is too small relative to ATR (weak conviction).
+   - Confirm breakout with a close below the engulfing low, not just an intrabar wick.
+
+This strategy leverages the psychological shift from bullish to bearish sentiment captured by the engulfing pattern, using the breakout as confirmation to enter with momentum on the side of the trade.

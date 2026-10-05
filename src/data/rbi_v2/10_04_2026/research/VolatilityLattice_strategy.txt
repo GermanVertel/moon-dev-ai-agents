@@ -1,0 +1,38 @@
+STRATEGY_NAME: VolatilityLattice
+
+STRATEGY_DETAILS:
+This strategy is best interpreted as a **volatility-adaptive lattice breakout system** that builds a dynamic grid of price levels around a volatility-weighted mean, then trades expansions and contractions of price through that lattice.
+
+**1. Key Strategy Components**
+- **Volatility-Weighted Mean:** Instead of a simple moving average, calculate a mean that gives more weight to periods of higher volatility. This helps the strategy respond faster when the market is active and stay smoother when it is quiet.
+- **Dynamic Lattice Construction:** Create multiple upper and lower bands around that mean using ATR or standard deviation. These bands form a “lattice” of support/resistance levels rather than a single channel.
+- **Regime Detection:** Measure whether volatility is expanding or contracting. Expanding volatility favors breakout trades; contracting volatility favors fade/reversal trades near lattice extremes.
+- **Momentum Confirmation:** Use momentum or rate-of-change to confirm whether a lattice break is likely to continue or fail.
+
+**2. Entry Rules**
+- **Long Entry:** Enter long when price closes above an upper lattice band and momentum confirms expansion. A stronger signal occurs if the previous candle was inside the lattice and the current candle breaks out with above-average volume.
+- **Short Entry:** Enter short when price closes below a lower lattice band with expanding volatility and negative momentum.
+- **Fade Entry (Optional):** If volatility is contracting and price touches an outer band without momentum confirmation, take a mean-reversion trade back toward the volatility-weighted mean.
+
+**3. Exit Rules**
+- **Profit Target:** Exit at the next opposing lattice level, or at the volatility-weighted mean for fade trades.
+- **Trailing Stop:** For breakout trades, trail the stop along the nearest lattice band to let winners run during strong trends.
+- **Time Stop:** Exit if price remains stuck between two lattice levels for too long, indicating the setup has lost momentum.
+- **Volatility Stop:** Exit if volatility collapses after entry, as the breakout thesis is invalidated.
+
+**4. Risk Management**
+- **Position Sizing by Volatility:** Size positions inversely to ATR so that each trade risks a similar dollar amount regardless of market conditions.
+- **Max Lattice Width Filter:** Avoid trades when the lattice is extremely wide, as stops become too large and reward-to-risk deteriorates.
+- **False Breakout Protection:** Require a close beyond the band, not just a wick, and optionally wait for a retest before entering.
+- **Daily Loss Limit:** Stop trading after a predefined number of failed breakout attempts in a day.
+
+**5. Required Indicators**
+- ATR or standard deviation for lattice spacing
+- Volatility-weighted moving average or EMA
+- Rate of Change or RSI for momentum confirmation
+- Volume filter
+- Optional: Bollinger Band Width or Keltner Channel width for regime detection
+
+**6. Best Market Conditions**
+- Works best in markets that alternate between compression and expansion, such as forex majors, index futures, and liquid crypto pairs.
+- Avoid during low-liquidity sessions or around major news events unless the strategy is explicitly designed to trade volatility spikes.

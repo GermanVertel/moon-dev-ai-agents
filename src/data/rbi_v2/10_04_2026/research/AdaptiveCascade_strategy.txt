@@ -1,0 +1,50 @@
+STRATEGY_NAME: AdaptiveCascade
+
+STRATEGY_DETAILS:
+This strategy is an adaptive, multi-timeframe cascade system that layers trend confirmation, momentum acceleration, and volatility-adjusted risk controls. It is designed to avoid whipsaws by requiring alignment across fast, medium, and slow structural signals before entering, then scaling in only when the market proves continuation.
+
+1. Key strategy components
+- Multi-timeframe trend alignment: Use a fast EMA, a medium EMA, and a slow EMA on the primary chart. A valid long bias requires fast EMA > medium EMA > slow EMA; a valid short bias requires fast EMA < medium EMA < slow EMA.
+- Momentum confirmation: Use RSI or MACD histogram to confirm that momentum is expanding in the direction of the trend, not merely positive or negative.
+- Volatility filter: Use ATR to define whether the market is in a tradeable expansion phase. Avoid entries when ATR is below its moving average, signaling compression and false-break risk.
+- Cascade entry logic: Enter only after a pullback or consolidation resolves in the direction of the higher-timeframe trend, then add to the position if price makes a new structure high/low while momentum and volatility remain supportive.
+- Market regime filter: Optional higher-timeframe trend filter, such as a 200 EMA or daily bias, to avoid fighting the dominant trend.
+
+2. Entry rules
+Long entry:
+- Fast EMA crosses above medium EMA, and medium EMA is above slow EMA.
+- RSI is above 50 and rising, or MACD histogram is positive and increasing.
+- ATR is above its 20-period average, confirming expansion.
+- Price closes above the recent swing high or breaks a short consolidation range.
+- Enter on the breakout candle close or on the first retest of the breakout level.
+
+Short entry:
+- Fast EMA crosses below medium EMA, and medium EMA is below slow EMA.
+- RSI is below 50 and falling, or MACD histogram is negative and decreasing.
+- ATR is above its 20-period average.
+- Price closes below the recent swing low or breaks a short consolidation range.
+- Enter on the breakdown candle close or on the first retest of the breakdown level.
+
+3. Exit rules
+- Initial stop loss: Place stop beyond the most recent swing point or at 1.5x to 2.0x ATR from entry, whichever is wider.
+- Trailing stop: After price moves 1R in favor, trail by the fast EMA or by 1.5x ATR.
+- Profit target: Use a partial exit at 2R, then let the remainder run with the trailing stop.
+- Trend invalidation exit: Exit if fast EMA crosses back through medium EMA against the position, or if momentum diverges sharply from price.
+- Time stop: If price does not move at least 1R in favor within a predefined number of bars, reduce or close the position.
+
+4. Risk management
+- Risk per trade: 0.5% to 1.0% of account equity.
+- Position sizing: Calculate size from the distance between entry and stop loss using ATR and account risk.
+- Maximum exposure: Limit total open risk to 3% to 5% of equity across all positions.
+- Correlation control: Avoid multiple simultaneous entries in highly correlated markets.
+- Cascade scaling: Add only when the trade is already in profit and the trend structure remains intact; never average down.
+- Volatility adjustment: Reduce size when ATR is unusually high, and avoid trading during major news events unless the setup is exceptionally strong.
+
+5. Required indicators
+- Fast EMA, medium EMA, and slow EMA for trend alignment.
+- RSI or MACD for momentum confirmation.
+- ATR and ATR moving average for volatility filtering and stop placement.
+- Higher-timeframe EMA for regime bias.
+- Swing high/low detection for breakout and retest entries.
+
+This AdaptiveCascade approach is unique because it combines layered trend alignment, momentum acceleration, volatility expansion, and staged position scaling into a single adaptive framework. It is not a simple trend follower; it is a regime-aware cascade system that only engages when multiple independent signals confirm continuation.

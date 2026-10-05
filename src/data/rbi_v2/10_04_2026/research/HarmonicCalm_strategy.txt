@@ -1,0 +1,51 @@
+STRATEGY_NAME: HarmonicCalm
+
+STRATEGY_DETAILS:
+This strategy combines Fibonacci retracement levels with time-of-day filtering and volatility conditions to enter counter-trend or continuation trades during quiet market hours, using ATR-based exits for dynamic risk management.
+
+**Key Strategy Components:**
+
+1. **Fibonacci Retracement Levels:**
+   - Identify significant swing highs and lows on the chosen timeframe (e.g., H1 or H4).
+   - Calculate key retracement levels: 23.6%, 38.2%, 50%, 61.8%, and 78.6%.
+   - These levels act as potential support/resistance zones where price may react.
+
+2. **GMT+2 Market Hour Filter:**
+   - Only consider entries during specific GMT+2 hours characterized by low volatility (e.g., 22:00–02:00 GMT+2, the Asian session lull, or 12:00–14:00 GMT+2 if backtesting shows lower volatility).
+   - This filter avoids high-volatility sessions (London/NY overlap) where false breakouts are common.
+
+3. **Low Volatility Condition:**
+   - Measure current volatility using ATR (Average True Range) on the same timeframe.
+   - Define "low volatility" as ATR being below its 20-period moving average, or below a fixed percentile (e.g., 30th percentile of recent ATR values).
+   - This ensures entries occur in calm markets where Fibonacci levels are more likely to hold.
+
+4. **Entry Rules:**
+   - **Long Entry:** Price touches a Fibonacci retracement level (e.g., 50% or 61.8%) from below during a low-volatility GMT+2 hour, with a bullish candlestick confirmation (e.g., hammer, bullish engulfing).
+   - **Short Entry:** Price touches a Fibonacci retracement level from above during a low-volatility GMT+2 hour, with a bearish candlestick confirmation (e.g., shooting star, bearish engulfing).
+   - Optional: Require price to be in an uptrend (for longs) or downtrend (for shorts) based on a higher timeframe (e.g., H4) to align with the trend.
+
+5. **Exit Rules:**
+   - **Profit Target:** Exit when price moves in favor by a multiple of ATR (e.g., 1.5x ATR from entry).
+   - **Stop Loss:** Exit when price moves against by a multiple of ATR (e.g., 1x ATR from entry).
+   - **Trailing Stop (Optional):** After price moves 1x ATR in favor, trail stop by 0.5x ATR to lock in profits.
+   - **Time-Based Exit:** Close the trade if it remains open beyond a set number of bars (e.g., 10 bars) without hitting target or stop.
+
+6. **Risk Management:**
+   - Risk no more than 1–2% of account equity per trade.
+   - Position size = (Account Risk) / (Entry Price - Stop Loss Price).
+   - Avoid trading during news events or if spread is unusually wide.
+   - Limit to one trade per Fibonacci level per session to avoid overtrading.
+
+**Required Indicators:**
+- Fibonacci Retracement tool (manual or automated).
+- ATR (Average True Range) with period 14.
+- ATR moving average (period 20) for volatility filter.
+- Candlestick pattern recognition (for confirmation).
+- Higher timeframe trend indicator (e.g., 50-period EMA on H4) for trend alignment.
+- Time filter (GMT+2 clock).
+
+**Additional Notes:**
+- Backtest across different assets (forex majors, indices, crypto) to identify which Fibonacci levels and ATR multiples perform best.
+- Consider using limit orders at Fibonacci levels to avoid slippage.
+- Monitor performance during different GMT+2 hours to refine the low-volatility window.
+- This strategy works best in ranging or gently trending markets; avoid strong trending markets where Fibonacci levels are easily breached.

@@ -1,0 +1,72 @@
+STRATEGY_NAME: ClusterVolumeBreakout
+
+STRATEGY_DETAILS:
+
+This strategy identifies high-conviction breakout opportunities by combining volume profile analysis with price action, specifically targeting breakouts from consolidation zones where institutional volume has accumulated.
+
+**Core Concept:**
+Traditional breakout strategies fail because they ignore where volume actually traded. This strategy identifies "volume clusters" — price levels where significant trading activity occurred — and only takes breakouts that clear these zones with confirming volume expansion.
+
+**Key Components:**
+
+1. **Volume Profile Construction**
+   - Build a volume-at-price histogram over a lookback window (typically 20-50 bars)
+   - Divide price range into bins (e.g., 30-50 bins)
+   - Identify the Point of Control (POC) — the price level with highest volume
+   - Identify High Volume Nodes (HVN) and Low Volume Nodes (LVN)
+   - Mark the Value Area (typically 70% of total volume)
+
+2. **Consolidation Detection**
+   - Price must spend N bars (e.g., 10+) within a defined range
+   - The range should contain a clear HVN or POC
+   - Bollinger Band width or ATR should contract (squeeze condition)
+
+3. **Breakout Trigger**
+   - Price closes beyond the consolidation high/low
+   - Volume on breakout bar must exceed 1.5x the average volume of the last 20 bars
+   - Ideally, price breaks through a LVN (thin volume zone) — this signals low resistance ahead
+
+**Entry Rules:**
+
+- **Long Entry:** Price closes above consolidation high AND above the Value Area High (VAH), with breakout volume > 1.5x average. Enter on close or on retest of breakout level.
+- **Short Entry:** Price closes below consolidation low AND below the Value Area Low (VAL), with breakout volume > 1.5x average.
+
+**Exit Rules:**
+
+- **Stop Loss:** For longs, place below the POC or the consolidation midpoint (whichever is tighter). For shorts, above POC/consolidation midpoint.
+- **Take Profit 1:** Next HVN above entry (long) / below entry (short) — scale out 50%
+- **Take Profit 2:** 2x the consolidation range projected from breakout point
+- **Trailing Stop:** Trail below the most recent swing low (long) or above swing high (short) once TP1 is hit
+- **Time Stop:** Exit if breakout fails to make progress within 5-10 bars and price re-enters consolidation
+
+**Risk Management:**
+
+- Risk per trade: 0.5-1% of account equity
+- Position size = (Account Risk %) / (Entry - Stop Loss)
+- Avoid trades where the nearest HVN is too close (poor R:R)
+- Skip breakouts occurring against the higher-timeframe trend
+- Maximum 2-3 concurrent positions to reduce correlated exposure
+- No new entries in the 15 minutes before/after major news events
+
+**Required Indicators:**
+
+1. **Volume Profile** (VPVR or session-based) — core indicator
+2. **Volume MA (20-period)** — for breakout confirmation
+3. **ATR (14)** — for consolidation detection and stop sizing
+4. **Bollinger Bands (20, 2)** — squeeze detection
+5. **POC / VAH / VAL lines** — plotted from volume profile
+6. **Higher timeframe trend filter** (e.g., 200 EMA on 4H)
+
+**Best Timeframes:**
+- Intraday: 5m-15m charts with session volume profile
+- Swing: 1H-4H charts with 20-30 day volume profile
+
+**Optimal Conditions:**
+- Works best in liquid instruments (index futures, large-cap stocks, major FX pairs)
+- Avoid low-volume instruments where profile is noisy
+- Performs well after volatility compression regimes (post-squeeze)
+
+**Common Pitfalls to Avoid:**
+- False breakouts into HVNs (high resistance) — always check what's above/below
+- Ignoring volume divergence (price breaks but volume doesn't confirm)
+- Trading breakouts during low-liquidity sessions (Asian range for US instruments, etc.)

@@ -1,0 +1,49 @@
+STRATEGY_NAME: VolatilityDivergence
+
+STRATEGY_DETAILS:
+This strategy identifies significant volatility reversals by combining RSI divergence signals with volume pattern confirmation. The core premise is that divergences between price action and RSI often precede volatility regime shifts, and volume patterns validate whether the reversal is genuine or a false signal.
+
+1. KEY STRATEGY COMPONENTS
+- RSI Divergence Detection: Compare RSI (14-period) peaks/troughs against price peaks/troughs to identify bullish or bearish divergence.
+- Volume Pattern Analysis: Track volume spikes, volume dry-ups, and volume-price divergence to confirm reversal strength.
+- Volatility Regime Filter: Use ATR (14-period) or Bollinger Band width to determine current volatility state (expansion vs. contraction).
+- Reversal Confirmation: Require both RSI divergence AND a volume pattern anomaly before signaling.
+
+2. ENTRY RULES
+Bullish Reversal (Long Entry):
+- Price makes a lower low while RSI makes a higher low (bullish divergence).
+- Volume shows capitulation spike followed by declining volume on the retest (selling exhaustion).
+- ATR is at a local extreme (high volatility contraction before expansion).
+- Entry on close of confirmation candle breaking above the prior swing high.
+
+Bearish Reversal (Short Entry):
+- Price makes a higher high while RSI makes a lower high (bearish divergence).
+- Volume shows a climax spike on the final push with declining follow-through volume.
+- ATR confirms volatility expansion exhaustion.
+- Entry on close of confirmation candle breaking below the prior swing low.
+
+3. EXIT RULES
+- Take Profit: Exit at 1.5x to 2x the ATR-based risk distance, or when RSI reaches overbought (70+) for longs / oversold (30-) for shorts.
+- Stop Loss: Place stop beyond the divergence swing point (recent low for longs, recent high for shorts) with a buffer of 0.5x ATR.
+- Trailing Exit: Trail stop using 2x ATR once price moves 1x ATR in favor.
+- Time-Based Exit: Close position if no reversal materializes within 10-15 bars (divergence invalidated).
+
+4. RISK MANAGEMENT
+- Position Size: Risk no more than 1-2% of account equity per trade.
+- ATR-Based Sizing: Calculate position size = (Account Risk $) / (Entry - Stop distance).
+- Max Concurrent Positions: Limit to 2-3 to avoid correlated volatility exposure.
+- Volatility Filter: Avoid entries when ATR is in the top 5% historical range (extreme chaos) unless volume confirms capitulation.
+- Correlation Check: Avoid multiple positions in highly correlated instruments during volatility events.
+
+5. REQUIRED INDICATORS
+- RSI (14-period) — primary divergence detection.
+- Volume (with 20-period moving average) — for spike and dry-up detection.
+- ATR (14-period) — volatility regime measurement and stop sizing.
+- Bollinger Bands (20, 2) — optional confirmation of volatility contraction/expansion.
+- Swing High/Low markers — to define divergence pivots and stop levels.
+
+6. EXECUTION NOTES
+- Best applied on 1H, 4H, and Daily timeframes for reliable divergence signals.
+- Avoid low-liquidity sessions; volume patterns are unreliable in thin markets.
+- Confirm divergence with at least two RSI pivot points for higher probability.
+- Combine with market structure (support/resistance) for confluence.

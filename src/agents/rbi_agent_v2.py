@@ -43,7 +43,7 @@ AI_MAX_TOKENS = 4000
 
 # Import model factory with proper path handling
 import sys
-sys.path.append('/Users/md/Dropbox/dev/github/moon-dev-ai-agents-for-trading')
+sys.path.append('/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents')
 
 try:
     from src.models import model_factory
@@ -201,7 +201,8 @@ RISK MANAGEMENT:
 
 If you need indicators use TA lib or pandas TA. 
 
-Use this data path: /Users/md/Dropbox/dev/github/moon-dev-ai-agents-for-trading/src/data/rbi/BTC-USD-15m.csv
+Use this data path: /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi/BTC-USD-15m.csv
+
 the above data head looks like below
 datetime, open, high, low, close, volume,
 2023-01-01 00:00:00, 16531.83, 16532.69, 16509.11, 16510.82, 231.05338022,
@@ -856,11 +857,15 @@ def main():
         cprint(f"📝 Idea: {idea[:100]}{'...' if len(idea) > 100 else ''}", "yellow")
         cprint(f"{'='*50}\n", "yellow")
         
-        process_trading_idea_with_execution(idea)
-        
-        cprint(f"\n{'='*50}", "green")
-        cprint(f"✅ Completed idea {i}/{total_ideas}", "green")
-        cprint(f"{'='*50}\n", "green")
+        try:
+            process_trading_idea_with_execution(idea)
+            
+            cprint(f"\n{'='*50}", "green")
+            cprint(f"✅ Completed idea {i}/{total_ideas}", "green")
+            cprint(f"{'='*50}\n", "green")
+        except Exception as e:
+            cprint(f"\n❌ Error processing idea {i}: {str(e)}", "red")
+            cprint("🔄 Moving safely to next idea...", "yellow")
         
         # Break between ideas
         if i < total_ideas:

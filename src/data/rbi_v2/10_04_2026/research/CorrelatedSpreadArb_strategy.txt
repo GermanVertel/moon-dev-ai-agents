@@ -1,0 +1,48 @@
+STRATEGY_NAME: CorrelatedSpreadArb
+
+STRATEGY_DETAILS:
+This strategy is a statistical arbitrage approach that exploits temporary dislocations in bid-ask spreads across two or more correlated instruments (e.g., dual-listed equities, ETFs vs. underlying basket, or highly correlated futures contracts). The core thesis is that when spreads widen abnormally across a correlated pair, one leg becomes temporarily "cheap" relative to the other, creating a short-lived mean-reversion opportunity.
+
+1. KEY STRATEGY COMPONENTS
+- Universe Selection: Identify pairs with historically high correlation (Pearson r > 0.85 over rolling 60–120 periods) and similar liquidity profiles. Examples: SPY/ES futures, dual-listed shares (e.g., RDS.A/RDS.B), or sector ETFs vs. constituent baskets.
+- Spread Signal Construction: Compute the "spread differential" as:
+  SpreadDiff = (BidLegA - AskLegA) - (BidLegB - AskLegB)
+  Normalize via z-score over a rolling lookback (e.g., 50–100 periods).
+- Signal Trigger: Enter long on the leg whose spread has widened disproportionately (i.e., its bid-ask has ballooned relative to its pair), expecting spread compression.
+- Correlation Monitoring: Continuously validate that the pair remains correlated; break correlation if rolling correlation drops below threshold (e.g., 0.7).
+
+2. ENTRY RULES
+- Long Entry: When z-score of SpreadDiff > +2.0 (spread on Leg A abnormally wide vs. Leg B), go long Leg A and/or short Leg B to remain market-neutral.
+- Confirmation Filters:
+  - Minimum liquidity: Leg bid-ask size > 100 shares/contracts.
+  - No earnings/news events within the holding window.
+  - Volatility regime check: VIX or realized vol below a cap (e.g., VIX < 30) to avoid trending dislocation regimes.
+- Position Sizing: Equal notional on both legs; size based on fraction of average daily volume (e.g., <1% ADV per leg).
+
+3. EXIT RULES
+- Primary Exit: Close when z-score reverts to within ±0.5 (spread normalized).
+- Time Stop: Exit after N periods (e.g., 5–20 bars) if reversion does not occur.
+- Stop Loss: Exit if z-score exceeds +3.5 (dislocation worsening) or if correlation breaks down.
+- Profit Target: Capture 70–80% of the initial spread differential.
+
+4. RISK MANAGEMENT
+- Market-Neutral Construction: Long/short legs sized to neutralize directional exposure (beta-adjusted).
+- Max Position Limit: Cap total exposure per pair at 2–5% of portfolio.
+- Correlation Risk: Hard stop if rolling correlation < 0.7 for two consecutive checks.
+- Liquidity Risk: Avoid pairs where either leg's spread > 50 bps of mid.
+- Execution Risk: Use limit orders on both legs; avoid market orders during spread widening.
+- Drawdown Control: Daily loss limit of 1–2% of allocated capital per pair; strategy-wide kill switch at 5% drawdown.
+
+5. REQUIRED INDICATORS / DATA
+- Real-time Level 1 (and ideally Level 2) bid/ask quotes for both legs.
+- Rolling correlation (60–120 period window).
+- Z-score of spread differential (50–100 period lookback).
+- Volatility filter (VIX or realized vol of pair).
+- Liquidity metrics: bid-ask size, spread in bps, ADV.
+- Event calendar (earnings, dividends, index rebalances) to avoid known dislocation drivers.
+
+6. EXECUTION NOTES
+- Latency-sensitive: Requires low-latency data feeds and order routing, as spread dislocations are typically short-lived (seconds to minutes).
+- Co-location or direct market access recommended.
+- Backtest with tick-level data and realistic slippage models (spread crossing costs are the primary P&L drag).
+- Monitor for structural breaks (e.g., index reconstitution, merger announcements) that invalidate the pair relationship.

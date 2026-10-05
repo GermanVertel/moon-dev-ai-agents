@@ -1,0 +1,44 @@
+STRATEGY_NAME: NocturnalSectorPulse
+
+STRATEGY_DETAILS:
+This strategy combines overnight session breakout trading with sector rotation analysis, creating a unique approach that captures momentum during low-liquidity hours while filtering trades through relative sector strength.
+
+**Core Components:**
+
+1. **Overnight Session Focus**: Trades exclusively during the overnight session (typically 6 PM - 9:30 AM ET for US equities or equivalent futures hours), capitalizing on reduced liquidity and potentially inefficient price discovery.
+
+2. **60-Minute High Breakout**: Entry trigger occurs when price breaks above the rolling 60-minute high during overnight hours. This timeframe balances noise reduction with responsiveness to genuine momentum shifts.
+
+3. **EROD Ratio Filter (Sector Rotation)**: 
+   - EROD (Earnings-Relative Outperformance Differential) measures a stock's performance relative to its sector peers
+   - Only take long entries when EROD is positive, indicating the stock is outperforming its sector
+   - This filters out breakouts driven purely by broad sector moves vs. genuine relative strength
+
+**Entry Rules:**
+- Time window: Overnight session only
+- Price must break above the 60-minute rolling high
+- EROD ratio must be positive (stock outperforming sector)
+- Optional: Require sector ETF itself to be in uptrend (above 50-period MA)
+
+**Exit Rules:**
+- Stop-loss: 5% below entry price, BUT dynamically adjusted using ATR
+  - Formula: Stop = Entry - (min(5% of entry, 1.5 × ATR(14)))
+  - This prevents stops from being too wide in low-volatility regimes
+- Take-profit: Consider 2:1 or 3:1 R:R, or trail using 30-minute lows
+- Time-based exit: Close position at session end if neither target nor stop hit
+
+**Risk Management:**
+- Position sizing: Risk no more than 1% of account per trade
+- Max concurrent positions: 3-5 to avoid overnight gap risk concentration
+- Avoid earnings dates (EROD becomes unreliable pre-earnings)
+- Monitor overnight gap risk — consider reducing size before major macro events
+
+**Required Indicators:**
+- 60-minute rolling high (custom calculation on 1-min or 5-min data)
+- ATR(14) on the entry timeframe
+- EROD ratio (stock return / sector ETF return over rolling window, e.g., 5-day)
+- Sector ETF identifier (e.g., XLK, XLF, XLE) mapped to each traded symbol
+- 50-period MA on sector ETF (optional trend filter)
+
+**Key Edge:**
+The overnight session often exhibits momentum continuation into the open due to institutional order flow positioning. By requiring EROD confirmation, the strategy avoids false breakouts caused by sector-wide moves, isolating stocks with genuine idiosyncratic strength. The ATR-adjusted stop prevents premature exits during volatile overnight periods while capping maximum loss at 5%.

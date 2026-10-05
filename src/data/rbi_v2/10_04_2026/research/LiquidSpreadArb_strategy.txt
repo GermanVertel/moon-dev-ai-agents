@@ -1,0 +1,46 @@
+STRATEGY_NAME: LiquidSpreadArb
+
+STRATEGY_DETAILS:
+This strategy targets transient inefficiencies in highly liquid markets by monitoring the bid-ask spread relative to traded volume. The core premise is that in liquid markets, spreads should remain tight; when they widen beyond statistical norms—especially when accompanied by volume imbalances—a short-lived arbitrage opportunity emerges. The strategy does not rely on latency arbitrage (HFT) but on detecting statistically significant dislocations and capturing mean reversion in the spread.
+
+1. KEY STRATEGY COMPONENTS
+- Universe: Only assets with high daily volume (e.g., top 50 crypto pairs, major FX pairs, or large-cap equities) where execution slippage is minimal.
+- Spread Monitoring: Track the current bid-ask spread (Ask - Bid) and compare against a rolling baseline (e.g., 20-period moving average of spread).
+- Volume Imbalance: Compute order book imbalance or trade volume imbalance (buy volume vs sell volume over a short window) to confirm directional pressure.
+- Discrepancy Detection: Flag when spread > baseline + k * standard deviation of spread AND volume imbalance exceeds a threshold.
+- Mean Reversion Assumption: Liquidity providers will re-tighten spreads, allowing the strategy to exit at a profit.
+
+2. ENTRY RULES
+- Long Entry (Buy at Bid, Sell at Ask): When spread is abnormally wide and volume imbalance is skewed to the sell side (indicating temporary oversupply), place a limit buy at the bid. If filled, immediately place a limit sell at the ask (or slightly below) to capture the spread.
+- Short Entry (Sell at Ask, Buy at Bid): When spread is abnormally wide and volume imbalance is skewed to the buy side (temporary demand spike), place a limit sell at the ask. If filled, immediately place a limit buy at the bid.
+- Entry Confirmation: Require at least two consecutive periods of elevated spread and volume imbalance to avoid false signals.
+- Position Sizing: Small, fixed fractional size (e.g., 0.5% of capital per trade) due to the low-profit-per-trade nature.
+
+3. EXIT RULES
+- Profit Target: Exit when the spread narrows back to or below the rolling baseline (mean reversion). For a long entry, this means selling at the ask when the ask-bid difference returns to normal.
+- Stop Loss: If the spread widens further by a predefined multiple (e.g., 2x the entry spread) or if volume imbalance reverses against the position, exit immediately to limit losses.
+- Time Stop: Close the position after a maximum holding period (e.g., 5 minutes for crypto, 1 minute for FX) to avoid tying up capital in a non-reverting spread.
+- Partial Exits: If spread narrows partially, scale out 50% and let the remainder run with a trailing stop.
+
+4. RISK MANAGEMENT
+- Maximum Concurrent Positions: Limit to 3-5 simultaneous arbitrage trades to avoid overexposure.
+- Daily Loss Limit: Stop trading if daily drawdown exceeds 2% of capital.
+- Slippage Buffer: Account for transaction costs and slippage; only enter if expected spread capture > 2x estimated costs.
+- Liquidity Check: Avoid entering if order book depth at the bid/ask is insufficient to fill the position without moving the price.
+- Correlation Risk: Avoid taking multiple positions in highly correlated assets simultaneously.
+
+5. REQUIRED INDICATORS
+- Bid-Ask Spread: Real-time best bid and best ask from Level 1 or Level 2 data.
+- Rolling Spread Baseline: 20-period simple moving average of spread.
+- Spread Standard Deviation: 20-period standard deviation of spread.
+- Volume Imbalance: (Buy Volume - Sell Volume) / (Buy Volume + Sell Volume) over a 1-minute window.
+- Order Book Depth: Total volume at best bid and best ask (optional but recommended).
+- Volatility Filter: ATR (Average True Range) to avoid entering during extreme volatility where spreads may not revert.
+
+6. EXECUTION NOTES
+- Use limit orders exclusively to avoid paying the spread.
+- Implement a "post-only" flag to ensure maker fees and avoid taker fees.
+- Monitor for adverse selection: if the spread widens due to news or a liquidity crisis, do not enter.
+- Backtest with tick-level data to capture realistic spread dynamics and fill probabilities.
+
+This strategy is best suited for automated execution in markets with tight nominal spreads and high liquidity, where even small dislocations can be exploited repeatedly.

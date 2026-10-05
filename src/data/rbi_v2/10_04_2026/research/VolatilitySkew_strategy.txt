@@ -1,0 +1,46 @@
+STRATEGY_NAME: VolatilitySkew
+
+STRATEGY_DETAILS:
+This strategy is a targeted options-buying approach that exploits elevated implied volatility (IV) in near-term put contracts. It is not a directional equity signal but an options-premium strategy that seeks to capitalize on rich IV pricing, mean reversion of volatility, or anticipated downside moves.
+
+1. Key Strategy Components
+- Universe: Put options on a specified underlying asset (single name or index).
+- Selection Criteria:
+  a. Expiry filter: Only consider options with an expiration date at least 7 calendar days (1 week) from the current date. This avoids ultra-short-dated contracts where IV can be noisy and gamma risk is extreme.
+  b. Strike filter: Strike price must equal the closing price of the underlying asset on the signal date (at-the-money, ATM).
+  c. IV filter: Among all qualifying ATM puts, select the one with the highest implied volatility.
+- Signal frequency: Evaluated at each trading session close or on a scheduled basis (e.g., weekly). The trade is initiated when a qualifying contract exists.
+
+2. Entry Rules
+- Determine current date and closing price of the underlying.
+- Scan the options chain for put contracts meeting:
+  - Expiration >= current date + 7 days.
+  - Strike == closing price (ATM).
+- Rank qualifying contracts by implied volatility (descending).
+- Buy the put with the highest IV.
+- Position sizing: Use a predefined risk unit (e.g., 1–2% of portfolio per trade) or a fixed number of contracts. Because options can expire worthless, size conservatively.
+
+3. Exit Rules
+- Profit target: Close the position when the option premium increases by a predefined percentage (e.g., 50–100%) or when IV contracts meaningfully.
+- Stop loss: Close if the option premium drops by a predefined percentage (e.g., 50%) or if the underlying moves sharply against the position.
+- Time-based exit: Close the position before expiration, ideally when 3–5 days remain, to avoid accelerated time decay (theta) and pin risk.
+- Optional roll: If the thesis remains valid and a new qualifying contract exists, roll into a new ATM put with the highest IV.
+
+4. Risk Management
+- Maximum loss is limited to the premium paid, but the probability of total loss is high for long options.
+- Use small position sizes; avoid allocating more than 1–2% of capital per trade.
+- Diversify across underlyings or timeframes if multiple signals occur.
+- Monitor implied volatility rank/percentile: buying the highest IV contract can mean buying expensive premium; ensure the strategy is paired with a volatility mean-reversion or event-driven thesis.
+- Be aware of liquidity: wide bid-ask spreads can erode returns. Prefer contracts with tight spreads and open interest.
+
+5. Required Indicators / Data
+- Options chain data: strike, expiration, bid, ask, last, implied volatility, open interest, volume.
+- Underlying asset closing price.
+- Current date and expiration calendar.
+- Optional: IV rank/percentile, historical volatility, put/call ratio for context.
+
+6. Notes and Caveats
+- Buying the highest-IV put is a contrarian volatility play; it assumes IV is overpriced and will revert, or that the underlying will fall enough to overcome the elevated premium.
+- If IV is high due to an upcoming event (earnings, FDA decision), the option may be expensive and subject to IV crush after the event.
+- Always verify that the strike equals the closing price within a reasonable tolerance (e.g., nearest available strike) since exact ATM strikes may not exist.
+- Backtest with realistic slippage and commissions, as options trading costs can significantly impact performance.

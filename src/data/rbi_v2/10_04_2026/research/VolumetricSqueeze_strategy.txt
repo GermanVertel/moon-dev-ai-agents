@@ -1,0 +1,64 @@
+STRATEGY_NAME: VolumetricSqueeze
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band breakouts with volume confirmation and bullish engulfing candlestick patterns to identify high-probability long entries during momentum expansion phases.
+
+**Core Concept:**
+The strategy targets moments when price breaks above the upper Bollinger Band (indicating volatility expansion and bullish momentum) while simultaneously showing above-average volume (confirming conviction) and forming a bullish engulfing pattern (validating buyer dominance). This confluence of three signals filters out weak breakouts and false momentum spikes.
+
+**Required Indicators:**
+1. **Bollinger Bands** (typically 20-period SMA, 2 standard deviations)
+   - Upper Band (UB) = SMA(20) + 2 × StdDev(20)
+   - Middle Band = SMA(20)
+   - Lower Band = SMA(20) - 2 × StdDev(20)
+2. **Volume Moving Average** (20-period SMA of volume)
+3. **Candlestick Pattern Recognition** (bullish engulfing detection)
+
+**Entry Rules (Long):**
+All three conditions must be satisfied on the same candle (or entry on the next candle's open):
+1. **Bollinger Breakout:** Close price > Upper Bollinger Band
+2. **Volume Confirmation:** Current volume > 20-period average volume (ideally > 1.5× average for stronger signal)
+3. **Bullish Engulfing Pattern:** Current candle's real body completely engulfs the prior candle's real body, with the current candle being bullish (close > open) and the prior candle being bearish (close < open)
+
+**Entry Execution:**
+- Enter long at the open of the candle immediately following the signal candle
+- Alternatively, enter at the close of the signal candle if using aggressive entry
+
+**Exit Rules:**
+1. **Primary Target:** Middle Bollinger Band (SMA 20) — take partial profit
+2. **Trailing Stop:** Trail below the lower Bollinger Band or use an ATR-based trailing stop (e.g., 2× ATR)
+3. **Time-Based Exit:** Exit if price fails to make a new high within 5–8 candles
+4. **Momentum Failure Exit:** Exit if price closes back below the upper Bollinger Band with declining volume
+
+**Stop Loss:**
+- Place initial stop below the low of the engulfing candle (or below the prior candle's low)
+- Alternative: Stop at 1.5× ATR below entry
+- Never risk more than 1–2% of account equity per trade
+
+**Risk Management:**
+- **Position Sizing:** Calculate based on distance from entry to stop loss (risk-based sizing)
+- **Max Risk Per Trade:** 1% of total capital
+- **Max Concurrent Positions:** 3–5 to avoid correlated exposure
+- **Volatility Filter:** Skip trades if Bollinger Band width is already extremely wide (avoid late-stage breakouts)
+- **Trend Filter (optional):** Only take signals when price is above the 200-period SMA for higher-probability setups
+
+**Confirmation Enhancements:**
+- RSI (14) should be > 50 and rising to confirm momentum
+- MACD histogram should be positive and expanding
+- Avoid entries near major resistance levels or during low-liquidity sessions
+
+**Invalidation Conditions:**
+- Volume drops below average on the signal candle
+- Engulfing pattern is weak (small body, long wicks)
+- Price closes back inside the Bollinger Bands on the next candle (failed breakout)
+- Bearish divergence on RSI/volume during the breakout
+
+**Best Timeframes:**
+- Works best on 1H, 4H, and Daily charts for swing trades
+- 15m charts can work for intraday but produce more false signals
+
+**Market Conditions:**
+- Optimal in trending or volatility-expansion regimes
+- Avoid in choppy, low-volume, or range-bound markets where Bollinger breakouts frequently fail
+
+This strategy's edge comes from the triple confluence of volatility expansion (BB breakout), participation confirmation (volume), and price action validation (bullish engulfing), which together significantly reduce the false breakout rate typical of single-indicator systems.

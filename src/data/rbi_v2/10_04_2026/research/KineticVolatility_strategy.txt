@@ -1,0 +1,73 @@
+STRATEGY_NAME: KineticVolatility
+
+STRATEGY_DETAILS:
+This strategy is a volatility-adaptive trading system that adjusts position sizing, entry thresholds, and stop placement based on real-time changes in market volatility. It is designed for liquid instruments (e.g., futures, FX majors, large-cap equities) and works best on intraday to swing timeframes (5m–4h).
+
+1. Key Strategy Components
+- Volatility Regime Detection:
+  - Use ATR(14) and Bollinger Band Width (BBW = (Upper−Lower)/Middle, 20-period, 2σ) to classify volatility into Low, Normal, High, and Extreme regimes.
+  - Optional: realized volatility (standard deviation of log returns over 20–50 bars) for confirmation.
+- Adaptive Band Construction:
+  - Build dynamic bands around a short EMA (e.g., EMA(20)) using a multiple of ATR that scales with the regime.
+  - In Low volatility: tighter bands (e.g., 1.0×ATR) to catch early breakouts.
+  - In High volatility: wider bands (e.g., 2.0–2.5×ATR) to avoid noise.
+- Momentum Confirmation:
+  - Use RSI(14) or MACD histogram to confirm direction and avoid false breakouts.
+  - Require slope alignment: EMA(20) slope positive for longs, negative for shorts.
+- Volume/Spread Filter:
+  - Require volume > 1.2× 20-period average and spread within normal bounds to avoid illiquid conditions.
+
+2. Entry Rules
+- Long Entry:
+  - Price closes above upper adaptive band.
+  - RSI(14) > 55 and rising, or MACD histogram > 0 and increasing.
+  - EMA(20) slope > 0.
+  - Volatility regime is Normal or High (avoid Extreme unless using reduced size).
+- Short Entry:
+  - Price closes below lower adaptive band.
+  - RSI(14) < 45 and falling, or MACD histogram < 0 and decreasing.
+  - EMA(20) slope < 0.
+  - Volatility regime is Normal or High.
+- Optional Mean-Reversion Variant (Low volatility only):
+  - Enter counter-trend when price touches outer band and RSI shows divergence, targeting the middle band.
+
+3. Exit Rules
+- Profit Targets:
+  - Target 1: 1.0×ATR from entry (scale out 50%).
+  - Target 2: 2.0×ATR from entry or opposite adaptive band, whichever comes first.
+- Trailing Stop:
+  - Trail using 1.5×ATR from the highest high (longs) or lowest low (shorts) after Target 1 is hit.
+- Time Stop:
+  - Exit if trade does not reach Target 1 within N bars (e.g., 20 bars) and momentum stalls.
+- Volatility Exit:
+  - If volatility regime shifts to Extreme, tighten stops to 0.75×ATR and reduce size.
+
+4. Risk Management
+- Position Sizing:
+  - Risk per trade = 0.5%–1.0% of equity.
+  - Size = (Equity × Risk%) / (Stop Distance in price × Point Value).
+  - Reduce size by 50% in High volatility and by 75% in Extreme volatility.
+- Stop Loss:
+  - Initial stop = entry ∓ 1.5×ATR (longs: entry − 1.5×ATR).
+  - Never widen a stop; only tighten.
+- Max Exposure:
+  - Limit concurrent positions to 2–3 in correlated instruments.
+  - Daily loss limit: 3% of equity; weekly: 6%.
+- Slippage/Commission Buffer:
+  - Add 0.1×ATR to stop distance for high-volatility instruments.
+
+5. Required Indicators
+- ATR(14) — volatility measurement and stop/target sizing.
+- Bollinger Bands (20, 2) — band width and regime detection.
+- EMA(20) — trend filter and adaptive band center.
+- RSI(14) or MACD(12,26,9) — momentum confirmation.
+- Volume MA(20) — liquidity filter.
+- Optional: Realized Volatility (20–50 bars) and VIX/IV rank for regime context.
+
+6. Execution Notes
+- Best sessions: London/New York overlap for FX; first 2 hours for equities.
+- Avoid major news releases unless trading the post-news volatility expansion with reduced size.
+- Backtest across Low/Normal/High regimes separately; optimize ATR multipliers per regime, not globally.
+- Walk-forward test to ensure regime classification remains stable out-of-sample.
+
+This KineticVolatility approach is unique because it treats volatility not as a static parameter but as a dynamic state variable that simultaneously governs entry sensitivity, stop distance, target placement, and position size.

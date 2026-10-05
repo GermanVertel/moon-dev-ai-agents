@@ -1,0 +1,47 @@
+STRATEGY_NAME: DivergentSqueeze
+
+STRATEGY_DETAILS:
+This strategy combines a classic long-term trend signal with a contrarian volatility setup, using volume and price action divergence as a filter to avoid false bearish continuation signals.
+
+**Core Components:**
+
+1. **Primary Trend Filter (Death Cross):**
+   - 50-day SMA crossing below the 200-day SMA signals a bearish regime.
+   - This defines the directional bias and the "bearish territory" context.
+
+2. **Volume Confirmation (Lower-than-Average):**
+   - The death cross must occur on volume below its 20-day average.
+   - Low-volume breakdowns often indicate exhaustion rather than conviction, setting up a potential divergence/mean-reversion move.
+
+3. **Price Action Divergence:**
+   - While the MAs are bearish, watch for bullish divergence: price making lower lows while momentum (RSI or MACD histogram) makes higher lows.
+   - This divergence signals weakening downside pressure and an impending volatility expansion.
+
+4. **Volatility Breakout Trigger:**
+   - Bollinger Bands must be in a "squeeze" (bandwidth at multi-week lows) after the divergence forms.
+   - Entry occurs on a close above the upper Bollinger Band (or above the 50-day SMA) confirming the breakout from the squeeze.
+
+**Entry Rules:**
+- 50 SMA < 200 SMA (bearish regime established).
+- Death cross volume < 20-day average volume.
+- Bullish RSI/MACD divergence present over the last 10–20 bars.
+- Bollinger Bandwidth in the bottom 20% of its 6-month range (squeeze).
+- Enter long on a daily close above the upper Bollinger Band with above-average volume.
+
+**Exit Rules:**
+- Primary exit: price closes below the middle Bollinger Band (20 SMA).
+- Secondary exit: price touches the lower Bollinger Band after entry (volatility reversal).
+- Stop-loss: below the most recent swing low or 2× ATR from entry.
+
+**Risk Management:**
+- Position size based on 1% account risk per trade.
+- ATR-based stop (2× ATR) to accommodate volatility expansion.
+- No new entries if the broader market (e.g., SPY) is in a strong downtrend with rising volume.
+
+**Required Indicators:**
+- 50-day and 200-day SMA
+- 20-day SMA with Bollinger Bands (2 std dev)
+- Bollinger Bandwidth
+- Volume with 20-day average
+- RSI (14) or MACD (12,26,9)
+- ATR (14)

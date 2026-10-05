@@ -1,0 +1,56 @@
+STRATEGY_NAME: ConvergentVolatility
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+ConvergentVolatility is a hybrid strategy that combines volatility compression detection (via moving average behavior) with momentum divergence confirmation (via RSI) to catch breakouts emerging from consolidation phases. The strategy's exit logic is uniquely symmetric to its entry logic — it waits for both the moving average and RSI to converge again, signaling the exhaustion of the breakout move.
+
+**Key Strategy Components:**
+
+1. **Consolidation Detection (Volatility Squeeze)**
+   - Use a dual moving average system: a fast MA (e.g., 10-period EMA) and a slow MA (e.g., 50-period EMA).
+   - Consolidation is identified when the distance between the fast and slow MA compresses below a threshold (e.g., ATR-normalized spread < 0.5× average spread over the last 50 bars).
+   - Alternatively, use Bollinger Band width contraction as a confirming filter.
+
+2. **RSI Divergence Filter**
+   - Calculate RSI (14-period) on the same timeframe.
+   - During consolidation, look for **hidden divergence**:
+     - Bullish setup: Price makes a lower low (or equal low) while RSI makes a higher low.
+     - Bearish setup: Price makes a higher high (or equal high) while RSI makes a lower high.
+   - This divergence indicates latent momentum building inside the range — a precursor to breakout.
+
+3. **Breakout Trigger**
+   - Enter long when price closes above the consolidation range high AND RSI crosses above 55 (or a mid-level threshold).
+   - Enter short when price closes below the consolidation range low AND RSI crosses below 45.
+   - Require volume expansion (e.g., current volume > 1.5× 20-period average) as a confirmation filter.
+
+**Entry Rules:**
+- **Long Entry:** Consolidation detected → bullish RSI divergence present → price breaks above range high with volume spike → RSI > 55.
+- **Short Entry:** Consolidation detected → bearish RSI divergence present → price breaks below range low with volume spike → RSI < 45.
+
+**Exit Rules (Convergence Exit):**
+- Exit long when: fast MA and slow MA begin to converge again (spread narrows for 2+ consecutive bars) AND RSI falls back toward the 45–55 neutral zone.
+- Exit short when: fast MA and slow MA begin to converge again AND RSI rises back toward the 45–55 neutral zone.
+- This dual-convergence exit prevents premature exits during strong trends while locking in gains as momentum fades.
+
+**Risk Management:**
+- **Stop Loss:** Place initial stop just inside the consolidation range (e.g., 1× ATR beyond the breakout candle's opposite extreme).
+- **Position Sizing:** Risk 1–2% of equity per trade. Since breakouts from tight consolidations often have favorable risk-reward, size can be slightly larger than trend-following systems.
+- **Trailing Stop:** Once price moves 1.5× the initial risk in profit, trail using the fast MA.
+- **Time Stop:** If the trade does not achieve 1× risk in profit within 15 bars, exit to avoid dead money.
+- **Max Concurrent Trades:** Limit to 3–5 to avoid correlated breakout exposure.
+
+**Required Indicators:**
+- Fast EMA (10)
+- Slow EMA (50)
+- RSI (14)
+- ATR (14) — for volatility normalization and stops
+- Volume MA (20) — for breakout confirmation
+- Optional: Bollinger Bands (20, 2) for squeeze confirmation
+
+**Timeframe & Markets:**
+- Best suited for 15m–4H timeframes on liquid instruments (FX majors, index futures, large-cap crypto).
+- Avoid low-liquidity assets where false breakouts dominate.
+
+**Edge Rationale:**
+Volatility is cyclical — compression precedes expansion. By requiring both structural (MA compression) and momentum (RSI divergence) evidence before entry, ConvergentVolatility filters out low-quality breakouts. The symmetric convergence exit ensures trades are closed when the volatility-momentum cycle completes, rather than relying on arbitrary targets.

@@ -1,0 +1,48 @@
+STRATEGY_NAME: FiboBand Tracker
+
+STRATEGY_DETAILS:
+This is a trend-following strategy that combines Fibonacci retracement levels with Bollinger Bands to identify high-probability continuation entries within an established trend. The core idea is to use Bollinger Bands to confirm trend direction and volatility, while Fibonacci ratios provide precise pullback entry zones.
+
+1. KEY STRATEGY COMPONENTS
+- Bollinger Bands (20-period SMA, 2 standard deviations) determine trend bias and volatility state.
+- Fibonacci retracement levels (typically 38.2%, 50%, 61.8%) are drawn from the most recent significant swing high to swing low (in an uptrend) or swing low to swing high (in a downtrend).
+- The strategy assumes that in a strong trend, price will pull back to a Fibonacci level and then resume in the trend direction, often with the middle or lower/upper Bollinger Band acting as dynamic support/resistance.
+- A trend filter (e.g., price above/below the 200-period SMA or the Bollinger Band middle line sloping upward/downward) ensures trades are taken only in the direction of the dominant trend.
+
+2. ENTRY RULES
+Long Entry (Uptrend):
+- Confirm uptrend: Price is above the 200-period SMA, and the 20-period SMA (Bollinger middle band) is sloping upward. Alternatively, price has been riding the upper Bollinger Band.
+- Identify the most recent swing low and swing high. Draw Fibonacci retracement from swing low to swing high.
+- Wait for price to pull back to one of the key Fibonacci levels (38.2%, 50%, or 61.8%).
+- Entry trigger: A bullish reversal candlestick (e.g., hammer, bullish engulfing) forms at or near the Fibonacci level, AND price is touching or has just bounced off the lower or middle Bollinger Band. Ideally, the Bollinger Band width is contracting during the pullback (squeeze) and then expanding on the bounce.
+- Enter long at the close of the reversal candle or on a break above the high of the reversal candle.
+
+Short Entry (Downtrend):
+- Confirm downtrend: Price is below the 200-period SMA, and the 20-period SMA is sloping downward.
+- Identify the most recent swing high and swing low. Draw Fibonacci retracement from swing high to swing low.
+- Wait for price to rally to a key Fibonacci level (38.2%, 50%, or 61.8%).
+- Entry trigger: A bearish reversal candlestick forms at or near the Fibonacci level, AND price is touching or has just been rejected by the upper or middle Bollinger Band. Bollinger Band width should contract during the rally and expand on the rejection.
+- Enter short at the close of the reversal candle or on a break below the low of the reversal candle.
+
+3. EXIT RULES
+- Profit Target: For longs, target the recent swing high or the upper Bollinger Band. For shorts, target the recent swing low or the lower Bollinger Band. Alternatively, use a Fibonacci extension (e.g., 127.2% or 161.8%) as a profit target.
+- Trailing Stop: Once price moves in favor, trail the stop using the middle Bollinger Band (20-period SMA) or a Chandelier Exit (ATR-based).
+- Stop Loss: For longs, place stop below the Fibonacci level that triggered the entry (e.g., below the 61.8% level) or below the recent swing low. For shorts, place stop above the Fibonacci level or above the recent swing high. A common rule is to risk no more than 1-2% of account equity per trade.
+- Time-based Exit: If price does not resume the trend within a certain number of bars (e.g., 10-15 bars) after entry, exit to avoid stagnation.
+
+4. RISK MANAGEMENT
+- Position sizing: Calculate position size based on the distance between entry and stop loss, ensuring risk per trade is fixed (e.g., 1% of account).
+- Avoid trading during low-volatility or range-bound markets: Only take trades when Bollinger Bands are not overly flat and the trend filter (200 SMA) is clearly directional.
+- Confirmation: Require at least two confluences (Fibonacci level + Bollinger Band touch + reversal candle + trend filter) before entering.
+- Maximum drawdown control: Stop trading for the day/week after a certain number of consecutive losses (e.g., 3 losses).
+- Use of multiple timeframes: Confirm the trend on a higher timeframe (e.g., daily) while executing on a lower timeframe (e.g., 1-hour or 4-hour).
+
+5. REQUIRED INDICATORS
+- Bollinger Bands (20, 2)
+- 200-period Simple Moving Average (trend filter)
+- Fibonacci Retracement tool (manual or automated)
+- Candlestick pattern recognition (for reversal signals)
+- Optional: ATR (for trailing stops and volatility measurement)
+- Optional: Volume (to confirm strength of pullback and breakout)
+
+This strategy works best in strongly trending markets (e.g., forex, indices, crypto) and should be avoided in choppy, range-bound conditions. Backtesting and forward testing are essential to optimize the Fibonacci levels and Bollinger Band settings for the specific instrument and timeframe.

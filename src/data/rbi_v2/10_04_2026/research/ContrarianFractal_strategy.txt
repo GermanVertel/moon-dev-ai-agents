@@ -1,0 +1,81 @@
+STRATEGY_NAME: Contrarian Fractal
+
+STRATEGY_DETAILS:
+The "Contrarian Fractal" strategy is a mean-reversion approach that fades false breakout signals by combining Williams Fractals with a moving average crossover filter. The core idea is that when a moving average crossover suggests a trend change (bullish or bearish), but price simultaneously prints a fractal in the *opposite* direction, the crossover is likely a trap. The strategy trades against that trap.
+
+---
+
+**1. Key Strategy Components**
+
+- **Moving Average Crossover (Trend Filter):**
+  - Use two moving averages (e.g., EMA 9 and EMA 21, or SMA 20 and SMA 50).
+  - **Bullish crossover:** Fast MA crosses above slow MA.
+  - **Bearish crossover:** Fast MA crosses below slow MA.
+
+- **Williams Fractals (Signal Trigger):**
+  - **Bullish fractal:** A 5-bar pattern where the middle bar has the lowest low, flanked by two higher lows on each side.
+  - **Bearish fractal:** A 5-bar pattern where the middle bar has the highest high, flanked by two lower highs on each side.
+  - Fractals are confirmed only after the two bars to the right have closed.
+
+- **Contrarian Logic:**
+  - If a **bullish MA crossover** occurs AND a **bearish fractal** forms around the same time → the bullish crossover is likely a fakeout → **SELL / SHORT**.
+  - If a **bearish MA crossover** occurs AND a **bullish fractal** forms around the same time → the bearish crossover is likely a fakeout → **BUY / LONG**.
+
+---
+
+**2. Entry Rules**
+
+**Short Entry (Contrarian Sell):**
+1. Fast MA crosses above slow MA (bullish crossover).
+2. A confirmed **bearish fractal** forms within a small window (e.g., 1–3 bars) of the crossover.
+3. Enter short on the close of the bar that confirms the bearish fractal (or on the next bar open).
+
+**Long Entry (Contrarian Buy):**
+1. Fast MA crosses below slow MA (bearish crossover).
+2. A confirmed **bullish fractal** forms within a small window (e.g., 1–3 bars) of the crossover.
+3. Enter long on the close of the bar that confirms the bullish fractal (or on the next bar open).
+
+---
+
+**3. Exit Rules**
+
+- **Stop Loss:**
+  - For shorts: Place stop just above the bearish fractal's high (the middle bar high) + a small buffer (e.g., 0.1–0.3 ATR).
+  - For longs: Place stop just below the bullish fractal's low (the middle bar low) − a small buffer.
+
+- **Take Profit:**
+  - Option A: Fixed risk-reward ratio (e.g., 1.5R or 2R).
+  - Option B: Exit when price reaches the opposite moving average.
+  - Option C: Exit on the appearance of an opposing fractal.
+
+- **Trailing Stop (optional):**
+  - Trail using the slow MA or an ATR-based trailing stop to lock in profits during extended reversals.
+
+---
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade, calculated from the distance between entry and stop loss.
+- **Max Concurrent Trades:** Limit to 1–2 open positions to avoid overexposure in choppy markets.
+- **Avoid News Events:** Skip entries during high-impact news releases, as fractals can be unreliable in volatile spikes.
+- **Filter by Trend Context (optional):** Only take contrarian signals when the higher timeframe (e.g., 4H or Daily) is ranging or near a support/resistance zone, not in a strong trending market.
+- **Confirmation Window:** Require the fractal and MA crossover to occur within a tight window (1–3 bars); otherwise, skip the trade.
+
+---
+
+**5. Required Indicators**
+
+- **Two Moving Averages:** e.g., EMA 9 & EMA 21, or SMA 20 & SMA 50 (adjust to timeframe).
+- **Williams Fractals:** Standard 5-bar fractal indicator (available in most platforms like TradingView, MT4/MT5).
+- **ATR (optional):** For dynamic stop-loss buffers and position sizing.
+- **Higher Timeframe MA (optional):** For trend-context filtering.
+
+---
+
+**6. Notes & Best Practices**
+
+- This is a **counter-trend / mean-reversion** strategy — best suited for ranging or choppy markets, not strong trends.
+- Backtest across multiple timeframes (15m, 1H, 4H) to find the sweet spot.
+- The "confirmation window" between the MA crossover and the fractal is critical — too wide, and the signal loses meaning.
+- Combine with support/resistance or volume analysis to improve win rate.
+- Be aware that fractals repaint until fully confirmed; only act on confirmed fractals (two bars to the right closed).

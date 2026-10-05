@@ -1,0 +1,139 @@
+STRATEGY_NAME: CompressionDivergence
+
+STRATEGY_DETAILS:
+A volatility-contraction breakout system that fuses dual moving-average trend filtering, Bollinger/Keltner squeeze detection, and RSI divergence confirmation to trade high-probability expansions out of consolidation ranges.
+
+---
+
+1. CORE CONCEPT
+
+Markets cycle between expansion (trending) and contraction (consolidation). This strategy waits for volatility to compress into a tight range, then uses RSI divergence as an early warning that the compression is resolving in a specific direction. The breakout is only taken when price escapes the range with momentum confirmation, filtering out false breaks.
+
+The edge comes from three stacked conditions:
+- Volatility is compressed (low-probability of chop, high-probability of expansion)
+- Momentum is diverging (smart money is positioning before the break)
+- Trend filter agrees (we only trade in the direction of the higher-timeframe bias)
+
+---
+
+2. REQUIRED INDICATORS
+
+- EMA 20 (fast trend)
+- EMA 50 (slow trend / bias)
+- EMA 200 (macro bias, optional higher TF)
+- Bollinger Bands (20, 2.0) — for range envelope
+- Keltner Channels (20, 1.5 ATR) — for squeeze detection
+- ATR (14) — for volatility measurement and stops
+- RSI (14) — for divergence detection
+- Volume (20-period average) — for breakout confirmation
+
+---
+
+3. CONSOLIDATION / SQUEEZE DETECTION
+
+A "compression regime" is active when ALL of the following are true:
+- Bollinger Bands sit INSIDE the Keltner Channels (classic TTM Squeeze condition)
+- ATR(14) is below its 20-period average (volatility is contracting)
+- EMA 20 and EMA 50 are within 0.5 × ATR of each other (trend is flat)
+- Price has made at least 5 consecutive closes inside the Bollinger envelope without a close beyond the outer band
+
+Mark the compression window and track its duration. Longer squeezes (10+ bars) tend to produce more explosive breakouts.
+
+---
+
+4. RSI DIVERGENCE CONFIRMATION
+
+While the compression is active, scan for divergence on the RSI(14):
+
+Bullish Divergence (bias = long breakout):
+- Price prints a lower low inside the range
+- RSI prints a higher low at the same swing
+- Divergence must form within the last 15 bars of the squeeze
+
+Bearish Divergence (bias = short breakout):
+- Price prints a higher high inside the range
+- RSI prints a lower high at the same swing
+
+Only trade in the direction the divergence points. This is the "pre-positioning" signal that separates real breaks from fakeouts.
+
+---
+
+5. TREND FILTER
+
+Directional alignment rule:
+- For long breakouts: EMA 20 > EMA 50 OR price above EMA 200 on the higher timeframe
+- For short breakouts: EMA 20 < EMA 50 OR price below EMA 200 on the higher timeframe
+
+If divergence and trend filter conflict, skip the trade.
+
+---
+
+6. ENTRY RULES
+
+Long Entry:
+1. Compression regime is active
+2. Bullish RSI divergence detected
+3. Trend filter agrees (bullish bias)
+4. Price closes ABOVE the upper Bollinger Band
+5. Breakout candle volume > 1.5 × 20-period average volume
+6. Enter on the close of the breakout candle (or on the retest of the upper band)
+
+Short Entry:
+Mirror of the above with bearish divergence, bearish bias, and a close below the lower Bollinger Band.
+
+Optional refinement: enter on the first pullback to the broken band or EMA 20 rather than the breakout candle itself — this reduces slippage and improves R:R.
+
+---
+
+7. EXIT RULES
+
+Initial Stop Loss:
+- Long: below the lower Bollinger Band OR entry − 1.5 × ATR(14), whichever is tighter
+- Short: above the upper Bollinger Band OR entry + 1.5 × ATR(14)
+
+Profit Targets:
+- Target 1 (scale 50%): 2 × ATR from entry
+- Target 2 (runner): trail using EMA 20 on the closing basis, or 3 × ATR, whichever is hit first
+
+Trailing Logic:
+- Once price moves 1 × ATR in favor, move stop to breakeven
+- Once price moves 2 × ATR in favor, trail stop with EMA 20 (long) or EMA 20 (short)
+
+Time Stop:
+- If the trade does not reach Target 1 within 15 bars, exit at market. Compression breakouts should resolve quickly.
+
+---
+
+8. RISK MANAGEMENT
+
+- Risk per trade: 0.5% – 1% of account equity
+- Position size = (Account × Risk%) ÷ (Entry − Stop)
+- Max concurrent positions: 2
+- Max daily loss: 2R — stop trading for the session
+- Avoid trading during major news events (FOMC, NFP, CPI) unless the breakout occurs after the release
+- Do not take counter-trend breakouts even if divergence is strong — the trend filter is non-negotiable
+
+---
+
+9. HIGH-PROBABILITY FILTERS (CONFLUENCE SCORING)
+
+Score each setup 0–5 and only trade if score ≥ 4:
+- +1 Squeeze duration ≥ 10 bars
+- +1 RSI divergence forms within 5 bars of the breakout
+- +1 Volume expansion ≥ 2× average
+- +1 EMA 20/50 alignment with breakout direction
+- +1 Breakout candle closes in top/bottom 25% of its range (strong close)
+
+---
+
+10. WHEN TO STAND ASIDE
+
+- Compression is active but no divergence has formed
+- Divergence exists but price is still mid-range (no breakout close)
+- Volume on the breakout is below average
+- ATR is expanding without a clean range (chop, not compression)
+- Higher-timeframe trend is directly opposing the divergence direction
+
+---
+
+SUMMARY: CompressionDivergence is a volatility-regime strategy — it only fires when the market has coiled, momentum has diverged, and price escapes the range with volume. This combination targets the highest-probability breakout windows while systematically avoiding the low-volatility chop that kills most breakout traders.

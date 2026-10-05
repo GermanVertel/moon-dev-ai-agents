@@ -1,0 +1,120 @@
+STRATEGY_NAME: VolatilityZone
+
+STRATEGY_DETAILS:
+This strategy combines volatility regime detection with dynamic support/resistance zone mapping to trade reversals at zone boundaries and confirmed breaks through zones. The core idea is that volatility expansion/contraction determines whether price is likely to respect a zone (reversal) or slice through it (breakout).
+
+---
+
+1. KEY STRATEGY COMPONENTS
+
+A. Volatility Regime Detection
+- Use ATR (Average True Range, 14-period) as the primary volatility gauge.
+- Compute a volatility ratio: ATR(14) / SMA(ATR(14), 50).
+- Regimes:
+  - Compression: ratio < 0.85 → zones are strong, expect reversals.
+  - Normal: 0.85 ≤ ratio ≤ 1.15 → trade both reversals and breaks with normal size.
+  - Expansion: ratio > 1.15 → zones are weak, favor breakouts and trend continuation.
+- Optionally confirm with Bollinger Band Width (BBW = (Upper − Lower) / Middle) to validate squeeze/expansion phases.
+
+B. Dynamic Support & Resistance Zone Construction
+- Identify swing highs/lows using a fractal lookback (e.g., 5 bars left/right).
+- Cluster nearby swing points within an ATR-based tolerance (e.g., 0.5 × ATR) into a single zone.
+- Each zone has:
+  - Center price (average of clustered swings)
+  - Zone width (max − min of clustered pivots, capped at 1.0 × ATR)
+  - Strength score = number of touches + recency weight + volume at touches
+- Keep only the top 3–5 zones by strength on each side of current price.
+
+C. Trend Context Filter
+- Use EMA(50) vs EMA(200) for macro trend bias.
+- Use EMA(20) slope for short-term momentum.
+- This determines whether we prefer long or short setups at each zone.
+
+---
+
+2. ENTRY RULES
+
+A. Reversal Entries (Compression / Normal Regime)
+Long reversal:
+- Price enters a support zone from above.
+- Rejection candle forms: bullish engulfing, hammer, or pin bar with wick piercing the zone.
+- Volatility ratio < 1.15 (not in strong expansion).
+- RSI(14) < 35 or bullish divergence vs. prior swing low.
+- Enter on close of the rejection candle or on break of its high.
+
+Short reversal:
+- Price enters a resistance zone from below.
+- Bearish rejection candle (shooting star, bearish engulfing, pin bar).
+- Volatility ratio < 1.15.
+- RSI(14) > 65 or bearish divergence.
+- Enter on close of the rejection candle or on break of its low.
+
+B. Breakout Entries (Expansion / Normal Regime)
+Long breakout:
+- Price closes decisively above a resistance zone (close > zone high + 0.25 × ATR).
+- Volatility ratio > 1.15 OR BBW expanding from a squeeze.
+- Volume > 1.5 × 20-period average volume.
+- Enter on the breakout close or on the first pullback that holds the zone as new support.
+
+Short breakout:
+- Price closes below a support zone (close < zone low − 0.25 × ATR).
+- Volatility ratio > 1.15 OR BBW expanding.
+- Volume confirmation.
+- Enter on breakout close or retest that fails to reclaim the zone.
+
+---
+
+3. EXIT RULES
+
+A. Reversal Trades
+- Take Profit 1: next opposing zone or 1.5 × ATR, whichever comes first.
+- Take Profit 2: 2.5 × ATR or prior swing extreme.
+- Stop Loss: just beyond the zone (zone extreme ± 0.5 × ATR).
+- Move to breakeven once price reaches 1 × ATR in profit.
+
+B. Breakout Trades
+- Take Profit 1: measured move = zone width projected from breakout point, or 2 × ATR.
+- Take Profit 2: next major zone in the breakout direction.
+- Stop Loss: back inside the broken zone (zone midpoint or zone far edge).
+- Trail stop using 1.5 × ATR once trade is 2 × ATR in profit.
+
+C. Universal Exit Triggers
+- Volatility regime flip: if expansion turns to compression against the trade, tighten stops.
+- Time stop: exit if trade hasn't reached TP1 within 20 bars.
+- Zone invalidation: if price re-enters and closes beyond the zone against the position, exit immediately.
+
+---
+
+4. RISK MANAGEMENT
+
+- Risk per trade: 0.5%–1.0% of account equity.
+- Position size = (Account × Risk%) / (Entry − Stop distance).
+- Maximum concurrent positions: 3, with no more than 2 in the same direction.
+- Correlation cap: avoid multiple positions in correlated instruments simultaneously.
+- Daily loss limit: stop trading after −2% daily drawdown.
+- Weekly loss limit: reduce size by 50% after −4% weekly drawdown.
+- No new entries within 15 minutes of major scheduled news (CPI, FOMC, NFP) when in compression regime.
+
+---
+
+5. REQUIRED INDICATORS
+
+- ATR(14) and SMA(ATR(14), 50) → volatility regime ratio
+- Bollinger Bands (20, 2) → BBW for squeeze/expansion confirmation
+- EMA(20), EMA(50), EMA(200) → trend and momentum context
+- RSI(14) → reversal confirmation and divergence detection
+- Volume SMA(20) → breakout validation
+- Fractal/Swing pivot detector (5-bar lookback) → zone construction
+- Optional: VWAP for intraday zone weighting
+
+---
+
+6. EXECUTION NOTES
+
+- Timeframes: 1H and 4H for swing trading; 15m for intraday with same logic.
+- Best instruments: liquid FX majors, index futures, large-cap crypto (BTC/ETH).
+- Backtest across all three volatility regimes separately to validate edge.
+- Track win rate by regime: reversals should dominate in compression, breakouts in expansion.
+- Continuously re-rank zones after each new swing forms; drop zones older than 200 bars unless untested and strong.
+
+This framework ensures entries are always aligned with the prevailing volatility state, using support/resistance zones as the decision points for either fading or following price action.

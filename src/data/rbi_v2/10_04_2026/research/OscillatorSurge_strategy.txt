@@ -1,0 +1,44 @@
+STRATEGY_NAME: OscillatorSurge
+
+STRATEGY_DETAILS:
+This strategy combines oversold momentum conditions with acceleration-based confirmation and volatility-adjusted exits. It is designed to catch sharp reversal moves after extreme selling pressure, using the MACD histogram's rate of change as the trigger filter rather than a simple crossover.
+
+1. Key Strategy Components
+- Primary condition: RSI(14) below 20, indicating deeply oversold conditions.
+- Confirmation condition: MACD histogram is rising faster than usual. This is measured by comparing the current histogram change against its recent average change (e.g., histogram delta over the last 1-3 bars vs. a 20-bar average of absolute histogram deltas). A reading above a defined multiplier (e.g., 1.5x or 2x the average) qualifies as "faster than usual."
+- Exit mechanism: ATR-based profit targets and stops, making exits adaptive to current volatility rather than fixed point values.
+
+2. Entry Rules
+- Long entry requires BOTH:
+  a) RSI(14) < 20 on the current closed bar.
+  b) MACD histogram is positive in its rate of change: histogram[t] > histogram[t-1], AND the magnitude of that change exceeds a threshold relative to its recent norm.
+- Recommended threshold formula:
+  - HistogramDelta = MACD_Hist[t] - MACD_Hist[t-1]
+  - AvgAbsDelta = SMA(ABS(MACD_Hist - MACD_Hist[1]), 20)
+  - Entry trigger: HistogramDelta > (Multiplier × AvgAbsDelta), with Multiplier typically 1.5–2.0.
+- Optional filter: require price to be above a longer-term moving average (e.g., 200 EMA) to avoid catching falling knives in strong downtrends, or skip this filter for pure mean-reversion.
+
+3. Exit Rules
+- ATR-based targets:
+  - Take Profit = Entry Price + (ATR_Multiplier_TP × ATR(14)), commonly 1.5x–3x ATR.
+  - Stop Loss = Entry Price − (ATR_Multiplier_SL × ATR(14)), commonly 1x–1.5x ATR.
+- Optional trailing stop: trail by 1.5x ATR once price moves 1x ATR in favor.
+- Time-based exit: close if neither target is hit within N bars (e.g., 10–20) to avoid dead trades.
+- Alternative exit: close if RSI(14) crosses above 60–70, or if MACD histogram turns negative.
+
+4. Risk Management
+- Position sizing: risk a fixed percentage of equity per trade (e.g., 0.5–1%), calculated from the ATR stop distance.
+- Max concurrent positions and max daily loss limits should be enforced.
+- Since RSI < 20 entries can cluster during crashes, cap exposure per instrument/sector.
+- Avoid trading during major news events or illiquid sessions where ATR may be distorted.
+
+5. Required Indicators
+- RSI (period 14) — oversold trigger.
+- MACD (12, 26, 9) — histogram value and its bar-to-bar delta for acceleration filter.
+- ATR (period 14) — volatility-based target and stop placement.
+- Optional: 200 EMA trend filter, volume confirmation.
+
+6. Notes and Caveats
+- The "faster than usual" MACD histogram condition is the unique edge: it distinguishes genuine momentum ignition from slow drift, reducing false entries during prolonged oversold conditions.
+- Best suited to liquid instruments and lower timeframes (5m–1h) where RSI < 20 occurs more frequently, though it also works on daily charts for swing reversals.
+- Backtest the histogram acceleration multiplier carefully — too low yields many false signals, too high misses valid reversals.

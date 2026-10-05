@@ -1,0 +1,110 @@
+STRATEGY_NAME: ConvergentRetracement
+
+STRATEGY_DETAILS:
+This strategy combines Fibonacci retracement levels, Bollinger Band compression, and support/resistance confirmation to identify high-probability reversal entries after a trend has paused. The core idea is that when price retraces into a key Fibonacci level while volatility contracts (Bollinger Bands narrowing), a breakout or reversal is imminent — and confirmation at a support/resistance zone provides the trigger.
+
+─────────────────────────────
+1. KEY STRATEGY COMPONENTS
+─────────────────────────────
+
+A. Trend Identification
+- Establish the prevailing trend using a higher timeframe (e.g., 4H or Daily).
+- Use a 50-period EMA and 200-period EMA:
+  • Uptrend: Price above both EMAs, 50 EMA > 200 EMA.
+  • Downtrend: Price below both EMAs, 50 EMA < 200 EMA.
+- Only take long setups in uptrends and short setups in downtrends (or allow counter-trend with reduced size).
+
+B. Fibonacci Retracement Mapping
+- Identify the most recent significant swing high and swing low in the direction of the trend.
+- Draw Fibonacci retracement from swing low → swing high (uptrend) or swing high → swing low (downtrend).
+- Key zones to watch: 0.382, 0.500, 0.618, and 0.786.
+- The 0.618–0.786 "golden pocket" is the highest-probability reversal zone.
+
+C. Bollinger Band Narrowing (Squeeze)
+- Bollinger Bands: 20-period SMA, 2 standard deviations.
+- Measure Band Width = (Upper Band − Lower Band) / Middle Band.
+- "Narrowing range" condition: current Band Width is in the lowest 20–30% of its range over the last 50–100 bars.
+- Optional: Use Bollinger Band Width Percentile (BBWP) < 25 to confirm squeeze.
+- A squeeze signals energy compression — often precedes an explosive move.
+
+D. Support/Resistance Confirmation
+- Mark horizontal S/R levels from prior swing highs/lows, round numbers, or high-volume nodes.
+- A valid setup requires the Fibonacci level to CONVERGE with a known S/R zone (within 0.5–1.0 ATR).
+- Confirmation candles: bullish/bearish engulfing, pin bar, hammer/shooting star, or a close back above/below the S/R level.
+
+─────────────────────────────
+2. ENTRY RULES
+─────────────────────────────
+
+LONG ENTRY (in uptrend):
+1. Price retraces into 0.382–0.786 Fibonacci zone.
+2. Fibonacci level aligns with a prior support level (confluence).
+3. Bollinger Bands are in a squeeze (BBWP < 25 or Band Width in bottom 25%).
+4. Confirmation: bullish reversal candle closes above the S/R + Fib level.
+5. Enter on the close of the confirmation candle or on a break of its high.
+
+SHORT ENTRY (in downtrend):
+1. Price retraces up into 0.382–0.786 Fibonacci zone.
+2. Fibonacci level aligns with a prior resistance level.
+3. Bollinger Bands are in a squeeze.
+4. Confirmation: bearish reversal candle closes below the S/R + Fib level.
+5. Enter on the close of the confirmation candle or on a break of its low.
+
+Optional enhancement: Wait for a Bollinger Band expansion (price closes outside the band) AFTER the squeeze to confirm the direction of the breakout.
+
+─────────────────────────────
+3. EXIT RULES
+─────────────────────────────
+
+Take Profit:
+- TP1: Previous swing high (longs) / swing low (shorts) — scale out 50%.
+- TP2: 1.272 or 1.618 Fibonacci extension of the retracement leg.
+- Trailing stop: Use 1.5× ATR or trail below the 20-period EMA.
+
+Stop Loss:
+- Long: Below the 0.786 Fib level or below the most recent swing low, whichever is tighter, plus a 0.5× ATR buffer.
+- Short: Above the 0.786 Fib level or above the most recent swing high, plus a 0.5× ATR buffer.
+
+Time-based exit:
+- If price does not move in favor within 10–15 bars after entry, close the position (squeeze setups can fail if momentum doesn't materialize).
+
+─────────────────────────────
+4. RISK MANAGEMENT
+─────────────────────────────
+
+- Risk per trade: 0.5%–1% of account equity.
+- Position size = (Account Risk $) / (Entry − Stop Loss distance).
+- Minimum R:R of 1:2 required; skip setups offering less.
+- Max concurrent positions: 3.
+- Avoid trading during major news events (FOMC, NFP, CPI) unless already in profit.
+- Reduce size by 50% if the setup is counter-trend.
+- Daily loss limit: 3% of equity → stop trading for the day.
+
+─────────────────────────────
+5. REQUIRED INDICATORS
+─────────────────────────────
+
+- Exponential Moving Averages: 50 EMA, 200 EMA (trend filter).
+- Bollinger Bands: 20-period, 2 SD (squeeze detection).
+- Bollinger Band Width / BBWP (volatility compression measurement).
+- Fibonacci Retracement tool (0.382, 0.5, 0.618, 0.786; extensions 1.272, 1.618).
+- ATR (14) for stop placement and position sizing.
+- Volume (optional but recommended) — look for declining volume during the squeeze and rising volume on breakout.
+- Support/Resistance zones (manually marked or via pivot points).
+
+─────────────────────────────
+6. MARKET CONDITIONS & FILTERS
+─────────────────────────────
+
+- Best on liquid instruments: major FX pairs, index futures (ES, NQ), large-cap stocks, BTC/ETH.
+- Works best on 1H–4H timeframes for swing entries.
+- Avoid ranging markets with no clear swing structure — the Fib anchor becomes ambiguous.
+- Skip if Bollinger Bands are already wide (no squeeze) — the edge comes from compression.
+
+─────────────────────────────
+7. SUMMARY LOGIC
+─────────────────────────────
+
+Trend (EMA) + Retracement (Fibonacci) + Compression (Bollinger squeeze) + Confirmation (S/R candle) = High-probability entry with tight risk.
+
+The convergence of three independent signals (Fib level, S/R zone, and volatility squeeze) drastically reduces false signals compared to using any one indicator alone, while the confirmation candle ensures you enter only after the market agrees with your level.

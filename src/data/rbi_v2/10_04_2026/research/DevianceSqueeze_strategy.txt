@@ -1,0 +1,71 @@
+STRATEGY_NAME: DevianceSqueeze
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band breakouts with RSI divergence to trade momentum exhaustion and potential reversal points during strong trends. It focuses on identifying when price has moved significantly beyond normal volatility ranges (2 SD) while momentum indicators show weakening conviction, suggesting a potential squeeze or short/long covering event.
+
+**Core Components:**
+
+1. **Bollinger Bands (20-period, 2 Standard Deviations)**
+   - Upper Band: 20-period SMA + (2 × Standard Deviation)
+   - Lower Band: 20-period SMA - (2 × Standard Deviation)
+   - Middle Band: 20-period SMA
+   - A breakout above the upper band or below the lower band signals an extreme price move relative to recent volatility.
+
+2. **Relative Strength Index (RSI, 14-period)**
+   - Standard overbought (>70) and oversold (<30) thresholds.
+   - Divergence detection: Compare price highs/lows with RSI highs/lows over a lookback window (e.g., 5–14 bars).
+
+**Entry Rules:**
+
+*Short-Covering Opportunity (Uptrend Reversal):*
+- Price closes **above the upper Bollinger Band** (2 SD breakout).
+- RSI forms a **bearish divergence**: Price makes a higher high, but RSI makes a lower high.
+- Confirmation: Wait for a bearish candle (e.g., bearish engulfing or close below prior bar's low) or RSI crossing below 70.
+- **Action:** Enter short or exit long positions, anticipating a pullback as short sellers cover.
+
+*Long-Covering Opportunity (Downtrend Reversal):*
+- Price closes **below the lower Bollinger Band** (2 SD breakout).
+- RSI forms a **bullish divergence**: Price makes a lower low, but RSI makes a higher low.
+- Confirmation: Wait for a bullish candle (e.g., bullish engulfing or close above prior bar's high) or RSI crossing above 30.
+- **Action:** Enter long or exit short positions, anticipating a bounce as long sellers cover.
+
+**Exit Rules:**
+
+- **Profit Target:** Middle Bollinger Band (20-period SMA) or opposite band.
+- **Stop Loss:** 
+  - For shorts: Above the recent swing high or 1.5× ATR above entry.
+  - For longs: Below the recent swing low or 1.5× ATR below entry.
+- **Time Stop:** Exit if no reversal occurs within 10–15 bars.
+- **Trailing Stop:** Optional—trail by 1× ATR once price moves 1 SD in favor.
+
+**Risk Management:**
+
+- Risk per trade: 1–2% of account equity.
+- Position sizing based on stop distance (ATR-based).
+- Avoid trading during low-volume sessions or major news events.
+- Require confirmation candle to reduce false breakouts.
+- Max concurrent positions: 2–3 to limit exposure.
+
+**Required Indicators:**
+
+- Bollinger Bands (20, 2)
+- RSI (14)
+- ATR (14) for stop sizing and trailing
+- Volume (optional, for breakout confirmation)
+
+**Best Timeframes:**
+
+- 1H, 4H, and Daily charts for sustained trends.
+- Avoid 1M–5M due to noise and false divergences.
+
+**Market Conditions:**
+
+- Works best in trending markets with clear momentum.
+- Avoid ranging/choppy markets where Bollinger breakouts are frequent but unsustainable.
+- Ideal for assets with high volatility and mean-reverting tendencies after extremes (e.g., crypto, forex majors, indices).
+
+**Edge Case Handling:**
+
+- If RSI divergence appears but price does not break the 2 SD band, skip the trade.
+- If multiple divergences form, wait for the strongest (largest RSI gap) and a clear confirmation candle.
+- In strong parabolic trends, divergences can persist—use tighter stops and smaller size.

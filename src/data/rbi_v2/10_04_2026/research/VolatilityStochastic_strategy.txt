@@ -1,0 +1,47 @@
+STRATEGY_NAME: VolatilityStochastic
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Bands (BB) with the Stochastic Oscillator to identify high-probability breakout opportunities. The core idea is to use Bollinger Bands to detect periods of low volatility (squeeze) and then rely on the Stochastic Oscillator to confirm momentum and direction of the impending breakout. This dual-confirmation approach reduces false signals and improves timing.
+
+**Key Strategy Components:**
+1. **Bollinger Bands (BB):** Use standard settings (20-period SMA, 2 standard deviations). The bands expand and contract based on volatility. A "squeeze" occurs when the bands narrow significantly, indicating low volatility and a potential breakout.
+2. **Stochastic Oscillator:** Use standard settings (14,3,3). The %K and %D lines oscillate between 0 and 100. Readings above 80 indicate overbought conditions, below 20 indicate oversold conditions. Crossovers and extreme readings signal momentum shifts.
+3. **Volatility Squeeze Detection:** Identify when the Bollinger Band width (upper band - lower band) is at its lowest level over a specified lookback period (e.g., 20 periods). This signals an imminent breakout.
+4. **Momentum Confirmation:** During the squeeze, wait for the Stochastic Oscillator to give a clear directional signal. For a bullish breakout, look for %K crossing above %D and moving above 20 (or even above 50 for stronger confirmation). For a bearish breakout, look for %K crossing below %D and moving below 80 (or below 50).
+
+**Entry Rules:**
+- **Long Entry:** 
+  - Bollinger Band width is in the lowest 10% of its range over the last 20 periods (squeeze).
+  - Price closes above the upper Bollinger Band.
+  - Stochastic %K crosses above %D and is above 20 (ideally above 50).
+  - Enter long on the close of the breakout candle or on a slight pullback to the upper band.
+- **Short Entry:**
+  - Bollinger Band width is in the lowest 10% of its range over the last 20 periods (squeeze).
+  - Price closes below the lower Bollinger Band.
+  - Stochastic %K crosses below %D and is below 80 (ideally below 50).
+  - Enter short on the close of the breakout candle or on a slight pullback to the lower band.
+
+**Exit Rules:**
+- **Take Profit:** 
+  - For long: Exit when price touches or exceeds the upper Bollinger Band after a sustained move, or when Stochastic reaches overbought (>80) and %K crosses below %D.
+  - For short: Exit when price touches or exceeds the lower Bollinger Band after a sustained move, or when Stochastic reaches oversold (<20) and %K crosses above %D.
+- **Stop Loss:** 
+  - For long: Place stop loss below the middle Bollinger Band (20-period SMA) or below the recent swing low, whichever is tighter.
+  - For short: Place stop loss above the middle Bollinger Band or above the recent swing high, whichever is tighter.
+- **Trailing Stop:** Optional: Use a trailing stop based on the middle Bollinger Band or a fixed ATR multiple to lock in profits.
+
+**Risk Management:**
+- Risk no more than 1-2% of account equity per trade.
+- Position sizing based on stop loss distance.
+- Avoid trading during major news events or low liquidity periods.
+- Confirm breakout with volume spike if possible (not required but adds confidence).
+- Do not enter if the squeeze is not clearly defined (e.g., BB width not at extreme lows).
+
+**Required Indicators:**
+- Bollinger Bands (20,2)
+- Stochastic Oscillator (14,3,3)
+- Optional: Volume, ATR for stop placement
+
+**Timeframes:** Works best on 1-hour, 4-hour, and daily charts. Avoid very low timeframes (e.g., 1-minute) due to noise.
+
+**Notes:** The combination of volatility squeeze (BB) and momentum (Stochastic) helps filter out false breakouts. The strategy is particularly effective in trending markets after a consolidation phase. Always backtest and optimize parameters for the specific asset and timeframe.

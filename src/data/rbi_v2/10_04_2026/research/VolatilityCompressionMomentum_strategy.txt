@@ -1,0 +1,105 @@
+STRATEGY_NAME: VolatilityCompressionMomentum
+
+STRATEGY_DETAILS:
+This strategy is a hybrid momentum/mean-reversion system that exploits the tendency of low-volatility consolidation phases to precede explosive directional moves. It uses Bollinger Band breakouts as the primary momentum trigger, ATR as a volatility filter, and an EMA-based mean-reversion adjustment to time exits.
+
+=====================================================
+1. KEY STRATEGY COMPONENTS
+=====================================================
+
+A) Bollinger Bands (4-6 week lookback)
+- Period: 20-30 trading days (approximately 4-6 weeks)
+- Standard deviation multiplier: 2.0
+- Upper Band = SMA(period) + (2 × StdDev)
+- Lower Band = SMA(period) − (2 × StdDev)
+- Purpose: Identify statistically significant price extremes and breakout thresholds
+
+B) Volatility Filter (ATR %)
+- ATR Period: 14 days
+- ATR% = ATR(14) / Current Close × 100
+- Entry condition requires ATR% < 10% (low volatility regime)
+- Purpose: Ensure entry only during compressed volatility, which historically precedes expansion moves
+
+C) Mean-Reversion Adjustment (20-day EMA)
+- EMA Period: 20 days
+- Used as a dynamic anchor for exit timing
+- Distance from EMA modulates how aggressively positions are closed
+
+=====================================================
+2. ENTRY RULES (LONG ONLY)
+=====================================================
+
+All conditions must be TRUE on the same bar (or within a 1-2 bar window):
+
+1. Price closes ABOVE the upper Bollinger Band (breakout confirmation)
+   - Close > UpperBB(period=20-30, mult=2.0)
+
+2. ATR% < 10%
+   - ATR(14) / Close × 100 < 10
+   - Confirms low-volatility compression regime
+
+3. Optional confirmation (recommended):
+   - Close > EMA(20) to align with short-term trend
+   - Volume expansion on breakout bar
+
+Entry: Market/Limit order at next bar open after signal confirmation.
+
+=====================================================
+3. EXIT RULES
+=====================================================
+
+Primary Exit — Bollinger Band Reversion:
+- Exit when price closes back BELOW the upper Bollinger Band
+- This signals momentum exhaustion / reversion to the mean
+
+Mean-Reversion Adjustment (EMA-based):
+- Compute distance from EMA: D = (Close − EMA20) / EMA20
+- If D exceeds a threshold (e.g., 5-8% above EMA), tighten stop / exit early
+- If price crosses below EMA20, force exit regardless of BB position
+- This prevents holding extended positions during reversal
+
+Secondary Exits:
+- Hard stop-loss: Entry price − (1.5 × ATR at entry)
+- Time stop: Exit after N bars (e.g., 15-20 bars) if neither target nor stop hit
+- Trailing stop: Activate once price moves 2× ATR in favor
+
+=====================================================
+4. RISK MANAGEMENT
+=====================================================
+
+- Position sizing: Risk 1-2% of equity per trade
+  Position Size = (Account Risk $) / (Entry − Stop)
+- Stop-loss: 1.5 × ATR(14) below entry
+- Max concurrent positions: 3-5 (sector diversification)
+- Volatility regime check: Skip entries if ATR% > 10% (avoid chasing extended moves)
+- Re-entry: Allow re-entry only after a full BB reversion cycle completes
+- Correlation filter: Avoid entering correlated assets simultaneously
+
+=====================================================
+5. REQUIRED INDICATORS
+=====================================================
+
+| Indicator          | Parameters                    | Purpose                          |
+|--------------------|-------------------------------|----------------------------------|
+| Bollinger Bands    | Period 20-30, StdDev 2.0      | Breakout + reversion trigger     |
+| ATR                | Period 14                     | Volatility filter (ATR% < 10%)   |
+| EMA                | Period 20                     | Mean-reversion anchor / exit     |
+| Volume (optional)  | 20-day avg                    | Breakout confirmation            |
+
+=====================================================
+6. IMPLEMENTATION NOTES
+=====================================================
+
+- Timeframe: Daily bars (best fit for 4-6 week BB lookback)
+- Markets: Liquid equities, ETFs, futures, or large-cap crypto
+- Backtest considerations:
+  * Test BB periods of 20, 25, 30 to find optimal
+  * Test ATR% thresholds of 8%, 10%, 12%
+  * Optimize EMA distance exit threshold (5-8%)
+- Watch for: False breakouts during choppy regimes — the ATR filter is critical
+- Regime awareness: Strategy performs best after prolonged consolidation (squeeze)
+
+=====================================================
+SUMMARY
+=====================================================
+VolatilityCompressionMomentum combines the squeeze-breakout logic of Bollinger Bands with a strict volatility filter (ATR < 10%) and a dynamic EMA-based exit adjustment. It captures the "calm before the storm" pattern while protecting profits through mean-reversion-aware exits.

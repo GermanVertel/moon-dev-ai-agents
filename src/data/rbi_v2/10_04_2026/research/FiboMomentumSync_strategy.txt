@@ -1,0 +1,84 @@
+STRATEGY_NAME: FiboMomentumSync
+
+STRATEGY_DETAILS:
+
+**Overview:**
+FiboMomentumSync is a trend-following strategy that combines Fibonacci retracement zones with MACD oscillator divergence to identify high-probability continuation entries. The core premise is that pullbacks to key Fibonacci levels (38.2%, 50%, 61.8%) within an established trend, confirmed by MACD momentum alignment, offer favorable risk-to-reward entries.
+
+---
+
+**1. Key Strategy Components**
+
+- **Trend Identification:** Determine the prevailing trend using a higher timeframe (e.g., 4H or Daily) via a 50/200 EMA crossover or price relative to a 200-period EMA.
+- **Fibonacci Retracement Mapping:** Automatically draw retracement levels from the most recent swing high to swing low (for uptrends) or swing low to swing high (for downtrends).
+- **MACD Oscillator:** Standard MACD (12, 26, 9) used to confirm momentum direction and detect divergence.
+- **Convergence Zone:** The area where price interacts with a Fibonacci level (38.2%–61.8%) AND MACD shows a bullish/bearish signal.
+
+---
+
+**2. Entry Rules**
+
+**Long Entry (Uptrend):**
+1. Price is above the 200 EMA and the 50 EMA > 200 EMA (trend confirmed up).
+2. Price retraces into the 38.2%–61.8% Fibonacci zone of the most recent impulse leg.
+3. MACD shows one of the following:
+   - Bullish divergence (price makes lower low, MACD makes higher low).
+   - MACD line crosses above the signal line within the retracement zone.
+   - MACD histogram flips from negative to positive.
+4. Entry trigger: A bullish candlestick confirmation (engulfing, pin bar, or close above the prior candle's high) inside the Fib zone.
+
+**Short Entry (Downtrend):**
+1. Price is below the 200 EMA and the 50 EMA < 200 EMA (trend confirmed down).
+2. Price rallies into the 38.2%–61.8% Fibonacci zone of the most recent impulse leg down.
+3. MACD shows:
+   - Bearish divergence (price makes higher high, MACD makes lower high).
+   - MACD line crosses below the signal line within the retracement zone.
+   - MACD histogram flips from positive to negative.
+4. Entry trigger: A bearish candlestick confirmation inside the Fib zone.
+
+---
+
+**3. Exit Rules**
+
+- **Take Profit (TP1):** Previous swing high (long) or swing low (short) — typically the 0% Fibonacci extension.
+- **Take Profit (TP2):** 127.2% or 161.8% Fibonacci extension of the retracement leg.
+- **Stop Loss (SL):** Just beyond the 78.6% Fibonacci level (or below the swing low for longs / above swing high for shorts).
+- **Trailing Exit:** Once TP1 is hit, move SL to breakeven; trail remaining position using the 50 EMA or ATR-based trailing stop (2× ATR).
+- **Momentum Exit:** Close the position if MACD crosses back against the trade direction before TP1 is reached.
+
+---
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade.
+- **Risk-to-Reward:** Minimum 1:2 R:R required; skip trades where SL-to-TP1 ratio is unfavorable.
+- **Confluence Filter:** Only take trades where MACD signal AND Fibonacci level align — no single-signal entries.
+- **Volatility Filter:** Avoid entries during low-volume sessions or major news events (e.g., NFP, FOMC).
+- **Max Concurrent Positions:** Limit to 2–3 to avoid correlated exposure.
+- **Time Stop:** If trade doesn't reach TP1 within a predefined number of bars (e.g., 20), close at market.
+
+---
+
+**5. Required Indicators**
+
+| Indicator | Purpose | Settings |
+|-----------|---------|----------|
+| Fibonacci Retracement | Identify pullback entry zones | Auto-drawn from swing high/low |
+| MACD | Momentum confirmation & divergence | 12, 26, 9 |
+| EMA (50 & 200) | Trend direction filter | 50-period, 200-period |
+| ATR | Volatility-based stop/trail | 14-period |
+| Volume | Confirmation filter | Optional, 20-period MA |
+
+---
+
+**6. Timeframes & Markets**
+
+- **Best Timeframes:** 1H, 4H, Daily (swing trading).
+- **Best Markets:** FX majors, indices (SPX, NASDAQ), liquid crypto (BTC, ETH), large-cap stocks.
+- **Avoid:** Choppy/range-bound markets where Fibonacci levels are unreliable.
+
+---
+
+**7. Strategy Logic Summary**
+
+FiboMomentumSync waits for a confirmed trend, then hunts for pullbacks into the golden Fibonacci zone. It only pulls the trigger when MACD momentum agrees — either through divergence or a crossover — ensuring entries are aligned with both structure (Fib) and momentum (MACD). This dual-confirmation approach filters out weak retracements and improves the probability of catching the next impulse leg in the trend direction.

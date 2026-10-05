@@ -1,0 +1,53 @@
+STRATEGY_NAME: VolumeDivergence
+
+STRATEGY_DETAILS:
+This strategy identifies and trades potential breakout or reversal opportunities by combining two key market microstructure signals: high-volume divergence from average price and increasing volume skew. The approach focuses on detecting when price deviates significantly from its volume-weighted average while volume distribution becomes increasingly asymmetric, signaling a likely directional move.
+
+Key Strategy Components:
+1. **Volume-Weighted Average Price (VWAP) Divergence**: Measures how far the current price is from VWAP, normalized by recent volatility.
+2. **Volume Skew**: Tracks the imbalance between buy-side and sell-side volume (e.g., using uptick/downtick volume or order flow imbalance).
+3. **Volume Spike Confirmation**: Requires above-average total volume to validate the signal.
+4. **Trend Context Filter**: Uses a longer-term moving average to avoid counter-trend trades unless reversal conditions are extreme.
+
+Entry Rules:
+- **Long Entry**:
+  - Price is significantly below VWAP (negative divergence > threshold, e.g., -2 standard deviations).
+  - Volume skew is increasingly positive (buy volume > sell volume) over the last N bars.
+  - Total volume > 1.5x average volume over lookback period.
+  - Price closes above the prior bar's high or reclaims a key short-term level.
+- **Short Entry**:
+  - Price is significantly above VWAP (positive divergence > threshold, e.g., +2 standard deviations).
+  - Volume skew is increasingly negative (sell volume > buy volume) over the last N bars.
+  - Total volume > 1.5x average volume.
+  - Price closes below the prior bar's low or loses a key short-term level.
+
+Exit Rules:
+- **Profit Target**: 
+  - Long: Exit at VWAP or a fixed risk-reward ratio (e.g., 2:1).
+  - Short: Exit at VWAP or 2:1 risk-reward.
+- **Stop Loss**:
+  - Long: Below the recent swing low or a fixed percentage (e.g., 1.5%).
+  - Short: Above the recent swing high or 1.5%.
+- **Time-Based Exit**: Close position if neither target nor stop is hit within a predefined number of bars (e.g., 10 bars) to avoid stagnation.
+- **Trailing Stop**: Optional – activate after 1:1 profit to lock in gains.
+
+Risk Management:
+- Position size based on volatility (e.g., ATR-based) to keep risk per trade consistent (e.g., 1% of equity).
+- Maximum daily loss limit (e.g., 3% of equity) to prevent overtrading.
+- Avoid trading during low-liquidity periods (e.g., pre-market, lunch hour).
+- Confirm signals with higher timeframe trend or support/resistance levels.
+
+Required Indicators:
+1. **VWAP** (Volume-Weighted Average Price) – for divergence calculation.
+2. **Volume Moving Average** – to detect volume spikes.
+3. **Volume Skew Indicator** – custom calculation: (Buy Volume - Sell Volume) / Total Volume over N bars.
+4. **ATR (Average True Range)** – for volatility-based position sizing and stop placement.
+5. **Standard Deviation Bands around VWAP** – to quantify divergence extremes.
+6. **Short-term Moving Average (e.g., 20 EMA)** – for trend context and entry confirmation.
+
+Signal Confirmation Logic:
+- Generate a raw signal when divergence and skew conditions align.
+- Require price action confirmation (e.g., bullish engulfing, pin bar, or break of micro-structure).
+- Filter out signals when volume skew is diverging from price (e.g., price up but skew negative) to avoid false breakouts.
+
+This strategy excels in markets with clear volume-driven moves, such as equities during earnings or crypto during high-volume sessions, and is designed to capture explosive moves while managing risk through volatility-adjusted stops and position sizing.

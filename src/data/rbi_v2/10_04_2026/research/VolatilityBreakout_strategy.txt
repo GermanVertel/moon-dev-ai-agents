@@ -1,0 +1,49 @@
+STRATEGY_NAME: VolatilityBreakout
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Bands with ATR-based moving average filtering to catch strong trend continuations. The core idea is that when price breaks above the upper Bollinger Band while the ATR (a volatility measure) remains below its own 20-period moving average, it signals a genuine trend breakout rather than a volatility spike or exhaustion move.
+
+**Key Strategy Components:**
+
+1. **Bollinger Bands (20-period, 2 standard deviations):**
+   - Upper Band = SMA(20) + (2 × StdDev(20))
+   - Middle Band = SMA(20)
+   - Lower Band = SMA(20) - (2 × StdDev(20))
+   - Used to identify when price closes above the upper band (breakout signal)
+
+2. **ATR Filter:**
+   - ATR(14) calculated on price
+   - ATR_MA = 20-period SMA of ATR(14)
+   - Condition: Current ATR < ATR_MA (indicating volatility is NOT expanding excessively)
+
+3. **Entry Logic (Long):**
+   - Close > Upper Bollinger Band
+   - Current ATR(14) < 20-period SMA of ATR(14)
+   - Both conditions must be true on the same bar
+   - Rationale: Price breaking above upper band with contained volatility suggests a steady, sustainable trend rather than a blow-off top
+
+4. **Entry Logic (Short - mirror):**
+   - Close < Lower Bollinger Band
+   - Current ATR(14) < 20-period SMA of ATR(14)
+
+5. **Exit Rules:**
+   - Exit long when close crosses back below the middle Bollinger Band (SMA 20)
+   - Exit short when close crosses back above the middle Bollinger Band
+   - Optional trailing stop using ATR × 2
+
+6. **Risk Management:**
+   - Stop-loss: Entry price − (2 × ATR) for longs; Entry price + (2 × ATR) for shorts
+   - Position sizing: Risk no more than 1-2% of account equity per trade
+   - Avoid trading during low-liquidity sessions or major news events
+   - Maximum concurrent positions: 1-2 to limit exposure
+
+7. **Required Indicators:**
+   - Bollinger Bands (20, 2)
+   - ATR (14)
+   - SMA of ATR (20) — the volatility baseline filter
+
+**Notes:**
+- The ATR filter is the distinguishing feature: it prevents entering when volatility is already spiking (which often precedes reversals).
+- Best suited for trending markets (stocks, forex majors, crypto in directional phases).
+- Confirm with volume or a trend filter (e.g., 200 EMA slope) to improve win rate.
+- Backtest across multiple timeframes (1H, 4H, daily) to tune parameters.

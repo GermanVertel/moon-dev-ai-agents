@@ -1,0 +1,49 @@
+STRATEGY_NAME: VolumeDivergent Reversion
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band divergence analysis with volume confirmation to identify high-probability mean-reversion opportunities, using ATR-based exits for adaptive risk management.
+
+**Core Concept:**
+The strategy exploits the divergence between upper and lower Bollinger Bands during low-volume consolidation phases. When price action near the lower band diverges from the upper band's trajectory while volume contracts, it signals weakening selling pressure and an imminent reversion to the mean (middle band).
+
+**Required Indicators:**
+1. **Bollinger Bands** (20-period SMA, 2 standard deviations)
+   - Upper Band (UB)
+   - Middle Band (MB) — 20-period SMA
+   - Lower Band (LB)
+2. **Volume** with 20-period Volume SMA
+3. **ATR** (14-period) for exit targets and stop placement
+
+**Entry Rules (Long):**
+1. Price touches or pierces the Lower Bollinger Band
+2. Band Divergence Condition: The Lower Band is expanding downward (making lower lows) while the Upper Band is contracting or flat (not making higher highs) — indicating asymmetric band behavior
+3. Volume Confirmation: Current volume < 20-period Volume SMA (declining volume on the down move)
+4. Optional filter: Price closes back above the Lower Band (rejection candle) for confirmation
+5. Enter long at the close of the confirmation candle
+
+**Entry Rules (Short — mirror):**
+1. Price touches or pierces the Upper Bollinger Band
+2. Upper Band expanding upward while Lower Band contracts/flat
+3. Volume below its 20-period SMA
+4. Enter short on rejection close
+
+**Exit Rules:**
+- **Primary Target:** Middle Band (20-period SMA) — the mean reversion target
+- **Extended Target:** Opposite Bollinger Band if momentum supports continuation
+- **ATR-Based Stop:** Entry price − (1.5 × ATR) for longs; Entry price + (1.5 × ATR) for shorts
+- **ATR Trailing Exit:** Once price crosses the Middle Band, trail stop at (1.0 × ATR) from the highest close (longs) or lowest close (shorts)
+- **Time Stop:** Exit if no reversion occurs within 10 bars
+
+**Risk Management:**
+- Position size = (Account Risk %) / (ATR-based stop distance)
+- Maximum 2% account risk per trade
+- Avoid entries during high-impact news events (volume spikes invalidate the divergence premise)
+- Skip trades when Bollinger Band Width is at extreme highs (high volatility regimes break mean reversion)
+
+**Invalidation Conditions:**
+- Volume expands above its 20-period SMA on the entry bar (contradicts the divergence thesis)
+- Price closes beyond the opposite band (trend regime, not reversion)
+- ATR expands more than 50% from the prior bar (volatility breakout)
+
+**Key Edge:**
+The divergence between upper and lower bands combined with declining volume distinguishes genuine mean-reversion setups from trending breakouts. Most Bollinger strategies fail by entering during volume expansion; this strategy specifically requires volume contraction, filtering out false reversals and improving win rate on range-bound instruments (e.g., FX pairs, index ETFs).

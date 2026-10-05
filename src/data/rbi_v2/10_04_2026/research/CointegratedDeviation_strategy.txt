@@ -1,0 +1,112 @@
+STRATEGY_NAME: CointegratedDeviation
+
+STRATEGY_DETAILS:
+This strategy combines statistical arbitrage (cointegration) with a hybrid machine learning model (e.g., LSTM + XGBoost or Random Forest + Neural Network ensemble) to predict when the spread between two cointegrated assets will deviate significantly from its historical norm — specifically, more than twice the historical average deviation. Trades are taken contrarily (mean-reverting) only when the ML model outputs a high-confidence prediction of such an extreme deviation.
+
+---
+
+### 1. Key Strategy Components
+
+**A. Pair Selection & Cointegration**
+- Scan a universe of liquid assets (equities, ETFs, crypto, futures).
+- Run the Engle-Granger or Johansen cointegration test on rolling windows (e.g., 60–120 periods).
+- Retain pairs with:
+  - p-value < 0.05
+  - Stable hedge ratio (β) via OLS or Kalman filter
+  - Half-life of mean reversion between 5 and 60 bars
+- Re-validate cointegration every N bars; drop pairs that break down.
+
+**B. Spread Construction**
+- Spread = Price_A − β × Price_B (or log-spread for better stationarity).
+- Normalize spread using a rolling z-score:
+  - z = (spread − μ_rolling) / σ_rolling
+- Compute historical average absolute deviation (HAD):
+  - HAD = mean(|spread − μ|) over a lookback (e.g., 200 bars)
+- Extreme deviation threshold = 2 × HAD.
+
+**C. Hybrid ML Model**
+- **Inputs (features):**
+  - Lagged spread values, z-score, rolling volatility
+  - Half-life estimate, β drift
+  - Volume, order-flow imbalance, VIX or regime indicators
+  - Macro/seasonal features (optional)
+- **Architecture (hybrid):**
+  - Branch 1: LSTM/GRU for temporal dependencies in the spread.
+  - Branch 2: XGBoost or Random Forest on engineered features (volatility, correlation regime, liquidity).
+  - Fusion layer: Concatenate embeddings → dense layers → sigmoid output.
+- **Target:** Binary classification — will the spread deviate > 2×HAD within the next K bars (e.g., K = 5–10)?
+- **Training:** Walk-forward validation; retrain monthly or when regime shifts detected.
+
+**D. Prediction Confidence**
+- Use model probability output p ∈ [0,1].
+- Only act when p ≥ confidence threshold (e.g., 0.75–0.85), tuned via backtest.
+- Optionally ensemble multiple seeds/models and require agreement.
+
+---
+
+### 2. Entry Rules
+
+**Long Spread (Buy A, Short β×B):**
+- ML predicts extreme deviation (p ≥ threshold)
+- Current z-score ≤ −1.5 (spread unusually low)
+- Cointegration still valid (p-value < 0.05)
+- No major scheduled news/earnings for either leg
+
+**Short Spread (Short A, Buy β×B):**
+- ML predicts extreme deviation (p ≥ threshold)
+- Current z-score ≥ +1.5 (spread unusually high)
+- Cointegration still valid
+- No major scheduled news/earnings
+
+**Position Sizing:**
+- Base size scaled by confidence: size = base × (p − threshold) / (1 − threshold)
+- Cap at max risk per pair (e.g., 1–2% of equity)
+- Dollar-neutral: notional long ≈ notional short
+
+---
+
+### 3. Exit Rules
+
+- **Profit target:** z-score reverts to 0 (or ±0.25).
+- **Time stop:** exit after max holding period (e.g., 2× half-life).
+- **Stop loss:** z-score moves further against position by 1×HAD beyond entry (i.e., deviation > 3×HAD).
+- **Model reversal:** if ML confidence flips or cointegration breaks (p-value > 0.10), exit immediately.
+- **Regime change:** exit if rolling correlation or β shifts beyond tolerance.
+
+---
+
+### 4. Risk Management
+
+- Max 3–5 concurrent pairs; diversify across sectors/asset classes.
+- Per-pair stop: 1–2% of equity.
+- Portfolio-level drawdown limit: pause trading if drawdown > 10%.
+- Volatility scaling: reduce size when realized vol > 2× median.
+- Slippage/borrow cost modeling, especially for short legs.
+- Avoid pairs with upcoming earnings, dividends, or index rebalances.
+- Monitor for cointegration breakdown daily; kill switch on structural breaks.
+
+---
+
+### 5. Required Indicators & Data
+
+- Rolling mean, std, z-score of spread
+- Historical average deviation (HAD)
+- Half-life of mean reversion (Ornstein-Uhlenbeck fit)
+- Hedge ratio β (OLS or Kalman filter)
+- Cointegration p-value (ADF on residuals)
+- Rolling correlation and volatility
+- Volume and order-flow imbalance
+- Regime indicators (VIX, yield curve, sector rotation)
+- ML model probability output + confidence calibration
+
+---
+
+### 6. Implementation Notes
+
+- Use walk-forward backtesting to avoid look-ahead bias.
+- Retrain ML model on rolling windows (e.g., 2 years train, 3 months test).
+- Calibrate confidence threshold via precision-recall curve — prioritize precision over recall (fewer, higher-quality trades).
+- Paper trade for 1–2 months before live deployment.
+- Log every prediction, confidence, and outcome for continuous model improvement.
+
+This hybrid approach blends the statistical rigor of cointegration with the predictive power of ML, while the "2×HAD" rule and contrarian execution ensure trades only occur at statistically extreme, high-conviction deviations.

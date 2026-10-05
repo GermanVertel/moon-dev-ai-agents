@@ -1,0 +1,40 @@
+STRATEGY_NAME: VolumeIgnition
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+VolumeIgnition is a momentum-continuation strategy that combines Bollinger Band breakouts with volume confirmation. The premise is that a breach of the upper Bollinger Band on abnormally high volume signals genuine buying pressure (not a false breakout), while the lower band serves as a dynamic stop-loss exit zone within an ATR-bounded time window.
+
+**Required Indicators:**
+1. **Bollinger Bands** (20-period SMA, 2 standard deviations) — Upper Band (UB), Middle Band (MB), Lower Band (LB)
+2. **Volume Filter** — 50-period average volume; "high-volume day" = current volume ≥ 150% of the 50-period average (i.e., above the 50% percentile threshold)
+3. **ATR** (14-period) — used to define the maximum holding window and dynamic exit tolerance
+
+**Entry Rules (Long):**
+- Price closes **above** the upper Bollinger Band (close > UB)
+- Current bar's volume is **above the 50% threshold** relative to the rolling volume distribution (e.g., volume > median of last 50 bars, or > 150% of avg volume)
+- Optional confirmation: close is in the upper 25% of the bar's range (bullish candle body)
+- Enter at next bar's open or on close of the signal bar
+
+**Exit Rules:**
+1. **Primary Exit (Time-Bounded Band Reversion):** If price returns to the **lower Bollinger Band** (close ≤ LB) within a window of **2 × ATR days** (i.e., holding period ≤ 2 × ATR value in bars), exit the position.
+2. **Time Stop:** If neither the lower band is touched nor a profit target is hit within 2 × ATR bars, force exit at market.
+3. **Optional Profit Target:** Take partial profits at 1 × ATR above entry; trail remaining position using the middle band.
+
+**Risk Management:**
+- **Position Sizing:** Risk no more than 1% of equity per trade; size = (Account × 0.01) / (Entry − Stop)
+- **Initial Stop:** Place stop at the middle Bollinger Band or 1.5 × ATR below entry (whichever is tighter)
+- **Trailing Stop:** Once price advances 1 × ATR, move stop to breakeven; thereafter trail by middle band
+- **Max Holding Period:** 2 × ATR bars (hard time stop to avoid dead-money trades)
+- **Avoid:** Low-liquidity sessions, earnings/news events within the holding window
+
+**Logic Rationale:**
+- Upper-band breach + high volume = institutional accumulation / breakout ignition
+- Lower-band reversion = failure of the breakout thesis → exit
+- ATR-based time window = adapts holding period to current volatility regime
+- Combining volume confirmation with band mechanics reduces whipsaw from low-conviction breakouts
+
+**Best Market Conditions:**
+- Trending or breakout regimes with expanding volatility
+- Liquid instruments (large-cap equities, index futures, major FX pairs)
+- Avoid choppy, low-volume consolidation markets where band breaches are frequent but unsustainable

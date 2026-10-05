@@ -1,0 +1,90 @@
+STRATEGY_NAME: VolatilityArbitrage
+
+STRATEGY_DETAILS:
+
+This strategy exploits temporary price discrepancies between implied volatility (IV) and realized volatility (RV) across correlated instruments, using volume metrics as a confirmation filter. The core premise: when IV diverges significantly from RV while volume surges, a mean-reversion arbitrage opportunity exists between volatility-based instruments (options, VIX futures, volatility ETFs) and their underlying assets.
+
+---
+
+**1. KEY STRATEGY COMPONENTS**
+
+- **Volatility Spread Signal**: Compute the spread between Implied Volatility (IV) and Realized Volatility (RV) for each instrument.  
+  - IV: Derived from options pricing (e.g., 30-day ATM implied vol) or VIX/VIX-equivalent.  
+  - RV: 20-period annualized standard deviation of log returns.  
+  - Spread = IV − RV. Extreme positive spreads suggest overpriced options (sell vol); extreme negative spreads suggest underpriced options (buy vol).
+
+- **Volume Confirmation**: Use relative volume (current volume / 20-period average volume) to validate the signal.  
+  - High relative volume (>1.5x) on a divergence indicates institutional participation and increases arbitrage reliability.  
+  - Low volume divergences are ignored to avoid false signals.
+
+- **Cross-Instrument Arbitrage Legs**:  
+  - **Leg A (Volatility Instrument)**: Options straddle/strangle, VIX futures, or volatility ETFs (e.g., VXX, UVXY).  
+  - **Leg B (Underlying/Correlated Asset)**: The underlying equity, index, or a correlated asset.  
+  - Trade the spread between the two when volatility measures diverge.
+
+- **Regime Filter**: Only trade when the volatility term structure is in contango or backwardation consistently — avoid chaotic regimes (e.g., VIX spikes >2 standard deviations).
+
+---
+
+**2. ENTRY RULES**
+
+**Long Volatility Arbitrage (Buy Vol, Sell Underlying):**
+- IV − RV < −0.05 (IV significantly below RV, options underpriced).
+- Relative volume > 1.5x on the volatility instrument.
+- VIX term structure in backwardation (near-term > long-term).
+- Enter: Buy ATM straddle (or VIX futures long), short the underlying (or use delta hedge).
+
+**Short Volatility Arbitrage (Sell Vol, Buy Underlying):**
+- IV − RV > +0.05 (IV significantly above RV, options overpriced).
+- Relative volume > 1.5x on the volatility instrument.
+- VIX term structure in contango (near-term < long-term).
+- Enter: Sell ATM straddle (or VIX futures short), long the underlying (or delta hedge).
+
+**Volume Confirmation Rule**: Only enter if the volume spike occurs within the same bar or the prior bar of the signal.
+
+---
+
+**3. EXIT RULES**
+
+- **Profit Target**: Close when IV − RV spread reverts to within ±0.01 of zero (mean reversion complete).
+- **Stop Loss**: Exit if the spread widens by an additional 0.03 against the position (e.g., for short vol, if IV − RV > 0.08).
+- **Time Stop**: Exit after 10 trading days if no reversion occurs (avoid theta decay and regime shifts).
+- **Volume Exit**: Exit if relative volume drops below 0.5x (liquidity drying up).
+- **Delta Neutrality**: Rebalance delta hedge daily if the underlying moves >1.5% from entry.
+
+---
+
+**4. REQUIRED INDICATORS**
+
+- **Implied Volatility (IV)**: 30-day ATM implied vol from options chain or VIX.
+- **Realized Volatility (RV)**: 20-period annualized standard deviation of log returns.
+- **Relative Volume**: Current volume / 20-period simple moving average of volume.
+- **VIX Term Structure**: VIX (near-term) vs. VIX3M (3-month) for contango/backwardation.
+- **ATR (Average True Range)**: 14-period ATR for position sizing and stop placement.
+- **Delta**: Options delta for hedging the underlying leg.
+
+---
+
+**5. RISK MANAGEMENT**
+
+- **Position Sizing**: Risk no more than 1% of portfolio equity per arbitrage trade.  
+  - Size = (0.01 × Equity) / (ATR × Contract Multiplier).
+- **Max Exposure**: Limit total volatility arbitrage exposure to 5% of portfolio.
+- **Correlation Check**: Only trade pairs with historical correlation > 0.7 (e.g., SPY vs. VIX, QQQ vs. VXN).
+- **Event Filter**: Avoid earnings, FOMC, or CPI releases unless the trade is explicitly event-driven.
+- **Hedge Ratio**: Maintain delta-neutral or beta-neutral exposure using the underlying leg.
+- **Liquidity Filter**: Only trade instruments with average daily volume > 500,000 shares/contracts.
+- **Drawdown Limit**: Stop trading the strategy for 5 days if drawdown exceeds 3% of allocated capital.
+
+---
+
+**6. EXECUTION NOTES**
+
+- Use limit orders to avoid slippage on the volatility instrument leg.
+- Monitor the spread in real-time; volatility arbitrage windows are often short-lived (minutes to hours).
+- Backtest across multiple regimes (2017 low-vol, 2020 COVID spike, 2022 rate hikes) to validate robustness.
+- Consider transaction costs (options spreads, futures roll costs) — arbitrage edges are thin.
+
+---
+
+This strategy capitalizes on the statistical tendency of IV and RV to converge, using volume as a confirmation signal to filter out noise and low-conviction setups. The dual-leg structure (volatility instrument + underlying) ensures market-neutral exposure while isolating the volatility mispricing.

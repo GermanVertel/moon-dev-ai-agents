@@ -1,0 +1,50 @@
+STRATEGY_NAME: HarmonicConfluence
+
+STRATEGY_DETAILS:
+This strategy combines multiple technical indicators in a unique, non-redundant way to generate high-probability signals. Rather than relying on a single indicator, it looks for "confluence" — moments where several independent technical tools agree on direction and timing. The "Harmonic" element refers to the blending of oscillators, trend filters, and volume/volatility measures into a harmonious signal.
+
+1. KEY STRATEGY COMPONENTS
+- Trend Filter: Use a longer-term EMA (e.g., 200 EMA) to establish the dominant market direction. Only take longs above it, shorts below it.
+- Momentum Oscillator: Use RSI (14) combined with Stochastic (14,3,3) to gauge overbought/oversold conditions and momentum shifts.
+- Volatility/Confirmation: Use Bollinger Bands (20,2) to identify price extremes and squeeze/expansion phases.
+- Volume Confirmation: Use On-Balance Volume (OBV) or a volume-weighted MACD to confirm that price moves are backed by real participation.
+- Optional Divergence Check: Look for hidden or regular divergences between price and RSI/Stochastic to strengthen conviction.
+
+2. ENTRY RULES (LONG EXAMPLE — mirror for shorts)
+- Price is above the 200 EMA (uptrend filter).
+- RSI crosses above 30 from below (recovering from oversold) OR RSI is between 40–60 and rising.
+- Stochastic %K crosses above %D while both are below 80.
+- Price touches or pierces the lower Bollinger Band and closes back inside.
+- OBV is rising or making higher lows, confirming accumulation.
+- Bonus: Bullish divergence on RSI/Stochastic (price makes lower low, indicator makes higher low).
+
+Enter long when at least 3 of the 4 core conditions align simultaneously (confluence).
+
+3. EXIT RULES
+- Take profit when RSI reaches 70+ AND price touches the upper Bollinger Band, or when Stochastic %K crosses below %D in overbought territory.
+- Trailing stop: Use an ATR-based trailing stop (e.g., 2× ATR(14)) to lock in gains during trends.
+- Hard stop: Place below the most recent swing low (for longs) or a fixed % (e.g., 2–3%).
+- Exit trend filter: If price closes below the 200 EMA, exit all longs.
+
+4. RISK MANAGEMENT
+- Position sizing: Risk no more than 1–2% of account equity per trade.
+- Stop-loss: Always defined before entry (ATR-based or swing-based).
+- Risk-reward: Minimum 1:2 ratio; prefer 1:3 in trending markets.
+- Avoid trading during major news events or low-liquidity sessions.
+- Maximum concurrent trades: 3–5 to limit correlated exposure.
+
+5. REQUIRED INDICATORS
+- EMA 200 (trend filter)
+- RSI 14 (momentum/overbought-oversold)
+- Stochastic 14,3,3 (momentum crossover)
+- Bollinger Bands 20,2 (volatility/extremes)
+- ATR 14 (stop-loss sizing)
+- OBV or Volume MACD (volume confirmation)
+
+6. BEST TIMEFRAMES & MARKETS
+- Works best on 1H, 4H, and Daily charts for swing trading.
+- Suitable for liquid markets: major forex pairs, large-cap stocks, BTC/ETH, and index futures.
+- Avoid choppy/range-bound markets unless using a mean-reversion variant.
+
+7. STRATEGY LOGIC SUMMARY
+The core idea is confluence: no single indicator dictates the trade. Instead, the strategy waits for trend, momentum, volatility, and volume to align. This reduces false signals and improves win rate at the cost of fewer trade opportunities. The "Harmonic" aspect comes from tuning the indicators to work in sync rather than in isolation.

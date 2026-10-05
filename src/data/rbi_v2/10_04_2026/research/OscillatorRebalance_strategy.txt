@@ -1,0 +1,47 @@
+STRATEGY_NAME: OscillatorRebalance
+
+STRATEGY_DETAILS:
+This is a hybrid mean-reversion / scaling strategy that uses RSI as both a de-risking trigger and a re-entry signal, with a profit-taking overlay on the recovery leg. It is NOT a simple RSI buy/sell system — the core mechanic is partial position reduction followed by leveraged re-accumulation.
+
+1. KEY STRATEGY COMPONENTS
+- Base position: An existing long position (the strategy assumes you are already long).
+- RSI (default period 14, on the chosen timeframe) is the sole decision indicator.
+- Two distinct RSI thresholds: 30 (de-risk trigger) and 60 (profit-take trigger).
+- Leverage scaling on re-entry (20% more than the original position's leverage/exposure).
+- Partial profit-taking (50%) on the recovery candle.
+
+2. ENTRY / EXIT RULES
+Step A — De-risk on weakness:
+- When RSI closes below 30, sell 70% of the current long position.
+- Keep 30% of the original position running (this is the "core" that stays exposed to a bounce).
+
+Step B — Re-lever on the dip (buy back):
+- After the 70% reduction, re-enter using 20% MORE leverage than the original position.
+- Example: if original leverage was 2x, re-entry uses 2.4x. If original size was 100 units, the 70 units sold are bought back at 1.2x the prior exposure (i.e., ~84 units equivalent exposure).
+- This is a conviction add — it assumes RSI < 30 marks an oversold bounce zone.
+
+Step C — Profit-take on recovery:
+- On the NEXT candle after re-entry, if RSI recovers above 60, take 50% profit from the (now larger) position.
+- "Next candle" is critical — this is a fast, time-boxed exit, not a hold-until-target exit.
+
+3. RISK MANAGEMENT
+- Hard stop: Because the strategy adds leverage into weakness, a stop MUST be defined below the re-entry price. Suggested: stop out the full position if price makes a new low while RSI stays below 30 for more than N candles (e.g., 3).
+- Leverage cap: Never exceed a pre-set maximum (e.g., 3x) regardless of the "+20%" rule.
+- Position sizing: The 30% core + leveraged re-entry means total exposure can exceed 100% of original — account for this in margin.
+- Time stop: If RSI neither recovers above 60 nor breaks lower within a defined window (e.g., 5 candles), flatten to avoid dead-money risk.
+- Sequence guard: Do NOT re-trigger Step A while already in a re-levered state; require RSI to reset above 30 first.
+
+4. REQUIRED INDICATORS
+- RSI (period 14 recommended, adjustable) on the trading timeframe.
+- Candle close data (decisions are made on candle close, especially the "next candle" rule).
+- Position/leverage tracker to enforce the +20% rule and the leverage cap.
+- Optional: ATR for stop placement, and volume filter to confirm the oversold bounce.
+
+5. LOGIC FLOW SUMMARY
+1. Long position active.
+2. RSI closes < 30 → sell 70%, keep 30%.
+3. Re-enter sold size at +20% leverage.
+4. Next candle: RSI > 60 → close 50% of position for profit.
+5. Otherwise apply stop / time-stop rules.
+
+CAUTION: This strategy levers UP into a falling market (RSI < 30), which is a classic "catching a falling knife" risk. The +20% leverage rule amplifies both the bounce payoff and the drawdown if RSI stays depressed. The "next candle" profit rule is extremely tight and will only work on fast mean-reverting bounces — on trending-down assets it will repeatedly de-risk, re-lever, and get stopped. Backtest across trending vs. ranging regimes before deploying.

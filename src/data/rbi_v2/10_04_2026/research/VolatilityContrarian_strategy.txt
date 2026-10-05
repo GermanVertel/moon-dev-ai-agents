@@ -1,0 +1,51 @@
+STRATEGY_NAME: VolatilityContrarian
+
+STRATEGY_DETAILS:
+
+This is a mean-reversion strategy built on the premise that VIX futures exhibit strong statistical tendencies to revert to their historical mean after extreme deviations. The core edge comes from trading volatility as a contrarian asset class.
+
+**Key Strategy Components:**
+
+1. **Statistical Baseline Construction**
+   - Calculate a rolling historical mean of VIX futures prices (e.g., 252-day or multi-year lookback)
+   - Compute rolling standard deviation over the same window
+   - Continuously update both to reflect regime shifts, but preserve enough history for statistical validity
+
+2. **Z-Score Signal Generation**
+   - Z-score = (Current VIX Futures Price − Historical Mean) / Standard Deviation
+   - Long signal: Z-score between −4 and −3 (extreme fear/panic, volatility overextended to the downside)
+   - Short signal: Z-score between +2 and +3 (extreme complacency, volatility overextended to the upside)
+
+3. **Directional Logic**
+   - **Long VIX futures exposure** when volatility is crushed 3–4 std devs below mean → betting on volatility reversion upward
+   - **Short VIX futures exposure** when volatility is stretched 2–3 std devs above mean → betting on volatility reversion downward
+   - Note the asymmetry: longs require deeper deviation (3–4σ), shorts require shallower (2–3σ), reflecting the natural upward bias/contango in VIX futures
+
+**Entry Rules:**
+- Enter long when Z-score first crosses below −3.0 and remains ≥ −4.0
+- Enter short when Z-score first crosses above +2.0 and remains ≤ +3.0
+- Confirm signal with at least one additional filter (e.g., term structure slope, RSI on VIX, or volume spike) to avoid catching falling knives
+
+**Exit Rules:**
+- Primary exit: Z-score reverts to within ±0.5 of the mean (full mean reversion)
+- Partial exit: Z-score returns to ±1.0 (scale out 50%)
+- Stop-loss: Z-score moves beyond −4.5 (for longs) or +3.5 (for shorts), indicating regime break/structural shift
+- Time stop: Exit if position hasn't reverted within a predefined holding window (e.g., 20–30 trading days)
+
+**Risk Management:**
+- **Position sizing**: Scale inversely with Z-score extremity — smaller size at 4σ, larger at 3σ
+- **Max exposure**: Cap total VIX futures notional (e.g., ≤10–15% of portfolio) due to volatility of volatility
+- **Contango/backwardation awareness**: Roll costs can erode returns; prefer front-month or use VIX ETPs (VXX, UVXY) with caution
+- **Correlation hedge**: VIX positions are negatively correlated to equities; consider pairing with SPX exposure for portfolio balance
+- **Gap risk**: VIX futures can gap violently on macro events — use options (VIX calls/puts) instead of pure futures when tail risk is elevated
+- **Regime filter**: Disable strategy during structural regime shifts (e.g., sustained inverted VIX term structure)
+
+**Required Indicators / Data:**
+1. VIX futures continuous contract price (front-month or specified tenor)
+2. Rolling mean of VIX futures (252-day default)
+3. Rolling standard deviation (252-day default)
+4. Z-score calculation
+5. Optional: VIX term structure (M1 vs M2 spread), VIX RSI, realized volatility (for confirmation)
+
+**Edge Rationale:**
+Volatility is mean-reverting by nature — spikes are sharp but decay, and low-vol regimes eventually give way to normalization. By requiring 3–4σ deviations for longs and 2–3σ for shorts, the strategy only fires on statistically rare events where the probability of reversion is highest, while the asymmetric thresholds account for the structural contango drag in VIX futures.

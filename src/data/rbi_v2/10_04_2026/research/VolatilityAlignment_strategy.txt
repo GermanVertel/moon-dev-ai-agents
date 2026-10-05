@@ -1,0 +1,44 @@
+STRATEGY_NAME: VolatilityAlignment
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band midpoint analysis with a simple moving average to create a trend-following system with dynamic risk management. The core concept is to identify when price volatility and trend direction align, entering positions when the Bollinger Band midpoint suggests an uptrend relative to the SMA, and exiting when this relationship reverses.
+
+**Key Strategy Components:**
+
+1. **Bollinger Band Midpoint (BBMP)**: Calculate the 50-period Bollinger Bands and extract the midpoint (which is essentially the 50-period SMA of price). This represents the central tendency of price over the lookback period.
+
+2. **Simple Moving Average (SMA)**: Calculate a shorter-term SMA (typically 20-period) to serve as the trend filter. The relationship between BBMP and SMA determines market bias.
+
+3. **Signal Generation**: 
+   - **Long Entry**: When BBMP > SMA, indicating that the medium-term average is above the shorter-term average, suggesting upward momentum
+   - **Exit Signal**: When BBMP < SMA, indicating a shift in momentum to the downside
+
+**Entry Rules:**
+- Enter long when the 50-period BBMP crosses above the SMA
+- Confirm with positive slope on both indicators for stronger signals
+- Optional: Wait for a pullback to the BBMP before entry for better risk/reward
+
+**Exit Rules:**
+- Primary exit: When BBMP crosses below the SMA
+- Trailing stop: Set at 2 standard deviations below the BBMP (using the 50-period Bollinger Band standard deviation)
+- The trailing stop should only move upward, never downward, to lock in profits
+
+**Risk Management:**
+- Position sizing based on the distance between entry price and initial trailing stop
+- Maximum risk per trade should not exceed 1-2% of account equity
+- The 2-standard-deviation trailing stop provides dynamic risk adjustment based on market volatility
+- During high volatility periods, the stop widens automatically; during low volatility, it tightens
+
+**Required Indicators:**
+1. Bollinger Bands (50-period, 2 standard deviations)
+   - Midpoint (BBMP) = 50-period SMA
+   - Upper Band = BBMP + (2 × standard deviation)
+   - Lower Band = BBMP - (2 × standard deviation)
+2. Simple Moving Average (20-period recommended)
+3. Optional: ATR for additional volatility confirmation
+
+**Implementation Notes:**
+- Best suited for trending markets; may produce whipsaws in ranging conditions
+- Consider adding a minimum distance filter between BBMP and SMA to avoid false signals
+- The 50-period lookback makes this strategy responsive to medium-term trends while filtering out short-term noise
+- Backtest across different market conditions to optimize the SMA period and standard deviation multiplier

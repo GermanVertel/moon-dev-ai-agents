@@ -1,0 +1,37 @@
+STRATEGY_NAME: Volatility-Adjusted Reversion
+
+STRATEGY_DETAILS:
+This strategy, named "Volatility-Adjusted Reversion," is a mean-reversion approach that uses a normalized price deviation metric to identify overextended moves relative to recent volatility. It enters long positions when price is significantly above its short-term average relative to volatility, and exits when the deviation normalizes or reverses.
+
+1. Key Strategy Components:
+   - Mean-Return Ratio (MRR): The core signal. It measures how far price has deviated from its 20-period Simple Moving Average (SMA 20), scaled by the 3-day Average True Range (ATR) to account for volatility.
+   - Formula: MRR = (Close - SMA20) / ATR3
+   - Entry Threshold: 1.5 (long entry when MRR > 1.5)
+   - Exit Threshold: -0.5 (exit when MRR < -0.5)
+
+2. Entry Rules:
+   - Calculate SMA20 of closing prices.
+   - Calculate ATR over 3 periods (ATR3).
+   - Compute MRR = (Close - SMA20) / ATR3.
+   - Enter a long position when MRR > 1.5.
+   - This implies price is 1.5 ATRs above its 20-period average, signaling a potential overextension that may revert upward (note: this is a long entry on strength, which is unusual for mean reversion—clarify if this is intended as a momentum/breakout entry or if the logic is inverted).
+
+3. Exit Rules:
+   - Exit the long position when MRR < -0.5.
+   - This means price has fallen to 0.5 ATRs below the SMA20, indicating the deviation has reversed and the trade should be closed to lock in gains or cut losses.
+
+4. Risk Management:
+   - Position sizing should be volatility-adjusted: since ATR is used in the signal, size positions inversely to ATR to maintain consistent risk.
+   - Use a stop-loss based on ATR (e.g., 2x ATR3 from entry) to limit drawdowns if the reversion fails.
+   - Consider a maximum holding period to avoid prolonged exposure if the MRR hovers between thresholds.
+   - Monitor for whipsaws: with a 3-day ATR, the signal may be noisy; consider smoothing or confirming with volume.
+
+5. Required Indicators:
+   - Simple Moving Average (20-period) on close.
+   - Average True Range (3-period).
+   - Close price (for MRR calculation).
+
+6. Additional Notes:
+   - The strategy as described enters long when price is high relative to its mean (MRR > 1.5) and exits when it is low (MRR < -0.5). This is atypical for mean reversion—typically, mean reversion would short overextensions or buy dips. If the intent is to buy strength and sell weakness, this is more of a momentum strategy. Clarify the logic to ensure alignment with the intended edge.
+   - Backtest with historical data to optimize thresholds (1.5 and -0.5) and ATR period (3) for the specific asset and timeframe.
+   - Ensure sufficient liquidity and low transaction costs, as frequent entries/exits may occur due to the short ATR period.

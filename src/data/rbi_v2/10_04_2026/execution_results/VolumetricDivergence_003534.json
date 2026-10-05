@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Starting Moon Dev's Volumetric Divergence Backtest! \u2728\ud83c\udf19\n\ud83c\udf19 Data loaded: 31066 bars \u2728\n\ud83c\udf19 Moon Dev indicators initialized! MACD, BB, ATR, Vol SMA ready \ud83d\ude80\n\ud83c\udf19\ud83d\ude80 LONG SIGNAL! Divergence + Volume Spike. Price: 16934.47, Size: 59, SL: 16894.78, ATR: 19.82\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/31032 [00:00<?, ?bar/s]\n                                                        \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/VolumetricDivergence_PKG.py\", line 179, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/VolumetricDivergence_PKG.py\", line 170, in next\n    self.trades[-1].atr_at_entry = atr_val\nIndexError: tuple index out of range\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/VolumetricDivergence_PKG.py` failed. (See above for error)\n",
+  "execution_time": 6.44593,
+  "timestamp": "2026-10-05T00:35:34.964404"
+}

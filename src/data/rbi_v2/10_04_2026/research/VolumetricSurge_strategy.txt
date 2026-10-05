@@ -1,0 +1,33 @@
+STRATEGY_NAME: VolumetricSurge
+
+STRATEGY_DETAILS:
+The VolumetricSurge strategy is a momentum-based breakout system that uses volume oscillations to confirm price breakouts, filtering out false signals caused by low-liquidity moves. It combines a volume oscillator (such as the Percentage Volume Oscillator, PVO) with price breakout levels to identify high-probability entries.
+
+**Key Strategy Components:**
+1. **Volume Oscillator (PVO):** Measures the difference between two volume EMAs (e.g., 12-period and 26-period) as a percentage of the longer EMA. This highlights surges in trading activity relative to recent norms.
+2. **Price Breakout Levels:** Uses recent swing highs/lows or a Donchian channel (e.g., 20-period) to define breakout thresholds.
+3. **Confirmation Filter:** A breakout is only valid if the volume oscillator is above a predefined threshold (e.g., >0 or >1.5%) at the time of the price breakout, indicating strong participation.
+
+**Entry Rules:**
+- **Long Entry:** Price closes above the upper breakout level (e.g., 20-period high) AND the volume oscillator is above the bullish threshold (e.g., PVO > 0 and rising).
+- **Short Entry:** Price closes below the lower breakout level (e.g., 20-period low) AND the volume oscillator is above the bearish threshold (e.g., PVO < 0 and falling).
+
+**Exit Rules:**
+- **Long Exit:** Price closes below a trailing stop (e.g., 2× ATR from entry) OR the volume oscillator crosses below zero, signaling weakening momentum.
+- **Short Exit:** Price closes above a trailing stop OR the volume oscillator crosses above zero.
+
+**Risk Management:**
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade.
+- **Stop-Loss:** Initial stop placed at 1.5–2× ATR from entry, adjusted dynamically with a trailing stop.
+- **Take-Profit:** Optional target at 2–3× risk-reward ratio, or exit on oscillator reversal.
+- **Filter:** Avoid trading during low-volume sessions (e.g., holidays, pre-market) to reduce noise.
+
+**Required Indicators:**
+- Volume Oscillator (PVO or similar, e.g., 12/26 EMA of volume)
+- Donchian Channel (20-period) or swing high/low levels
+- ATR (14-period) for stop-loss and trailing stop
+- Optional: Moving average (e.g., 50-period) for trend bias
+
+**Timeframe:** Works best on 1-hour to daily charts for swing trading; can be adapted to 5–15 minute charts for intraday with adjusted parameters.
+
+**Notes:** The strategy excels in trending markets but may produce whipsaws in ranging conditions. Consider adding a trend filter (e.g., price above 200-period EMA for longs) to improve win rate. Backtest with realistic slippage and commission, as volume spikes often coincide with volatile price action.

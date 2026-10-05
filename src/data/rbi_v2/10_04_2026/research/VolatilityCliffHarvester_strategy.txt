@@ -1,0 +1,60 @@
+STRATEGY_NAME: VolatilityCliffHarvester
+
+STRATEGY_DETAILS:
+
+This strategy exploits "volatility cliffs" — sharp, discontinuous regime shifts in implied/realized volatility that create temporary mispricings between related instruments (e.g., spot vs. options, VIX futures vs. VIX ETPs, or cross-exchange volatility surfaces). Unlike smooth mean-reversion plays, cliffs are step-changes where the market reprices risk abruptly, leaving lagging instruments temporarily out of sync.
+
+CORE CONCEPT
+A volatility cliff occurs when realized volatility spikes or collapses faster than the market's pricing of that volatility across linked instruments. The arbitrage is the convergence between the "fast" instrument (already repriced) and the "slow" instrument (still anchored to the old vol regime). The edge exists only during the transient window — typically minutes to a few hours.
+
+KEY STRATEGY COMPONENTS
+
+1. Cliff Detection Engine
+   - Compute rolling realized volatility (e.g., 5-min, 15-min, 30-min windows) on the underlying.
+   - Compute implied volatility (IV) from the options/derivatives side.
+   - Define a cliff trigger: |ΔRV| / RV_prior > threshold (e.g., 40–60%) within a short window, OR a jump in the IV-RV spread beyond N standard deviations.
+   - Use a CUSUM or Bayesian changepoint detector rather than simple z-scores to avoid false positives from normal vol clustering.
+
+2. Instrument Pair Selection
+   - Primary: spot/futures vs. options (delta-hedged straddle or variance swap proxy).
+   - Alternative: VIX futures vs. VIX ETPs (VXX/UVXY) — the classic "roll-yield cliff" setup.
+   - Cross-venue: same underlying on two exchanges with divergent vol surfaces.
+   - Rank pairs by historical convergence speed and liquidity.
+
+3. Entry Rules
+   - Trigger when cliff detector fires AND the IV-RV spread exceeds its rolling mean by ≥2σ.
+   - Direction: short the overpriced vol instrument, long the underpriced one (or vice versa for vol collapse cliffs).
+   - Require minimum liquidity (spread < X bps, depth > Y contracts).
+   - Confirm with order-flow imbalance or a volume spike on the leading instrument.
+
+4. Exit Rules
+   - Primary exit: convergence — when IV-RV spread returns within 0.5σ of rolling mean.
+   - Time stop: exit after N bars (e.g., 30–120 min) if no convergence — cliffs either resolve fast or signal a true regime change.
+   - Hard stop: if spread widens by another 1.5σ beyond entry (cliff was actually a new regime, not a mispricing).
+   - Vol-of-vol exit: if the vol-of-vol itself spikes (indicating instability), flatten immediately.
+
+5. Risk Management
+   - Position sizing scaled inversely to vol-of-vol at entry (Kelly-fraction with cap, e.g., 0.25 Kelly).
+   - Max single-trade risk: 0.5–1% of equity.
+   - Correlation cap: limit aggregate exposure to the same vol regime (e.g., don't stack VIX + SPX vol trades).
+   - Gap risk: use options spreads rather than naked legs where possible to define max loss.
+   - Regime filter: disable strategy when VIX > 40 or during scheduled events (FOMC, CPI) unless specifically trading the event cliff.
+
+6. Required Indicators / Data
+   - Realized volatility (multiple horizons: 5m, 15m, 30m, 1h)
+   - Implied volatility surface (or at least ATM IV + skew)
+   - IV-RV spread and its rolling z-score
+   - Vol-of-vol (rolling std of IV changes)
+   - CUSUM / changepoint signal
+   - Order book depth and bid-ask spread
+   - Funding rates (if perps are involved)
+
+BACKTESTING NOTES
+- Use tick or 1-min data — cliff windows are too short for daily bars.
+- Model transaction costs aggressively: arbitrage edges are thin and slippage during vol spikes is severe.
+- Include a "no-trade" filter for the first 5 minutes after a cliff (spreads blow out).
+- Benchmark against a naive "always short vol" strategy to prove the cliff timing adds alpha.
+- Walk-forward test across 2018 (Volmageddon), 2020 (COVID), 2022 (rate vol), and 2024 (yen carry unwind) to validate robustness across different cliff types.
+
+EDGE SUMMARY
+The alpha comes from speed of detection and disciplined exit timing — not from holding a directional vol view. The strategy monetizes the market's mechanical lag in repricing linked instruments after a volatility regime break, while strict stops prevent being run over when a "cliff" is actually a permanent regime shift.

@@ -1,0 +1,51 @@
+STRATEGY_NAME: DivergentPulse
+
+STRATEGY_DETAILS:
+This strategy combines MACD and RSI divergence signals to identify high-probability trend reversals, then uses ATR-based profit targets with a strict one-trade-per-day limit to control risk and overtrading.
+
+CORE LOGIC:
+The strategy hunts for momentum exhaustion by requiring BOTH MACD and RSI to show divergence from price simultaneously. This dual-confirmation filter dramatically reduces false signals compared to using either indicator alone.
+
+KEY COMPONENTS:
+
+1. DIVERGENCE DETECTION (Entry Signal)
+   - Bullish setup: Price makes a LOWER LOW, but MACD histogram makes a HIGHER LOW AND RSI makes a HIGHER LOW
+   - Bearish setup: Price makes a HIGHER HIGH, but MACD histogram makes a LOWER HIGH AND RSI makes a LOWER HIGH
+   - Divergence must form within a lookback window (typically 10-30 bars)
+   - Both divergences must occur within a 3-5 bar proximity of each other to be valid
+
+2. INDICATORS REQUIRED
+   - MACD (12, 26, 9) — use histogram for divergence comparison
+   - RSI (14) — use oscillator values for divergence comparison
+   - ATR (14) — for dynamic stop/target placement
+   - Pivot detection logic (swing highs/lows) to anchor divergence points
+
+3. ENTRY RULES
+   - Enter LONG when bullish dual-divergence confirmed AND price closes above the most recent swing high (confirmation candle)
+   - Enter SHORT when bearish dual-divergence confirmed AND price closes below the most recent swing low
+   - Entry only allowed if no trade has been taken that calendar day
+   - Skip signal if ATR is abnormally low (< 20% of 20-period average) — avoids chop
+
+4. EXIT RULES
+   - Profit target: 2-3 ATR from entry price (use 2 ATR for conservative, 3 ATR for trending conditions)
+   - Stop loss: 1 ATR from entry, placed beyond the divergence swing point
+   - Optional trailing: move stop to breakeven once price reaches +1.5 ATR
+   - Time-based exit: close position at end of trading day if neither target nor stop hit (avoids overnight gap risk)
+
+5. RISK MANAGEMENT
+   - Position sizing: risk 1% of account per trade based on ATR stop distance
+   - Max one trade per day (hard rule, resets at session open)
+   - No new entries in the final 30 minutes of the session
+   - Skip trades during major news events (FOMC, NFP) if using intraday timeframes
+
+6. TIMEFRAME GUIDANCE
+   - Best suited for 15m, 1H, or 4H charts
+   - Higher timeframes (Daily) produce fewer but higher-quality signals
+
+7. SIGNAL QUALITY FILTERS
+   - Prefer divergences that occur at key support/resistance zones
+   - Stronger signal if RSI divergence crosses above 30 (bullish) or below 70 (bearish)
+   - Ignore divergences where MACD lines are far apart (weak momentum context)
+
+EXECUTION SUMMARY:
+Wait for dual MACD+RSI divergence → confirm with structural break (swing high/low close) → enter with 1 ATR stop → target 2-3 ATR → one trade daily maximum → flat by session close.

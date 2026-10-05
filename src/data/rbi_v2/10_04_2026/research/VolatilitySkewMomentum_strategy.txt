@@ -1,0 +1,49 @@
+STRATEGY_NAME: VolatilitySkewMomentum
+
+STRATEGY_DETAILS:
+
+This strategy combines implied volatility mean-reversion signals with a Gamma Skew momentum confirmation to time entries into overbought-but-still-accelerating conditions. The core idea is that when VIX is deeply depressed relative to its own history (a sign of complacency/overbought equity conditions), a bullish Gamma Skew crossover acts as the trigger that the equity rally still has fuel left — so we buy rather than fade.
+
+1. KEY STRATEGY COMPONENTS
+
+- Primary Signal (VIX Compression): Compute a rolling historical average of VIX (e.g., 252-day or 3-year lookback). The "compression condition" fires when current VIX ≤ 80% of that historical average (i.e., VIX is at least 20% below its norm).
+  - Rationale: VIX trading far below its mean signals low fear / overbought equity regime — a precondition, not a standalone entry.
+
+- Confirmation Signal (Gamma Skew Bullish Crossover): Track a VIX-based Gamma Skew index (a proxy for the skew of the implied-vol distribution, typically derived from VIX term-structure or options skew data). Require the current 3-month Gamma Skew reading to cross above its prior 3-month average (i.e., a bullish crossover vs. the trailing three-month baseline).
+  - This confirms that while volatility is compressed, the skew is rotating in a direction consistent with continued upside momentum (call demand / dealer positioning support).
+
+- Regime Filter (Overbought Momentum): Optional RSI(14) > 60 or price > 20-EMA to ensure we are in an uptrend, since the strategy deliberately buys overbought conditions.
+
+2. ENTRY RULES
+
+- Long entry when BOTH conditions are true simultaneously:
+  a) VIX ≤ 0.80 × VIX_historical_average (e.g., 252-day SMA of VIX)
+  b) Gamma_Skew_3M > Gamma_Skew_3M_average AND Gamma_Skew_3M crossed above its 3-month average within the last N bars (e.g., 5 bars) — bullish crossover confirmed.
+- Enter at next bar open (or on close of the crossover bar).
+- Position size scaled by conviction: larger when VIX compression is deeper (e.g., VIX at 70% of average = larger size than 80%).
+
+3. EXIT RULES
+
+- Take-profit: Close when VIX reverts back to ≥ 100% of its historical average (mean reversion complete), OR
+- Momentum failure: Exit when Gamma Skew 3M crosses back below its 3-month average (bearish crossover), OR
+- Overbought exhaustion: Exit on RSI(14) > 80 combined with a bearish reversal candle.
+- Hard stop: 2× ATR(14) below entry, or a fixed % (e.g., 3–5%) depending on instrument.
+
+4. RISK MANAGEMENT
+
+- Max position size: 1–2% of equity per trade given the counter-intuitive nature of buying overbought conditions.
+- Volatility-adjusted sizing: Reduce size when VIX compression is extreme (< 70% of average) since snap-back risk is highest.
+- Correlation cap: Avoid stacking multiple long-vol-sensitive positions simultaneously.
+- Time stop: If neither TP nor stop is hit within 20–30 trading days, exit to avoid regime drift.
+
+5. REQUIRED INDICATORS / DATA
+
+- VIX index (daily close) and its 252-day (or 3-year) SMA.
+- Gamma Skew index (or a proxy: 25-delta put-call skew, VIX term-structure slope, or CBOE SKEW index).
+- 3-month rolling average of the Gamma Skew index.
+- RSI(14) and ATR(14) for filters and stops.
+- Optional: 20-EMA of underlying for trend confirmation.
+
+6. LOGIC SUMMARY
+
+Buy overbought equities ONLY when implied volatility is unusually cheap (VIX < 80% of its historical average) AND the volatility skew is turning bullish (Gamma Skew 3M crossover above its 3-month average). Exit on VIX mean reversion, skew reversal, or momentum exhaustion. This is a "complacency + confirmation" momentum play — you are not fading the overbought condition, you are riding it while the skew still supports it.

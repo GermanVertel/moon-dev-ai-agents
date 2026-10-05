@@ -1,0 +1,48 @@
+STRATEGY_NAME: ChandeStochasticPullback
+
+STRATEGY_DETAILS:
+This strategy is a pullback-based trend continuation system that uses the Chande Momentum Oscillator (CMO) as a trend filter and the Stochastic Oscillator (SO) as an oversold timing trigger, with ATR-based exits and volume confirmation. The core idea: in an established uptrend, temporary pullbacks push the Stochastic into oversold territory, while the CMO remains in a bullish/positive regime — the entry occurs when the SO crosses back up from oversold, confirmed by rising volume on the pullback.
+
+1. KEY STRATEGY COMPONENTS
+
+- Trend Filter (CMO): The Chande Momentum Oscillator measures momentum on a scale of -100 to +100. For a long-only trend-following system, CMO above 0 (or above a threshold like +20) indicates bullish momentum. The "downtrend signal" referenced in the prompt is interpreted as a short-term CMO dip/pullback within a broader uptrend — i.e., CMO momentarily falling toward or below its zero line or a neutral band, representing a temporary loss of momentum rather than a full trend reversal. This dip is the pullback condition that sets up the entry.
+- Timing Trigger (Stochastic Oscillator): The Stochastic Oscillator (%K, %D) identifies oversold conditions. When %K drops below 20 (oversold) and then crosses back above %D or above the 20 line, it signals that the pullback is exhausting and upward momentum is resuming.
+- Volume Confirmation: During the pullback, volume should be declining (healthy pullback); at the reversal/breakout bar, volume should expand above its moving average (e.g., 20-period volume SMA). Increasing volume on the resumption confirms genuine buying interest rather than a dead-cat bounce.
+- Volatility-Based Exits (ATR): ATR multiples define both stop-loss and profit-target levels, adapting to current market volatility.
+
+2. ENTRY RULES (LONG)
+
+- Confirm the broader trend is up: price above a longer-term moving average (e.g., 200-period EMA/SMA), and/or CMO has recently been in positive territory.
+- Pullback condition: CMO has dipped (e.g., CMO crosses below +20 or falls toward 0) indicating a short-term momentum decline within the uptrend.
+- Oversold trigger: Stochastic %K < 20 (oversold zone).
+- Entry signal: Stochastic %K crosses back above %D (or above 20) from oversold.
+- Volume confirmation: The entry bar or the reversal bar shows volume greater than its 20-period average, and pullback bars showed declining volume.
+- Enter long on the close of the confirmation bar or on a break above the prior bar's high.
+
+3. EXIT RULES
+
+- Stop-Loss: Place initial stop at Entry Price − (ATR × 1.5) (or 2.0× depending on risk appetite). This adapts the stop to volatility.
+- Profit Target: Take profit at Entry Price + (ATR × 3.0), giving a 2:1 reward-to-risk ratio relative to a 1.5× ATR stop.
+- Trailing Exit: Alternatively, trail the stop using a Chandelier Exit — Highest High since entry − (ATR × 3.0) — to ride extended trends.
+- Momentum Exit: Exit if CMO crosses back below 0 (trend failure) or if Stochastic reaches overbought (>80) and turns down.
+- Time Stop (optional): Exit if neither target nor stop is hit within N bars.
+
+4. RISK MANAGEMENT
+
+- Position sizing: Risk a fixed percentage of equity (e.g., 1–2%) per trade, with size = (Account Risk $) / (Entry − Stop distance).
+- ATR-based stops ensure risk scales with volatility — wider stops in volatile markets, tighter in calm markets.
+- Avoid entering if volume confirmation is absent — no volume, no trade.
+- Cap simultaneous positions and avoid correlated instruments to limit aggregate exposure.
+- Consider a maximum ATR filter: skip trades when ATR is abnormally high (e.g., > 2× its 50-period average) to avoid whipsaw regimes.
+
+5. REQUIRED INDICATORS
+
+- Chande Momentum Oscillator (CMO), typical period 14 or 20 — trend/pullback filter.
+- Stochastic Oscillator (%K, %D), typical settings 14,3,3 — oversold entry trigger.
+- Average True Range (ATR), period 14 — stop-loss and target sizing.
+- Volume Moving Average (e.g., 20-period) — pullback/breakout volume confirmation.
+- Optional: 200-period EMA/SMA for higher-timeframe trend bias.
+
+6. NOTES ON INTERPRETATION
+
+The prompt describes entering long when CMO signals a "downtrend" while Stochastic is oversold. In a trend-following long framework, this is best read as a counter-trend pullback within a dominant uptrend: CMO's short-term bearish dip plus oversold Stochastic marks a buy-the-dip opportunity, and volume expansion on the reversal confirms the trend is resuming. If instead the intent is a pure mean-reversion entry against a confirmed CMO downtrend, the strategy becomes counter-trend and should be paired with tighter ATR stops and faster profit-taking, since it fights the prevailing trend.

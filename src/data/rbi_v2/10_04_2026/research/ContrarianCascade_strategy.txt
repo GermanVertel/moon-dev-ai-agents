@@ -1,0 +1,49 @@
+STRATEGY_NAME: Contrarian Cascade
+
+STRATEGY_DETAILS:
+The Contrarian Cascade is a counterintuitive mean-reversion strategy that deliberately fades the classic "death cross" signal. Rather than treating a 50/200 MA bearish crossover as a confirmed downtrend, it interprets that moment as a potential exhaustion point where oversold conditions and an upside breakout can trigger a sharp reversal. The strategy layers three independent signals into a single entry trigger, then uses RSI normalization as its exit clock.
+
+1. KEY STRATEGY COMPONENTS
+
+- Primary Trigger (Death Cross): The 50-period simple moving average crosses BELOW the 200-period simple moving average. This is the structural event that arms the setup. It signals that long-term trend momentum has flipped bearish, which is precisely the contrarian condition the strategy exploits.
+
+- Confirmation Filter 1 (RSI > 40): The short-term RSI (typically 14-period) must be ABOVE 40 at the time of (or shortly after) the crossover. This is unusual: a death cross usually coincides with weak RSI. An RSI holding above 40 despite the bearish cross suggests underlying buying pressure is quietly absorbing the sell-off — a hidden bullish divergence.
+
+- Confirmation Filter 2 (Bollinger Breach): Price must have breached the UPPER Bollinger Band (20-day period, 2 standard deviations). This confirms that despite the bearish MA structure, price is showing an upside breakout / volatility expansion to the upside. The combination of a death cross + upper-band breach is a rare "coiled spring" condition.
+
+- Entry: LONG when all three conditions align (MA cross below + RSI > 40 + price above upper Bollinger Band). The crossover can be recent (within a defined window, e.g., last 3-5 bars) rather than simultaneous, since the three signals rarely fire on the exact same bar.
+
+2. ENTRY RULES
+
+- Wait for the 50 MA to cross below the 200 MA.
+- Within the following N bars (recommend 3-10), verify RSI(14) > 40.
+- Verify price has closed above the upper Bollinger Band (20, 2.0) during that same window.
+- Enter long at the next bar's open once all three are satisfied.
+- Optional: require a bullish confirmation candle (close > open) to avoid entering on a wick-only breach.
+
+3. EXIT RULES
+
+- Primary Exit (RSI Reset): Close the position when RSI resets — i.e., RSI crosses back below 50 (or returns to a neutral mid-zone, configurable between 45-55). This captures the mean-reversion move as momentum normalizes.
+- Secondary Exit (Time Stop): If RSI fails to reset within a maximum holding period (e.g., 20 bars), exit at market to avoid capital lock-up.
+- Tertiary Exit (Stop Loss): Hard stop below the lower Bollinger Band or a fixed ATR-based stop (e.g., 2x ATR(14)) to cap downside if the reversal thesis fails.
+- Optional Take Profit: Scale out at a fixed R:R (e.g., 2:1) or when price tags the middle Bollinger Band.
+
+4. RISK MANAGEMENT
+
+- Position Sizing: Risk a fixed percentage of equity per trade (e.g., 1-2%), sized off the ATR-based stop distance.
+- Stop Placement: Below the entry bar's low, the lower Bollinger Band, or 2x ATR — whichever is tighter but still respecting volatility.
+- Max Concurrent Positions: Limit to 1-2 to avoid clustering during broad market death-cross waves.
+- Regime Filter: Avoid trading during high-impact news or when the 200 MA itself is sharply rising (which would make the death cross a false signal in a strong uptrend).
+- RSI Reset Confirmation: Do not exit prematurely on a single down-tick; require RSI to close below the reset threshold on a completed bar.
+
+5. REQUIRED INDICATORS
+
+- 50-period Simple Moving Average (SMA)
+- 200-period Simple Moving Average (SMA)
+- RSI (14-period, short-term)
+- Bollinger Bands (20-period, 2 standard deviations)
+- Optional: ATR (14) for dynamic stop sizing
+- Optional: Volume filter to confirm the upper-band breach is backed by participation
+
+SUMMARY OF LOGIC:
+The Contrarian Cascade bets that a death cross, when accompanied by resilient RSI (>40) and an upper Bollinger Band breakout, marks a false bearish signal and a high-probability long reversal. It enters on the convergence of these three conditions and exits when RSI normalizes back to its neutral zone — capturing the snap-back move that the crowd misreads as a downtrend.

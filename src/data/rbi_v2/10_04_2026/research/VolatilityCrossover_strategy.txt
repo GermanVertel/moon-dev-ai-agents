@@ -1,0 +1,44 @@
+STRATEGY_NAME: VolatilityCrossover
+
+STRATEGY_DETAILS:
+This strategy exploits temporary price dislocations between a primary asset and a correlated proxy (e.g., index vs. ETF, or two highly correlated pairs) by detecting volatility regime shifts and waiting for price action reversal confirmation. The arbitrage edge comes from mean reversion after volatility spikes, where one leg overreacts and the other lags.
+
+1. KEY STRATEGY COMPONENTS
+- Pair Selection: Choose two instruments with historical correlation > 0.85 (e.g., SPY vs. ES futures, or BTC vs. ETH with rolling correlation filter).
+- Volatility Regime Detection: Use ATR (Average True Range) and Bollinger Band Width (BBW) to identify when volatility expands beyond its 90th percentile over a 100-period lookback.
+- Price Action Reversal Signals: Look for candlestick patterns (pin bars, engulfing, inside bars) at extreme z-scores of the spread (e.g., spread > 2 standard deviations from 50-period mean).
+- Spread Construction: Compute the log-price ratio (or hedge-ratio-adjusted spread) between the two instruments. Normalize it using a rolling Z-score.
+- Divergence Confirmation: Require that the lagging leg shows no new high/low while the leading leg does (classic bearish/bullish divergence on the spread).
+
+2. ENTRY RULES
+- Long Spread Entry: When spread Z-score < -2.0, volatility regime is "high" (BBW > 90th percentile), and the leading leg prints a bullish reversal candle (hammer/engulfing) while the lagging leg fails to make a new low.
+- Short Spread Entry: When spread Z-score > +2.0, volatility regime is "high", and the leading leg prints a bearish reversal candle (shooting star/engulfing) while the lagging leg fails to make a new high.
+- Execution: Simultaneously enter long on the undervalued leg and short on the overvalued leg with equal dollar risk (beta-adjusted).
+
+3. EXIT RULES
+- Profit Target: Close when spread Z-score reverts to ±0.5 (mean reversion).
+- Stop Loss: Close if spread Z-score moves further to ±3.5 (arbitrage breakdown) OR if correlation drops below 0.7 on a 20-period rolling basis.
+- Time Stop: Exit after 15 bars if neither target nor stop is hit, to avoid regime decay.
+- Volatility Exit: If BBW contracts back below the 50th percentile before mean reversion, exit early to lock in partial gains.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk no more than 0.5% of equity per trade due to the leveraged nature of pair trades.
+- Max Concurrent Trades: 2 pairs to avoid overexposure to correlated arbitrage setups.
+- Correlation Filter: No new entries if the 50-period rolling correlation between the two legs is below 0.8.
+- Slippage Buffer: Account for 0.05% round-trip transaction cost per leg when calculating expected value.
+- Event Blackout: Avoid entries 30 minutes before and after major scheduled news (CPI, FOMC, earnings) that can break correlation.
+
+5. REQUIRED INDICATORS
+- ATR (14-period) for volatility measurement.
+- Bollinger Bands (20-period, 2 std dev) and Bollinger Band Width for regime detection.
+- Rolling Z-score of the spread (50-period lookback).
+- Rolling Correlation (50-period and 20-period) between the two instruments.
+- Candlestick pattern recognition (pin bar, engulfing, inside bar).
+- Volume filter (optional): require above-average volume on the reversal candle for confirmation.
+
+6. EXECUTION NOTES
+- Use limit orders on both legs to reduce slippage, but ensure simultaneous fill or cancel both.
+- Monitor spread in real-time; if one leg fills and the other doesn't within 2 seconds, cancel the filled leg immediately.
+- Backtest across at least 3 volatility regimes (low, normal, high VIX) to validate robustness.
+
+This strategy combines statistical arbitrage with volatility timing and price action confirmation, creating a high-probability edge during market dislocations rather than relying on directional bias.

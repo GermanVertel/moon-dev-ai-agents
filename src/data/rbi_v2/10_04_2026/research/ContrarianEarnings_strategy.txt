@@ -1,0 +1,46 @@
+STRATEGY_NAME: ContrarianEarnings
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy capitalizes on post-earnings-announcement drift (PEAD) reversal dynamics. It exploits the tendency for stocks that underperform in the immediate 3-day window following an earnings release to experience a contrarian bounce, driven by overreaction, tax-loss harvesting, or short-term liquidity pressure that mean-reverts.
+
+**Key Strategy Components:**
+
+1. **Universe Selection**
+   - Liquid equities (market cap > $1B preferred, to ensure tradability)
+   - Stocks with confirmed earnings releases (quarterly)
+   - Must have sufficient intraday liquidity and reasonable spreads
+
+2. **Signal Generation (Entry)**
+   - Identify stocks that have declined significantly in the 3 trading days immediately following their earnings release
+   - "Underperformed" definition: stock shows negative cumulative return over the post-earnings 3-day window (e.g., -3% or worse relative to pre-earnings close)
+   - Optional refinement: compare against sector/benchmark performance to isolate idiosyncratic weakness
+   - Enter a LONG position at the open of the 4th trading day after earnings (i.e., after the 3-day observation window closes)
+
+3. **Exit Rules**
+   - **Stop Loss:** Hard stop at -2% from entry price (tight, defined risk)
+   - **Take Profit:** Target a mean-reversion bounce — e.g., +3% to +5%, or exit after a fixed holding period (e.g., 5-10 trading days) if target not hit
+   - **Time Stop:** Close position if neither stop nor target is triggered within the holding window
+
+4. **Risk Management**
+   - Position sizing based on the 2% stop: risk no more than 0.5–1% of portfolio equity per trade
+   - Max concurrent positions cap (e.g., 5–10) to limit correlated earnings-season exposure
+   - Avoid holding through the next earnings date
+   - Consider earnings-season clustering — diversify across sectors and dates
+
+5. **Required Indicators / Data**
+   - Earnings release calendar (dates and timestamps — pre/post market matters)
+   - Daily OHLC price data for return calculation
+   - Benchmark/sector index for relative performance measurement (optional)
+   - Volatility filter (e.g., ATR) to avoid entering during abnormal volatility spikes
+   - Volume data to confirm genuine selling pressure vs. thin-market noise
+
+**Edge Rationale:**
+Markets often overreact to disappointing earnings in the first few days. By waiting 3 days for the initial panic to exhaust, the strategy enters after forced sellers (momentum funds, stop-outs) have exited, positioning for a short-term mean-reversion bounce. The tight 2% stop keeps losses small while the asymmetric upside captures the reversion move.
+
+**Key Risks:**
+- Fundamental deterioration (not just overreaction) → stock keeps falling, stop triggers
+- Earnings gaps can blow through the 2% stop (slippage risk)
+- Crowded trade during earnings season
+- Regime dependence — works better in mean-reverting markets than strong trending downturns

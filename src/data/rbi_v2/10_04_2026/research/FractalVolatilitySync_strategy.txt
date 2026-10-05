@@ -1,0 +1,50 @@
+STRATEGY_NAME: FractalVolatilitySync
+
+STRATEGY_DETAILS:
+This strategy combines three complementary technical indicators to create a high-conviction trend-following system. The core premise is that fractal patterns reveal self-similar price structures, RSI confirms momentum extremes, and ATR validates volatility conditions — entries only trigger when all three align.
+
+**Key Strategy Components:**
+
+1. **Fractal Pattern Detection (Primary Signal)**
+   - Use Bill Williams' Fractal indicator (5-bar pattern)
+   - Bullish fractal: middle bar has the lowest low with two higher lows on each side
+   - Bearish fractal: middle bar has the highest high with two lower highs on each side
+   - Only confirmed fractals (bars fully closed) are valid entry triggers
+
+2. **RSI Confirmation (Momentum Filter)**
+   - RSI period: 14 (standard)
+   - For long entries: RSI must be recovering from oversold (<30 recently crossed back above 30) OR in bullish momentum zone (50-70)
+   - For short entries: RSI must be retreating from overbought (>70 recently crossed back below 70) OR in bearish momentum zone (30-50)
+   - Reject entries when RSI is diverging against the fractal direction
+
+3. **ATR Volatility Filter (Regime Validation)**
+   - ATR period: 14
+   - Require ATR to be above its 20-period moving average (expanding volatility)
+   - Reject signals when ATR is contracting (low-volatility chop zones)
+   - Use ATR to set dynamic stop-loss and position sizing
+
+**Entry Rules:**
+- **Long Entry:** Bullish fractal confirmed + RSI > 30 and rising + ATR expanding above its MA + price above 50 EMA (trend alignment)
+- **Short Entry:** Bearish fractal confirmed + RSI < 70 and falling + ATR expanding above its MA + price below 50 EMA (trend alignment)
+- All three conditions must be true on the same bar or within a 2-bar confirmation window
+
+**Exit Rules:**
+- **Stop-Loss:** 1.5 × ATR from entry price
+- **Take-Profit:** 3 × ATR (2:1 reward-to-risk minimum)
+- **Trailing Stop:** Activate after 1.5 × ATR profit; trail at 1 × ATR
+- **Signal Exit:** Close on opposite fractal signal or RSI crossing 70/30 against position
+
+**Risk Management:**
+- Risk per trade: 1-2% of account equity
+- Position size = (Account Risk $) / (1.5 × ATR)
+- Maximum 3 concurrent positions
+- Skip signals during major news events or when ATR is in the bottom 20th percentile of its 100-period range
+
+**Required Indicators:**
+- Fractals (Bill Williams, 5-bar)
+- RSI (14)
+- ATR (14) with 20-period MA overlay
+- EMA (50) for trend bias
+- Optional: Volume filter to confirm fractal breakouts
+
+**Timeframe:** Best suited for 1H to 4H charts where fractals form reliably without excessive noise.

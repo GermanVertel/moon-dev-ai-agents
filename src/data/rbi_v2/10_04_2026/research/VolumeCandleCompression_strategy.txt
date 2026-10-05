@@ -1,0 +1,45 @@
+STRATEGY_NAME: VolumeCandle Compression
+
+STRATEGY_DETAILS:
+This strategy identifies consolidation phases by combining relative volume analysis with price candle structure to pinpoint low-volatility ranges, then trades boundary touches with volume-based exits.
+
+**1. Key Strategy Components**
+
+- **Relative Volume (RVOL):** Current bar volume divided by a rolling average volume (e.g., 20-period SMA of volume). Values near or below 1.0 indicate participation is drying up — a hallmark of consolidation.
+- **Consolidation Detection:** A phase is confirmed when RVOL stays below a threshold (e.g., < 1.0) for N consecutive bars (e.g., 5–10) AND price candles form a tight range (high-low spread compressing, e.g., ATR contracting or range width < X% of price).
+- **Consolidation Range:** Defined by the highest high and lowest low of the consolidation window. The upper band = range high, lower band = range low.
+- **Average Consolidation Volume (ACV):** Mean volume calculated across all bars within the identified consolidation window — this becomes the benchmark for exit signals.
+
+**2. Entry Rules**
+
+- **Long Entry:** Price candle touches or pierces the **lower band** of the consolidation range (anticipating mean reversion or a failed breakdown). Confirm with a bullish rejection candle (wick, engulfing, or hammer) and RVOL rising above ACV to signal participation returning.
+- **Short Entry:** Price candle touches or pierces the **upper band** of the consolidation range. Confirm with a bearish rejection candle and RVOL rising above ACV.
+- **Alternative (breakout variant):** Enter long on a decisive close above the upper band with RVOL > 1.5×ACV; enter short on a decisive close below the lower band with RVOL > 1.5×ACV.
+
+**3. Exit Rules**
+
+- **Primary Exit Trigger:** Close the position when current volume is **significantly lower than ACV** (e.g., < 0.5×ACV), indicating the move has lost participation and momentum is fading.
+- **Secondary Exits:**
+  - Take-profit at the opposite band of the consolidation range (for mean-reversion entries).
+  - Stop-loss just beyond the touched band (e.g., 0.5×ATR beyond the range boundary).
+  - Time-based exit if price remains range-bound beyond a defined bar count.
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk a fixed % of equity per trade (e.g., 1%). Size = Risk Amount / (Entry − Stop).
+- **Stop-Loss:** Placed outside the consolidation band by a buffer (0.3–0.5×ATR) to avoid wick noise.
+- **Reward-to-Risk:** Minimum 1.5:1; for range trades, target the opposite band.
+- **False-Breakout Filter:** Require volume confirmation (RVOL > ACV) before accepting a band touch as a valid entry.
+- **Max Concurrent Trades:** Limit exposure during choppy regimes; skip trades if the range is too narrow relative to transaction costs.
+
+**5. Required Indicators**
+
+- **Volume SMA (20-period)** — baseline for RVOL.
+- **RVOL = Current Volume / Volume SMA** — core consolidation and exit signal.
+- **ATR (14-period)** — range compression detection and stop placement.
+- **Highest High / Lowest Low (consolidation window)** — defines upper/lower bands.
+- **Average Consolidation Volume (ACV)** — custom metric computed over the detected consolidation window.
+- **Optional:** Bollinger Band Width or Keltner Channel width to corroborate low-volatility compression.
+
+**Strategy Logic Summary:**
+Low RVOL + tight candle range = consolidation → mark bands and ACV → trade touches of bands with rising volume → exit when volume collapses below ACV → manage risk with ATR-based stops and range-based targets.

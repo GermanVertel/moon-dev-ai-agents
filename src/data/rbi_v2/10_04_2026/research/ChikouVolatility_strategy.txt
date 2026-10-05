@@ -1,0 +1,75 @@
+STRATEGY_NAME: ChikouVolatility
+
+STRATEGY_DETAILS:
+This strategy combines the Chikou Span (Lagging Span) from the Ichimoku Kinko Hyo system with Bollinger Bands to create a trend-following system that anticipates reversals through lagging price comparison and volatility expansion/contraction.
+
+CORE COMPONENTS:
+
+1. **Chikou Span (Lagging Span)**
+   - Plot current close price shifted back 26 periods
+   - Compare Chikou Span against historical price action 26 periods ago
+   - Bullish signal: Chikou Span breaks above price from 26 periods ago
+   - Bearish signal: Chikou Span breaks below price from 26 periods ago
+   - This confirms trend direction by comparing current momentum to past structure
+
+2. **Bollinger Bands (20-period SMA, 2 standard deviations)**
+   - Upper Band, Middle Band (SMA20), Lower Band
+   - Bandwidth = (Upper - Lower) / Middle — measures volatility
+   - Squeeze: bandwidth at multi-period lows (consolidation)
+   - Expansion: bandwidth rising sharply (breakout confirmation)
+
+ENTRY RULES:
+
+**Long Entry:**
+- Chikou Span crosses above the price candle from 26 periods ago
+- Price closes above the Middle Band (SMA20)
+- Bollinger Bandwidth is expanding from a recent squeeze
+- Confirmation: Price closes above Upper Band on breakout candle
+
+**Short Entry:**
+- Chikou Span crosses below the price candle from 26 periods ago
+- Price closes below the Middle Band (SMA20)
+- Bollinger Bandwidth is expanding from a recent squeeze
+- Confirmation: Price closes below Lower Band on breakdown candle
+
+EXIT RULES:
+
+**Long Exit:**
+- Price closes back below Middle Band, OR
+- Chikou Span crosses back below historical price, OR
+- Price touches Lower Band (trailing stop hit)
+
+**Short Exit:**
+- Price closes back above Middle Band, OR
+- Chikou Span crosses back above historical price, OR
+- Price touches Upper Band (trailing stop hit)
+
+RISK MANAGEMENT:
+
+- **Position Sizing:** Risk 1-2% of account per trade
+- **Stop Loss (Long):** Below the Lower Band or recent swing low, whichever is tighter
+- **Stop Loss (Short):** Above the Upper Band or recent swing high, whichever is tighter
+- **Take Profit:** Trail using Middle Band as dynamic stop; partial profit at 2x ATR
+- **Avoid trading during Bollinger Squeeze** — wait for expansion confirmation
+- **Avoid counter-trend trades** when Chikou Span is strongly displaced (>2x ATR from price)
+- **Maximum 2 concurrent positions** to limit correlated exposure
+
+REQUIRED INDICATORS:
+
+1. Chikou Span (Close shifted -26)
+2. Bollinger Bands (Length: 20, StdDev: 2.0)
+3. Bollinger Bandwidth (for squeeze detection)
+4. ATR (14-period) for stop placement and volatility filter
+5. Optional: 200-period EMA for higher timeframe trend bias
+
+TIMEFRAMES:
+- Best on 4H and Daily charts for reliable Chikou signals
+- Avoid timeframes below 1H (noise distorts 26-period lag)
+- Multi-timeframe confirmation: align with Daily trend direction
+
+MARKET CONDITIONS:
+- Thrives in trending markets with periodic volatility expansion
+- Poor performance in tight ranges where Chikou gives false signals
+- Filter out low-bandwidth periods (squeeze) until breakout confirms
+
+The synergy: Chikou Span validates trend direction using historical price memory, while Bollinger Bands provide the volatility trigger and dynamic support/resistance for entries, exits, and stops.

@@ -1,0 +1,78 @@
+STRATEGY_NAME: SqueezeStochastic
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band squeeze detection with Stochastic Oscillator reversal signals, filtered by a volume-confirmed breakout. It targets stocks in consolidation phases that are preparing for a directional move, aiming to catch reversals at the edges of the bands when volume surges confirm conviction.
+
+CORE COMPONENTS
+1. Bollinger Bands (20-period SMA, 2 standard deviations)
+   - Used to detect consolidation: narrow band width (squeeze) relative to recent history.
+   - Band width = (Upper Band − Lower Band) / Middle Band.
+   - Squeeze condition: current band width is in the lowest 20–30% of its range over the last 50–100 periods.
+   - Bands also define overbought/oversold extremes for reversal entries.
+
+2. Stochastic Oscillator (14,3,3)
+   - %K and %D lines.
+   - Oversold: %K < 20 and %D < 20.
+   - Overbought: %K > 80 and %D > 80.
+   - Reversal confirmation: %K crosses above %D in oversold zone (bullish), or %K crosses below %D in overbought zone (bearish).
+
+3. Volume Analysis
+   - Volume moving average (e.g., 20-period).
+   - Breakout volume confirmation: current volume > 1.5× to 2× the 20-period average volume.
+   - Volume must expand on the breakout candle, not on the consolidation candles.
+
+ENTRY RULES
+
+Long Entry (Bullish Reversal)
+- Precondition: Bollinger Band squeeze is active (band width in lowest 20–30% of lookback).
+- Price touches or pierces the Lower Bollinger Band during consolidation.
+- Stochastic %K crosses above %D while both are below 20 (oversold).
+- Breakout confirmation: price closes back above the Lower Band (or above the Middle Band for stronger signal) with volume > 1.5× average.
+- Optional filter: bullish candlestick pattern (hammer, bullish engulfing) on the breakout candle.
+
+Short Entry (Bearish Reversal)
+- Precondition: Bollinger Band squeeze is active.
+- Price touches or pierces the Upper Bollinger Band during consolidation.
+- Stochastic %K crosses below %D while both are above 80 (overbought).
+- Breakout confirmation: price closes back below the Upper Band (or below the Middle Band for stronger signal) with volume > 1.5× average.
+- Optional filter: bearish candlestick pattern (shooting star, bearish engulfing).
+
+EXIT RULES
+
+Long Exit
+- Take profit: price reaches the Upper Bollinger Band, or Stochastic reaches overbought (>80) and %K crosses below %D.
+- Stop loss: below the recent swing low or below the Lower Bollinger Band by a fixed ATR-based buffer (e.g., 1.5× ATR).
+- Trailing stop: trail below the Middle Band or a rising 20-period EMA once in profit.
+
+Short Exit
+- Take profit: price reaches the Lower Bollinger Band, or Stochastic reaches oversold (<20) and %K crosses above %D.
+- Stop loss: above the recent swing high or above the Upper Bollinger Band plus 1.5× ATR.
+- Trailing stop: trail above the Middle Band or a falling 20-period EMA.
+
+RISK MANAGEMENT
+- Position sizing: risk no more than 1–2% of account equity per trade.
+- Stop distance: use ATR (14-period) to normalize stops across different volatility regimes.
+- Reward-to-risk: require at least 2:1 before entering.
+- Avoid trades during major news events or earnings unless volume confirmation is exceptionally strong.
+- Squeeze failure: if price breaks the band but volume does not confirm, skip the trade.
+- Maximum concurrent positions: limit to 3–5 to manage correlated exposure.
+
+REQUIRED INDICATORS
+- Bollinger Bands (20, 2)
+- Bollinger Band Width (for squeeze detection)
+- Stochastic Oscillator (14, 3, 3)
+- Volume + Volume Moving Average (20)
+- ATR (14) for stop placement
+- Optional: 20-period EMA for trailing stops and trend bias
+
+TIMEFRAMES
+- Best suited for daily and 4-hour charts for swing trading.
+- Can be adapted to 15-minute/1-hour charts for intraday with tighter stops.
+
+MARKET CONDITIONS
+- Works best in range-bound or consolidating markets transitioning into a breakout.
+- Less effective in strong, sustained trends where squeezes are rare or false.
+- Volume filter is critical to avoid low-liquidity false breakouts.
+
+SUMMARY
+SqueezeStochastic identifies low-volatility consolidation via Bollinger Band squeeze, waits for a Stochastic reversal at the band extremes, and confirms entry with a volume-backed breakout. This triple confirmation (volatility contraction + momentum reversal + volume expansion) reduces false signals and targets high-probability reversal-to-trend transitions.

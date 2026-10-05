@@ -1,0 +1,65 @@
+STRATEGY_NAME: VolatilityChikou
+
+STRATEGY_DETAILS:
+This strategy combines Financial Conditions Index (FCI) volatility divergence analysis with Bollinger Bands and Chikou Span trend confirmation to identify high-probability long/short entries. The core premise is that when FCI volatility diverges from what Bollinger Bands would predict, it signals an impending regime shift in risk assets, which the Chikou Span then confirms via lagged price comparison.
+
+**1. Key Strategy Components**
+
+- **FCI Volatility Calculation**: Compute the Financial Conditions Index (or a proxy such as a composite of credit spreads, yield curve, equity risk premium, and dollar index). Calculate rolling volatility (e.g., 20-period standard deviation of FCI changes).
+- **Bollinger Band Overlay on FCI Volatility**: Apply Bollinger Bands (20-period SMA, 2 standard deviations) directly to the FCI volatility series. This creates an envelope that defines "expected" volatility behavior.
+- **Divergence Detection**: Compare the actual FCI volatility path against the Bollinger Band envelope:
+  - **Bullish Divergence (Long Signal)**: FCI volatility makes a lower low while price (or FCI level) makes a higher low, OR volatility breaks below the lower band while FCI itself is rising — indicating easing conditions not yet priced in.
+  - **Bearish Divergence (Short Signal)**: FCI volatility makes a higher high while price makes a lower high, OR volatility breaks above the upper band while FCI itself is falling — indicating tightening stress.
+- **Chikou Span Confirmation**: Plot the Chikou Span (current close shifted back 26 periods) on the price chart. A valid long requires the Chikou Span to be above the price action 26 periods ago; a valid short requires it below.
+
+**2. Entry Rules**
+
+- **Long Entry**:
+  1. FCI volatility shows bullish divergence vs. Bollinger Bands (lower low in volatility while FCI/price makes higher low, or volatility pierces lower band during FCI uptrend).
+  2. Chikou Span is above the candle from 26 periods ago (bullish trend confirmation).
+  3. Optional filter: Chikou Span above the current cloud (if Ichimoku is used) or above the 26-period SMA.
+  4. Enter long on the close of the confirmation candle.
+
+- **Short Entry**:
+  1. FCI volatility shows bearish divergence vs. Bollinger Bands (higher high in volatility while FCI/price makes lower high, or volatility pierces upper band during FCI downtrend).
+  2. Chikou Span is below the candle from 26 periods ago (bearish trend confirmation).
+  3. Optional filter: Chikou Span below the current cloud or below the 26-period SMA.
+  4. Enter short on the close of the confirmation candle.
+
+**3. Exit Rules**
+
+- **Long Exit**: Chikou Span crosses below the price from 26 periods ago, OR FCI volatility closes back above its upper Bollinger Band (signaling renewed stress), OR a fixed profit target / trailing stop is hit.
+- **Short Exit**: Chikou Span crosses above the price from 26 periods ago, OR FCI volatility closes back below its lower Bollinger Band (signaling easing), OR a fixed profit target / trailing stop is hit.
+- **Time-Based Exit**: Optional — close position if no Chikou confirmation persists after 10 bars.
+
+**4. Risk Management**
+
+- **Position Sizing**: Risk 1–2% of account equity per trade. Size positions based on the distance between entry and stop-loss.
+- **Stop-Loss**:
+  - Long: Place stop below the most recent swing low or below the lower Bollinger Band of price (whichever is tighter).
+  - Short: Place stop above the most recent swing high or above the upper Bollinger Band of price.
+- **Take-Profit**: Use a 2:1 or 3:1 reward-to-risk ratio, or trail stops using the Chikou Span as a dynamic exit.
+- **Max Drawdown Rule**: Halt trading if drawdown exceeds 10% of equity; reassess FCI data inputs.
+- **Correlation Check**: Avoid taking multiple correlated positions (e.g., long SPX and long EURUSD simultaneously) if FCI divergence signals are similar.
+
+**5. Required Indicators**
+
+- Financial Conditions Index (FCI) or proxy composite (credit spreads, yield curve, equity risk premium, DXY).
+- Rolling standard deviation of FCI changes (volatility series).
+- Bollinger Bands (20-period SMA, 2 SD) applied to the FCI volatility series.
+- Chikou Span (close shifted back 26 periods) plotted on price chart.
+- Optional: 26-period SMA or Ichimoku Cloud for additional trend filtering.
+- ATR (Average True Range) for stop-loss and position sizing calibration.
+
+**6. Timeframe & Markets**
+
+- Best suited for daily or 4-hour charts on liquid macro instruments: SPX/ES, EURUSD, USDJPY, 10-year Treasury futures, gold.
+- Avoid low-liquidity sessions; FCI data is most reliable during major market hours.
+
+**7. Signal Confirmation Logic Summary**
+
+A trade is only valid when BOTH conditions align:
+- **Divergence**: FCI volatility vs. Bollinger Bands divergence (leading indicator of regime shift).
+- **Chikou Confirmation**: Lagged price comparison confirming trend direction (trend filter).
+
+This dual-layer approach reduces false signals from volatility noise alone and ensures entries align with established momentum.

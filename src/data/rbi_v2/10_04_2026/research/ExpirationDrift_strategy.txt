@@ -1,0 +1,48 @@
+STRATEGY_NAME: ExpirationDrift
+
+STRATEGY_DETAILS:
+This strategy exploits post-expiration drift in S&P 500 futures (ES) following the expiry of the largest open interest options contracts. The core premise is that once the dominant options strike expires, the pinning/pinning-suppression effect is removed, allowing directional momentum to release—often producing an outsized move that can be captured over a short multi-day window.
+
+1. KEY STRATEGY COMPONENTS
+- Identify the largest options contract expiry for S&P 500 futures. This is typically the monthly "big" expiry (third Friday) or quarterly (third Friday of Mar/Jun/Sep/Dec) where open interest and notional value peak.
+- Determine the exact expiration timestamp (typically 3:00 PM CT / 4:00 PM ET for ES options).
+- Define the "2-hour window" immediately following expiration: e.g., 4:00 PM–6:00 PM ET (or the corresponding futures session open for the Globex session).
+- Assess pre-expiration positioning: net gamma exposure, put/call open interest ratio, and max pain level to gauge which direction the release is likely to favor.
+- Target: a 10% directional move over 3 consecutive trading days.
+
+2. ENTRY RULES
+- Trigger: At or immediately after the options expiration timestamp, monitor price action for the first 2 hours.
+- Directional bias: Go long if:
+  a) Price breaks and holds above the max pain / largest OI strike, OR
+  b) Net dealer gamma flips negative (short gamma) above the key strike, OR
+  c) Put/call ratio was heavily put-skewed (suggesting downside was hedged and upside is unencumbered).
+- Entry: Enter long on the first 5-minute close above the pre-expiration high, or on a confirmed break of the expiration-day range, within the 2-hour post-expiry window.
+- Only take the trade if volatility expectations (VIX/VIX futures) are not collapsing—expansion is required for a 10% move.
+
+3. EXIT RULES
+- Primary target: +10% from entry, achieved within 3 consecutive trading days.
+- Time stop: Exit at the close of the 3rd trading day if the 10% target is not reached.
+- Profit protection: Trail stop once +5% is reached; move stop to breakeven after +3%.
+- Hard stop: -3% to -4% from entry (or below the expiration-day low), whichever is tighter.
+
+4. RISK MANAGEMENT
+- Position sizing: Risk no more than 1–2% of account equity per trade given the high-volatility, event-driven nature.
+- Use options (long calls or call spreads) if seeking defined risk for the 10% target; use futures with tight stops if seeking capital efficiency.
+- Avoid overlapping with other major macro events (FOMC, CPI, NFP) that could distort the post-expiry drift.
+- Maximum 1–2 concurrent positions; this is a low-frequency event strategy.
+- Account for slippage and gap risk around the Globex open.
+
+5. REQUIRED INDICATORS / DATA
+- Options open interest and volume by strike (to find the largest contract).
+- Max pain calculator.
+- Dealer gamma exposure (GEX) / net gamma.
+- Put/Call ratio (volume and OI).
+- VIX and VIX futures term structure (contango/backwardation).
+- Price action: 5-minute and daily candles, prior day high/low, expiration-day range.
+- ATR (14) for stop and target calibration.
+- Economic calendar (to avoid event conflicts).
+
+6. NOTES / EDGE
+- The edge is strongest on quarterly expirations (quad witching) where OI is largest.
+- A 10% move in 3 days is rare and typically requires a catalyst (e.g., a gamma squeeze or macro shock); treat the 10% target as an upside scenario and manage the trade dynamically.
+- Backtest across multiple expiry cycles to validate the drift direction and hit rate before committing capital.

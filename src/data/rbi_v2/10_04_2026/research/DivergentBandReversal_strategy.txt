@@ -1,0 +1,37 @@
+STRATEGY_NAME: DivergentBandReversal
+
+STRATEGY_DETAILS:
+This strategy combines two asymmetric momentum signals—one for longs and one for shorts—using RSI divergence against price action lows and a moving-average/Bollinger Band relationship. It is not a symmetric trend-following system; it uses distinct logic for each direction.
+
+1. KEY STRATEGY COMPONENTS
+- Long component: 5-period RSI vs. price action lows over the past 3 periods. The idea is that RSI is making a lower low while price is not, or RSI falls below the level implied by recent price lows—a bullish divergence or oversold momentum exhaustion signal.
+- Short component: 10-period simple moving average (SMA) positioned above a declining 20-period Bollinger Band (typically the lower band or middle band, depending on interpretation). A 10-period MA above a declining Bollinger Band suggests bearish momentum and a potential continuation short.
+- The two components operate independently, so the system can be long, short, or flat depending on which condition is active.
+
+2. ENTRY RULES
+- Long entry: Enter long when the 5-period RSI value falls below the lowest price action low of the past 3 periods (or below the RSI level corresponding to that low). This is a momentum divergence/oversold condition.
+- Short entry: Enter short when the 10-period MA is above a declining 20-period Bollinger Band. "Declining" means the Bollinger Band (likely the middle or lower band) has a negative slope over the recent lookback. The MA being above the band indicates bearish pressure.
+
+3. EXIT RULES
+- Long exit: Exit when RSI recovers above the price action low reference or when a predefined profit target/stop is hit. Alternatively, exit on a close above the 10-period MA or when RSI crosses back above 50.
+- Short exit: Exit when the 10-period MA crosses back below the Bollinger Band, or when the Bollinger Band stops declining (slope turns flat/positive), or on a fixed profit target/stop.
+- Consider a time-based exit if neither condition triggers within a set number of bars.
+
+4. RISK MANAGEMENT
+- Use a fixed stop-loss based on ATR (e.g., 1.5x ATR) for both long and short entries.
+- Position sizing should be volatility-adjusted so that risk per trade is consistent.
+- Because long and short logic are asymmetric, avoid taking both signals simultaneously; if both trigger, prioritize the one with stronger momentum confirmation or stay flat.
+- Maximum drawdown limit: pause trading if equity drops by a set percentage (e.g., 10%).
+
+5. REQUIRED INDICATORS
+- 5-period RSI
+- Price action lows over the past 3 periods (rolling minimum of low prices)
+- 10-period simple moving average
+- 20-period Bollinger Bands (20-period SMA with standard deviation bands)
+- Bollinger Band slope (to determine "declining")
+- Optional: ATR for stops, 50-period EMA for trend filter
+
+6. ADDITIONAL NOTES
+- The long signal is a mean-reversion/divergence play, while the short signal is a momentum/trend continuation play. This hybrid nature means backtesting should separate long and short performance.
+- Clarify whether the short condition uses the lower Bollinger Band or the middle band. If the 10-period MA is above the lower band, that is almost always true; the meaningful signal is likely the 10-period MA above the middle band while the lower band is declining, or the 10-period MA crossing above the upper band during a decline. Adjust based on intended logic.
+- Consider adding a volume or volatility filter to avoid false signals in choppy markets.

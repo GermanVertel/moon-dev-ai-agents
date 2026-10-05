@@ -1,0 +1,68 @@
+STRATEGY_NAME: HarmonicCompression
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+HarmonicCompression is a volatility-aware pullback strategy that combines Fibonacci retracement levels with contracting ATR bands to identify high-probability continuation entries during uptrends. The strategy exploits the tendency of price to bounce off Fibonacci support levels when volatility is compressing (which often precedes directional expansion). Exits are triggered by volatility expansion breakouts rather than fixed targets.
+
+**Strategy Components:**
+
+1. **Trend Filter (Uptrend Identification)**
+   - Use a 200-period EMA as the primary trend filter
+   - Price must be trading above the 200 EMA
+   - Additionally, require a 50 EMA > 200 EMA (golden cross condition)
+   - Optional: Higher highs and higher lows on the daily/4H structure
+
+2. **Fibonacci Retracement Levels**
+   - Identify the most recent significant swing low and swing high (e.g., using a 20-bar pivot lookback)
+   - Draw Fibonacci retracement levels: 38.2%, 50%, 61.8% (the "golden pocket")
+   - These levels serve as potential entry zones during pullbacks
+
+3. **Contracting ATR Bands (Volatility Compression)**
+   - Calculate ATR (14-period)
+   - Compare current ATR to ATR from N bars ago (e.g., 10-20 bars)
+   - Compression condition: `ATR_current < ATR_previous * 0.85` (ATR shrinking by 15%+)
+   - Alternatively, use ATR percentile rank: current ATR must be in the bottom 30% of the last 100 periods
+   - This confirms the market is "coiling" before a potential expansion move
+
+4. **Entry Condition (All must be true)**
+   - Price is above 200 EMA (uptrend confirmed)
+   - ATR is contracting (volatility compression)
+   - Price pulls back and touches one of the Fibonacci levels (38.2%, 50%, or 61.8%)
+   - Candlestick confirmation: bullish reversal candle (hammer, bullish engulfing, or pin bar) at the Fib level
+   - Enter long on the close of the confirmation candle
+
+**Exit Rules:**
+
+1. **Primary Exit (Breakout Expansion)**
+   - Exit when ATR expands beyond a threshold: `ATR_current > ATR_entry * 1.3`
+   - This captures the volatility expansion that typically follows compression
+   - Alternatively, exit when price breaks above the recent swing high with strong momentum
+
+2. **Stop Loss**
+   - Place stop loss just below the next Fibonacci level (e.g., if entering at 50%, stop below 61.8%)
+   - Or use a fixed ATR-based stop: `Entry - (1.5 × ATR)`
+   - Never risk more than 1-2% of account equity per trade
+
+3. **Take Profit (Optional Partial)**
+   - Scale out 50% at the prior swing high
+   - Trail the remainder using a 2× ATR trailing stop
+
+**Risk Management:**
+- Position sizing: Risk 1% of equity per trade, calculated as: `Position Size = (Account Risk) / (Entry - Stop Loss)`
+- Max concurrent positions: 3
+- Avoid trades during major news events or earnings
+- Skip signals if ATR compression has lasted more than 30 bars (potential trend exhaustion)
+
+**Required Indicators:**
+- 200 EMA (trend filter)
+- 50 EMA (trend confirmation)
+- ATR (14) — for compression detection and stops
+- Fibonacci retracement tool (auto-drawn from swing high/low)
+- Pivot high/low indicator (20-bar lookback)
+- Optional: RSI (14) to avoid entering overbought pullbacks
+
+**Timeframe:** Best suited for 4H and Daily charts; can be adapted to 1H for intraday with tighter parameters.
+
+**Edge Rationale:**
+Volatility compression during an uptrend pullback signals that sellers are losing conviction while buyers are quietly accumulating. When price touches a key Fibonacci level in this low-volatility state, the probability of a bounce increases. The subsequent volatility expansion (measured by ATR) provides a natural exit signal that captures the bulk of the continuation move.

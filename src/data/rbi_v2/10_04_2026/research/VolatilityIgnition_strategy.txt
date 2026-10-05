@@ -1,0 +1,62 @@
+STRATEGY_NAME: VolatilityIgnition
+
+STRATEGY_DETAILS:
+
+This strategy identifies and trades high-probability breakout opportunities by focusing on volatility-driven market conditions. The core idea is that breakouts are most reliable when they occur after a period of volatility contraction, followed by a volatility expansion. The strategy combines volatility analysis, price structure, and momentum confirmation to filter out false breakouts.
+
+**Key Strategy Components:**
+
+1. **Volatility Contraction Detection:** Use the Average True Range (ATR) or Bollinger Band Width to identify periods where volatility has significantly contracted. A contraction is defined as ATR falling below its 20-period moving average by a certain threshold (e.g., ATR < 0.75 * ATR_MA20). This indicates the market is coiling and preparing for a move.
+
+2. **Consolidation Range Identification:** During the contraction phase, define a price range using recent swing highs and lows (e.g., the highest high and lowest low over the last 10-20 bars). This range acts as the breakout zone.
+
+3. **Breakout Trigger:** A breakout is confirmed when price closes outside the consolidation range with strong momentum. Specifically, a long entry is triggered when price closes above the range high, and a short entry when price closes below the range low.
+
+4. **Volume and Momentum Confirmation:** To avoid false breakouts, require volume expansion (e.g., current volume > 1.5 * 20-period average volume) and a momentum indicator like the Relative Strength Index (RSI) crossing above 60 for longs or below 40 for shorts.
+
+5. **Volatility Expansion Filter:** Ensure that ATR begins to rise after the breakout, confirming volatility expansion. This can be checked by ATR > previous ATR value.
+
+**Entry Rules:**
+
+- **Long Entry:**
+  - Volatility contraction condition met (ATR < 0.75 * ATR_MA20).
+  - Price closes above the consolidation range high.
+  - Volume > 1.5 * 20-period average volume.
+  - RSI > 60.
+  - ATR is increasing (current ATR > previous ATR).
+
+- **Short Entry:**
+  - Volatility contraction condition met.
+  - Price closes below the consolidation range low.
+  - Volume > 1.5 * 20-period average volume.
+  - RSI < 40.
+  - ATR is increasing.
+
+**Exit Rules:**
+
+- **Profit Target:** Set a target based on a multiple of the ATR at entry (e.g., 2 * ATR) or a fixed risk-reward ratio (e.g., 2:1).
+- **Stop Loss:** Place stop loss just inside the consolidation range (e.g., below the range high for longs, above the range low for shorts) or at a distance of 1 * ATR from entry.
+- **Trailing Stop:** Once price moves in favor by 1 * ATR, trail the stop using a Chandelier Exit or a moving average (e.g., 20-period EMA).
+- **Time-Based Exit:** If the breakout fails to reach the profit target within a certain number of bars (e.g., 10 bars), exit at market.
+
+**Risk Management:**
+
+- Risk no more than 1-2% of account equity per trade.
+- Position size calculated based on the distance between entry and stop loss.
+- Avoid trading during major news events or low-liquidity sessions.
+- Only take breakouts in the direction of the higher-timeframe trend (e.g., use a 200-period EMA on a higher timeframe as a trend filter).
+
+**Required Indicators:**
+
+- Average True Range (ATR) with a 14-period setting and its 20-period moving average.
+- Bollinger Bands (20-period, 2 standard deviations) for volatility contraction detection (optional, can use ATR alone).
+- Volume with a 20-period moving average.
+- Relative Strength Index (RSI) with a 14-period setting.
+- 200-period EMA on a higher timeframe for trend direction.
+- Chandelier Exit or 20-period EMA for trailing stops.
+
+**Additional Notes:**
+
+- This strategy works best on volatile instruments like forex majors, indices, or cryptocurrencies during active sessions.
+- Backtest with different ATR thresholds and volume multipliers to optimize for specific markets.
+- Consider using a breakout confirmation candle (e.g., a strong bullish/bearish candle closing near its high/low) to further reduce false signals.

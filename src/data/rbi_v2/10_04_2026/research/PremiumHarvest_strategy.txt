@@ -1,0 +1,46 @@
+STRATEGY_NAME: PremiumHarvest
+
+STRATEGY_DETAILS:
+This strategy combines a trend filter with options premium selling to generate income from bullish futures markets. The core idea is to sell cash-secured put options on futures contracts that demonstrate sustained upward momentum, collecting premium while positioning to potentially acquire the underlying at a favorable price.
+
+**1. Key Strategy Components**
+
+- **Universe:** Futures contracts across liquid markets (equity indices, commodities, energy, metals). Only trade contracts with active options chains and sufficient open interest/liquidity.
+- **Trend Filter (200-period MA):** A contract qualifies only if it has traded *above* its 200-period moving average for the entire trailing month (~21 trading sessions). This confirms a sustained bullish regime rather than a fleeting spike.
+- **Directional Bias:** Bullish. We expect the contract to stay flat or rise, allowing sold puts to expire worthless or be bought back at a profit.
+- **Premium Selling:** Sell out-of-the-money put options to collect premium. Strike selection should be tied to the stop-loss level (see below).
+
+**2. Entry Rules**
+
+- **Qualification Check:** At the close of each session, verify:
+  - Price has closed above the 200-period MA on every bar over the last ~21 sessions.
+  - The contract is not in a known high-volatility event window (earnings, inventory reports, Fed decisions) unless volatility premium justifies it.
+- **Strike Selection:** Sell a put option with a strike approximately 20% below the current futures price (aligning with the stop-loss distance). Target 30–45 days to expiration for optimal theta decay vs. gamma risk.
+- **Entry Timing:** Enter when implied volatility (IV) is elevated relative to realized volatility (IV rank > 30%), maximizing premium collected.
+- **Position Sizing:** Risk no more than 1–2% of portfolio equity per position; margin/collateral must be fully accounted for since sold puts are cash-secured or margin-secured.
+
+**3. Exit Rules**
+
+- **Profit Target (Limit-Up):** Close the position when the option premium decays to ~10% of the original credit received, or when the underlying rises ~10% above the entry price — whichever comes first. This locks in the majority of theta gains.
+- **Stop-Loss:** Exit if the futures price falls 20% below the entry price, or if the option premium doubles/triples against the position. This caps downside before assignment becomes deeply unfavorable.
+- **Time-Based Exit:** Close or roll positions with 7–10 days to expiration to avoid gamma/pin risk near expiry.
+- **Assignment Handling:** If assigned, accept delivery of the futures contract and manage as a long position, or immediately roll to a further-dated strike.
+
+**4. Risk Management**
+
+- **Max Loss per Trade:** Theoretically large for naked puts — use cash-secured or defined-risk (put credit spread) structures to cap losses.
+- **Portfolio Heat:** Limit total premium-selling exposure to 20–30% of capital.
+- **Correlation Check:** Avoid stacking multiple puts on highly correlated futures (e.g., ES and NQ) to prevent concentrated drawdowns.
+- **Volatility Guard:** Reduce size or pause entries when VIX or contract IV spikes above historical norms, since tail risk rises sharply.
+- **Rolling Protocol:** If the trend filter breaks (price closes below 200-MA), roll down-and-out or close the position rather than holding through regime change.
+
+**5. Required Indicators & Data**
+
+- **200-period Simple Moving Average** (primary trend filter).
+- **Implied Volatility (IV) and IV Rank/Percentile** (premium quality gauge).
+- **Realized Volatility** (for IV vs. RV comparison).
+- **Options Chain Data:** Strikes, expirations, bid/ask, open interest, Greeks (delta, theta, gamma, vega).
+- **Futures Price Feed:** For entry, stop-loss, and limit-up monitoring.
+- **Margin/Collateral Tracker:** To ensure cash-secured or spread-based risk control.
+
+**Summary:** PremiumHarvest systematically sells puts on futures in confirmed uptrends (above 200-MA for a month), harvesting theta with a 10% profit cap and a 20% stop-loss, while managing tail risk through sizing, diversification, and volatility filters.

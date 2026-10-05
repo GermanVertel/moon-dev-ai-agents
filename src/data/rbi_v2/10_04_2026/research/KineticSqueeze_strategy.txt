@@ -1,0 +1,46 @@
+STRATEGY_NAME: KineticSqueeze
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Bands (BB) and the Stochastic Oscillator to capture momentum shifts after periods of low volatility. The core idea is that when price consolidates (Bollinger Band squeeze), a breakout is imminent, and the Stochastic Oscillator confirms the direction and timing of entry.
+
+**Key Strategy Components:**
+1. **Bollinger Bands (20-period SMA, 2 standard deviations):** Identify volatility contraction (squeeze) when bands narrow and price stays near the middle band. A squeeze signals potential explosive move.
+2. **Stochastic Oscillator (14,3,3):** Measures momentum. Readings below 20 = oversold, above 80 = overbought. Crossovers in these zones generate signals.
+3. **Combination Logic:** 
+   - Long entry: Price touches or pierces lower Bollinger Band during a squeeze, AND Stochastic %K crosses above %D from below 20 (bullish reversal).
+   - Short entry: Price touches or pierces upper Bollinger Band during a squeeze, AND Stochastic %K crosses below %D from above 80 (bearish reversal).
+4. **Squeeze Detection:** Bollinger Band width (upper - lower) is at a 6-month low or below a threshold (e.g., 5% of price). Alternatively, use Bollinger Band Width indicator.
+
+**Entry Rules:**
+- **Long:** 
+  1. BB width < 20-period average of BB width (squeeze).
+  2. Price closes below lower BB or touches it.
+  3. Stochastic %K crosses above %D and both are below 20.
+  4. Enter at next bar open.
+- **Short:** 
+  1. BB width < 20-period average of BB width.
+  2. Price closes above upper BB or touches it.
+  3. Stochastic %K crosses below %D and both are above 80.
+  4. Enter at next bar open.
+
+**Exit Rules:**
+- **Long:** Exit when price closes above upper BB OR Stochastic %K crosses below %D above 80 OR stop-loss hit.
+- **Short:** Exit when price closes below lower BB OR Stochastic %K crosses above %D below 20 OR stop-loss hit.
+- **Time-based exit:** Close after 10 bars if neither target nor stop hit.
+
+**Risk Management:**
+- **Stop-Loss:** For long, place stop at lower BB - 1 ATR (14-period). For short, upper BB + 1 ATR.
+- **Position Sizing:** Risk 1% of account per trade. Calculate size = (Account * 0.01) / (Entry - Stop).
+- **Take-Profit:** Use 2:1 reward-to-risk ratio or exit at opposite Bollinger Band.
+- **Max Drawdown Guard:** Stop trading for the day if 3 consecutive losses occur.
+
+**Required Indicators:**
+- Bollinger Bands (20,2)
+- Stochastic Oscillator (14,3,3)
+- ATR (14) for stop distance
+- Bollinger Band Width (optional for squeeze detection)
+
+**Best Timeframes:** 1H, 4H, Daily (avoid low liquidity periods).
+**Markets:** Forex majors, liquid stocks, crypto (BTC/ETH).
+
+**Notes:** Avoid trading during major news events. Confirm squeeze with volume contraction if available. Backtest with slippage and commission.

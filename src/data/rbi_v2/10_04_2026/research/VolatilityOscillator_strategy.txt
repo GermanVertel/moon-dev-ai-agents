@@ -1,0 +1,52 @@
+STRATEGY_NAME: VolatilityOscillator
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Bands (BB) with the Stochastic Oscillator to identify high-probability reversal points. Bollinger Bands measure volatility and price extremes, while the Stochastic Oscillator measures momentum and overbought/oversold conditions. Together, they filter out false signals and confirm reversals when price touches a band AND the oscillator reaches an extreme.
+
+**Key Strategy Components:**
+1. **Bollinger Bands (20, 2):** Middle band = 20-period SMA. Upper/lower bands = ±2 standard deviations.
+2. **Stochastic Oscillator (14, 3, 3):** %K = 14-period, smoothed by 3; %D = 3-period SMA of %K.
+3. **Reversal Confirmation:** A reversal signal requires BOTH price at/near a Bollinger Band AND Stochastic in overbought (>80) or oversold (<20) territory.
+
+**Entry Rules:**
+
+*Long Entry (Buy at potential bottom):*
+- Price touches or pierces the LOWER Bollinger Band.
+- Stochastic %K crosses ABOVE %D while both are below 20 (oversold).
+- Optional confirmation: Bullish candlestick (hammer, bullish engulfing) at the lower band.
+- Enter long on the close of the confirmation candle.
+
+*Short Entry (Sell at potential top):*
+- Price touches or pierces the UPPER Bollinger Band.
+- Stochastic %K crosses BELOW %D while both are above 80 (overbought).
+- Optional confirmation: Bearish candlestick (shooting star, bearish engulfing) at the upper band.
+- Enter short on the close of the confirmation candle.
+
+**Exit Rules:**
+- **Take Profit (Long):** Exit when price reaches the middle Bollinger Band (20 SMA) or when Stochastic crosses back above 80.
+- **Take Profit (Short):** Exit when price reaches the middle Bollinger Band or when Stochastic crosses back below 20.
+- **Stop Loss (Long):** Place below the most recent swing low or 1.5 × ATR below entry.
+- **Stop Loss (Short):** Place above the most recent swing high or 1.5 × ATR above entry.
+- **Time Exit:** If no target/stop hit within 10–15 bars, exit to avoid stagnation.
+
+**Risk Management:**
+1. Risk no more than 1–2% of account equity per trade.
+2. Position size = (Account Risk $) ÷ (Entry Price − Stop Loss Price).
+3. Avoid trading during major news events or low-liquidity sessions.
+4. Require both indicators to align; skip trades where only one condition is met.
+5. In strong trends, price can "walk the band"—avoid counter-trend shorts at upper band during uptrends and longs at lower band during downtrends. Use a higher-timeframe trend filter (e.g., 200 SMA) to only take reversals in the direction of the larger trend, or switch to a breakout strategy in trending regimes.
+6. Consider a maximum of 2–3 consecutive losing trades before pausing to reassess market conditions.
+
+**Required Indicators:**
+- Bollinger Bands (20-period SMA, 2 standard deviations)
+- Stochastic Oscillator (14, 3, 3)
+- Optional: ATR (14) for dynamic stops
+- Optional: 200-period SMA for trend filter
+
+**Best Timeframes:**
+- 15-minute to 4-hour charts for intraday/swing reversals.
+- Works best in ranging or mean-reverting markets; less effective in strong trending markets.
+
+**Signal Quality Notes:**
+- The strongest signals occur when Bollinger Bands are relatively narrow (low volatility) and then expand with the reversal.
+- Divergence between price (new low) and Stochastic (higher low) at the lower band significantly boosts long signal reliability (and vice versa for shorts).

@@ -1,0 +1,39 @@
+STRATEGY_NAME: GoldenPulse Reversal
+
+STRATEGY_DETAILS:
+This strategy combines a classic trend-confirmation structure (the 50/200 MA spread, often called the "Golden Cross" distance) with a faster EMA trigger to time momentum reversals. The core idea is that the spread between the long-term averages acts as a smoothed measure of trend strength, while the 20-period EMA serves as a responsive trigger line. When the spread crosses above the EMA, it signals that medium-term trend momentum is re-accelerating relative to the shorter-term trend, which is interpreted as a bullish reversal entry.
+
+Key Strategy Components:
+1. Trend Spread (50MA - 200MA): Measures the divergence between medium-term and long-term trend. A rising spread indicates strengthening bullish structure.
+2. 20-period EMA: Acts as a fast trigger/benchmark for the spread's momentum.
+3. Crossover Signal: Long entry when (50MA - 200MA) crosses ABOVE the 20EMA.
+
+Entry Rules:
+- Compute MA50, MA200, and EMA20 on the chosen timeframe.
+- Compute Spread = MA50 - MA200.
+- Enter LONG when Spread crosses from below to above EMA20 (previous bar Spread <= previous EMA20 AND current Spread > current EMA20).
+- Optional confirmation: require MA50 > MA200 at the time of entry to avoid entering during a bearish structure.
+
+Exit Rules:
+- Exit LONG when Spread crosses back below EMA20 (bearish momentum reversal).
+- Alternative exits: fixed ATR-based stop, trailing stop, or take-profit at a risk-reward ratio (e.g., 2:1).
+- Optional trend-failure exit: close if MA50 crosses below MA200.
+
+Risk Management:
+- Position sizing based on fixed fractional risk (e.g., 1-2% of equity per trade).
+- Initial stop-loss placed below recent swing low or at 1.5x ATR from entry.
+- Trailing stop using EMA20 or ATR to lock in profits.
+- Avoid trading during low-liquidity sessions or major news events to reduce whipsaws.
+- Since crossovers can lag, use a confirmation candle close to reduce false signals.
+
+Required Indicators:
+- 50-period Simple Moving Average (MA50)
+- 200-period Simple Moving Average (MA200)
+- 20-period Exponential Moving Average (EMA20)
+- Optional: ATR (14) for volatility-based stops, and swing-high/low detection for stop placement.
+
+Notes and Caveats:
+- The "spread crossing EMA" concept is unconventional; backtesting is essential to validate whether the spread behaves in a way that produces meaningful signals.
+- Works best in trending or transitional markets; may produce frequent false signals in choppy ranges.
+- Consider adding a volatility filter (e.g., ADX > 20 or ATR above its average) to avoid low-momentum environments.
+- Multi-timeframe confirmation (e.g., daily trend + intraday trigger) can improve reliability.

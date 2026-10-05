@@ -1,0 +1,42 @@
+STRATEGY_NAME: DivergentOscillator
+
+STRATEGY_DETAILS:
+This strategy combines a momentum filter with a mean-reversion entry trigger, using RSI divergence against a longer-term moving average, and exits based on CCI directional bias.
+
+**Core Components:**
+
+1. **Entry Signal (Long Only):**
+   - Short-term RSI (default 14-period) must be below 30 (oversold).
+   - Simultaneously, price must be positioned such that the RSI is diverging from the 50-period MA in the opposite direction.
+   - Interpretation: While RSI is deeply oversold, the 50-period MA slope/position suggests underlying bullish momentum (e.g., price above the 50-MA, or MA rising). This creates a bullish divergence between the oscillator (weak) and the trend filter (strong).
+   - Enter long when both conditions align.
+
+2. **Exit Signal:**
+   - Monitor the CCI (Commodity Channel Index, default 20-period).
+   - Exit the long position when CCI's directional bias flips bearish, i.e., CCI crosses below zero or below a defined threshold (e.g., -100), indicating momentum exhaustion.
+
+**Entry Rules (Long):**
+- RSI(14) < 30
+- Price > 50-period MA (or 50-MA slope > 0) — divergence condition
+- Optional confirmation: RSI turning upward (RSI[t] > RSI[t-1]) to avoid catching a falling knife.
+- Enter at next bar open or market.
+
+**Exit Rules:**
+- CCI(20) crosses below 0 (or below -100 for stricter exit).
+- Alternatively, exit when CCI directional bias turns negative (CCI slope negative for N bars).
+- Optional stop-loss: fixed % or ATR-based (e.g., 1.5x ATR below entry).
+
+**Risk Management:**
+- Position sizing based on fixed fractional risk (e.g., 1-2% of equity per trade).
+- Stop-loss placed below recent swing low or 1.5x ATR.
+- Take-profit optional but can be tied to CCI reaching overbought (+100) or RSI > 70.
+- Avoid trading during low-liquidity sessions.
+
+**Required Indicators:**
+- RSI (period 14)
+- 50-period Simple or Exponential Moving Average
+- CCI (period 20)
+- Optional: ATR (period 14) for stops, volume filter
+
+**Logic Rationale:**
+The strategy seeks to exploit temporary oversold conditions (RSI < 30) that occur within an otherwise bullish trend (price above 50-MA). This divergence suggests a pullback within an uptrend, offering a high-probability long entry. The CCI exit ensures the position is closed when momentum shifts against the trade, locking in gains or cutting losses before a full reversal.

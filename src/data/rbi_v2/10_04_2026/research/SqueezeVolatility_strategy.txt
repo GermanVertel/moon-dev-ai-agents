@@ -1,0 +1,50 @@
+STRATEGY_NAME: SqueezeVolatility
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Bands (BB) and the Relative Strength Index (RSI) to identify high-probability breakout opportunities that occur after periods of low volatility. The core premise is that a "squeeze" — a contraction in Bollinger Band width — often precedes a significant price move, and RSI confirms the momentum and direction of that breakout.
+
+**Key Strategy Components:**
+1. **Bollinger Band Squeeze Detection:** Identifies periods where the Bollinger Bands narrow significantly, indicating low volatility and an impending breakout.
+2. **RSI Momentum Confirmation:** Uses RSI to confirm the strength and direction of the breakout, filtering out false signals.
+3. **Breakout Confirmation:** Requires price to close outside the Bollinger Bands with a strong RSI reading to validate the breakout.
+
+**Indicators Required:**
+- **Bollinger Bands:** 20-period Simple Moving Average (SMA) with 2 standard deviations.
+- **RSI:** 14-period RSI.
+- **Bollinger Band Width (BBW):** Calculated as (Upper Band - Lower Band) / Middle Band. Used to detect the squeeze.
+- **Optional:** Volume indicator to confirm breakout strength.
+
+**Entry Rules:**
+- **Long Entry (Buy):**
+  1. BBW is in the lowest 20% of its range over the past 100 periods (squeeze condition).
+  2. Price closes above the Upper Bollinger Band.
+  3. RSI is above 60 (or crosses above 60), confirming bullish momentum.
+  4. Optional: Volume is above its 20-period average.
+- **Short Entry (Sell):**
+  1. BBW is in the lowest 20% of its range over the past 100 periods (squeeze condition).
+  2. Price closes below the Lower Bollinger Band.
+  3. RSI is below 40 (or crosses below 40), confirming bearish momentum.
+  4. Optional: Volume is above its 20-period average.
+
+**Exit Rules:**
+- **Long Exit:**
+  1. Price closes below the Middle Bollinger Band (20-period SMA).
+  2. RSI drops below 50.
+  3. Take profit at a predetermined level (e.g., 2x the width of the Bollinger Bands at entry).
+  4. Stop loss at the Lower Bollinger Band or a fixed percentage below entry.
+- **Short Exit:**
+  1. Price closes above the Middle Bollinger Band.
+  2. RSI rises above 50.
+  3. Take profit at a predetermined level (e.g., 2x the width of the Bollinger Bands at entry).
+  4. Stop loss at the Upper Bollinger Band or a fixed percentage above entry.
+
+**Risk Management:**
+- **Position Sizing:** Risk no more than 1-2% of the trading capital per trade.
+- **Stop Loss:** Place stop loss at the opposite Bollinger Band or a fixed percentage (e.g., 2-3%) from entry.
+- **Take Profit:** Use a risk-reward ratio of at least 1:2. Alternatively, trail the stop loss using the Middle Bollinger Band or a moving average.
+- **Avoid Trading in Choppy Markets:** Only take trades when the squeeze condition is met, and avoid trading during low-volume periods or major news events.
+
+**Additional Notes:**
+- This strategy works best in trending markets and may produce false signals in ranging markets. Always use additional confirmation (e.g., candlestick patterns, support/resistance levels).
+- Backtest the strategy on historical data to optimize parameters (e.g., BB period, RSI thresholds) for the specific asset and timeframe.
+- Consider using a higher timeframe (e.g., daily or 4-hour) for more reliable signals.

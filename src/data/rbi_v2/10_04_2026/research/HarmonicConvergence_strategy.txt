@@ -1,0 +1,61 @@
+STRATEGY_NAME: HarmonicConvergence
+
+STRATEGY_DETAILS:
+
+This strategy combines a harmonic oscillator (a smoothed momentum oscillator that cycles between overbought and oversold zones, similar to a sine-wave based indicator) with MACD (Moving Average Convergence Divergence) to confirm trend direction and time entries. The core idea is to use the harmonic oscillator for precise timing of pullbacks within an established trend, while MACD validates the underlying trend and filters out counter-trend noise.
+
+**Key Strategy Components:**
+
+1. **Harmonic Oscillator (HO):** A cycle-based oscillator that oscillates around a zero midline between +100 and -100 (or similar bounds). It identifies overbought/oversold extremes and momentum shifts within a trend. The harmonic nature means it produces smooth, wave-like swings that are less noisy than raw RSI or stochastic.
+
+2. **MACD:** Standard 12/26/9 MACD (or adjustable) used to define the primary trend via the MACD line vs. signal line crossover and the histogram above/below zero. The MACD line above zero indicates bullish trend bias; below zero indicates bearish bias.
+
+3. **Trend Filter:** Only take long trades when MACD line is above zero (or above signal line), and only take short trades when MACD line is below zero (or below signal line). This ensures entries align with the dominant trend.
+
+**Entry Rules:**
+
+- **Long Entry:**
+  - MACD line > Signal line AND MACD line > 0 (bullish trend confirmed).
+  - Harmonic Oscillator dips into oversold territory (e.g., below -80 or crosses back above -80 from below) and begins turning upward.
+  - Entry is taken on the HO bullish cross of its signal line or midline, or on the first HO bar that closes higher after an oversold reading.
+
+- **Short Entry:**
+  - MACD line < Signal line AND MACD line < 0 (bearish trend confirmed).
+  - Harmonic Oscillator rises into overbought territory (e.g., above +80 or crosses back below +80 from above) and begins turning downward.
+  - Entry is taken on the HO bearish cross of its signal line or midline, or on the first HO bar that closes lower after an overbought reading.
+
+**Exit Rules:**
+
+- **Long Exit:**
+  - Harmonic Oscillator reaches overbought territory (above +80) and turns down, OR
+  - MACD line crosses below its signal line (trend weakening), OR
+  - A fixed profit target or trailing stop is hit.
+
+- **Short Exit:**
+  - Harmonic Oscillator reaches oversold territory (below -80) and turns up, OR
+  - MACD line crosses above its signal line, OR
+  - A fixed profit target or trailing stop is hit.
+
+- **Stop-Loss:** Place stop below the most recent swing low (for longs) or above the most recent swing high (for shorts), or use an ATR-based stop (e.g., 1.5–2× ATR).
+
+**Risk Management:**
+
+- Risk no more than 1–2% of account equity per trade.
+- Use ATR-based position sizing to normalize risk across instruments.
+- Avoid trading during low-liquidity periods or major news events.
+- Require both indicators to align; do not take HO signals against MACD trend bias.
+- Optional: Scale out of positions in thirds (first target at 1R, second at 2R, trail the rest).
+
+**Required Indicators:**
+
+1. Harmonic Oscillator (period ~14–20, with smoothing and signal line).
+2. MACD (12, 26, 9) with histogram.
+3. ATR (14) for stop placement and position sizing.
+4. Optional: 50/200 EMA as an additional trend filter for higher-timeframe bias.
+
+**Timeframe & Market Suitability:**
+
+- Best suited for trending markets (forex majors, index futures, large-cap stocks) on 1H, 4H, or daily charts.
+- Avoid ranging/choppy markets where MACD whipsaws; use ADX > 20 as an optional trend-strength filter.
+
+**Summary:** HarmonicConvergence uses the harmonic oscillator as a precision timing tool to enter pullbacks, while MACD acts as the trend gatekeeper. This dual-confirmation approach reduces false signals and keeps trades aligned with the dominant trend direction.

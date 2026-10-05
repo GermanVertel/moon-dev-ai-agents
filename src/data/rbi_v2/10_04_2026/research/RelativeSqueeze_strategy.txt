@@ -1,0 +1,107 @@
+STRATEGY_NAME: RelativeSqueeze
+
+STRATEGY_DETAILS:
+This strategy fuses Bollinger Band volatility structure with Relative Strength (RS) against a benchmark (e.g., SPY, BTC, or an index) to filter trades. The core idea: Bollinger Bands signal *when* volatility is compressing or expanding, while RS confirms *whether* the asset has the strength to sustain a directional move. This reduces false breakouts and improves timing on reversals.
+
+---
+
+## 1. Key Strategy Components
+
+**A. Bollinger Bands (BB)**
+- Period: 20 (SMA basis)
+- Standard Deviation multiplier: 2.0
+- Components:
+  - Middle Band = 20-period SMA
+  - Upper Band = SMA + (2 × StdDev)
+  - Lower Band = SMA − (2 × StdDev)
+  - Bandwidth = (Upper − Lower) / Middle
+  - %B = (Price − Lower) / (Upper − Lower)
+
+**B. Relative Strength (RS)**
+- Definition: Ratio of the asset's price to a benchmark price.
+  - RS Line = Asset Price / Benchmark Price
+  - RS Momentum = RS Line today vs. RS Line N periods ago (e.g., 20)
+- Alternative: RSI-style RS using a benchmark-adjusted return.
+- Use RS *slope* and *position relative to its own moving average* to determine leadership or laggard status.
+
+**C. Volatility Regime Detection**
+- Squeeze condition: Bandwidth is in the lowest 20th percentile of its lookback (e.g., 100 bars).
+- Expansion condition: Bandwidth rising after a squeeze.
+
+---
+
+## 2. Entry Rules
+
+**Long Entry (Buy)**
+1. Bollinger Squeeze detected (Bandwidth in lower percentile).
+2. Price closes above the Middle Band (20 SMA).
+3. RS Line is rising (positive slope over last 5–10 bars) AND RS Line > its 20-period MA.
+4. Confirmation: %B crosses above 0.5 (or price closes above Upper Band on expansion).
+5. Volume confirmation preferred (above 20-period average).
+
+**Short Entry (Sell)**
+1. Bollinger Squeeze detected.
+2. Price closes below the Middle Band.
+3. RS Line is falling (negative slope) AND RS Line < its 20-period MA.
+4. Confirmation: %B crosses below 0.5 (or price closes below Lower Band on expansion).
+5. Volume confirmation preferred.
+
+**Optional Aggressive Entry**
+- Enter on the breakout bar (close outside the band) only if RS slope agrees in direction.
+
+---
+
+## 3. Exit Rules
+
+**Profit-Taking / Trend Exit**
+- Long: Exit when price closes below the Middle Band AND RS Line slope turns negative.
+- Short: Exit when price closes above the Middle Band AND RS Line slope turns positive.
+- Alternative: Trail using the Lower Band (long) or Upper Band (short).
+
+**Volatility Exit**
+- Exit when Bandwidth reaches the upper 80th–90th percentile (volatility exhaustion).
+- Exit if %B reverses from >1.0 (long) or <0.0 (short) back toward 0.5.
+
+**RS Divergence Exit**
+- Long: If price makes a new high but RS Line fails to make a new high → reduce/exit.
+- Short: If price makes a new low but RS Line fails to make a new low → reduce/exit.
+
+---
+
+## 4. Risk Management
+
+- **Position Sizing:** Risk 1–2% of equity per trade. Size based on distance from entry to stop.
+- **Stop-Loss:**
+  - Long: Below the Lower Band or below the recent swing low (whichever is tighter).
+  - Short: Above the Upper Band or above the recent swing high.
+- **ATR Filter:** Avoid entries when ATR is extremely low (dead squeeze with no catalyst) or extremely high (late-stage volatility).
+- **Benchmark Alignment:** Skip longs if the benchmark itself is in a downtrend (RS rising but market falling = weak edge). Skip shorts if benchmark is in a strong uptrend.
+- **Max Concurrent Positions:** 3–5 to limit correlated exposure.
+- **Time Stop:** Exit if no expansion within 10–15 bars after entry.
+
+---
+
+## 5. Required Indicators / Data
+
+| Indicator | Purpose | Settings |
+|---|---|---|
+| Bollinger Bands | Volatility + trend reference | 20 SMA, 2 StdDev |
+| Bandwidth | Squeeze detection | 100-bar percentile |
+| %B | Momentum within bands | Derived from BB |
+| RS Line | Relative performance vs benchmark | Asset / Benchmark |
+| RS MA | RS trend filter | 20-period SMA on RS Line |
+| Volume MA | Confirmation | 20-period |
+| ATR | Volatility filter & sizing | 14-period |
+| Benchmark data | RS calculation | SPY / BTC / Index |
+
+---
+
+## 6. Strategy Logic Summary
+
+1. **Squeeze forms** → market is coiling.
+2. **RS slope tells you which side has strength.**
+3. **Breakout above/below Middle Band with RS agreement = entry.**
+4. **Band expansion + RS continuation = hold.**
+5. **RS divergence or volatility exhaustion = exit.**
+
+This combination avoids the classic Bollinger Band trap of trading every breakout by requiring *relative strength confirmation*, making it especially effective in equity, crypto, and FX markets where a benchmark or index proxy is available.

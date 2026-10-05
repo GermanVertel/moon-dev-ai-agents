@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev OscillatorSurge Backtest starting... \u2728\ud83d\ude80\n\ud83c\udf19 Data loaded: 31066 bars \u2728\n\ud83d\ude80 Columns: ['Open', 'High', 'Low', 'Close', 'Volume']\n\ud83c\udf19 Running backtest... \u2728\n\ud83c\udf19 Initializing OscillatorSurge indicators... \u2728\n\ud83d\ude80 Indicators ready!\n\ud83c\udf19\ud83d\ude80 ENTRY at 28631.04 | RSI=16.9 | HistDelta=6.7354 > 1.5\u00d73.7247 | Size=34\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/30866 [00:00<?, ?bar/s]\n                                                        \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/OscillatorSurge_PKG.py\", line 150, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/OscillatorSurge_PKG.py\", line 80, in next\n    entry = self.position.entry_price\nAttributeError: 'Position' object has no attribute 'entry_price'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/OscillatorSurge_PKG.py` failed. (See above for error)\n",
+  "execution_time": 5.009666,
+  "timestamp": "2026-10-05T01:40:46.083362"
+}

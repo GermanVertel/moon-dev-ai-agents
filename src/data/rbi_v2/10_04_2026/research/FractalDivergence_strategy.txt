@@ -1,0 +1,56 @@
+STRATEGY_NAME: FractalDivergence
+
+STRATEGY_DETAILS:
+This strategy combines fractal-based market structure analysis with RSI divergence to identify high-probability trend continuation and reversal points. It is designed for trending markets and works best on higher timeframes (1H, 4H, Daily).
+
+1. KEY STRATEGY COMPONENTS
+- Fractal Patterns: Use Bill Williams-style fractals (5-bar pattern) to identify swing highs and swing lows. An up-fractal forms when a candle's high is greater than the highs of the two candles on each side. A down-fractal forms when a candle's low is lower than the lows of the two candles on each side.
+- RSI Divergence: Use RSI (14-period) to detect divergence between price and momentum. Bullish divergence occurs when price makes a lower low while RSI makes a higher low. Bearish divergence occurs when price makes a higher high while RSI makes a lower high.
+- Trend Filter: Use a 50/200 EMA to determine overall trend direction. Only take long trades when price is above the 200 EMA, and short trades when price is below the 200 EMA.
+- Confirmation: A valid signal requires a fractal to form in the direction of the trend, followed by RSI divergence at that fractal point.
+
+2. ENTRY RULES
+Long Entry:
+- Price is above the 200 EMA (uptrend).
+- A down-fractal forms (swing low).
+- RSI shows bullish divergence at that down-fractal (price lower low, RSI higher low).
+- Enter long on the close of the candle that breaks above the high of the fractal candle.
+- Optional: Require a bullish engulfing or pin bar for additional confirmation.
+
+Short Entry:
+- Price is below the 200 EMA (downtrend).
+- An up-fractal forms (swing high).
+- RSI shows bearish divergence at that up-fractal (price higher high, RSI lower high).
+- Enter short on the close of the candle that breaks below the low of the fractal candle.
+- Optional: Require a bearish engulfing or shooting star for confirmation.
+
+3. EXIT RULES
+- Take Profit: Place TP at the next opposing fractal level, or use a 2:1 risk-reward ratio.
+- Stop Loss: Place SL just beyond the fractal low (for longs) or fractal high (for shorts), plus a small buffer (e.g., 0.5x ATR).
+- Trailing Stop: Once price moves 1R in profit, move SL to breakeven. Trail using the most recent fractal in the trend direction.
+- Exit on Divergence Failure: If RSI divergence is invalidated (RSI makes a new low with price), exit immediately.
+
+4. RISK MANAGEMENT
+- Risk no more than 1-2% of account equity per trade.
+- Position size = (Account Risk) / (Entry Price - Stop Loss Price).
+- Avoid trading during major news events or low-liquidity sessions.
+- Maximum 3 concurrent trades to limit exposure.
+- Skip signals if RSI is already overbought (>70) for longs or oversold (<30) for shorts.
+
+5. REQUIRED INDICATORS
+- Fractals (Bill Williams-style, 5-bar pattern) — built-in on most platforms.
+- RSI (14-period) — for divergence detection.
+- EMA 50 and EMA 200 — for trend filter.
+- ATR (14-period) — for stop-loss buffer and volatility sizing.
+- Optional: Volume indicator to confirm breakout strength.
+
+6. TIMEFRAMES AND MARKETS
+- Best on 1H, 4H, and Daily charts.
+- Works well on Forex majors, indices, and large-cap crypto (BTC, ETH).
+- Avoid ranging/choppy markets — confirm with ADX > 20 for trending conditions.
+
+7. COMMON PITFALLS TO AVOID
+- Do not trade divergence alone — always require fractal confirmation.
+- Divergence can persist for multiple swings; wait for the fractal break to trigger.
+- Avoid counter-trend trades against the 200 EMA unless on a higher timeframe reversal setup.
+- Backtest across at least 2 years of data before live deployment.

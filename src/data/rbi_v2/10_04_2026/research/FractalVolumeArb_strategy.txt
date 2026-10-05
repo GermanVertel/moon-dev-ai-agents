@@ -1,0 +1,44 @@
+STRATEGY_NAME: FractalVolumeArb
+
+STRATEGY_DETAILS:
+This strategy exploits the divergence between price fractal geometry and volume-momentum confirmation to identify arbitrage windows where price structure and participation flow are temporarily misaligned. The core premise is that fractal patterns (self-similar price swings) are only valid when corroborated by volume-momentum; when they diverge, a high-probability reversion/continuation trade emerges.
+
+1. KEY STRATEGY COMPONENTS
+- Fractal Detection: Identify Williams-style fractals (5-bar swing highs/lows) on the primary timeframe. A bullish fractal = middle bar has the lowest low with two higher lows on each side; bearish fractal = middle bar has the highest high with two lower highs on each side.
+- Volume-Momentum Engine: Compute a volume-weighted momentum oscillator (e.g., Volume-Weighted RSI or a normalized OBV slope over N bars) to measure the strength of participation behind each fractal.
+- Divergence Arbitrage: Compare fractal direction against volume-momentum direction. 
+  - Bullish fractal + falling volume-momentum = "hidden bullish arbitrage" (accumulation).
+  - Bearish fractal + rising volume-momentum = "hidden bearish arbitrage" (distribution).
+- Multi-Timeframe Confirmation: Validate fractals on a higher timeframe (e.g., 4H) while executing on a lower timeframe (e.g., 15m) to filter noise.
+
+2. ENTRY RULES
+- Long Entry: A confirmed bullish fractal forms, price closes above the fractal high, AND volume-momentum shows positive divergence (momentum higher while price made a lower low). Enter on the close of the confirmation candle.
+- Short Entry: A confirmed bearish fractal forms, price closes below the fractal low, AND volume-momentum shows negative divergence (momentum lower while price made a higher high). Enter on the close of the confirmation candle.
+- Optional Confluence: Require price to be at a Fibonacci retracement zone (0.5–0.618) of the prior impulse for higher win rate.
+
+3. EXIT RULES
+- Profit Target: Next opposing fractal level, or 1.5×–2× the ATR(14) measured from entry.
+- Stop Loss: Placed just beyond the fractal's extreme (below the bullish fractal low for longs, above the bearish fractal high for shorts) plus a small ATR buffer (0.25× ATR).
+- Trailing Exit: Trail stop using the most recent opposite fractal once price moves 1× ATR in favor.
+- Time Exit: Close position if volume-momentum flips against the trade for two consecutive bars.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk 0.5–1% of equity per trade, calculated from the distance between entry and stop.
+- Max Concurrent Positions: 2–3 to avoid correlated exposure.
+- Volatility Filter: Skip trades when ATR is below the 20th percentile (dead market) or above the 95th percentile (news spike).
+- Correlation Check: Avoid stacking longs/shorts in highly correlated instruments.
+- Daily Loss Limit: Stop trading after 3 consecutive losses or -2% daily drawdown.
+
+5. REQUIRED INDICATORS
+- Williams Fractals (5-bar) — primary pattern detector.
+- Volume-Weighted RSI (VW-RSI) or OBV Slope — momentum confirmation.
+- ATR(14) — volatility and stop sizing.
+- Volume MA(20) — filter for above-average participation.
+- Fibonacci Retracement tool — optional confluence zone.
+- Higher-timeframe fractal overlay — trend/context filter.
+
+6. EXECUTION NOTES
+- Best suited for liquid instruments (FX majors, index futures, large-cap crypto) where volume data is reliable.
+- Avoid during low-liquidity sessions (Asian lunch, holidays).
+- Backtest across at least 500 trades to validate the divergence edge; expect win rate ~45–55% with reward:risk ≥ 1.8.
+- Combine with a regime filter (e.g., ADX > 20) to trade only in trending or expanding-volatility environments.

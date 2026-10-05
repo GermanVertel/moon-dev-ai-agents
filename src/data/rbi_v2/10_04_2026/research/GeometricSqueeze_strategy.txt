@@ -1,0 +1,51 @@
+STRATEGY_NAME: GeometricSqueeze
+
+STRATEGY_DETAILS:
+This strategy combines W.D. Gann's geometric angle analysis with a short-term moving average to trade intraday trend continuations and identify precise profit-taking zones. The core premise is that price moves along predictable geometric slopes (Gann angles), and a 5-period SMA acts as a dynamic trend filter. Profit targets are generated where the Gann angle line and the SMA intersect, creating a confluence zone.
+
+1. KEY STRATEGY COMPONENTS
+- Gann Angles: Draw a 1x1 (45-degree) angle from a significant swing low (for uptrend) or swing high (for downtrend). Optionally use 1x2, 2x1, or other Gann ratios for steeper/shallower slopes. The 1x1 is the primary trendline.
+- 5-period SMA: A very fast moving average that hugs price action. It confirms whether the current trend is aligned with the Gann angle's slope. When price is above the SMA and the SMA is rising, uptrend is confirmed; price below a falling SMA confirms downtrend.
+- Intraday Timeframe: Use 5-minute, 15-minute, or 1-hour charts. Gann angles are scale-sensitive, so adjust the price-per-bar slope to match the instrument's volatility.
+- Intersection Points: Where the Gann angle line crosses the 5-period SMA. These are dynamic profit targets because they represent a temporary equilibrium between geometric trend and short-term momentum.
+
+2. ENTRY RULES
+Long Entry:
+- Price is trading above the 1x1 Gann angle drawn from a recent swing low.
+- The 5-period SMA is rising and price closes above the SMA.
+- A pullback to the Gann angle or SMA occurs, and a bullish reversal candle (e.g., hammer, engulfing) forms.
+- Enter long on the close of the reversal candle or on a break above the prior candle's high.
+
+Short Entry:
+- Price is trading below the 1x1 Gann angle drawn from a recent swing high.
+- The 5-period SMA is falling and price closes below the SMA.
+- A rally to the Gann angle or SMA occurs, and a bearish reversal candle forms.
+- Enter short on the close of the reversal candle or on a break below the prior candle's low.
+
+3. EXIT RULES
+Profit Target:
+- Primary target: The next intersection of the Gann angle line and the 5-period SMA. This is calculated dynamically each bar. For longs, if the SMA is below the Gann angle, the intersection may occur when the SMA catches up or price pulls back. Take partial profits at this intersection.
+- Secondary target: The next Gann angle level (e.g., 1x2 or 2x1) or a fixed risk-reward ratio (e.g., 1.5R or 2R).
+
+Stop Loss:
+- Place stop loss just beyond the Gann angle line (e.g., 1-2 ticks below the 1x1 angle for longs, above for shorts) or below the recent swing low/high that formed the angle.
+- Alternatively, use the 5-period SMA as a trailing stop: exit if price closes on the opposite side of the SMA.
+
+4. RISK MANAGEMENT
+- Position sizing: Risk no more than 1% of account equity per trade.
+- Intraday only: Close all positions before the session ends or at a predetermined time (e.g., 3:55 PM ET for US equities) to avoid overnight gap risk.
+- Avoid trading during low-volume periods (e.g., lunch hour) or major news releases unless the setup is exceptionally strong.
+- Confirm with volume: Entries are stronger when volume expands on the breakout or reversal candle.
+- Maximum 2-3 trades per day to avoid overtrading.
+
+5. REQUIRED INDICATORS
+- Gann Angle tool (manual drawing or scripted): Plot 1x1, 1x2, 2x1 angles from swing points. Many platforms (TradingView, MetaTrader) have Gann fan or angle tools.
+- 5-period Simple Moving Average (SMA) on close.
+- Optional: Volume histogram, ATR (for volatility-based stop placement), and a swing high/low indicator to anchor Gann angles.
+- Timeframe: 5-min or 15-min chart for intraday precision.
+
+6. ADDITIONAL NOTES
+- Gann angles require a fixed price/time scale. On most charts, you must set the scale so that one unit of price equals one unit of time (or a chosen ratio). Without proper scaling, the 45-degree angle is meaningless.
+- The 5-period SMA is extremely sensitive; whipsaws are common. Use it only in conjunction with the Gann angle, not as a standalone signal.
+- Backtest the intersection logic on your specific instrument, as the frequency of Gann-SMA crosses varies with volatility.
+- Consider using a higher timeframe (e.g., 1-hour) Gann angle as a bias filter for 5-minute entries.

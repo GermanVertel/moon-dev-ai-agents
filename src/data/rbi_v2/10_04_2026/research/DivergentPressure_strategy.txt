@@ -1,0 +1,37 @@
+STRATEGY_NAME: DivergentPressure
+
+STRATEGY_DETAILS:
+This strategy identifies short opportunities when momentum is overbought but internal volume dynamics show weakening conviction, suggesting a potential reversal in an uptrend.
+
+1. Key Strategy Components
+- Trend Filter: Confirm the market is in an uptrend (e.g., price above a rising 50-period EMA or 200-period SMA).
+- Overbought Condition: RSI(14) is above 70, signaling stretched momentum.
+- Volume Divergence: Upside volume outperforms downside volume even as RSI reaches overbought levels. This "pressure" indicates buyers are still active but the rally may be exhausting.
+- Mean Reversion Bias: The strategy assumes overbought RSI plus persistent upside volume can precede a pullback or reversal.
+
+2. Entry Rules
+- Enter a short position when:
+  - Price is in a confirmed uptrend (e.g., close > 50 EMA and 50 EMA > 200 EMA).
+  - RSI(14) > 70.
+  - Upside volume (sum of volume on up-closing bars) > downside volume (sum of volume on down-closing bars) over the last N bars (e.g., N=5 or 10).
+- Optional confirmation: Bearish candlestick pattern (e.g., shooting star, bearish engulfing) or RSI bearish divergence.
+
+3. Exit Rules
+- Take profit: When RSI falls below 50 or price reaches a predefined target (e.g., 1.5x ATR below entry).
+- Stop loss: Above the recent swing high or a fixed ATR-based stop (e.g., 1.5x ATR above entry).
+- Time-based exit: Close the short after a set number of bars if neither target nor stop is hit.
+
+4. Risk Management
+- Position sizing: Risk no more than 1-2% of account equity per trade.
+- ATR-based stops to adapt to volatility.
+- Avoid shorting during strong trending conditions without additional reversal confirmation.
+- Consider scaling out partial profits at the first target.
+
+5. Required Indicators
+- RSI (period 14)
+- Volume (up/down volume aggregation over N bars)
+- EMA or SMA (50 and 200) for trend filter
+- ATR (14) for stop/target sizing
+- Optional: candlestick pattern recognition
+
+This strategy is unique because it combines overbought RSI with a volume pressure divergence, rather than relying solely on price-based overbought signals. It aims to catch reversals where upside volume remains strong but momentum is stretched, often a sign of distribution.

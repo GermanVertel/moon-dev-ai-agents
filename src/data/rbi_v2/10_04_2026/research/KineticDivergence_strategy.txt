@@ -1,0 +1,52 @@
+STRATEGY_NAME: KineticDivergence
+
+STRATEGY_DETAILS:
+
+**Overview**
+KineticDivergence is a high-frequency volatility arbitrage strategy that exploits the discrepancy between short-term price momentum (measured via RSI divergence) and realized volatility shifts. It enters counter-trend when RSI diverges from price while volatility is expanding, capturing mean-reversion bursts on fast timeframes (1s–1m bars).
+
+**Key Strategy Components**
+
+1. **Volatility Regime Detection**
+   - Compute rolling realized volatility (e.g., 30-period std dev of log returns).
+   - Compute a volatility-of-volatility (VoV) metric to detect regime shifts.
+   - Only trade when current vol is in the top quartile of recent distribution — arbitrage edge requires elevated dispersion.
+
+2. **RSI Divergence Signal**
+   - Use RSI(9) or RSI(14) on 1s–5s bars.
+   - **Bullish divergence**: Price makes lower low, RSI makes higher low → long signal.
+   - **Bearish divergence**: Price makes higher high, RSI makes lower high → short signal.
+   - Require divergence confirmation within a 3–5 bar window to keep it high-frequency.
+
+3. **Volatility Arbitrage Layer**
+   - Compare implied short-term vol (from a rolling GARCH or EWMA estimate) vs. realized vol.
+   - Only take divergence trades when implied > realized by a threshold (mispricing edge).
+   - Size position inversely to current volatility (vol-targeting).
+
+**Entry Rules**
+- Long: Bullish RSI divergence + vol expansion + implied-realized spread > threshold + bid/ask imbalance favoring buyers.
+- Short: Bearish RSI divergence + vol expansion + implied-realized spread > threshold + order book pressure favoring sellers.
+- Entry via limit orders at or just inside mid to minimize slippage.
+
+**Exit Rules**
+- Take profit: 0.5–1.5× ATR(14) or when RSI crosses back through 50.
+- Stop loss: 1× ATR or when divergence invalidates (new price extreme without RSI confirmation).
+- Time stop: Exit within N seconds (e.g., 30–90s) if neither target nor stop hit — critical for high-frequency edge decay.
+
+**Risk Management**
+- Max position size scaled to target 0.5–1% portfolio vol per trade.
+- Hard daily loss limit (e.g., 2% of capital).
+- Kill switch if win rate drops below 45% over rolling 100 trades (regime change).
+- Avoid trading during scheduled news/economic releases — vol spikes break the model.
+- Latency budget: sub-10ms execution required; otherwise edge is consumed by slippage.
+
+**Required Indicators**
+- RSI (period 9 or 14) on 1s–5s bars
+- Rolling realized volatility (std dev of log returns, 30-period)
+- EWMA or GARCH(1,1) implied volatility estimate
+- ATR(14) for stops/targets
+- Order book imbalance (bid/ask volume ratio)
+- VWAP or micro-price for execution reference
+
+**Edge Rationale**
+RSI divergence alone is noisy on high frequencies. By layering volatility arbitrage (trading only when implied vol misprices realized vol) and restricting to vol-expansion regimes, the strategy filters out low-edge chop and captures sharp mean-reversion bursts where liquidity providers are temporarily offside.

@@ -1,0 +1,51 @@
+STRATEGY_NAME: ContrarianCrossover
+
+STRATEGY_DETAILS:
+
+This strategy combines a short volatility options overlay with a momentum-based signal on an inverse ETF. The core idea is to harvest option premium by selling cash-secured put options on an inverse ETF when the underlying momentum signal suggests the inverse ETF is likely to be stable or rising (i.e., the base asset is falling or flat).
+
+**Key Components:**
+
+1. **Signal Generation (3-Day MA Crossover Momentum):**
+   - Calculate a 3-day simple moving average (SMA) on the price of the **base asset** (e.g., SPY, QQQ, or a sector ETF).
+   - Compare the current price of the base asset to its 3-day SMA.
+   - **Bullish momentum signal:** Base asset price crosses above its 3-day SMA.
+   - **Bearish momentum signal:** Base asset price crosses below its 3-day SMA.
+   - Since we are trading the **inverse ETF** (e.g., SH for SPY, PSQ for QQQ), a bearish signal on the base asset translates to a bullish signal on the inverse ETF.
+
+2. **Instrument Selection:**
+   - Use a liquid inverse ETF that corresponds to the base asset (e.g., SH, PSQ, DOG, RWM).
+   - Ensure the inverse ETF has an active options chain with sufficient open interest and tight bid-ask spreads.
+
+3. **Entry Rule (Sell Puts):**
+   - When the 3-day MA crossover generates a **bearish signal on the base asset** (i.e., base price crosses below its 3-day SMA), the inverse ETF is expected to rise.
+   - Sell **out-of-the-money (OTM) cash-secured put options** on the inverse ETF.
+   - Choose a strike price approximately 5–10% below the current price of the inverse ETF, with an expiration 30–45 days out.
+   - Collect the premium. The goal is for the inverse ETF to stay above the strike price at expiration, allowing the put to expire worthless.
+
+4. **Exit Rules:**
+   - **Profit target:** Buy back the put option when it has lost 50–75% of its value (i.e., capture 50–75% of the premium).
+   - **Time-based exit:** Close the position if the put has 7–10 days to expiration and is still OTM, to avoid gamma risk.
+   - **Stop-loss:** If the inverse ETF falls below the strike price by more than 5%, buy back the put to limit losses, or prepare to take assignment of the inverse ETF shares.
+   - **Signal reversal:** If the base asset price crosses back above its 3-day SMA (bullish signal on base asset, bearish on inverse ETF), consider closing the put position early.
+
+5. **Risk Management:**
+   - **Position sizing:** Risk no more than 2–5% of total account equity per trade. Since puts are cash-secured, ensure sufficient cash to buy the inverse ETF shares if assigned.
+   - **Diversification:** Avoid selling puts on multiple correlated inverse ETFs simultaneously.
+   - **Volatility filter:** Avoid selling puts when implied volatility (IV) is extremely low (premium too small) or when IV is spiking (market panic), as the risk/reward deteriorates.
+   - **Assignment handling:** If assigned, either sell covered calls on the acquired inverse ETF shares or close the position at a loss.
+   - **Max loss:** Theoretically limited to the strike price minus premium received (if the inverse ETF goes to zero), but practically managed via stop-losses.
+
+6. **Required Indicators & Tools:**
+   - 3-day Simple Moving Average (SMA) on the base asset.
+   - Price chart of the base asset and inverse ETF.
+   - Options chain data (strikes, expirations, bid-ask, implied volatility).
+   - Implied Volatility Rank (IVR) or percentile to gauge premium richness.
+   - Account cash balance to ensure cash-secured puts.
+
+7. **Ideal Market Conditions:**
+   - Range-bound or mildly bearish base asset (mildly bullish inverse ETF).
+   - Elevated implied volatility to collect higher premiums.
+   - Low probability of a sharp base asset rally (which would hurt the inverse ETF).
+
+**Summary:** This strategy sells cash-secured puts on an inverse ETF when a 3-day MA crossover signals short-term weakness in the base asset. It profits from time decay and the inverse ETF's tendency to rise or stay flat in that environment, while managing risk through strike selection, profit targets, and stop-losses.

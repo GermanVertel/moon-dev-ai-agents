@@ -1,0 +1,45 @@
+STRATEGY_NAME: OscillatorDivergence
+
+STRATEGY_DETAILS:
+This strategy is a mean-reversion setup that exploits temporary disagreement between two momentum oscillators — RSI(20) and Stochastic Oscillator(8,20) — to identify overextended price moves that are likely to snap back.
+
+1. KEY STRATEGY COMPONENTS
+- Core signal: Divergence between RSI(20) and Stochastic Oscillator(8,20) relative to their own 20-period moving averages.
+- RSI(20) is the slower, smoother momentum gauge.
+- Stochastic Oscillator(8,20) is the faster, more reactive gauge (%K period 8, %D smoothing 20).
+- The divergence occurs when one oscillator is above its 20-period MA while the other is below its 20-period MA — signaling conflicting momentum readings.
+- Only one directional setup is described here: SHORT entries.
+
+2. ENTRY RULES (SHORT)
+- Condition A: RSI(20) > 20-period MA of RSI(20).
+- Condition B: Stochastic Oscillator(8,20) < 20-period MA of Stochastic Oscillator(8,20).
+- When both conditions are true simultaneously, enter a SHORT position.
+- Rationale: The fast Stochastic has already rolled over (bearish), while the slower RSI is still elevated (lagging). This mismatch suggests the RSI will soon catch down to the Stochastic, implying price weakness and a mean-reversion move lower.
+
+3. EXIT RULES
+Exit the short when ANY of the following occurs:
+- Reversion exit 1: Stochastic Oscillator(8,20) crosses back above its 20-period MA (fast oscillator re-aligns).
+- Reversion exit 2: RSI(20) crosses back below its 20-period MA (slow oscillator confirms the move).
+- Price target exit: Price reaches the $10 target (lower target).
+- Price target exit: Price reaches the $50 target (upper target / stop-related level).
+- Note: Because the strategy references fixed price levels ($10 and $50), confirm the instrument's typical trading range. These appear to be absolute price thresholds rather than percentage-based, so the strategy is best applied to instruments whose price oscillates within that band, or the levels should be re-scaled per instrument.
+
+4. RISK MANAGEMENT
+- Use the $50 level as a hard stop-loss on the short (if price rises to $50, exit to cap losses).
+- Use the $10 level as a profit target on the short (if price falls to $10, take profit).
+- Position sizing should be set so that a move from entry to the $50 stop does not exceed the trader's per-trade risk limit (e.g., 1–2% of equity).
+- Because this is a mean-reversion strategy, avoid holding through strong trending regimes — add a trend filter (e.g., avoid shorts when a longer-term MA is strongly rising) if possible.
+- Time-based stop: consider exiting if the divergence does not resolve within N bars, since failed reversion setups can drift.
+
+5. REQUIRED INDICATORS
+- RSI with period 20.
+- 20-period Simple Moving Average applied to RSI(20).
+- Stochastic Oscillator with %K period 8 and %D period 20 (or smoothing 20).
+- 20-period Simple Moving Average applied to the Stochastic Oscillator.
+- Optional: longer-term trend filter (e.g., 200-period MA) and ATR for volatility-based position sizing.
+
+6. IMPLEMENTATION NOTES
+- Signal logic (short): IF RSI(20) > SMA(RSI(20),20) AND Stoch(8,20) < SMA(Stoch(8,20),20) THEN enter short.
+- Exit logic: IF Stoch(8,20) > SMA(Stoch(8,20),20) OR RSI(20) < SMA(RSI(20),20) OR price <= $10 OR price >= $50 THEN close short.
+- The strategy is inherently asymmetric (short-only in this description); a mirrored long version would require RSI(20) < its MA while Stoch(8,20) > its MA, with inverted price targets.
+- Backtest across multiple instruments and timeframes to validate that the $10/$50 levels are appropriate; otherwise convert them to percentage or ATR-based targets.

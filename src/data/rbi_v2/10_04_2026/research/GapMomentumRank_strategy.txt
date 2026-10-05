@@ -1,0 +1,51 @@
+STRATEGY_NAME: GapMomentumRank
+
+STRATEGY_DETAILS:
+This strategy is a cross-sectional momentum system that ranks stocks by the size and direction of their daily bar range gaps, then goes long the strongest gap-up names and short the weakest gap-down names. It is designed to capture continuation of directional moves that occur when a stock opens significantly away from its prior close relative to its recent range.
+
+Key Strategy Components:
+1. Universe: A liquid universe of stocks (e.g., S&P 500, Russell 1000, or a custom watchlist) with sufficient daily volume and price above a minimum threshold (e.g., $5) to avoid illiquid or penny stocks.
+2. Gap Definition: For each stock, calculate the daily bar range gap as:
+   - Gap = (Today's Open - Yesterday's Close) / (Yesterday's High - Yesterday's Low)
+   - This normalizes the gap by the prior day's range, so a 2% gap in a low-volatility stock is treated similarly to a 2% gap in a high-volatility stock.
+3. Cross-Sectional Ranking: Each day, rank all stocks in the universe by their normalized gap value.
+   - Top 20% (highest positive gaps) = long candidates.
+   - Bottom 20% (most negative gaps) = short candidates.
+4. Directional Bias: The strategy assumes gap momentum continues intraday and/or over the next few days. Longs are expected to keep rising; shorts are expected to keep falling.
+
+Entry Rules:
+- At or near the market open (e.g., first 5–15 minutes after the open), compute the gap for each stock using the current open and prior close.
+- Rank all stocks by gap.
+- Enter long positions in the top 20% of ranked stocks.
+- Enter short positions in the bottom 20% of ranked stocks.
+- Optionally, require a minimum absolute gap threshold (e.g., |gap| > 0.5) to avoid noise-driven signals.
+- Enter at the open or on a small pullback/breakout confirmation (e.g., price above the opening range high for longs, below the opening range low for shorts).
+
+Exit Rules:
+- Time-based exit: Close all positions at the end of the same trading day (intraday momentum) or hold for a fixed number of days (e.g., 1–5 days) for swing momentum.
+- Stop-loss exit: For longs, exit if price falls below the prior day's low or a fixed percentage (e.g., 1–2%). For shorts, exit if price rises above the prior day's high or a fixed percentage.
+- Profit target: Optional target based on a multiple of the prior day's range (e.g., 1.5x ATR) or a fixed percentage.
+- Rebalance: If holding multiple days, re-rank and rebalance daily or weekly, closing positions that no longer fall in the top/bottom 20%.
+
+Risk Management:
+- Position Sizing: Equal-weight the long basket and equal-weight the short basket, or use volatility-adjusted sizing (e.g., inverse ATR) so each position contributes similar risk.
+- Dollar Neutrality: Balance long and short exposure to reduce market beta (e.g., equal dollar amounts long and short).
+- Max Positions: Cap the number of long and short positions (e.g., 10–20 each) to control concentration.
+- Stop-Loss: Hard stop at 1–2% per position or based on ATR (e.g., 1.5x ATR).
+- Daily Loss Limit: Stop trading for the day if portfolio drawdown exceeds a threshold (e.g., 2–3%).
+- Liquidity Filter: Only trade stocks with average daily volume above a minimum (e.g., 1M shares) and price above $5.
+- Event Filter: Avoid earnings announcements, halts, or major news unless the strategy is explicitly designed to trade them.
+
+Required Indicators:
+1. Prior Day High, Low, Close: For gap normalization.
+2. Today's Open: To compute the gap.
+3. ATR (Average True Range): For volatility-adjusted position sizing and stops.
+4. Volume: For liquidity filtering and optional confirmation.
+5. Opening Range (first 5–15 min high/low): For entry confirmation.
+6. Moving Average (optional): To filter trades in the direction of the broader trend (e.g., only long stocks above their 50-day MA).
+
+Implementation Notes:
+- Data: Requires daily OHLCV data and intraday open prices. For intraday exits, minute-level data is needed.
+- Backtesting: Test on a rolling window, account for slippage and commissions, and avoid look-ahead bias by using only data available at the time of the signal.
+- Market Regime: Momentum gap strategies tend to work better in trending or high-volatility regimes and can suffer in choppy, mean-reverting markets. Consider a regime filter (e.g., VIX or ADX) to disable trading in unfavorable conditions.
+- Execution: Use limit orders where possible to reduce slippage, but ensure fills for momentum entries. Avoid trading in the first few minutes if spreads are wide, or use market orders for immediate execution.

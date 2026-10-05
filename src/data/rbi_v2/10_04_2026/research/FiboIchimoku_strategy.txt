@@ -1,0 +1,58 @@
+STRATEGY_NAME: FiboIchimoku
+
+STRATEGY_DETAILS:
+This strategy combines Fibonacci retracement levels with the Ichimoku Cloud to create a trend-following system that identifies high-probability pullback entries within established trends. The Ichimoku Cloud confirms trend direction and momentum, while Fibonacci levels pinpoint optimal retracement zones for entries.
+
+**Key Strategy Components:**
+
+1. **Trend Confirmation (Ichimoku Cloud):**
+   - Price must be above the Kumo Cloud for bullish trend, below for bearish trend.
+   - Tenkan-sen (Conversion Line, 9-period) above Kijun-sen (Base Line, 26-period) confirms bullish bias; opposite for bearish.
+   - Chikou Span (Lagging Line, 26-period shifted back) must be above price for bullish, below for bearish.
+   - Cloud color and thickness indicate trend strength and future support/resistance.
+
+2. **Fibonacci Retracement Setup:**
+   - Identify the most recent significant swing high and swing low in the direction of the trend.
+   - Draw Fibonacci retracement from swing low to swing high (uptrend) or swing high to swing low (downtrend).
+   - Key retracement zones: 38.2%, 50%, 61.8% (Golden Pocket), and 78.6%.
+   - The 50%-61.8% zone is the primary entry area.
+
+3. **Entry Rules (Long Example):**
+   - Ichimoku confirms bullish trend (price above cloud, Tenkan > Kijun, Chikou above price).
+   - Price retraces into the 50%-61.8% Fibonacci zone.
+   - Bullish candlestick confirmation (engulfing, pin bar, or hammer) at the Fibonacci level.
+   - Price remains above the Kijun-sen or the top of the Kumo Cloud.
+   - Enter long on the close of the confirmation candle.
+
+4. **Entry Rules (Short Example):**
+   - Ichimoku confirms bearish trend (price below cloud, Tenkan < Kijun, Chikou below price).
+   - Price rallies into the 50%-61.8% Fibonacci zone.
+   - Bearish candlestick confirmation (shooting star, bearish engulfing) at the Fibonacci level.
+   - Price remains below the Kijun-sen or bottom of the Kumo Cloud.
+   - Enter short on the close of the confirmation candle.
+
+5. **Exit Rules:**
+   - **Take Profit:** Target the recent swing high (long) or swing low (short), or use Fibonacci extensions (127.2%, 161.8%) for extended targets.
+   - **Stop Loss:** Place below the 78.6% Fibonacci level or below the Kijun-sen/cloud for longs; above for shorts.
+   - **Trailing Stop:** Trail using the Kijun-sen or the Tenkan-sen as the trend progresses.
+   - **Trend Invalidation Exit:** Exit if price closes through the Kumo Cloud against the position, or if Tenkan/Kijun cross reverses.
+
+6. **Risk Management:**
+   - Risk no more than 1-2% of account equity per trade.
+   - Position size = (Account Risk $) / (Entry Price - Stop Loss Price).
+   - Minimum risk-reward ratio of 1:2; ideally 1:3 or better.
+   - Avoid trading during major news events or when the cloud is extremely thin/flat (indecision).
+   - Skip setups where the retracement exceeds 78.6% (trend weakness signal).
+
+7. **Required Indicators:**
+   - Ichimoku Cloud (Tenkan-sen 9, Kijun-sen 26, Senkou Span B 52, Chikou Span 26).
+   - Fibonacci Retracement tool (auto or manual swing detection).
+   - Candlestick pattern recognition (for entry confirmation).
+   - Optional: ATR for dynamic stop-loss adjustment and volatility filtering.
+
+8. **Timeframe & Market Suitability:**
+   - Best on higher timeframes (4H, Daily) for cleaner trends and more reliable Fibonacci levels.
+   - Works well in trending markets (forex majors, indices, crypto in strong trends).
+   - Avoid ranging/choppy markets where Ichimoku signals whipsaw and Fibonacci levels fail.
+
+**Summary:** FiboIchimoku waits for Ichimoku to establish a clear trend, then uses Fibonacci retracements to enter on pullbacks at discounted prices, maximizing risk-reward while filtering false signals through multi-indicator confluence.

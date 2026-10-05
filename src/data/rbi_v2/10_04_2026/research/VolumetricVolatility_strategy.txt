@@ -1,0 +1,61 @@
+STRATEGY_NAME: VolumetricVolatility
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy fuses volume pattern recognition with volatility-based signals to identify high-probability breakout entries. The premise is that volume patterns reveal institutional accumulation/distribution before price moves, while volatility indicators confirm the energy behind the move. A signal only fires when BOTH conditions align — volume pattern forming AND volatility expanding.
+
+**1. Key Strategy Components**
+
+- **Volume Pattern Detection:** Identify emerging volume formations such as:
+  - Rising volume during consolidation (accumulation/distribution)
+  - Volume climax followed by contraction (Wyckoff-style)
+  - Volume divergence from price (price flat, volume rising)
+  - Sequential volume expansion across consecutive bars
+
+- **Volatility Indicator:** Use ATR, Bollinger Band Width, Keltner Channel width, or standard deviation of returns. Track the indicator's recent minimum and maximum values to establish a reference range.
+
+- **Dual Confirmation Trigger:** A trade is only valid when:
+  - Volume pattern is actively forming (not yet fully matured)
+  - Volatility indicator shows significant price fluctuation (expansion beyond a threshold, e.g., >1.5x its rolling average)
+
+**2. Entry Rules**
+
+**Long Entry:**
+- Volume pattern shows accumulation (rising volume on up-closes or absorption of selling)
+- Volatility indicator rises significantly above its rolling mean
+- Price breaks above the recent consolidation high
+- Enter on the close of the confirmation candle or on a retest of the breakout level
+
+**Short Entry:**
+- Volume pattern shows distribution (rising volume on down-closes or rejection of buying)
+- Volatility indicator expands significantly
+- Price breaks below the recent consolidation low
+- Enter on close confirmation or retest
+
+**3. Exit Rules**
+
+- **Primary Exit (Distance-Based):** Measure the distance from the breakout point to the previous minimum (for longs) or previous maximum (for shorts) of the volatility indicator.
+  - For longs: exit when price has traveled a distance proportional to (breakout price − volatility indicator's prior minimum) or when volatility contracts back toward that prior extreme.
+  - For shorts: exit when price has traveled a distance proportional to (volatility indicator's prior maximum − breakout price) or when volatility contracts back toward that prior extreme.
+- **Stop Loss:** Placed at the opposite side of the volatility range — for longs, below the prior volatility minimum; for shorts, above the prior volatility maximum.
+- **Trailing Exit:** As volatility expands further, trail the stop using the evolving volatility band, locking in gains while allowing the trend to breathe.
+
+**4. Risk Management**
+
+- **Position Sizing:** Scale position size inversely with current volatility (ATR-based sizing) so each trade risks a consistent % of equity.
+- **Max Risk Per Trade:** 1–2% of account equity.
+- **Volatility Filter:** Avoid entries when volatility is already at extreme highs (potential exhaustion) — require the volatility to be in an expansion phase, not a climax phase.
+- **Volume Confirmation:** Reject signals where volume pattern is weak or purely price-driven (no volume expansion).
+- **Time Stop:** Exit if the trade fails to reach its distance target within N bars (e.g., 10–15 bars), indicating the setup has invalidated.
+
+**5. Required Indicators**
+
+- Volume (raw + moving average, e.g., 20-period VMA)
+- ATR (14-period) OR Bollinger Band Width (20-period, 2 std dev)
+- Volatility reference: rolling min/max of the volatility indicator over 20–50 bars
+- Optional: OBV or Volume Profile for pattern confirmation
+- Optional: VWAP for intraday breakout validation
+
+**Summary Logic:**
+Volume tells you *who* is moving (smart money), volatility tells you *when* the move has energy. Entries require both to align. Exits are anchored to the volatility indicator's own prior extremes — a self-referential distance measure that adapts to the market's current regime rather than fixed pips or percentages.

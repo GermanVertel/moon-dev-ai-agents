@@ -1,0 +1,72 @@
+STRATEGY_NAME: SqueezeDivergence
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band width dynamics with MACD positioning and divergence to trade trend continuation and breakout scenarios. The core insight is that BB behavior (expanding vs. tightening) signals trend strength, while MACD's position relative to its midpoint confirms directional bias.
+
+KEY STRATEGY COMPONENTS:
+
+1. **Bollinger Bands Analysis**
+   - BB Midpoint (SMA): 20-period simple moving average
+   - Band Width: (Upper Band - Lower Band) / Midpoint
+   - Track whether BB is "opening" (width expanding) or "tightening" (width contracting)
+   - Compare current width to N-period average width to determine expansion/contraction
+
+2. **MACD Analysis**
+   - Standard MACD: 12 EMA - 26 EMA
+   - Signal Line: 9 EMA of MACD
+   - MACD Midpoint: Zero line (0)
+   - Track MACD histogram and divergence vs. price
+
+3. **Trend Context**
+   - Establish trend using higher-timeframe direction or price relative to BB midpoint
+   - Uptrend: Price above BB midpoint and midpoint rising
+   - Downtrend: Price below BB midpoint and midpoint falling
+
+ENTRY RULES:
+
+**Long Entry (Uptrend Continuation):**
+- BB width expanding (current width > average width, and increasing)
+- BB midpoint sloping upward
+- MACD line above zero (above midpoint)
+- MACD above signal line (bullish momentum confirmation)
+- Price pulls back near BB midpoint but holds above it
+- Optional: Bullish MACD divergence (price makes higher low, MACD makes lower low) during pullback
+
+**Short Entry (Downtrend Continuation):**
+- BB width tightening (current width < average width, and decreasing) — signals consolidation before continuation
+- BB midpoint sloping downward
+- MACD line below zero (below midpoint)
+- MACD below signal line (bearish momentum confirmation)
+- Price rallies near BB midpoint but rejects below it
+- Optional: Bearish MACD divergence (price makes lower high, MACD makes higher high) during rally
+
+EXIT RULES:
+- Exit long when MACD crosses below signal line OR price closes below BB midpoint
+- Exit short when MACD crosses above signal line OR price closes above BB midpoint
+- Take partial profits when price reaches outer BB (upper for longs, lower for shorts)
+- Hard stop: Opposite BB band or fixed ATR-based stop
+
+RISK MANAGEMENT:
+- Position sizing: Risk 1-2% of account per trade
+- Stop-loss: Place below recent swing low (longs) or above recent swing high (shorts), or 1.5x ATR
+- Risk-Reward: Minimum 1:2 target using BB width as volatility proxy
+- Avoid trading during low-volatility squeezes without MACD confirmation
+- Reduce size when BB width is at extreme lows (imminent breakout, higher uncertainty)
+- Max 2-3 concurrent positions to manage correlation risk
+
+REQUIRED INDICATORS:
+- Bollinger Bands (20, 2.0)
+- BB Width and its moving average (e.g., 20-period SMA of width)
+- MACD (12, 26, 9) with histogram
+- ATR (14) for stop placement
+- Optional: Volume for breakout confirmation
+- Optional: Higher timeframe (4H/Daily) trend filter
+
+TIMEFRAMES:
+- Best suited for 1H–4H charts for swing entries
+- Confirm with Daily trend direction for alignment
+
+MARKET CONDITIONS:
+- Works best in trending markets with periodic pullbacks
+- Avoid in choppy, range-bound markets where BB width oscillates without direction
+- The "BB tightening + MACD below midpoint" short setup is particularly effective before downtrend continuation breakouts

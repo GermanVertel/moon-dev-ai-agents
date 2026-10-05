@@ -1,0 +1,64 @@
+STRATEGY_NAME: FractalVolatility
+
+STRATEGY_DETAILS:
+This strategy combines fractal-based divergence detection with Bollinger Band analysis to identify high-probability reversal entries, while using ATR-based exits during volatility spikes.
+
+**Core Components:**
+
+1. **Fractal Indicator Setup**
+   - Use Williams Fractals (5-bar pattern: 2 bars left, 1 center, 2 bars right)
+   - Track the last 3 confirmed fractal highs and 3 confirmed fractal lows
+   - Mark fractal points only after the 2nd right bar closes (no repainting)
+
+2. **Bollinger Bands Configuration**
+   - Period: 20 SMA
+   - Standard deviations: 2.0
+   - Bandwidth = (Upper - Lower) / Middle
+
+3. **Divergence Detection (Entry Trigger)**
+   - **Bullish Setup:**
+     - Price makes a lower low (fractal low #2 < fractal low #1)
+     - BUT price at fractal low #2 touches or pierces the lower Bollinger Band
+     - AND %B at fractal low #2 is HIGHER than %B at fractal low #1 (positive divergence)
+     - This signals selling exhaustion despite new lows
+   - **Bearish Setup:**
+     - Price makes a higher high (fractal high #2 > fractal high #1)
+     - BUT price at fractal high #2 touches or pierces the upper Bollinger Band
+     - AND %B at fractal high #2 is LOWER than %B at fractal high #1 (negative divergence)
+     - This signals buying exhaustion despite new highs
+
+4. **Entry Rules**
+   - Enter long on close of the bar immediately following the confirmed bullish fractal divergence
+   - Enter short on close of the bar immediately following the confirmed bearish fractal divergence
+   - Require Bollinger Bandwidth to be above its 20-period average (ensures meaningful bands)
+
+5. **ATR-Based Exit Rules**
+   - ATR Period: 14
+   - **Initial Stop Loss:** 1.5 × ATR from entry
+   - **Take Profit:** 2.5 × ATR from entry (1.67:1 R:R minimum)
+   - **Volatility Trailing Stop:**
+     - When ATR rises 20% above its 20-period average, tighten trailing stop to 1.0 × ATR
+     - When ATR rises 40% above average, tighten further to 0.5 × ATR
+     - This locks in profits during volatility expansion
+   - **Band Reversion Exit:** Close position if price closes back inside the middle Bollinger Band against trade direction
+
+6. **Risk Management**
+   - Risk per trade: 1% of account equity
+   - Position size = (Account × 0.01) / (1.5 × ATR)
+   - Max 2 concurrent positions
+   - No new entries if ATR is already 50%+ above its 20-period average (avoids chasing chaos)
+   - Skip signals during the first 15 minutes of market open
+
+7. **Required Indicators**
+   - Williams Fractals (or equivalent 5-bar swing detector)
+   - Bollinger Bands (20, 2.0)
+   - Bollinger %B and Bandwidth
+   - ATR (14) plus 20-period ATR moving average
+   - Volume filter (optional): require volume above 20-period average on entry bar
+
+8. **Timeframe & Markets**
+   - Best on 15m, 1H, and 4H timeframes
+   - Works on FX majors, index futures, and liquid crypto pairs
+   - Avoid low-liquidity instruments where fractals are unreliable
+
+**Logic Rationale:** Fractals alone generate too many false signals in ranging markets. By requiring divergence between fractal structure and Bollinger Band positioning, the strategy isolates moments where price is making new extremes but momentum is fading — a classic reversal signature. The ATR-based exits adapt to changing volatility, protecting profits when markets become erratic after the reversal is underway.

@@ -1,0 +1,53 @@
+STRATEGY_NAME: FractalFibonacci
+
+STRATEGY_DETAILS:
+This strategy combines fractal symmetry detection with Fibonacci retracement levels to identify high-probability reversal points, then uses volatility-based exits to lock in profits.
+
+**Core Components:**
+
+1. **Fractal Symmetry Detection**
+   - Identify fractal highs/lows using a 5-bar pattern (center bar's high/low is greater/less than the two bars on each side)
+   - Look for symmetric fractal formations where price creates mirrored peaks/troughs
+   - Symmetry confirmation requires at least two matching fractal structures within a defined lookback period (e.g., 50 bars)
+
+2. **Fibonacci Retracement Confluence**
+   - Apply Fibonacci retracements (23.6%, 38.2%, 50%, 61.8%, 78.6%) to the most recent significant swing high-to-low or low-to-high
+   - Entry signal triggers only when a fractal reversal forms AT or NEAR a key Fibonacci level (within 0.5% tolerance)
+   - The 61.8% and 50% levels carry the highest weight for reversal probability
+
+3. **Entry Rules**
+   - **Long Entry:** Price hits a Fibonacci support level (50%-78.6%), forms a bullish fractal (swing low), and shows a reversal candle (bullish engulfing, hammer, or pin bar)
+   - **Short Entry:** Price hits a Fibonacci resistance level (50%-78.6%), forms a bearish fractal (swing high), and shows a reversal candle (bearish engulfing, shooting star, or pin bar)
+   - Confirmation requires RSI divergence (bullish for longs, bearish for shorts) or MACD crossover in the reversal direction
+
+4. **Exit Rules (Volatility-Based)**
+   - Use ATR (Average True Range, 14-period) as the volatility gauge
+   - **Take Profit:** Exit when price moves 2x ATR in the trade's favor, or when ATR spikes 1.5x its 20-period average (indicating volatility expansion that often precedes reversal)
+   - **Stop Loss:** Placed 1x ATR beyond the fractal swing point
+   - **Trailing Exit:** Once price moves 1.5x ATR in favor, trail stop using 0.75x ATR to capture extended moves
+   - **Emergency Exit:** Close position if a counter-fractal forms within 3 bars of entry (invalidates setup)
+
+5. **Risk Management**
+   - Risk per trade: 1-2% of account equity
+   - Position size = (Account Risk $) / (Entry - Stop Loss distance)
+   - Maximum 3 concurrent trades across uncorrelated pairs
+   - Avoid trading during major news events (high-impact economic releases)
+   - Minimum reward-to-risk ratio: 1.5:1 before entering
+
+6. **Required Indicators**
+   - Fractal indicator (Bill Williams Fractals or custom 5-bar fractal)
+   - Fibonacci retracement tool (auto-drawn from recent swing points)
+   - ATR (14) for volatility measurement
+   - RSI (14) for divergence confirmation
+   - MACD (12, 26, 9) for momentum confirmation
+   - Volume indicator (to validate fractal strength)
+
+7. **Timeframe & Market Conditions**
+   - Best suited for 1H, 4H, and Daily timeframes
+   - Works optimally in ranging or corrective markets (not strong trending phases)
+   - Avoid in low-liquidity sessions; prefer London/NY overlap
+
+8. **Trade Filtering**
+   - Skip signals if the fractal is too close to a previous fractal (less than 10 bars apart)
+   - Require the Fibonacci level to have been previously respected at least once
+   - Only take trades in the direction of the higher timeframe trend (optional trend filter using 200 EMA)

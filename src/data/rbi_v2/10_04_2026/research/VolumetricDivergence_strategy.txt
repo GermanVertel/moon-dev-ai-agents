@@ -1,0 +1,60 @@
+STRATEGY_NAME: Volumetric Divergence
+
+STRATEGY_DETAILS:
+This strategy combines MACD divergence detection with volume confirmation, dynamic Bollinger Band expansion monitoring, and ATR-based profit targeting. It is a momentum-reversal hybrid designed to catch turning points where price and momentum disagree, validated by a surge in trading activity.
+
+**Core Components**
+
+1. **MACD Divergence Detection**
+   - Use standard MACD (12, 26, 9).
+   - Bullish divergence: Price makes a lower low while MACD histogram/line makes a higher low.
+   - Confirm divergence over a lookback window (e.g., 20–50 bars) by comparing at least two swing lows in price against corresponding MACD lows.
+   - Only long signals are taken (per strategy spec).
+
+2. **Volume Spike Confirmation**
+   - Compute a volume moving average (e.g., 20-period SMA).
+   - Require current volume > 1.5x–2.0x the volume SMA on the divergence bar or the breakout bar.
+   - This filters out weak divergences without participation.
+
+3. **Bollinger Band Width Monitoring**
+   - Use Bollinger Bands (20, 2).
+   - Compute Band Width = (Upper − Lower) / Middle.
+   - Record Band Width at entry as the baseline.
+   - Hold the position until Band Width expands by ≥20% relative to the entry baseline (i.e., current width ≥ 1.20 × entry width). This signals volatility expansion confirming the move.
+
+4. **ATR-Based Take Profit**
+   - Use ATR (14) at entry.
+   - Take Profit = Entry Price + (ATR × Multiplier), where multiplier is tunable (commonly 2.0–3.0).
+   - Exit when price touches the TP level OR when Bollinger Band Width expansion condition is met, whichever comes first (or use BB expansion as a trailing trigger and ATR as the hard target).
+
+**Entry Rules**
+- Bullish MACD divergence confirmed on the last completed bar.
+- Volume spike ≥ 1.5x the 20-period volume SMA.
+- Price is at or near the lower Bollinger Band (optional filter for better R:R).
+- Enter long at market or on the close of the confirmation bar.
+
+**Exit Rules**
+- Primary: Price reaches ATR-based take-profit level (Entry + ATR × 2.5, adjustable).
+- Secondary: Bollinger Band Width widens by 20% from entry baseline — tighten stop or exit.
+- Stop-loss: Place at recent swing low minus 1× ATR, or a fixed ATR multiple below entry (e.g., Entry − 1.5× ATR).
+
+**Risk Management**
+- Risk per trade: 1–2% of account equity.
+- Position size = (Account Risk $) / (Entry − Stop Loss).
+- Avoid trading during low-liquidity sessions to keep volume signals meaningful.
+- Skip signals when ATR is extremely low (choppy regime) or extremely high (news-driven chaos).
+
+**Required Indicators**
+- MACD (12, 26, 9)
+- Volume + Volume SMA (20)
+- Bollinger Bands (20, 2) with Band Width calculation
+- ATR (14)
+
+**Timeframe & Application**
+- Best suited for 1H, 4H, or Daily charts where divergences and volume spikes are more reliable.
+- Works on liquid instruments (major FX pairs, large-cap equities, BTC/ETH).
+
+**Notes**
+- Divergence detection should use swing pivots (e.g., 3-bar fractal) to avoid noise.
+- Backtest the ATR multiplier and BB expansion threshold (20%) per instrument, as volatility regimes differ.
+- Combine with a trend filter (e.g., 200 EMA) if you want to only trade divergences in the direction of the higher-timeframe trend.

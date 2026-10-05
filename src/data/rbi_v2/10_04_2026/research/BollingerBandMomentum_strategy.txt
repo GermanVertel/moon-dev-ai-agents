@@ -1,0 +1,57 @@
+STRATEGY_NAME: BollingerBandMomentum
+
+STRATEGY_DETAILS:
+This strategy combines trend-following momentum with Bollinger Band structure to trade both mean-reversion touches and momentum breakouts. It uses the Bollinger Bands (typically 20-period SMA with 2 standard deviations) as dynamic support/resistance zones, entering long on upper-band touches and shorting on lower-band breaks.
+
+CORE COMPONENTS:
+1. Bollinger Bands indicator (period 20, std dev 2.0)
+   - Upper Band = SMA(20) + 2 * StdDev(20)
+   - Lower Band = SMA(20) - 2 * StdDev(20)
+   - Middle Band (basis) = SMA(20)
+2. Momentum confirmation filter (e.g., RSI or MACD histogram)
+3. Trend filter (e.g., 200-period EMA) to align direction
+
+ENTRY RULES:
+
+LONG ENTRY (trend-following touch):
+- Price action touches or pierces the UPPER Bollinger Band
+- Momentum indicator confirms bullish bias (RSI > 50 or MACD histogram > 0)
+- Overall trend filter is bullish (price above 200 EMA)
+- Enter long on close of the candle that touches the upper band, or on the next candle's breakout above the touch candle's high
+
+SHORT ENTRY (momentum break):
+- Price breaks ABOVE the LOWER Bollinger Band's moving average midpoint (i.e., price crosses above the middle band from below in a downtrend context) — interpreted as a failed rally / continuation short
+- Momentum indicator confirms bearish bias (RSI < 50 or MACD histogram < 0)
+- Overall trend filter is bearish (price below 200 EMA)
+- Enter short on close of the break candle or on the next candle's break below the prior candle's low
+
+EXIT RULES:
+- Long exits: Close below the middle band (SMA 20) OR momentum flips bearish OR stop-loss hit
+- Short exits: Close above the middle band OR momentum flips bullish OR stop-loss hit
+- Optional trailing exit: ATR-based trailing stop (2x ATR) to lock in trend gains
+
+RISK MANAGEMENT:
+1. Position sizing: Risk no more than 1-2% of equity per trade
+2. Stop-loss placement:
+   - Long: Below the lower Bollinger Band or 1.5x ATR below entry
+   - Short: Above the upper Bollinger Band or 1.5x ATR above entry
+3. Take-profit: 2:1 or 3:1 reward-to-risk, or trail with middle band
+4. Avoid trading during low-volatility squeeze unless a breakout is confirmed
+5. Maximum concurrent positions and daily loss limits enforced
+
+REQUIRED INDICATORS:
+- Bollinger Bands (20, 2.0)
+- 200-period EMA (trend filter)
+- RSI (14) or MACD (12, 26, 9) for momentum confirmation
+- ATR (14) for stop-loss and volatility sizing
+
+TIMEFRAME & MARKET NOTES:
+- Best suited for trending markets (equities, FX majors, crypto in directional phases)
+- Recommended timeframes: 1H, 4H, or Daily to reduce noise
+- Avoid ranging/choppy markets where band touches produce false signals
+
+CAVEATS:
+The described logic mixes two distinct concepts — band-touch mean reversion (long on upper band) and momentum breakout shorts (break above lower band midpoint). This is internally inconsistent with classic Bollinger theory (upper band touch usually signals overbought/mean-reversion short, not long). Traders should backtest carefully and clarify whether the intent is:
+(a) trend-continuation entries where upper band touch confirms strength, or
+(b) reversal entries where upper band touch signals exhaustion.
+Validate with historical data before deploying capital.

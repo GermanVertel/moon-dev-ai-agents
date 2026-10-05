@@ -1,0 +1,66 @@
+STRATEGY_NAME: DivergentVolatility
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy combines three complementary technical tools to identify high-probability reversal setups. It enters short positions when RSI signals overbought conditions AND the MACD histogram shows bearish divergence, then exits when ATR-based volatility exceeds predefined thresholds (signaling potential trend exhaustion or a new regime).
+
+**Key Strategy Components**
+
+1. **RSI Overbought Filter**
+   - Indicator: RSI (period 14, standard)
+   - Condition: RSI > 70 (overbought zone)
+   - Purpose: Confirms momentum is stretched to the upside, increasing reversal probability
+
+2. **MACD Histogram Divergence**
+   - Indicator: MACD (12, 26, 9)
+   - Condition: Price makes a higher high while MACD histogram makes a lower high (bearish divergence)
+   - Purpose: Signals weakening bullish momentum despite rising price — a classic reversal warning
+
+3. **ATR Volatility Exit**
+   - Indicator: ATR (period 14)
+   - Condition: ATR exceeds a predefined multiplier of its rolling average (e.g., ATR > 1.5 × 20-period SMA of ATR)
+   - Purpose: Exit when volatility spikes, indicating the move is exhausted or a new regime has begun
+
+**Entry Rules (Short Position)**
+- RSI(14) closes above 70
+- Price prints a higher high versus the prior swing high
+- MACD histogram prints a lower high versus the prior swing high (bearish divergence confirmed on at least two peaks)
+- Optional confirmation: bearish candle close or break below short-term EMA (e.g., EMA 9)
+- Enter short at the close of the signal candle
+
+**Exit Rules**
+- Primary exit: ATR(14) exceeds predefined volatility threshold (e.g., ATR > 1.5× its 20-period SMA)
+- Secondary exit: Stop-loss placed above the most recent swing high plus 1× ATR
+- Take-profit (optional): Fixed R-multiple (e.g., 2R) or when RSI drops below 30
+
+**Risk Management**
+- Position sizing: Risk 1–2% of account equity per trade
+- Stop-loss: 1× ATR above entry (dynamic, volatility-adjusted)
+- Risk-Reward target: Minimum 1:2
+- Max concurrent positions: 1–2 to avoid correlated exposure
+- Avoid trading during major news events (high volatility can distort ATR signals)
+
+**Required Indicators**
+- RSI (period 14)
+- MACD (12, 26, 9) with histogram
+- ATR (period 14) plus a 20-period SMA of ATR for the volatility threshold
+- Optional: EMA(9) for entry confirmation
+
+**Timeframes**
+- Best suited for 1H, 4H, and Daily charts
+- Lower timeframes (5m–15m) produce more noise and false divergences
+
+**Strengths**
+- Combines momentum (RSI), trend divergence (MACD), and volatility (ATR) for a multi-factor edge
+- ATR-based exits adapt to changing market conditions rather than using fixed targets
+- Divergence + overbought alignment filters out many weak signals
+
+**Weaknesses**
+- Divergences can persist in strong trends (risk of early entry)
+- Requires visual/algorithmic swing detection for divergence confirmation
+- ATR spikes can trigger exits prematurely in choppy markets
+
+**Best Market Conditions**
+- Range-bound or topping markets after extended rallies
+- Works poorly in strong, uninterrupted uptrends where RSI stays overbought for long periods

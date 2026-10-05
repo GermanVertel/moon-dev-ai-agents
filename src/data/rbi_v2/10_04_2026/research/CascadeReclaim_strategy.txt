@@ -1,0 +1,38 @@
+STRATEGY_NAME: CascadeReclaim
+
+STRATEGY_DETAILS:
+This strategy capitalizes on forced selling cascades caused by long liquidations, treating them as exhaustion events rather than pure trend continuation signals. The core thesis is that when leveraged longs are liquidated en masse, price often overshoots to the downside, creating a sharp wick or flush that is quickly reclaimed once the forced sellers are exhausted.
+
+1. KEY STRATEGY COMPONENTS
+- Liquidation Cascade Detection: Identify clusters of long liquidations (large red candles with abnormal volume, rapid price decline, or funding rate spikes).
+- Overshoot / Wick Analysis: The flush should produce a long lower wick or a sharp deviation below a key level (support, range low, or prior swing low).
+- Reclaim Confirmation: The strategy waits for price to reclaim a defined reference level (e.g., the level that was broken, a VWAP, or the midpoint of the liquidation candle) before entering.
+- Momentum Shift: Confirmation via a momentum oscillator turning up from oversold, or a bullish engulfing / rejection candle closing back above the reclaimed level.
+
+2. ENTRY RULES
+- Trigger: A long-liquidation flush occurs (volume spike + fast drop + liquidation data).
+- Setup: Price prints a rejection wick or reversal candle at/below a key support or range low.
+- Entry: Enter long when price closes back above the liquidation candle's open, the broken level, or a short-term VWAP/EMA, ideally with a volume-confirmed reclaim. Alternatively, a retest of the reclaimed level can be used for a lower-risk entry.
+- Filters: Avoid entries during broad market downtrends or when funding is still deeply negative without any reclaim. Require the reclaim to happen within a few candles of the flush.
+
+3. EXIT RULES
+- Take Profit 1: Prior swing high or the origin of the liquidation move (the level price fell from).
+- Take Profit 2: Range high / next resistance zone, or a measured move equal to the size of the flush.
+- Trailing Stop: Trail below higher lows or a short EMA once price moves in favor.
+- Time Stop: If price fails to progress within a set number of bars, exit to avoid chop.
+
+4. RISK MANAGEMENT
+- Stop Loss: Below the low of the liquidation wick / flush candle. If that low is taken out, the reclaim thesis is invalidated.
+- Position Sizing: Risk a fixed percentage (e.g., 0.5–1%) per trade given the high volatility of liquidation events.
+- Volatility Adjustment: Widen stops proportionally to ATR during high-volatility cascades to avoid noise stop-outs.
+- No Averaging Down: Never add to a losing reclaim trade; the invalidation level is hard.
+
+5. REQUIRED INDICATORS / DATA
+- Volume (to spot the liquidation spike and reclaim confirmation)
+- Liquidation data feed (long liquidation clusters) if available
+- VWAP or short-term EMA (reclaim reference / trend filter)
+- ATR (volatility-based stop sizing)
+- RSI or similar oscillator (oversold + bullish turn confirmation)
+- Key support/resistance or prior swing levels (for flush and target zones)
+
+SUMMARY: CascadeReclaim hunts for capitulation flushes driven by long liquidations, waits for a confirmed reclaim of the broken level, and targets a snap-back toward the origin of the cascade—using the flush low as a hard invalidation point and strict position sizing to manage the elevated volatility.

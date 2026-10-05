@@ -1,0 +1,78 @@
+STRATEGY_NAME: KineticDrift
+
+STRATEGY_DETAILS:
+This strategy combines dual momentum confirmation with a mean reversion rate (MRR) filter derived from MACD delta deviations, while dynamically sizing positions based on volatility. It is designed to trade the interaction between trend-following (SMA/EMA crossover) and short-term exhaustion (MACD delta deviations from its average).
+
+1. KEY STRATEGY COMPONENTS
+
+- Trend Layer (Momentum Confirmation):
+  - 50-period SMA and 50-period EMA on the same timeframe.
+  - A bullish trend bias exists when the EMA crosses above the SMA (EMA > SMA).
+  - A bearish trend bias exists when the EMA crosses below the SMA (EMA < SMA).
+  - The "spread" between SMA and EMA (EMA - SMA) is used as a momentum strength gauge, not just a binary signal.
+
+- Mean Reversion Layer (MRR Filter):
+  - Calculate MACD (standard 12, 26, 9).
+  - Compute MACD Delta = MACD line - Signal line (the histogram).
+  - Compute the average MACD Delta over a rolling window (e.g., 20 periods).
+  - Compute the deviation = current MACD Delta - average MACD Delta.
+  - MRR (Mean Reversion Rate) = deviation normalized by the standard deviation of MACD Delta over the same window.
+  - Interpretation: High positive MRR suggests overextended bullish momentum prone to reversion; high negative MRR suggests overextended bearish momentum prone to reversion.
+
+- Volatility Layer (Position Sizing):
+  - ATR Ratio = Current ATR (e.g., 14-period) / Long-term average ATR (e.g., 50-period).
+  - ATR Ratio > 1 means elevated volatility; < 1 means suppressed volatility.
+  - Position size is inversely scaled to ATR Ratio (larger size in low volatility, smaller in high volatility) to maintain consistent risk.
+
+2. ENTRY RULES
+
+Long Entry:
+- EMA crosses above SMA (trend bias bullish), AND
+- MRR is negative and turning upward (bearish momentum exhaustion / potential reversal to the upside), AND
+- MACD Delta is below its average (confirming oversold momentum condition).
+- Enter long when the above conditions align on a closed candle.
+
+Short Entry:
+- EMA crosses below SMA (trend bias bearish), AND
+- MRR is positive and turning downward (bullish momentum exhaustion / potential reversal to the downside), AND
+- MACD Delta is above its average (confirming overbought momentum condition).
+- Enter short when the above conditions align on a closed candle.
+
+Optional Confirmation:
+- Require the SMA/EMA spread to be widening (momentum acceleration) for trend continuation entries, or narrowing for counter-trend reversion entries.
+
+3. EXIT RULES
+
+- Primary Exit: Opposite crossover (EMA crosses back through SMA) closes the position.
+- Momentum Exit: Exit when MRR crosses zero against the position direction (mean reversion completed).
+- Profit Target: Exit when price reaches a multiple of ATR (e.g., 1.5x ATR) from entry.
+- Stop Loss: Place stop at 1.0x ATR from entry, adjusted by ATR Ratio (wider in high volatility, tighter in low volatility).
+- Time-Based Exit: Optional maximum holding period (e.g., 20 bars) if neither target nor stop is hit.
+
+4. RISK MANAGEMENT
+
+- Position Sizing Formula:
+  - Base Size = Account Risk % / (Stop Distance in ATR × ATR Value)
+  - Adjusted Size = Base Size × (1 / ATR Ratio)
+  - This ensures risk per trade remains constant regardless of volatility regime.
+- Maximum exposure cap: Limit total position size to a percentage of equity (e.g., 2% risk per trade).
+- Correlation check: Avoid taking simultaneous long/short positions in highly correlated instruments.
+- Drawdown control: Reduce position size by 50% after two consecutive losing trades; resume full size after a winning trade.
+- Volatility circuit breaker: If ATR Ratio > 2.5 (extreme volatility), skip new entries until it normalizes.
+
+5. REQUIRED INDICATORS
+
+- 50-period SMA
+- 50-period EMA
+- MACD (12, 26, 9) with histogram (MACD Delta)
+- Rolling average and standard deviation of MACD Delta (e.g., 20-period)
+- ATR (14-period) and long-term average ATR (50-period) for ATR Ratio
+- Optional: Volume or ADX for trend strength confirmation
+
+6. IMPLEMENTATION NOTES
+
+- Timeframe: Best suited for 1H to 4H charts for swing trading; can be adapted to 15m for intraday with tighter parameters.
+- Signal Timing: All calculations should use closed candles to avoid repainting.
+- Backtesting: Test across trending and ranging markets separately, since MRR behavior differs significantly between regimes.
+- Parameter Optimization: Focus on the MACD Delta averaging window and ATR Ratio thresholds; these drive the strategy's unique edge.
+- Warning: In strong trending markets, MRR signals may fire prematurely against the trend. Consider requiring the SMA/EMA spread to exceed a minimum threshold before taking counter-trend MRR entries.

@@ -1,0 +1,59 @@
+STRATEGY_NAME: FibonRSIDivergence
+
+STRATEGY_DETAILS:
+This strategy combines RSI divergence detection with Fibonacci retracement confluence to identify high-probability trend continuation and reversal entries. The core premise is that when RSI diverges from price action AT a Fibonacci retracement level, the level is more likely to hold, providing a strong entry signal aligned with the prevailing trend.
+
+1. KEY STRATEGY COMPONENTS
+- Trend Filter: Determine the dominant trend using a 200-period EMA (or 50/200 EMA crossover). Only take longs in uptrends and shorts in downtrends.
+- RSI Divergence Detection: Compare RSI (14-period) swing highs/lows with price swing highs/lows.
+  - Bullish Divergence: Price makes a lower low, RSI makes a higher low.
+  - Bearish Divergence: Price makes a higher high, RSI makes a lower high.
+- Fibonacci Retracement Levels: Draw Fib retracements from the most recent significant swing high to swing low (in an uptrend) or swing low to swing high (in a downtrend). Key levels: 0.382, 0.5, 0.618, 0.786.
+- Confluence Zone: The divergence must occur within a tolerance band (e.g., ±0.5% of price) around a Fibonacci level.
+
+2. ENTRY RULES
+Long Entry (Uptrend):
+- Trend is up (price above 200 EMA).
+- Price pulls back to a Fibonacci retracement zone (0.382–0.618 preferred).
+- Bullish RSI divergence forms at or near the Fib level.
+- Entry trigger: Bullish reversal candle (engulfing, hammer, or close above prior candle high) OR RSI crosses back above 50.
+- Enter long on the close of the confirmation candle.
+
+Short Entry (Downtrend):
+- Trend is down (price below 200 EMA).
+- Price rallies into a Fibonacci retracement zone (0.382–0.618).
+- Bearish RSI divergence forms at or near the Fib level.
+- Entry trigger: Bearish reversal candle (shooting star, bearish engulfing, or close below prior candle low) OR RSI crosses back below 50.
+- Enter short on the close of the confirmation candle.
+
+3. EXIT RULES
+- Take Profit: 
+  - First target: Prior swing high (for longs) or swing low (for shorts).
+  - Second target: 1.272 or 1.618 Fibonacci extension.
+- Stop Loss: 
+  - Longs: Placed below the recent swing low that formed the divergence (or below the 0.786 Fib level), plus a small buffer (e.g., 0.3%).
+  - Shorts: Placed above the recent swing high that formed the divergence (or above the 0.786 Fib level), plus a small buffer.
+- Trailing Stop: Once price moves 1R in favor, trail stop to breakeven, then use an ATR-based trailing stop (e.g., 2× ATR(14)).
+- Time Exit: If neither target nor stop is hit within 20 bars, exit at market.
+
+4. RISK MANAGEMENT
+- Risk per trade: 1–2% of account equity.
+- Position size = (Account Risk $) / (Entry Price − Stop Price).
+- Maximum concurrent positions: 3.
+- Avoid trading during major news events (e.g., FOMC, NFP) unless already in a position with a trailing stop.
+- Only take signals where the risk-to-reward ratio is at least 1:2 based on the first target.
+
+5. REQUIRED INDICATORS
+- RSI (14-period) — for divergence detection.
+- 200-period EMA — trend filter.
+- Fibonacci Retracement tool — drawn from swing high to swing low (or vice versa).
+- ATR (14-period) — for trailing stops and volatility filter.
+- Candlestick pattern recognition — for entry confirmation.
+- Optional: Volume indicator to confirm divergence strength (higher volume on reversal candle).
+
+6. ADDITIONAL FILTERS
+- Volatility Filter: Skip trades if ATR is below 20-period average ATR (low volatility = unreliable signals).
+- Divergence Strength: Only valid if RSI divergence spans at least 5 bars and RSI is below 40 (bullish) or above 60 (bearish) at the swing point.
+- Confluence Bonus: If divergence aligns with a 0.618 or 0.786 Fib level AND a round number, increase position size slightly (up to 1.5× normal risk, capped at 2% total).
+
+This strategy leverages the dual confirmation of momentum divergence and structural Fibonacci support/resistance to filter out false signals and improve win rate in trending markets.

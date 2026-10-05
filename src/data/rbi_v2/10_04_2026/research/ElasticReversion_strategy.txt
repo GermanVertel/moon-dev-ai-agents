@@ -1,0 +1,44 @@
+STRATEGY_NAME: Elastic Reversion
+
+STRATEGY_DETAILS:
+This strategy is a mean-reversion play that combines a longer-term Bollinger Band regime filter with a shorter-term Bollinger Band trigger. It is designed to catch oversold snapbacks only when the broader context is favorable, and it uses a tight, volatility-scaled stop for protection.
+
+1. Key Strategy Components
+- Regime Filter (50-period Bollinger Bands, 20,2): A slow set of Bollinger Bands computed over 50 periods with a 2-standard-deviation multiplier. The rule requires the 50-period bands to be "above price," meaning the entire slow band structure sits over the current price. In practice this signals a sustained downtrend or deep pullback regime where price is trading below the slow basis and lower band.
+- Trigger (20-period Bollinger Bands, 2): A standard Bollinger Band set (20,2). The long entry is triggered when price closes below the lower band of this faster set while the slow band filter is satisfied.
+- Exit (Upper Band Touch): Once in a long position, if price touches or crosses above the upper band of the 20-period set within the next 3 bars, the trade is closed.
+- Risk Management: A stop-loss placed at 0.5 ATR from the entry price, using ATR (typically 14-period) to scale the stop to current volatility.
+
+2. Entry Rules
+- Condition A (Regime Filter): The 50-period Bollinger Bands (20,2) are above price. Interpret this as price < 50-period lower band (or price below the 50-period basis with the band structure overhead). The stricter and more common interpretation: price is below the 50-period lower band.
+- Condition B (Trigger): Price closes below the lower band of the 20-period Bollinger Bands (20,2).
+- Both conditions must be true on the same bar (or Condition A true and Condition B triggering).
+- Enter a long position at the close of the trigger bar (or at the next bar's open, depending on execution model).
+
+3. Exit Rules
+- Time-Limited Target: After entry, monitor the next 3 bars. If price touches or crosses over the upper band of the 20-period Bollinger Bands within those 3 bars, exit the long position.
+- If the upper band is not touched within 3 bars, exit at the close of the 3rd bar (time-based exit) unless the stop-loss was hit first.
+- Stop-Loss: Place a stop at entry price minus 0.5 × ATR (14). If price trades at or below this level at any time, exit immediately.
+
+4. Risk Management
+- Stop distance: 0.5 ATR(14) below entry. This is a tight, volatility-adjusted stop that limits loss in fast markets and tightens in calm markets.
+- Position sizing should be derived from the stop distance: risk a fixed percentage of equity per trade, and size = (Equity × Risk%) / (0.5 × ATR).
+- Because the exit window is only 3 bars, this is a short-duration trade. Avoid holding beyond 3 bars even if the target is not reached.
+- Consider avoiding entries during major news events or illiquid sessions, as the tight stop can be easily triggered by noise.
+
+5. Required Indicators
+- Bollinger Bands (50, 2): For the regime filter (upper, basis, lower).
+- Bollinger Bands (20, 2): For the entry trigger (lower band) and exit target (upper band).
+- ATR (14): For stop-loss placement and position sizing.
+
+6. Implementation Notes
+- "50-period BB above price" should be coded explicitly. A practical coding rule: price < LowerBand(50,2). This ensures the slow band is overhead and the market is in a stretched-down state.
+- Entry: if (price < LB50) and (close < LB20) then go long.
+- Exit logic: track bars_since_entry; if price >= UB20 and bars_since_entry <= 3 then exit; if bars_since_entry >= 3 then exit; if price <= entry - 0.5*ATR then exit.
+- Backtest with intrabar high/low checks for the stop and the upper-band touch to avoid look-ahead bias.
+
+7. Edge and Caveats
+- The edge comes from combining a slow oversold regime with a fast oversold trigger, then exiting on a quick mean-reversion bounce to the fast upper band.
+- The 3-bar exit window is aggressive; it assumes a fast snapback. In choppy or trending-down markets, the tight stop and short window will produce frequent small losses.
+- The strategy performs best in range-bound or mean-reverting regimes and poorly in strong sustained downtrends where price keeps making lower lows.
+- Consider a higher-timeframe trend filter or a volatility filter (e.g., ATR percentile) to avoid entering during crash conditions.

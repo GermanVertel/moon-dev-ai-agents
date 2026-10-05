@@ -1,0 +1,66 @@
+STRATEGY_NAME: VolatilityConfluence
+
+STRATEGY_DETAILS:
+The VolatilityConfluence strategy is a hybrid momentum-contrarian system that exploits the divergence between equity momentum (measured by RSI) and market fear (measured by VIX). Unlike traditional mean-reversion strategies that buy oversold conditions, this strategy deliberately enters long positions during *overbought* RSI readings, but only when the VIX confirms a low-fear, risk-on environment. The exit logic is uniquely driven by the relationship between the VIX and a 200-day moving average of price, making it a regime-aware strategy rather than a simple oscillator play.
+
+**Core Thesis:**
+High RSI normally signals overbought conditions and a potential reversal. However, when the VIX is simultaneously low, it indicates that complacency and liquidity are driving sustained momentum. In such regimes, overbought conditions can persist far longer than mean-reversion traders expect. The strategy therefore *joins* the momentum (contrarian to the contrarian) but uses the VIX-vs-200MA relationship to detect when the regime is shifting and momentum is about to exhaust.
+
+**1. Key Strategy Components**
+
+- **Primary Entry Signal (Momentum-Contrarian Trigger):**
+  - RSI(14) on the daily chart must be **above 70** (overbought).
+  - VIX must be **below 20** (low-fear regime). Optionally, VIX below its own 20-day SMA for confirmation of declining fear.
+  - Price must be trading **above the 200-day SMA** to ensure the broader trend is bullish.
+  - This combination signals a "low-volatility melt-up" environment where momentum is likely to continue.
+
+- **Secondary Confirmation (Regime Filter):**
+  - The 200-day SMA of price is used as a structural anchor, not just a trend filter.
+  - Calculate the **correlation** between VIX and the 200-day SMA of price over a rolling window (e.g., 60 days).
+  - In healthy bull markets, VIX and price tend to be negatively correlated. A rising (less negative) correlation is an early warning that the regime is breaking down.
+
+- **Exit Signal (Correlation-Based Regime Shift):**
+  - Exit the long position when the rolling correlation between VIX and the 200-day SMA **turns positive** or rises above a threshold (e.g., -0.2).
+  - This indicates that fear is no longer suppressing volatility relative to the trend, and the low-VIX momentum regime is ending.
+  - Additionally, exit if VIX spikes above 25 or if price closes below the 200-day SMA.
+
+**2. Entry Rules (Long Only)**
+
+1. Confirm price > 200-day SMA.
+2. Confirm RSI(14) > 70.
+3. Confirm VIX < 20 (and ideally VIX < VIX 20-day SMA).
+4. Confirm rolling 60-day correlation between VIX and 200-day SMA is **negative** (i.e., the normal risk-on relationship holds).
+5. Enter long at the next open or on a pullback to the 10-day EMA for better entry.
+
+**3. Exit Rules**
+
+- **Primary Exit:** Rolling 60-day correlation between VIX and 200-day SMA rises above -0.2 (regime shift).
+- **Stop-Loss Exit:** VIX closes above 25, or price closes below the 200-day SMA.
+- **Profit-Taking Exit:** Optional trailing stop at 2× ATR(14) or exit when RSI drops below 50.
+- **Time-Based Exit:** If the trade has been open for more than 40 trading days without hitting targets, reassess.
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk no more than 1% of equity per trade. Because entries occur in low-VIX regimes, position size can be slightly larger (1.5%) but must be reduced if VIX begins rising.
+- **Stop-Loss:** Hard stop at 2× ATR(14) below entry, or a close below the 200-day SMA, whichever is tighter.
+- **Correlation Monitor:** The rolling VIX/200MA correlation is the key risk gauge. If it moves from strongly negative to near zero, reduce position size by half.
+- **Max Exposure:** No more than 3 concurrent positions to avoid overexposure to a single volatility regime.
+- **Volatility Regime Check:** Avoid entering if VIX has risen more than 20% in the past 5 days, even if it is still below 20.
+
+**5. Required Indicators**
+
+- **RSI(14):** Momentum oscillator for overbought detection.
+- **VIX (CBOE Volatility Index):** Fear gauge; use daily close.
+- **200-day SMA of price:** Long-term trend and structural anchor.
+- **Rolling 60-day correlation (VIX vs. 200-day SMA):** Regime-shift detector.
+- **ATR(14):** For stop-loss and position sizing.
+- **10-day EMA:** Optional pullback entry trigger.
+- **VIX 20-day SMA:** Optional confirmation of declining fear.
+
+**6. Strategy Logic Summary**
+
+- **Enter long** when momentum is strong (RSI > 70), fear is low (VIX < 20), the trend is up (price > 200MA), and the VIX/200MA correlation is negative.
+- **Exit** when the VIX/200MA correlation turns positive or rises above -0.2, signaling that the low-volatility momentum regime is breaking down.
+- **Risk** is managed through ATR-based stops, correlation monitoring, and position sizing that adapts to volatility regime changes.
+
+This strategy is unique because it uses the *correlation between VIX and the 200-day moving average* as a regime-shift signal, rather than relying on static VIX thresholds or RSI reversals alone. It is a momentum-contrarian hybrid that profits from persistent overbought conditions in low-fear markets while exiting before the regime collapses.

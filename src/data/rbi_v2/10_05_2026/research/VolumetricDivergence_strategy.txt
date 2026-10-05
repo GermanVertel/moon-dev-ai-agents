@@ -1,0 +1,34 @@
+STRATEGY_NAME: VolumetricDivergence
+
+STRATEGY_DETAILS:
+This strategy combines volume analysis with stochastic oscillator divergence to identify high-probability breakout opportunities. The core premise is that divergences between price action and the stochastic oscillator, when confirmed by volume surges, signal genuine breakouts rather than false moves.
+
+**Key Strategy Components:**
+1. **Stochastic Oscillator Divergence Detection** - Identify bullish divergence (price makes lower lows while stochastic makes higher lows) and bearish divergence (price makes higher highs while stochastic makes lower highs) using a 14-period stochastic with 3-period smoothing.
+2. **Volume Confirmation** - A breakout is only valid when accompanied by a volume spike exceeding the 20-period average volume by at least 150%.
+3. **Breakout Level Identification** - Define breakout levels using recent swing highs/lows or consolidation range boundaries confirmed over the last 20-30 bars.
+
+**Entry Rules:**
+- **Long Entry:** Bullish stochastic divergence forms near a support/consolidation zone, price breaks above the range high, AND volume exceeds 1.5x the 20-period average. Enter on the close of the breakout candle.
+- **Short Entry:** Bearish stochastic divergence forms near resistance, price breaks below range low, AND volume confirms the move. Enter on the close of the breakdown candle.
+
+**Exit Rules:**
+- **Take Profit:** Exit at 2x the range height measured from the breakout point (measured move technique).
+- **Stop Loss:** Place stop just below the breakout candle's low (for longs) or above its high (for shorts), typically 1-1.5% risk.
+- **Trailing Exit:** If stochastic crosses back into overbought (>80) for longs or oversold (<20) for shorts while price stalls, tighten stop to breakeven.
+- **Time-Based Exit:** Close position if no follow-through occurs within 5 bars.
+
+**Risk Management:**
+- Risk no more than 1% of account equity per trade.
+- Minimum risk-reward ratio of 1:2.
+- Avoid trades during low-liquidity sessions or major news releases.
+- Skip signals if volume spike occurs on the same bar as a large wick (potential trap).
+
+**Required Indicators:**
+1. Stochastic Oscillator (14, 3, 3)
+2. Volume Moving Average (20-period)
+3. Volume bars (for spike detection)
+4. Swing high/low markers (20-30 bar lookback)
+5. ATR (14) for dynamic stop sizing (optional)
+
+**Best Timeframes:** 15-minute to 4-hour charts for intraday swing setups; daily charts for position trades.

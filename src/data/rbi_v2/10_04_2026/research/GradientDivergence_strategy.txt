@@ -1,0 +1,50 @@
+STRATEGY_NAME: GradientDivergence
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band slope analysis with MACD momentum to identify trend continuations and reversals, using ATR-normalized thresholds for adaptive exits across varying volatility regimes.
+
+CORE CONCEPT:
+The strategy exploits divergence between two independent trend-strength measures:
+1. The steepness (slope) of the upper Bollinger Band — a proxy for price trend acceleration and volatility expansion
+2. The MACD line — a momentum oscillator reflecting trend velocity
+
+When these two measures diverge meaningfully, it signals either an emerging trend (slope rising faster than MACD) or trend exhaustion (MACD rolling over while band slope remains steep).
+
+INDICATORS REQUIRED:
+- Bollinger Bands (period 20, std dev 2.0) — track the upper band specifically
+- MACD (12, 26, 9) — use the MACD line (fast EMA minus slow EMA)
+- ATR (period 14) — used to normalize all thresholds into volatility-adjusted units
+
+ENTRY RULES:
+Long Entry:
+- Compute upper BB slope over N bars (e.g., 5), normalized by ATR: BB_slope_ATR = (UpperBB[t] - UpperBB[t-N]) / (N * ATR[t])
+- Compute MACD slope over N bars, normalized by ATR: MACD_slope_ATR = (MACD[t] - MACD[t-N]) / (N * ATR[t])
+- Enter long when BB_slope_ATR > entry_threshold (e.g., 0.15) AND MACD_slope_ATR > 0 AND divergence = BB_slope_ATR - MACD_slope_ATR > divergence_min (e.g., 0.05)
+- This captures cases where volatility/price structure is expanding faster than momentum, signaling early trend initiation
+
+Short Entry:
+- Mirror condition: BB_slope_ATR < -entry_threshold AND MACD_slope_ATR < 0 AND divergence magnitude exceeds threshold
+- Note: For shorts, use lower Bollinger Band slope for symmetry (or invert upper band logic)
+
+EXIT RULES:
+- Exit long when BB_slope_ATR falls below exit_threshold (e.g., 0.05) AND MACD_slope_ATR falls below its exit threshold (e.g., 0.0)
+- Both conditions must be met — this ensures the trend has genuinely decelerated rather than a temporary pullback
+- Exit short when both slopes rise above their respective (negative) exit thresholds
+- Thresholds measured in ATR units make exits volatility-adaptive: in high-ATR regimes, larger raw moves are required before exit
+
+RISK MANAGEMENT:
+- Position sizing: risk 1% of equity per trade; stop distance = 2 × ATR from entry
+- Hard stop-loss: 2.0 ATR below entry (long) / above entry (short)
+- Take-profit: optional trailing stop at 2.5 ATR, or rely on dual-threshold exit
+- Max concurrent positions: 1-3 depending on account size
+- Avoid trading during low-liquidity sessions; require ATR above a minimum floor to filter dead markets
+
+PARAMETER TUNING NOTES:
+- N (slope lookback): 3-10 bars; shorter = more responsive, longer = smoother
+- entry_threshold: 0.10-0.25 ATR units — calibrate to instrument
+- exit_threshold: 0.03-0.08 ATR units — should be meaningfully lower than entry
+- divergence_min: 0.03-0.10 — filters weak signals
+- MACD parameters can be adjusted for faster/slower regimes (e.g., 8,17,9 for intraday)
+
+STRATEGY LOGIC SUMMARY:
+The dual-slope divergence acts as a confirmation filter. A rising upper band slope alone could be noise; a rising MACD alone could be overbought. Their divergence — band slope outpacing MACD — suggests price structure is leading momentum, which historically precedes sustained trends. The symmetric ATR-normalized exit prevents premature exits during volatility spikes while ensuring timely closure when both signals converge toward zero.

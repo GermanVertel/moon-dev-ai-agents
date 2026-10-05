@@ -1,0 +1,50 @@
+STRATEGY_NAME: MomentumCascade
+
+STRATEGY_DETAILS:
+
+**Strategy Overview:**
+MomentumCascade is a long-biased momentum strategy that exploits the Relative Momentum Index (RMI) on a 52-week lookback to identify stocks with sustained upward momentum. It enters heavily concentrated long positions (70% of capital per trade) when a precise RMI threshold is crossed, then uses a tiered exit system combining hard stops with dynamic profit-taking based on cumulative RMI acceleration.
+
+**Key Strategy Components:**
+
+1. **Universe & Timeframe:**
+   - Liquid stocks with sufficient 52-week price history
+   - Primary indicator timeframe: weekly (52-week RMI), with 5-day RMI for exit signals
+   - RMI period: 14 (standard) applied to the 52-week window for entry filter
+
+2. **Entry Rule (RMI = R1 Trigger):**
+   - Calculate RMI over 52 weeks using a 14-period lookback
+   - Enter when RMI crosses exactly the R1 threshold (e.g., RMI = 70 or the defined "R1" reference level — typically the overbought momentum zone)
+   - Position size: 70% of allocated capital per qualifying stock
+   - Only long entries; no shorts
+
+3. **Exit Rules:**
+   - **Hard Stop:** -20% from entry price (mandatory, non-negotiable)
+   - **Momentum Exit:** Track cumulative 5-day RMI gains; exit when the sum of 5-day RMI changes exceeds **3× the baseline RMI gain** (i.e., RMI is accelerating too fast → exhaustion risk)
+   - Optional trailing logic: once cumulative 5-day RMI gain hits 2×, tighten stop to breakeven
+
+4. **Risk Management:**
+   - Max 70% capital deployed per position → implies concentrated, high-conviction bets
+   - Hard -20% stop limits max loss per trade to ~14% of total equity
+   - Consider max 1–2 concurrent positions to avoid overexposure given the 70% sizing
+   - Position sizing should be adjusted if portfolio drawdown exceeds predefined threshold (e.g., -15% portfolio-level circuit breaker)
+
+5. **Required Indicators:**
+   - **Relative Momentum Index (RMI)** — 14-period, computed on 52-week data for entry
+   - **RMI(5)** — 5-day RMI for cumulative gain tracking
+   - **Cumulative RMI Delta** — rolling sum of daily 5-day RMI changes
+   - Price series for stop-loss calculation
+
+6. **Signal Logic Summary:**
+   - **Entry:** 52W RMI crosses R1 (exact threshold) → Buy 70%
+   - **Exit A:** Price ≤ Entry × 0.80 → Close
+   - **Exit B:** Σ(5-day RMI gains) > 3 × baseline → Close
+   - **Exit C (optional):** Trailing stop activation after 2× RMI gain
+
+**Edge & Rationale:**
+The strategy assumes that stocks crossing a specific RMI level on a long 52-week horizon have durable momentum, and that the precise R1 trigger filters for genuine trend strength rather than noise. The 3× cumulative 5-day RMI exit captures momentum exhaustion before mean reversion, while the -20% stop caps tail risk on the concentrated 70% position.
+
+**Caveats:**
+- The exact value of "R1" must be defined by the trader (commonly 70 or 80 for overbought RMI zones)
+- 70% position sizing is aggressive; backtest across regimes before live deployment
+- RMI on 52-week data is slow-moving → fewer but higher-conviction signals

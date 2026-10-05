@@ -1,0 +1,113 @@
+STRATEGY_NAME: GoldenStochastic Volatility
+
+STRATEGY_DETAILS:
+
+This strategy combines the Stochastic Oscillator (SO), Bollinger Bands (BB), and a Golden Ratio (φ = 0.618) filter to identify high-probability reversal entries during overbought/oversold conditions, with dynamic position sizing driven by volatility spikes.
+
+---
+
+### 1. Core Components & Indicators
+
+**A. Stochastic Oscillator (SO)**
+- Parameters: %K period = 14, %D period = 3, smoothing = 3 (standard).
+- Overbought zone: %K > 80
+- Oversold zone: %K < 20
+- Signal trigger: %K crossing %D within these zones.
+
+**B. Bollinger Bands (BB)**
+- Period = 20, StdDev multiplier = 2.
+- Provides volatility context and price extremes.
+- Bandwidth (BBW) = (Upper − Lower) / Middle — used to detect volatility spikes.
+
+**C. Golden Ratio Filter (φ = 0.618)**
+- Applied to the distance between the BB middle band (SMA20) and the price extreme.
+- Entry only valid if price retraces to a φ-proportional level within the band:
+  - For long: Price ≤ Lower Band + (Middle − Lower) × 0.618 (i.e., price is in the deeper oversold region).
+  - For short: Price ≥ Upper Band − (Upper − Middle) × 0.618 (i.e., price is in the deeper overbought region).
+- This filters out shallow, weak signals and only trades strong extremes.
+
+---
+
+### 2. Entry Rules
+
+**Long Entry (Buy)**
+1. SO %K < 20 and %K crosses above %D (bullish cross in oversold zone).
+2. Price is at or below the Golden Ratio level inside the lower BB (deep oversold).
+3. Optional confirmation: price closes back inside the lower BB after piercing it.
+4. Volatility check: BBW is not in an extreme spike (see risk section).
+
+**Short Entry (Sell)**
+1. SO %K > 80 and %K crosses below %D (bearish cross in overbought zone).
+2. Price is at or above the Golden Ratio level inside the upper BB (deep overbought).
+3. Optional confirmation: price closes back inside the upper BB after piercing it.
+4. Volatility check: BBW is not in an extreme spike.
+
+---
+
+### 3. Exit Rules
+
+**Long Exit**
+- Take Profit: Price reaches BB middle band (SMA20) or %K crosses back above 80.
+- Stop Loss: Price closes below the lower BB by a buffer (e.g., 0.5 × ATR) OR %K re-enters oversold after failing to rise.
+- Trailing option: Move stop to breakeven once price reaches the middle band.
+
+**Short Exit**
+- Take Profit: Price reaches BB middle band (SMA20) or %K crosses back below 20.
+- Stop Loss: Price closes above the upper BB by a buffer (e.g., 0.5 × ATR) OR %K re-enters overbought after failing to fall.
+- Trailing option: Move stop to breakeven once price reaches the middle band.
+
+---
+
+### 4. Volatility-Based Position Sizing
+
+Use BBW and ATR to adjust position size dynamically:
+
+- Compute current BBW and compare to its 50-period average (BBW_avg).
+- Volatility Ratio (VR) = BBW / BBW_avg.
+- Position Size Multiplier (PSM):
+  - If VR < 0.8 (low volatility): PSM = 1.5 (increase size, tighter bands = cleaner signals).
+  - If 0.8 ≤ VR ≤ 1.2 (normal): PSM = 1.0 (standard size).
+  - If 1.2 < VR ≤ 2.0 (elevated): PSM = 0.6 (reduce size).
+  - If VR > 2.0 (volatility spike): PSM = 0.3 or skip trade entirely (extreme risk).
+
+Base position size = Risk per trade / (Stop distance × PSM).
+
+- Risk per trade: e.g., 1% of account equity.
+- Stop distance: distance from entry to stop loss in price units.
+
+This ensures larger positions in calm markets and smaller positions during volatility spikes, protecting capital.
+
+---
+
+### 5. Risk Management Summary
+
+- Max risk per trade: 1% of equity.
+- Max concurrent positions: 2–3 (to avoid correlated exposure).
+- Avoid trading during major news events or when BBW spikes > 2× average.
+- Use ATR-based stop buffer to prevent premature stop-outs.
+- Re-evaluate position size on every entry using the VR formula.
+
+---
+
+### 6. Required Indicators & Settings
+
+| Indicator | Settings |
+|-----------|----------|
+| Stochastic Oscillator | %K=14, %D=3, Smooth=3 |
+| Bollinger Bands | Period=20, StdDev=2 |
+| ATR | Period=14 (for stop buffer) |
+| BBW Average | 50-period SMA of BBW |
+| Golden Ratio | φ = 0.618 (applied to band distance) |
+
+---
+
+### 7. Strategy Logic Flow
+
+1. Monitor SO for overbought/oversold crosses.
+2. Confirm price is at Golden Ratio depth within BB.
+3. Check BBW volatility ratio for position sizing.
+4. Enter with calculated size and ATR-based stop.
+5. Exit at middle band, opposite SO signal, or stop loss.
+6. Adjust size dynamically on each new trade based on VR.
+
+This approach blends mean-reversion (SO + BB) with a Fibonacci-based precision filter and volatility-adaptive risk sizing, making it robust across varying market conditions.

@@ -1,0 +1,34 @@
+STRATEGY_NAME: CotrendDeltaNeutral
+
+STRATEGY_DETAILS:
+This strategy exploits the structural co-trendality between S&P 500 futures (ES) and VIX futures (VX), using delta-neutral ETFs as the execution vehicle to isolate the spread relationship without taking outright directional equity risk. The core premise is that VIX futures and ES futures share an inverse co-trend that is more persistent than mean-reverting, allowing a systematic long-short book to harvest the spread while neutralizing net delta.
+
+1. KEY STRATEGY COMPONENTS
+- Co-trendality engine: Track the rolling correlation and cointegration between front-month ES and VX futures. Co-trendality is confirmed when the 20-day rolling correlation stays below -0.65 and the spread (ES return vs. inverse VX return) holds a stable beta.
+- Delta-neutral ETFs: Use paired ETFs such as SPY/SPXS or VXX/VIXY-style instruments to express the spread. Position sizing is adjusted so the portfolio's net delta to the S&P 500 is approximately zero, leaving the VIX term-structure exposure as the primary driver.
+- Weighted risk-reward filter: Trades are only initiated when the projected reward-to-risk (based on ATR-scaled targets and stops) is at least 3:1. Weighting is applied so higher-conviction co-trend signals receive larger allocation.
+- Regime awareness: A volatility regime filter (e.g., VIX term structure in contango vs. backwardation) gates entries to avoid whipsaw during structural breaks.
+
+2. ENTRY RULES
+- Long spread (long ES-equivalent / short vol-equivalent): Enter when ES makes a higher high while VX fails to make a higher low, and the co-trend beta is stable. Confirm with delta-neutral ETF pair alignment.
+- Short spread (short ES-equivalent / long vol-equivalent): Enter when ES makes a lower low while VX fails to make a lower high, with the same beta stability check.
+- Require the weighted risk-reward ratio to be ≥ 3:1 at the moment of entry, computed from the distance to the ATR-based stop vs. the projected target.
+
+3. EXIT RULES
+- Profit target: Exit when the spread converges to the projected target or the risk-reward ratio compresses below 1.5:1.
+- Stop loss: Exit if the ATR-based stop is hit or if the rolling correlation breaks its co-trend threshold (e.g., correlation rises above -0.4), signaling decoupling.
+- Time stop: Close positions after a predefined holding window (e.g., 10–15 trading days) if neither target nor stop is reached.
+
+4. RISK MANAGEMENT
+- Delta neutrality: Continuously rebalance the ETF pairs so net delta stays within a tight band (e.g., ±5%).
+- Position sizing: Scale exposure by the weighted risk-reward ratio; cap any single spread trade at a fixed % of portfolio equity.
+- Volatility cap: Reduce or halt trading when VIX spikes beyond a defined ceiling or when term structure inverts sharply.
+- Correlation monitoring: Treat a breakdown in co-trendality as an immediate risk-off trigger.
+
+5. REQUIRED INDICATORS
+- Rolling correlation and cointegration metrics between ES and VX futures
+- ATR (Average True Range) for stop and target calibration
+- VIX term structure slope (contango/backwardation)
+- Beta coefficient of the ES/VX spread
+- Delta exposure monitor for the ETF pair
+- Weighted risk-reward ratio calculator

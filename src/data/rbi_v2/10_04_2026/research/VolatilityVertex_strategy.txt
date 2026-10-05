@@ -1,0 +1,51 @@
+STRATEGY_NAME: VolatilityVertex
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy exploits the psychological turning points embedded in VIX futures term structure shapes. A "V" shape (down-up-down) signals capitulation followed by recovery in fear — a bullish equity setup. An inverted "V" (up-down-up) signals complacency followed by renewed fear — a bearish equity setup. The strategy is contrarian relative to VIX direction but momentum-confirming relative to the shape inflection.
+
+**Key Components:**
+
+1. **VIX Futures Shape Detection**
+   - Monitor front-month, second-month, and third-month VIX futures contracts.
+   - Compute the slope of the term structure across three consecutive observation windows (e.g., rolling 5-day blocks).
+   - **"V" shape (Long signal):** VIX futures slope is negative, then positive, then negative — i.e., a local minimum forms in the middle observation.
+   - **Inverted "V" shape (Short signal):** VIX futures slope is positive, then negative, then positive — i.e., a local maximum forms in the middle observation.
+   - Require the inflection magnitude to exceed a threshold (e.g., ≥ 3% change in slope) to filter noise.
+
+2. **Confirmation Filters**
+   - **Contango/Backwardation check:** Long entries favored when term structure is in contango (front < back); short entries favored when in backwardation.
+   - **Roll yield:** Only take longs when roll yield is positive; only take shorts when roll yield is negative.
+   - **Volume/liquidity:** Require adequate VIX futures volume on the inflection bar.
+
+3. **Entry Rules**
+   - **Long Entry:** Confirmed "V" shape + contango + price action in underlying (SPY/ES) showing stabilization or higher low.
+   - **Short Entry:** Confirmed inverted "V" shape + backwardation + underlying showing lower high or breakdown.
+   - Enter at the close of the bar that confirms the second inflection.
+
+4. **Exit Rules**
+   - **Take Profit:** Exit when VIX futures revert to the pre-signal mean level, or when the shape pattern completes (target 1.5–2× ATR move in underlying).
+   - **Stop Loss:** Exit if VIX futures break beyond the inflection extreme in the adverse direction (e.g., for longs, VIX makes a new high above the "V" left arm).
+   - **Time Stop:** Close position after 10 trading days if neither target nor stop is hit.
+
+5. **Risk Management**
+   - Position size based on ATR of the underlying instrument (e.g., 1% account risk per trade).
+   - Maximum 2 concurrent positions (one long, one short) to avoid correlated exposure.
+   - Reduce size by 50% during VIX > 30 regimes or earnings-heavy weeks.
+   - Hard portfolio stop: exit all positions if VIX spikes > 40% intraday.
+
+6. **Required Indicators / Data**
+   - VIX front, second, and third month futures prices (continuous series).
+   - VIX term structure slope (3-period rolling).
+   - ATR (14) on underlying (SPY, ES, or QQQ).
+   - Volume on VIX futures.
+   - Optional: RSI(14) on VIX for divergence confirmation.
+
+**Edge Rationale:**
+VIX futures term structure shapes encode market participants' fear trajectory. A "V" reflects a brief panic that resolves — historically a strong mean-reversion long setup in equities. An inverted "V" reflects fading fear that reverses — a reliable short setup. The contrarian framing (long when VIX dips, short when VIX peaks) aligns with volatility mean-reversion while the shape filter avoids catching falling knives.
+
+**Backtest Considerations:**
+- Test on daily bars from 2010–present (post-2008 regime).
+- Benchmark against buy-and-hold SPY and a simple VIX mean-reversion strategy.
+- Track Sharpe, max drawdown, and win rate by VIX regime (low <15, mid 15–25, high >25).

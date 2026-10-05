@@ -1,0 +1,40 @@
+STRATEGY_NAME: VolatilityCorridor
+
+STRATEGY_DETAILS:
+This strategy is a short-volatility options strategy that sells put options near expiration, conditioned on a tight co-movement regime between the VIX and the S&P 500. The core thesis is that when VIX and SPX are moving in a strongly correlated (within 5%) band, the market is in a "normal" or "complacent" volatility regime where put premium is overpriced relative to realized risk, and mean-reversion behavior creates favorable conditions for collecting premium.
+
+1. KEY STRATEGY COMPONENTS
+- Instrument: Short (sold) put options on the S&P 500 (SPX or SPY).
+- Expiration: Near-term / expiration-day (0DTE or 1DTE) contracts to maximize theta decay.
+- Regime Filter: VIX and SPX must be within a 5% correlation band over the lookback window (e.g., rolling 10–20 day correlation of daily returns). This ensures the market is in a "correlated" regime, not a divergence or panic regime.
+- Entry Trigger: Use the daily HIGH of the underlying (or VIX) as the entry signal — enter the short put when price reaches a defined intraday high threshold, confirming upside momentum / complacency.
+- Exit Target: Next day's LOW as the profit-taking / exit reference level.
+
+2. ENTRY RULES
+- Compute rolling correlation between VIX daily returns and SPX daily returns.
+- Require |correlation| to be within a 5% band (i.e., correlation in a narrow range, e.g., -0.95 to -0.90, or a defined tolerance band around the historical mean).
+- On a day meeting the regime filter, wait for the underlying to print a new daily high (or reach a predefined intraday high threshold).
+- At that high, sell an out-of-the-money put option with 0–1 DTE.
+- Strike selection: ~5–15 delta put, or a fixed % OTM (e.g., 0.5–1.5% below spot) depending on risk tolerance.
+
+3. EXIT RULES
+- Primary exit: Target the NEXT DAY'S LOW as the exit reference. If the underlying trades down to the prior day's low (or projected next-day low), buy back the put to lock in profit.
+- Time exit: If the option is still open near expiration and has decayed to a small fraction of premium (e.g., 80–90% of max profit captured), close it.
+- Stop loss: If the underlying breaches the short strike by a defined buffer (e.g., 1–2%), exit immediately to cap downside.
+
+4. RISK MANAGEMENT
+- Position sizing: Limit notional exposure per trade (e.g., 1–5% of capital) due to the fat-tail risk of short puts.
+- Define max loss: Use defined-risk structures (put spreads) as an alternative to naked puts to cap tail risk.
+- Regime exit: If the VIX/SPX correlation breaks out of the 5% band (divergence = stress signal), close all short-put positions.
+- Avoid earnings / macro events: Skip entries on FOMC, CPI, or major event days.
+- Margin awareness: Ensure sufficient margin/cash to cover assignment risk.
+
+5. REQUIRED INDICATORS / DATA
+- VIX daily closes (and intraday if available).
+- SPX/SPY daily OHLC (High, Low, Close) for correlation and trigger levels.
+- Rolling correlation indicator (10–20 day window) with a 5% tolerance band.
+- Daily high/low markers for entry and exit triggers.
+- Optional: IV rank, put/call skew, and delta for strike selection.
+
+SUMMARY:
+VolatilityCorridor is a regime-filtered, short-put premium-harvesting strategy that only activates when VIX and SPX are tightly correlated (within 5%), enters on a daily high, and targets the next day's low for exit — exploiting theta decay and mean-reversion in calm, correlated markets while strictly managing tail risk.

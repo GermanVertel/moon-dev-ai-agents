@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev Backtest AI initializing...\n\ud83d\ude80 Loading data from Moon Dev vault...\n\u2728 Columns after cleaning: ['datetime', 'open', 'high', 'low', 'close', 'volume', 'unnamed: 6']\n\ud83e\uddf9 Dropped unnamed columns. Remaining: ['datetime', 'open', 'high', 'low', 'close', 'volume']\n\ud83c\udf19 Data ready: 31066 bars from 2023-01-01 00:00:00 to 2023-11-20 19:15:00\n\n\ud83c\udf19\ud83d\ude80 Launching Moon Dev Backtest Engine...\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/ContrarianEarnings_PKG.py\", line 167, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/ContrarianEarnings_PKG.py` failed. (See above for error)\n",
+  "execution_time": 6.137568,
+  "timestamp": "2026-10-05T00:07:44.372394"
+}

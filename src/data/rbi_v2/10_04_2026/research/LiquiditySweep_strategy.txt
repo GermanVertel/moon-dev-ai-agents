@@ -1,0 +1,53 @@
+STRATEGY_NAME: LiquiditySweep
+
+STRATEGY_DETAILS:
+
+This strategy exploits institutional order-flow imbalances by identifying breakout moves that are confirmed by abnormal volume expansion, filtering out low-conviction "fakeouts" that plague traditional price-only breakout systems.
+
+**Core Thesis:**
+Price breakouts are only tradeable when accompanied by a significant surge in volume relative to recent averages. Volume acts as the "fuel" that validates a breakout — without it, the move is likely a liquidity grab or stop-hunt. This strategy treats volume as the primary signal and price structure as the trigger.
+
+**Required Indicators:**
+1. **Volume Moving Average (VMA)** — 20-period SMA of volume.
+2. **Relative Volume (RVOL)** — Current bar volume ÷ VMA. Threshold: RVOL ≥ 1.8–2.5 (adjustable by asset/timeframe).
+3. **Donchian Channel (20-period)** — for breakout levels (upper/lower band).
+4. **ATR (14-period)** — for dynamic stop placement and position sizing.
+5. **Optional: VWAP** — for intraday bias confirmation.
+
+**Entry Rules (Long):**
+- Price closes above the 20-period Donchian upper band (new N-bar high).
+- Current bar volume shows RVOL ≥ 2.0 (volume spike).
+- Volume on breakout bar exceeds volume on at least the prior 5 bars.
+- Optional confirmation: breakout bar closes in the top 30% of its range (strong close).
+- Enter on close of breakout bar OR on a retest of the broken level with continued elevated volume.
+
+**Entry Rules (Short):**
+- Mirror of long: close below 20-period Donchian lower band.
+- RVOL ≥ 2.0 on the breakdown bar.
+- Enter on close of breakdown bar or retest from below.
+
+**Exit Rules:**
+- **Initial Stop:** 1.5 × ATR below entry (long) / above entry (short).
+- **Trailing Stop:** Chandelier exit — highest high (or lowest low) since entry minus 2 × ATR.
+- **Profit Target 1:** 2R — scale out 50%.
+- **Profit Target 2:** 3R–4R or trail remainder until volume collapses (RVOL < 1.0 on continuation bars).
+- **Time Stop:** Exit if price fails to advance within 5 bars of entry (momentum fade).
+
+**Risk Management:**
+- Risk per trade: 0.5%–1% of account equity.
+- Position size = (Account Risk $) ÷ (Entry − Stop distance).
+- Max 2 concurrent breakout positions to avoid correlation risk.
+- Skip signals during low-liquidity sessions (e.g., Asian session for US equities) or around major news events (CPI, FOMC).
+- Avoid breakouts that occur after 5+ consecutive up/down bars — exhaustion risk.
+
+**Filters to Avoid Fakeouts:**
+- Require the breakout level to have been tested at least twice before (established resistance/support).
+- Reject signals if RVOL is high but the bar has a large upper/lower wick (> 40% of range) — indicates rejection.
+- Confirm with broader market/trend context (e.g., price above 200-EMA for longs).
+
+**Best Markets & Timeframes:**
+- Liquid instruments: index futures (ES, NQ), large-cap equities, major FX pairs, BTC/ETH.
+- Timeframes: 15m, 1H, and 4H for swing entries. Daily for position trading.
+
+**Edge Summary:**
+Volume is the footprint of institutional participation. By requiring both a structural break AND a volume expansion, this strategy aligns entries with genuine supply/demand imbalance rather than random noise, improving win-rate on breakout trades while preserving favorable risk-reward through ATR-based stops and trailing exits.

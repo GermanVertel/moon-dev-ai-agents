@@ -1,0 +1,51 @@
+STRATEGY_NAME: InversePivotTrigger
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy trades 2x leveraged inverse ETFs (e.g., SQQQ, SPXU, SDS) based on a bearish pivot condition derived from the previous day's intraday range. It enters when price closes below the midpoint of the prior day's open-high range — a signal that selling pressure has overwhelmed buyers — and confirms with a volume surge indicating genuine conviction.
+
+**Key Components:**
+
+1. **Reference Level Calculation (Previous Day's Midpoint):**
+   - Compute the previous day's range midpoint as:
+     `PivotMid = (PreviousDay_Open + PreviousDay_High) / 2`
+   - Note: This is NOT the standard (High+Low)/2 pivot. It uses Open and High, making the level typically higher and more bearish-biased — the market must fall further from the prior day's opening sentiment to trigger.
+   - This level acts as the dynamic threshold for both entry and exit.
+
+2. **Volume Confirmation:**
+   - Compute the Average Daily Volume (ADV) over a chosen lookback (e.g., 20 days).
+   - Entry requires current day's volume > 10% of ADV.
+   - Caution: 10% of ADV is a very low bar and will almost always be satisfied on any liquid ETF. Consider whether this is intended as a minimum liquidity filter or a true conviction filter. If conviction is intended, a value like 100%+ of ADV would be more meaningful.
+
+**Entry Rules (Long Inverse ETF):**
+- Condition A: Today's closing price < PivotMid (previous day's open-high midpoint).
+- Condition B: Today's volume > 10% of ADV.
+- Both conditions must be true → Enter long position in the 2x inverse ETF at or near the close (or next open).
+
+**Exit Rules:**
+- Exit when EITHER:
+  - The condition breaks: today's close is back above PivotMid, OR
+  - The setup is invalidated (price closes above the midpoint of the previous day's open-high range).
+- Exit at close or next open for consistency.
+
+**Risk Management:**
+- **Leverage Decay Warning:** 2x leveraged inverse ETFs suffer from volatility decay and are designed for short holding periods. Do not hold for weeks — this strategy should be treated as a swing trade (1–5 days typical).
+- **Position Sizing:** Given 2x leverage, cap position size at ~50% of what a normal equity position would be, or use a fixed fractional risk model (e.g., 1–2% account risk per trade).
+- **Stop Loss:** Place a hard stop above the PivotMid level or at a fixed % (e.g., 3–5%) to limit whipsaw losses.
+- **Time Stop:** Exit if the trade hasn't moved favorably within N days (e.g., 5 days) to avoid decay drag.
+- **Market Regime Filter:** Only take signals in confirmed downtrends (e.g., price below 50-day SMA on the underlying index) to avoid choppy false breakouts.
+
+**Required Indicators:**
+- Previous day's Open and High (for PivotMid).
+- 20-day Average Daily Volume (ADV).
+- Optional: 50-day SMA on the underlying index for regime filtering.
+- Optional: ATR for volatility-adjusted stops.
+
+**Logic Summary:**
+The strategy bets that when price closes below the prior day's open-high midpoint on elevated volume, downward momentum will continue — and amplifies that bet via 2x inverse ETFs. It exits as soon as the midpoint is reclaimed, keeping exposure brief to minimize leverage decay.
+
+**Practical Notes:**
+- Backtest with realistic slippage and borrow costs (inverse ETFs have higher expense ratios).
+- The 10% ADV threshold is likely too loose; test 50%–150% ADV for stronger signals.
+- Consider intraday confirmation (e.g., close near lows) to reduce false signals.

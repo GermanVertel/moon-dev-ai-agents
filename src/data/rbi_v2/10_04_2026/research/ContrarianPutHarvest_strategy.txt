@@ -1,0 +1,40 @@
+STRATEGY_NAME: ContrarianPutHarvest
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy sells (writes) put options on futures contracts during periods of elevated open interest while the underlying futures are in a downtrend. The thesis is that high open interest during a decline often reflects crowded positioning, panic hedging, or oversold conditions — creating rich premium for put sellers. The exit trigger is when open interest begins rising again, signaling that positioning is normalizing or that a new directional move is beginning.
+
+**Key Strategy Components:**
+
+1. **Universe Selection**
+   - Liquid futures contracts with active options markets (e.g., ES, CL, GC, ZB).
+   - Must have sufficient option liquidity (tight bid-ask spreads, deep strikes).
+
+2. **Entry Conditions (All must align)**
+   - **Declining Futures:** Underlying futures price is in a confirmed downtrend (e.g., price below 20-period EMA, or negative slope over N bars).
+   - **High Open Interest:** Current OI is above a threshold (e.g., 90th percentile of rolling 60-day OI, or OI rising into a peak).
+   - **Premium Richness:** Implied volatility elevated (IV rank > 50) to ensure adequate premium collection.
+   - **Strike Selection:** Sell OTM puts (delta 0.15–0.30) with 20–45 DTE, or cash-secured/naked depending on account.
+
+3. **Exit Rules (Primary Trigger)**
+   - **OI Inflection Exit:** Close the short put position as soon as open interest begins to increase after a decline/plateau phase. This is the strategy's defining exit signal — it suggests the "crowded short/hedged" condition is reversing.
+   - **Profit Target:** Take profit at 50–75% of premium collected.
+   - **Stop Loss:** Close if loss reaches 2x premium received, or if futures break below the short strike by a defined buffer.
+   - **Time Exit:** Close at 5–7 DTE regardless of P&L to avoid gamma risk.
+
+4. **Risk Management**
+   - Position sizing: risk no more than 1–2% of account per trade (based on max loss at short strike).
+   - Avoid earnings, inventory reports, or Fed events unless intentionally trading them.
+   - Use defined-risk spreads (put credit spreads) if naked puts are not permitted.
+   - Portfolio-level cap: limit total short-put exposure across correlated futures.
+
+5. **Required Indicators / Data**
+   - Futures price series with EMA/slope for trend detection.
+   - Open Interest time series (daily) with rolling percentile and rate-of-change.
+   - Implied Volatility Rank (IVR) / IV Percentile.
+   - Option Greeks (delta for strike selection, theta for premium decay tracking).
+   - Volume/OI ratio for liquidity confirmation.
+
+**Rationale & Edge:**
+High OI during a decline often marks capitulation or hedging saturation. When OI stops growing and starts rising again, it typically signals renewed directional conviction — a poor environment for short puts. Exiting on the OI uptick locks in premium before the market's structure shifts against the position.

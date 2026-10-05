@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "",
+  "stderr": "  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_final/DivergentPulse_BTFinal_v7.py\", line 1\n    ```python\n    ^\nSyntaxError: invalid syntax\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_final/DivergentPulse_BTFinal_v7.py` failed. (See above for error)\n",
+  "execution_time": 4.243505,
+  "timestamp": "2026-10-05T00:40:42.739118"
+}

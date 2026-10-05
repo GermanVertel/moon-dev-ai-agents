@@ -1,0 +1,56 @@
+STRATEGY_NAME: HarmonicDivergence
+
+STRATEGY_DETAILS:
+This strategy combines short-term momentum divergence with a medium-term trend filter to isolate high-probability long entries. It is designed for traders who want to catch reversals confirmed by trend alignment, while using volatility-aware exits to protect gains.
+
+1. KEY STRATEGY COMPONENTS
+- Primary Signal: 3-period RSI bullish divergence.
+- Confirmation Filter: Price closes above an N-period SMA, where N = 2 × RSI period = 6-period SMA.
+- Exit Logic: Divergence resolution (bearish divergence or momentum fade) or volatility spike.
+- Timeframe: Best suited for intraday to short swing timeframes (1m–1h), where a 3-period RSI is responsive but noisy.
+
+2. INDICATORS REQUIRED
+- RSI (period = 3)
+- SMA (period = 6, since N = 2 × 3)
+- ATR (period = 14) for volatility spike detection
+- Optional: Volume or Bollinger Band width for additional volatility confirmation
+
+3. ENTRY RULES (LONG)
+Step 1 — Identify Bullish Divergence on 3-period RSI:
+- Price makes a lower low (LL) while RSI makes a higher low (HL).
+- Compare the two most recent swing lows in price and RSI.
+- Divergence is valid only if the RSI HL occurs within the last 3–5 bars.
+
+Step 2 — Confirm Trend Alignment:
+- The current candle must close above the 6-period SMA.
+- Ideally, the SMA is flat or turning upward, not sharply declining.
+
+Step 3 — Trigger:
+- Enter long on the close of the candle that satisfies both conditions.
+- Optional: Enter on a break above the high of the divergence candle for additional confirmation.
+
+4. EXIT RULES
+Primary Exit — Divergence Resolution:
+- Exit when 3-period RSI forms a bearish divergence (price higher high, RSI lower high) at a swing high.
+- Or exit when RSI crosses back below 50 after being overbought (>70).
+
+Secondary Exit — Volatility Spike:
+- Exit if ATR(14) increases by more than 50% compared to its 10-period average.
+- Or exit if the current candle range exceeds 2 × ATR(14).
+- This protects against sudden adverse moves after a divergence entry.
+
+Optional Trailing Stop:
+- Trail stop at 1.5 × ATR(14) below the highest close since entry.
+
+5. RISK MANAGEMENT
+- Position Sizing: Risk no more than 1% of account equity per trade.
+- Stop Loss: Place initial stop below the most recent swing low that formed the divergence, or at 1.5 × ATR below entry.
+- Risk-Reward: Target minimum 2:1. Divergence trades can fail quickly, so tight stops are essential.
+- Max Concurrent Positions: 1–2 to avoid overexposure in choppy markets.
+- Avoid Trading: During major news events or extremely low liquidity periods, as 3-period RSI can produce false divergences.
+
+6. PRACTICAL NOTES
+- The 3-period RSI is extremely sensitive; divergence signals should always be confirmed by the 6-period SMA break to filter noise.
+- In strong downtrends, bullish divergences often fail — only take signals when price is above the SMA.
+- Backtest across multiple assets and timeframes; divergence strategies perform best in ranging or early-trend markets, not in strong sustained trends.
+- Consider combining with a higher-timeframe trend filter (e.g., 50-period SMA) to avoid counter-trend entries.

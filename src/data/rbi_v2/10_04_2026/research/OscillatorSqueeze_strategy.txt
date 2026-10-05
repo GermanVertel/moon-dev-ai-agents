@@ -1,0 +1,47 @@
+STRATEGY_NAME: OscillatorSqueeze
+
+STRATEGY_DETAILS:
+This strategy combines three complementary indicators to identify high-probability trend reversal entries during oversold conditions, with volatility expansion as the trigger mechanism and channel/ATR-based exits.
+
+**Core Concept:**
+The strategy seeks to catch reversals when momentum shifts (MACD), price is statistically stretched (Bollinger Bands), and the market is oversold (RSI). It only enters when volatility confirms the setup, avoiding low-conviction chop.
+
+**Required Indicators:**
+1. **MACD (12, 26, 9)** — Standard settings for momentum/trend reversal detection
+2. **Bollinger Bands (20, 2)** — For volatility measurement and price extremes
+3. **RSI (14)** — For oversold/overbought confirmation
+4. **ATR (14)** — For volatility expansion confirmation and exit management
+5. **Price Channel** — Donchian or Keltner channel for breakout exit logic
+
+**Entry Rules (Long Example):**
+- **MACD Signal:** MACD line crosses above the signal line (bullish crossover), OR a bullish divergence forms (price makes lower low, MACD makes higher low)
+- **Bollinger Condition:** Bollinger Band Width (BBW) is expanding, indicating increased volatility. Price should have recently touched or pierced the lower band
+- **RSI Condition:** RSI is below 30 (oversold) or has just crossed back above 30 from below
+- **Volatility Confirmation:** ATR is rising, confirming the volatility expansion
+- **All three must align within a 2–3 bar window** for a valid signal
+
+**Entry Rules (Short Example):** Mirror of above — MACD bearish crossover/divergence, price at upper Bollinger Band with expanding width, RSI above 70 (or crossing below 70), ATR rising.
+
+**Exit Rules:**
+1. **Channel Breakout Exit:** Exit when price breaks out of the established price channel (Donchian high/low over N bars) in the direction of the trade — this captures trend continuation
+2. **ATR Expansion Exit:** If ATR expands beyond a threshold (e.g., 2x its 20-period average), take profit as volatility becomes extreme
+3. **Stop Loss:** Place stop at the recent swing low (long) or swing high (short), or 1.5x ATR from entry
+4. **Time-Based Exit:** Close position if neither target nor stop is hit within a set number of bars (e.g., 20)
+
+**Risk Management:**
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade, calculated using ATR-based stop distance
+- **Risk-Reward:** Target minimum 2:1 R:R using the channel breakout as the profit objective
+- **Max Concurrent Trades:** Limit to 1–2 positions to avoid correlated exposure
+- **Volatility Filter:** Skip trades during known low-liquidity periods (e.g., holidays, Asian session for US instruments) to avoid false BBW expansion signals
+- **Trailing Stop:** Once price moves 1R in favor, trail stop using ATR or the opposite Bollinger Band
+
+**Confirmation & Filters:**
+- Avoid entries when Bollinger Bands are extremely narrow (squeeze without directional bias) — wait for the expansion to confirm direction
+- Higher-timeframe trend alignment (e.g., 4H EMA) improves win rate but is optional for pure mean-reversion mode
+- Volume spike on the reversal bar strengthens the signal
+
+**Common Pitfalls to Avoid:**
+- Entering on MACD crossover alone without BB/RSI confirmation (leads to whipsaws)
+- Ignoring ATR expansion — entering during contraction often means the reversal fails
+- Holding through channel breakout against the position (respect the exit rule strictly)
+- Over-leveraging when volatility is high — ATR-based sizing is essential

@@ -1,0 +1,43 @@
+STRATEGY_NAME: DivergentConvergence
+
+STRATEGY_DETAILS:
+This strategy combines RSI divergence with Stochastic oscillator convergence to identify high-probability trend reversals. The core idea is that when momentum (RSI) diverges from price while a faster oscillator (Stochastic) confirms a convergence signal, the market is likely to reverse.
+
+**Key Components:**
+
+1. **RSI Divergence Detection**
+   - Bullish divergence: Price makes a lower low, but RSI makes a higher low.
+   - Bearish divergence: Price makes a higher high, but RSI makes a lower high.
+   - Lookback window: 14-period RSI, with divergence confirmed over 20–50 bars.
+
+2. **Stochastic Convergence**
+   - Stochastic oscillator (14,3,3) settings.
+   - Convergence defined as %K and %D lines crossing and moving together in the direction of the expected reversal.
+   - For long entry: %K crosses above %D in oversold zone (<20) and both turn upward.
+   - For short entry: %K crosses below %D in overbought zone (>80) and both turn downward.
+
+3. **Entry Rules**
+   - **Long Entry:** Bullish RSI divergence confirmed AND Stochastic %K crosses above %D from below 20, with both lines rising.
+   - **Short Entry:** Bearish RSI divergence confirmed AND Stochastic %K crosses below %D from above 80, with both lines falling.
+
+4. **Exit Rules**
+   - **Take Profit:** Fixed risk-reward ratio of 2:1, or exit when RSI reaches overbought/oversold opposite extreme.
+   - **Stop Loss:** Placed below the recent swing low (for longs) or above the recent swing high (for shorts), typically 1.5x ATR.
+   - **Trailing Stop:** Optional trailing stop using 2x ATR to lock in profits.
+
+5. **Risk Management**
+   - Risk per trade: 1–2% of account equity.
+   - Position sizing based on stop-loss distance.
+   - Avoid trading during major news events or low-liquidity sessions.
+   - Maximum of 2–3 concurrent positions to limit exposure.
+
+6. **Required Indicators**
+   - RSI (14-period)
+   - Stochastic Oscillator (14,3,3)
+   - ATR (14-period) for stop-loss and position sizing
+   - Optional: 50-period EMA for trend filter (only take longs above EMA, shorts below).
+
+**Additional Notes:**
+- Best applied on 1H–4H timeframes for swing trading.
+- Confirmation from volume or candlestick patterns (e.g., bullish engulfing) can increase win rate.
+- Backtest across different market conditions to validate divergence reliability.

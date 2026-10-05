@@ -1,0 +1,58 @@
+STRATEGY_NAME: AdaptiveBandReversion
+
+STRATEGY_DETAILS:
+This strategy combines RSI momentum with Bollinger Band volatility envelopes, filtered by a trend regime to trade reversion moves within the dominant trend direction. The core idea: RSI is itself an oscillator bounded 0–100, so applying Bollinger Bands to RSI creates dynamic overbought/oversold thresholds that expand in volatile conditions and contract in quiet ones. Entries only fire when a higher-timeframe trend filter confirms directional bias, avoiding counter-trend traps.
+
+1. KEY STRATEGY COMPONENTS
+- RSI (default period 14) plotted as the primary signal line.
+- Bollinger Bands applied to the RSI series (not price): SMA of RSI (length 20) with ±2 standard deviations.
+- Trend filter: a longer moving average on price (e.g., EMA 200 on the trading timeframe, or EMA 50 on a higher timeframe) to define bullish vs. bearish regime.
+- Optional ADX (>20 or >25) to confirm the market is actually trending and not ranging.
+
+2. ENTRY RULES
+Long entry (only in uptrend regime):
+- Trend filter: price above EMA 200 (or higher-TF EMA 50 sloping up).
+- Trigger: RSI crosses UP through the LOWER Bollinger Band of RSI (i.e., RSI was below the lower band and closes back above it). This is a reversion signal — the pullback in an uptrend has exhausted.
+- Confirmation (optional): ADX > 20 to ensure trend strength.
+
+Short entry (only in downtrend regime):
+- Trend filter: price below EMA 200 (or higher-TF EMA 50 sloping down).
+- Trigger: RSI crosses DOWN through the UPPER Bollinger Band of RSI (RSI was above the upper band and closes back below it).
+- Confirmation (optional): ADX > 20.
+
+Note: The "cross above/below" should be interpreted as re-entry into the bands after a band breach, not a fresh breach — this is the classic reversion trigger.
+
+3. EXIT RULES
+- Primary exit: RSI reverts to its midline (the SMA of RSI, i.e., the middle Bollinger Band). Close the position when RSI crosses the 50-line or the RSI-SMA in the direction of the trade.
+  - Long exit: RSI crosses above the middle band (RSI-SMA) or reaches 50–60.
+  - Short exit: RSI crosses below the middle band or reaches 40–50.
+- Optional aggressive exit: RSI touches the opposite band (upper band for longs, lower band for shorts).
+- Stop-loss: place below the most recent swing low (long) or above the most recent swing high (short), or a fixed ATR multiple (e.g., 1.5× ATR).
+- Trend-invalidation exit: if price closes back through the EMA 200 against the trade direction, exit immediately.
+
+4. RISK MANAGEMENT
+- Position sizing: risk 0.5–1% of equity per trade, sized from entry to stop distance.
+- ATR-based stops: stop = entry − 1.5×ATR (long) / entry + 1.5×ATR (short).
+- Take-profit: partial at middle band, remainder trailed with a moving average or ATR trailing stop.
+- Max concurrent risk: cap total open risk (e.g., 3% of equity).
+- Avoid trading during low-volatility chop: require ADX > 20 and/or Bollinger Band width above a minimum threshold.
+- No counter-trend entries: if the trend filter disagrees, skip the signal entirely.
+
+5. REQUIRED INDICATORS
+- RSI (period 14).
+- Bollinger Bands on RSI (SMA 20, 2 standard deviations) — upper, middle, lower.
+- EMA 200 (or higher-timeframe EMA 50) as trend filter.
+- ADX (period 14) as trend-strength filter.
+- ATR (period 14) for stop sizing and volatility filter.
+- Optional: volume filter to confirm reversion legs.
+
+6. PARAMETERS TO OPTIMIZE
+- RSI period (10–21).
+- Bollinger Band length (14–30) and standard deviation multiplier (1.5–2.5).
+- Trend EMA length (100–200) or higher-TF choice.
+- ADX threshold (20–30).
+- ATR stop multiple (1.0–2.5).
+- Exit target: middle band vs. 50-line vs. opposite band.
+
+7. LOGIC SUMMARY
+Trade WITH the trend, but enter on RSI extremes that touch the RSI-Bollinger envelope and then revert. The Bollinger Bands on RSI adapt the overbought/oversold threshold to current momentum volatility, while the EMA/ADX filter ensures you only take reversion entries in the direction of the dominant trend. Exit when momentum normalizes to the RSI midline, or on stop/trend invalidation.

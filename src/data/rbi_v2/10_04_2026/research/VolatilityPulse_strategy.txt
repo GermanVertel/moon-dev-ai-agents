@@ -1,0 +1,45 @@
+STRATEGY_NAME: VolatilityPulse
+
+STRATEGY_DETAILS:
+This strategy combines exponential moving averages (EMA) for trend direction, Bollinger Bands Width (BWW) for volatility expansion/contraction, and RSI for momentum confirmation. It is designed to capture sustained trends while avoiding low-volatility chop and early exits on momentum exhaustion.
+
+1. Key Strategy Components
+- Trend filter: EMA crossover (typically 20 EMA crossing above 50 EMA) identifies bullish trend initiation.
+- Volatility filter: Bollinger Bands Width (BWW = (Upper Band - Lower Band) / Middle Band) must be rising at entry, indicating expansion and trend conviction.
+- Momentum confirmation: RSI must be above 50 (and ideally rising) at entry, confirming bullish momentum.
+- Exit conditions: BWW contraction (volatility squeeze) or significant RSI divergence (price makes higher high while RSI makes lower high) signals trend exhaustion.
+
+2. Entry Rules
+- Long entry when:
+  - Fast EMA (e.g., 20) crosses above Slow EMA (e.g., 50).
+  - BWW is rising over the last N bars (e.g., 3 bars) and above its short-term average.
+  - RSI(14) > 50 and rising, or RSI crosses above 50.
+- Optional: price closes above the upper Bollinger Band or above the middle band with strong candle body.
+- Avoid entries if BWW is already extremely high (overextended) or RSI > 70 (overbought) unless trend is very strong.
+
+3. Exit Rules
+- Exit long when:
+  - BWW contracts for M consecutive bars (e.g., 3) or falls below its moving average, indicating volatility squeeze.
+  - Bearish RSI divergence: price makes a higher high while RSI makes a lower high over a lookback period (e.g., 14 bars).
+  - Optional stop-loss: close below the slow EMA or below the lower Bollinger Band.
+  - Optional take-profit: RSI > 80 and then crosses back below 70.
+- Exit all positions on opposite EMA crossover (fast below slow).
+
+4. Risk Management
+- Position sizing: risk 1–2% of equity per trade.
+- Stop-loss: placed below recent swing low or below the slow EMA (e.g., 1.5–2 ATR).
+- Trailing stop: use a Chandelier Exit or trail below the lower Bollinger Band as trend progresses.
+- Max drawdown control: reduce position size or pause trading if BWW remains low for extended periods (choppy market).
+- Avoid trading during low-volatility regimes (BWW below its 20-period average and flat).
+
+5. Required Indicators
+- EMA(20) and EMA(50) on close.
+- Bollinger Bands (20, 2) and Bollinger Bands Width (BWW).
+- RSI(14).
+- Optional: ATR(14) for stop placement, volume for confirmation.
+
+6. Timeframe and Market
+- Best suited for trending markets (stocks, forex, crypto) on 1H, 4H, or daily charts.
+- Avoid ranging markets; use BWW contraction as a filter to stay out.
+
+This strategy aims to ride volatility-expanding trends while exiting before momentum fully reverses, using BWW contraction and RSI divergence as early warning signals.

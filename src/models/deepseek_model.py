@@ -3,6 +3,7 @@
 Built with love by Moon Dev 🚀
 """
 
+import time
 from openai import OpenAI
 from termcolor import cprint
 from .base_model import BaseModel, ModelResponse
@@ -31,11 +32,13 @@ class DeepSeekModel(BaseModel):
         return self.MODEL_ALIASES.get(self.model_name, self.model_name)
     
     def initialize_client(self, **kwargs) -> None:
-        """Initialize the DeepSeek client"""
+        """Initialize the DeepSeek client with generous timeout and retries"""
         try:
             self.client = OpenAI(
                 api_key=self.api_key,
-                base_url=self.base_url
+                base_url=self.base_url,
+                timeout=120.0,
+                max_retries=3
             )
             api_model = self._get_api_model_name()
             cprint(f"✨ Initialized DeepSeek model: {self.model_name} (API endpoint: {api_model})", "green")
@@ -50,45 +53,55 @@ class DeepSeekModel(BaseModel):
         max_tokens: int = 4096,
         **kwargs
     ) -> ModelResponse:
-        """Generate a response using DeepSeek with thinking/reasoning support"""
-        try:
-            api_model = self._get_api_model_name()
-            
-            request_params = {
-                "model": api_model,
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_content}
-                ],
-                "max_tokens": max_tokens,
-                "stream": False,
-                **kwargs
-            }
-            
-            # DeepSeek Reasoner does not support custom temperature; only set for chat models
-            if api_model != "deepseek-reasoner" and temperature is not None:
-                request_params["temperature"] = temperature
-            
-            response = self.client.chat.completions.create(**request_params)
-            
-            message = response.choices[0].message
-            content = (message.content or "").strip()
-            reasoning_content = getattr(message, "reasoning_content", None)
-            
-            if reasoning_content:
-                cprint(f"🧠 DeepSeek Reasoning process detected ({len(reasoning_content)} chars)", "magenta")
-            
-            return ModelResponse(
-                content=content,
-                raw_response=response,
-                model_name=self.model_name,
-                usage=response.usage.model_dump() if hasattr(response, 'usage') and response.usage else None,
-                reasoning_content=reasoning_content
-            )
-            
-        except Exception as e:
-            cprint(f"❌ DeepSeek generation error: {str(e)}", "red")
-            raise
+        """Generate a response using DeepSeek with thinking/reasoning support and retry resilience"""
+        api_model = self._get_api_model_name()
+        
+        request_params = {
+            "model": api_model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_content}
+            ],
+            "max_tokens": max_tokens,
+            "stream": False,
+            **kwargs
+        }
+        
+        # DeepSeek Reasoner does not support custom temperature; only set for chat models
+        if api_model != "deepseek-reasoner" and temperature is not None:
+            request_params["temperature"] = temperature
+        
+        max_attempts = 3
+        for attempt in range(1, max_attempts + 1):
+            try:
+                response = self.client.chat.completions.create(**request_params)
+                
+                message = response.choices[0].message
+                content = (message.content or "").strip()
+                reasoning_content = getattr(message, "reasoning_content", None)
+                
+                if reasoning_content:
+                    cprint(f"🧠 DeepSeek Reasoning process detected ({len(reasoning_content)} chars)", "magenta")
+                
+                return ModelResponse(
+                    content=content,
+                    raw_response=response,
+                    model_name=self.model_name,
+                    usage=response.usage.model_dump() if hasattr(response, 'usage') and response.usage else None,
+                    reasoning_content=reasoning_content
+                )
+                
+            except Exception as e:
+                err_str = str(e).lower()
+                is_transient = any(keyword in err_str for keyword in ["timeout", "timed out", "connect", "connection", "500", "502", "503", "504", "rate limit", "429"])
+                
+                if attempt < max_attempts and is_transient:
+                    wait_time = attempt * 8
+                    cprint(f"⚠️ DeepSeek request issue (attempt {attempt}/{max_attempts}): {str(e)}. Retrying in {wait_time}s...", "yellow")
+                    time.sleep(wait_time)
+                else:
+                    cprint(f"❌ DeepSeek generation error: {str(e)}", "red")
+                    raise
     
     def is_available(self) -> bool:
         """Check if DeepSeek is available"""

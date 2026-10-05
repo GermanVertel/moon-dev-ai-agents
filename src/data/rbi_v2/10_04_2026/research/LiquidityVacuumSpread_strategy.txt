@@ -1,0 +1,52 @@
+STRATEGY_NAME: LiquidityVacuumSpread
+
+STRATEGY_DETAILS:
+This strategy exploits the tendency for index ETFs to experience sharp, asymmetric downside moves when liquidity dries up — often during pre-holiday sessions, late-day summer Fridays, or macro-event blackout windows. The core trade is a bear put spread (long higher-strike put, short lower-strike put) on liquid index ETFs like SPY, QQQ, or IWM, sized to profit from a volatility expansion and directional decline that occurs when order books thin out.
+
+1. KEY STRATEGY COMPONENTS
+- Liquidity Regime Detection: Identify "low liquidity" windows using a composite of:
+  - Time-of-day filters (first/last 30 min of session, lunch hour, pre-holiday half-days)
+  - Seasonal filters (August, late December, day before/after major holidays)
+  - Volume vs. 20-day average volume ratio (trigger when current volume < 60% of average)
+  - Bid-ask spread widening on the ETF (>1.5x its 20-day median spread)
+  - VIX term structure in contango but with rising short-dated IV (front-month > 5-day IV slope)
+- Directional Bias: Only take the trade when price is below the 20-EMA and the 20-EMA is flat-to-declining, confirming a weak underlying.
+- Catalyst Awareness: Avoid initiating within 24 hours of scheduled FOMC/CPI/NFP releases (those are high-liquidity, high-volatility events — the opposite regime).
+
+2. ENTRY RULES
+- Entry trigger: All of the following must be true:
+  a) Liquidity score below threshold (volume ratio < 0.6, spread ratio > 1.5)
+  b) SPY/QQQ/IWM trading below its 20-EMA
+  c) 5-day realized volatility < 20-day realized volatility (compression before expansion)
+  d) RSI(14) between 30 and 55 (not oversold, room to fall)
+- Structure: Buy ATM or slightly OTM put (delta ~ -0.45 to -0.55), sell put 1.5–2.0 standard deviations lower (delta ~ -0.15 to -0.20).
+- Expiration: 7–14 DTE to capture the near-term liquidity event without excessive theta decay.
+- Timing: Enter in the first 45 minutes of the session OR the last 30 minutes, when liquidity is thinnest.
+
+3. EXIT RULES
+- Profit target: Close when spread value reaches 1.75x–2.0x entry debit, OR when the underlying hits the short strike.
+- Time stop: Exit at 3 DTE if not yet profitable to avoid gamma/theta whipsaw.
+- Stop loss: Close if spread loses 50% of debit, OR if volume ratio normalizes above 1.0 (liquidity has returned).
+- Regime exit: If VIX drops below its 10-day low, close immediately — the liquidity vacuum thesis is invalidated.
+
+4. RISK MANAGEMENT
+- Position size: Risk no more than 0.5%–1.0% of account equity per spread (low-liquidity trades have wider slippage).
+- Max concurrent positions: 2 (avoid correlated ETF exposure — SPY, QQQ, IWM are highly correlated).
+- Use limit orders only — never market orders in thin books.
+- Account for slippage: assume 3–5% worse fills than mid-price when modeling expected value.
+- Avoid holding through earnings-heavy weeks for QQQ (mega-cap concentration risk).
+
+5. REQUIRED INDICATORS
+- Volume ratio (current vs. 20-day average)
+- Bid-ask spread ratio (current vs. 20-day median)
+- 20-EMA on the underlying ETF
+- RSI(14)
+- Realized volatility ratio (5-day vs. 20-day)
+- VIX level and VIX 10-day low
+- Economic calendar filter (FOMC, CPI, NFP blackout windows)
+- Options chain data: IV skew, put delta, DTE availability
+
+6. EDGE & FAILURE MODES
+- Edge: Liquidity vacuums create non-linear price impact — small sell orders move price disproportionately, and put spreads benefit from both delta and vega expansion.
+- Failure mode: If the Fed or a surprise headline injects liquidity, the vacuum closes instantly and the spread bleeds theta. The volume-ratio exit rule is critical.
+- Backtest note: Expect low win rate (~35–40%) but high payoff ratio (>2.5:1); the strategy is a convexity play, not a high-frequency edge.

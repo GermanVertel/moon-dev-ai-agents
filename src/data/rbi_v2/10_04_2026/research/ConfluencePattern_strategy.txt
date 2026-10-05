@@ -1,0 +1,64 @@
+STRATEGY_NAME: ConfluencePattern
+
+STRATEGY_DETAILS:
+This strategy identifies and trades price patterns that emerge when multiple technical indicators align at the same price and time zone — a phenomenon called "confluence." Instead of relying on any single indicator, it waits for 2–3 independent signals to converge before entering a trade, filtering out false signals and low-probability setups.
+
+1. KEY STRATEGY COMPONENTS
+
+- Confluence Zones: Price areas where multiple indicators overlap, such as:
+  - A moving average (e.g., 50 EMA) intersecting a prior support/resistance level
+  - A Fibonacci retracement level (38.2%, 50%, 61.8%) coinciding with a trendline
+  - An RSI oversold/overbought reading occurring at a key structural level
+  - A VWAP or volume profile node aligning with a breakout point
+
+- Pattern Recognition: Look for recognizable candlestick/price patterns forming at these zones:
+  - Engulfing candles, pin bars, or inside bars at confluence
+  - Double tops/bottoms or head-and-shoulders near overlapping indicators
+  - Break-and-retest patterns where a broken level becomes support/resistance
+
+- Multi-Timeframe Confirmation: Check that the confluence zone is significant on both a higher timeframe (e.g., 4H/Daily) and the execution timeframe (e.g., 15m/1H).
+
+2. ENTRY RULES
+
+- Long Entry:
+  - Price reaches a confluence zone (support cluster) from above
+  - At least 2 of these align: bullish reversal candlestick, RSI < 35 turning up, price above 200 EMA on higher timeframe, MACD bullish crossover, or bounce off Fibonacci level
+  - Enter on the close of the confirming candle, or on a break above the high of the reversal candle
+
+- Short Entry:
+  - Price reaches a confluence zone (resistance cluster) from below
+  - At least 2 of these align: bearish reversal candlestick, RSI > 65 turning down, price below 200 EMA on higher timeframe, MACD bearish crossover, or rejection at Fibonacci level
+  - Enter on the close of the confirming candle, or on a break below the low of the rejection candle
+
+- Avoid entries when indicators conflict (e.g., RSI oversold but price breaking major support with volume) — this is a "broken confluence" and signals a likely continuation, not reversal.
+
+3. EXIT RULES
+
+- Take Profit:
+  - First target: nearest opposing confluence zone or prior swing high/low
+  - Second target: next major Fibonacci extension (1.272 or 1.618) or measured move
+  - Trail stop once first target is hit
+
+- Stop Loss:
+  - Place just beyond the confluence zone (e.g., below the swing low that formed the support cluster, plus a small buffer for volatility using ATR)
+  - If price closes decisively through the confluence zone, the setup is invalidated — exit immediately
+
+4. RISK MANAGEMENT
+
+- Risk no more than 1–2% of account equity per trade
+- Position size = (Account Risk $) / (Entry − Stop distance)
+- Require a minimum risk-to-reward ratio of 1:2 before entering
+- Limit to 2–3 concurrent confluence trades to avoid overexposure to correlated setups
+- Skip trades during major news events or low-liquidity sessions unless the confluence zone is exceptionally strong
+
+5. REQUIRED INDICATORS
+
+- Moving Averages: 50 EMA and 200 EMA (trend and dynamic support/resistance)
+- RSI (14): momentum and overbought/oversold confirmation
+- MACD (12, 26, 9): momentum shift and crossover confirmation
+- Fibonacci Retracement/Extension: static confluence levels
+- VWAP or Volume Profile: institutional price levels and volume nodes
+- ATR (14): volatility-based stop placement and position sizing
+- Support/Resistance & Trendlines: structural confluence anchors
+
+The core edge is patience: only trade when multiple independent tools point to the same price zone, then let the pattern at that zone dictate entry timing.

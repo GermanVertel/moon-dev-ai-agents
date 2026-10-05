@@ -1,0 +1,47 @@
+STRATEGY_NAME: VolatilitySqueeze
+
+STRATEGY_DETAILS:
+This strategy is a **volatility-contraction breakout system** designed to catch explosive moves that follow periods of unusually low volatility. It is built on the principle that markets alternate between compression (low volatility, tight ranges) and expansion (high volatility, directional trends). By entering only when volatility transitions from compressed to expanded, it avoids choppy, range-bound conditions and targets high-momentum breakouts.
+
+**Core Concept**
+Volatility is mean-reverting. When price consolidates into a narrow range, energy builds up and eventually releases in a sharp directional move. This strategy quantifies "squeeze" conditions and waits for the first strong expansion candle to join the breakout in the direction of the prevailing trend filter.
+
+**Required Indicators**
+1. **Bollinger Bands (20-period, 2 standard deviations)** – measures the outer volatility envelope.
+2. **Keltner Channel (20-period EMA, 1.5× ATR)** – measures inner volatility using true range.
+3. **Squeeze condition:** Bollinger Bands contract *inside* the Keltner Channel. This signals an extreme low-volatility regime.
+4. **ATR (14-period)** – used for position sizing and stop placement.
+5. **200-period EMA** – trend filter to bias breakout direction.
+6. **Momentum histogram (e.g., MACD or a simple linear-regression slope)** – confirms the direction and strength of the release.
+
+**Entry Rules**
+- **Long entry:** Squeeze condition is active (Bollinger Bands inside Keltner Channel), then price closes above the upper Bollinger Band, the momentum histogram flips positive, and price is above the 200 EMA.
+- **Short entry:** Squeeze condition is active, then price closes below the lower Bollinger Band, the momentum histogram flips negative, and price is below the 200 EMA.
+- Enter on the close of the breakout candle, or on a stop order just beyond the breakout candle's high/low for confirmation.
+
+**Exit Rules**
+- **Initial stop-loss:** Placed at 1.5× ATR from entry, or at the opposite Bollinger Band, whichever is tighter.
+- **Profit target 1:** 2× ATR (scale out 50%).
+- **Profit target 2:** Trail the remainder using a 2× ATR trailing stop, or exit when price closes back inside the Bollinger Bands.
+- **Time stop:** If the trade does not reach +1× ATR within 10 bars, exit to avoid dead trades.
+
+**Risk Management**
+- Risk a fixed 1% of account equity per trade. Position size = (Account × 1%) ÷ (Entry − Stop distance).
+- Maximum 2 concurrent positions to limit correlated exposure.
+- No new entries during major news events (e.g., FOMC, NFP) to avoid slippage-driven false breakouts.
+- Skip signals if the squeeze has lasted fewer than 5 bars (insufficient compression) or if ATR is already elevated.
+
+**Best Markets and Timeframes**
+- Works best on liquid instruments: index futures (ES, NQ), major FX pairs (EUR/USD, GBP/USD), and large-cap crypto (BTC, ETH).
+- Recommended timeframe: 15-minute to 4-hour charts for intraday/swing balance.
+- Avoid low-liquidity instruments where breakouts frequently fail.
+
+**Strengths**
+- Systematically avoids choppy markets by trading only after compression.
+- Clear, objective, rules-based entries and exits.
+- Adapts to changing volatility through ATR-based sizing and stops.
+
+**Weaknesses**
+- False breakouts can occur; the trend filter and momentum confirmation mitigate but do not eliminate whipsaws.
+- Fewer trade signals during strongly trending, high-volatility markets.
+- Requires discipline to wait for the squeeze condition rather than forcing trades.

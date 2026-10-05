@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Moon Dev OscillatorSqueeze Backtest Loading... \ud83d\ude80\n\ud83d\udcca Data shape: (31066, 5)\n\ud83d\udcc8 Columns: ['Open', 'High', 'Low', 'Close', 'Volume']\n\n\ud83c\udf19 Starting Moon Dev OscillatorSqueeze Backtest... \ud83d\ude80\u2728\n\ud83c\udf19 Moon Dev indicators initialized! \u2728\n\ud83c\udf19\ud83d\ude80 LONG SIGNAL! Price: 26755.45 | RSI: 37.1 | MACD Cross \u2705 | BBW Expanding \u2705 | ATR Rising \u2705\n   Entry: 26755.45 | Stop: 26678.78 | TP: 26908.79 | Size: 37\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/31032 [00:00<?, ?bar/s]\n                                                        \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/OscillatorSqueeze_PKG.py\", line 263, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/OscillatorSqueeze_PKG.py\", line 230, in next\n    bars_in_trade = len(self.data) - self.position.entry_bar\nAttributeError: 'Position' object has no attribute 'entry_bar'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/OscillatorSqueeze_PKG.py` failed. (See above for error)\n",
+  "execution_time": 4.655504,
+  "timestamp": "2026-10-05T01:26:09.165380"
+}

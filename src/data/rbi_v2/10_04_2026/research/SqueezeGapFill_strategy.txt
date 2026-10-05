@@ -1,0 +1,74 @@
+STRATEGY_NAME: SqueezeGapFill
+
+STRATEGY_DETAILS:
+This strategy exploits short-squeeze dynamics combined with options-flow sentiment to capture upside gap-fill moves. It targets heavily shorted names with bullish options positioning that are trading at discounted price levels, betting on forced covering and mean reversion toward prior gaps.
+
+KEY STRATEGY COMPONENTS:
+
+1. Universe Screening (Short Interest Coverage)
+- Screen for stocks with Days-to-Cover (DTC) ratio ≥ 5 days (high short interest relative to average daily volume)
+- Short interest as % of float ≥ 15% (heavily shorted)
+- Focus on names that have recently gapped DOWN and are trading near lower price levels (below 20-day or 50-day moving average)
+- Market cap filter: $500M–$10B (liquid enough to trade, small enough for squeezes)
+
+2. Options Sentiment Confirmation (Put-Call Ratio)
+- Put-Call Ratio (PCR) on volume: between 0.5 and 0.8 (bullish tilt — more call buying than puts)
+- Put-Call Ratio on open interest: declining trend over last 5 sessions (shorts covering hedges)
+- Look for elevated call volume relative to 20-day average (≥ 1.5x) as confirmation of bullish positioning
+- Optional: rising implied volatility skew toward calls
+
+3. Price Level / Gap-Down Setup
+- Identify a recent unfilled gap-down (price gapped below prior close by ≥ 3% within last 10 trading days)
+- Stock currently trading in lower 25% of its 52-week range
+- RSI(14) between 25–40 (oversold but not dead-cat territory)
+- Price stabilizing above a recent swing low (higher low formation)
+
+ENTRY RULES:
+- Enter long when ALL of the following align:
+  a) DTC ≥ 5 and short float ≥ 15%
+  b) PCR (volume) ≤ 0.8 and declining
+  c) Price closes above the prior day's high (confirmation of reversal)
+  d) Volume on entry day ≥ 1.5x 20-day average volume
+- Stagger entries: 50% initial position on signal, add 50% on breakout above the gap-fill midpoint
+
+EXIT RULES:
+- Primary target: Gap-fill level (prior gap-down origin) — typically 10–20% upside
+- Scale out: 50% at +10%, remaining 50% at gap-fill or +20%
+- Trailing stop: Activate after +8% gain, trail by 5% (ATR-based)
+- Time stop: Exit if no progress toward target within 15 trading days
+
+RISK MANAGEMENT:
+- Hard stop-loss: -7% from entry (or below the reversal-day low, whichever is tighter)
+- Position sizing: Risk no more than 1% of portfolio per trade
+- Max 3 concurrent positions (squeeze trades are volatile and correlated)
+- Avoid earnings dates within 5 days of entry unless catalyst is intentional
+- Reduce size by 50% if VIX > 30 (broad market stress)
+- Monitor borrow rates: if short borrow fee spikes > 50%, expect squeeze acceleration (favorable) but also higher volatility
+
+REQUIRED INDICATORS:
+- Days-to-Cover (DTC) and Short % of Float
+- Put-Call Ratio (volume and open interest, 5-day and 20-day)
+- Relative Volume (current vs 20-day average)
+- RSI(14)
+- ATR(14) for trailing stops and volatility sizing
+- 20/50-day SMAs for trend/price-level context
+- 52-week high/low for range positioning
+- Gap detection (prior close vs current open)
+
+MARKET CONTEXT FILTERS:
+- Best performance in neutral-to-bullish broad market (SPY above 50-day SMA)
+- Avoid during high-correlation risk-off events (credit spreads widening, VIX > 35)
+- Sector preference: small-cap growth, biotech, and high-beta tech where squeezes are most common
+
+EXPECTED PERFORMANCE PROFILE:
+- Win rate: ~45–55% (asymmetric payoff driven)
+- Average winner: +12–18%
+- Average loser: -6–7%
+- Reward-to-risk: ~2:1 or better
+- Holding period: 3–15 trading days
+
+KEY RISKS:
+- Squeezes can reverse violently; strict stops are essential
+- Low-float names may have poor liquidity and wide spreads
+- False PCR signals during earnings or macro events
+- Gap-downs sometimes reflect fundamental deterioration (avoid "value traps")

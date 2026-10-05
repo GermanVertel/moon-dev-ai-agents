@@ -1,0 +1,63 @@
+STRATEGY_NAME: DivergentReversion
+
+STRATEGY_DETAILS:
+This strategy combines MACD divergence detection with Bollinger Band breakout confirmation to identify high-probability mean-reversion trades. The core premise is that when price breaks outside the Bollinger Bands but MACD shows divergence (weakening momentum), the breakout is likely a trap, and price will revert back inside the channel.
+
+**Key Strategy Components:**
+
+1. **Bollinger Band Setup**: 
+   - Period: 20 SMA
+   - Standard deviations: 2.0
+   - Bands: Upper (+2σ), Middle (20 SMA), Lower (-2σ)
+
+2. **MACD Setup**:
+   - Fast EMA: 12
+   - Slow EMA: 26
+   - Signal line: 9
+   - Histogram: MACD line minus signal line
+
+**Entry Rules:**
+
+*Long Entry (Bullish Reversion):*
+- Price closes below the Lower Bollinger Band (-2σ)
+- Simultaneously, MACD shows bullish divergence: price makes a lower low while MACD histogram/macd line makes a higher low over the last 2-3 swings
+- Enter long on the next candle open after a bullish reversal candle (e.g., hammer, bullish engulfing) forms at/below the lower band
+
+*Short Entry (Bearish Reversion):*
+- Price closes above the Upper Bollinger Band (+2σ)
+- Simultaneously, MACD shows bearish divergence: price makes a higher high while MACD histogram/macd line makes a lower high over the last 2-3 swings
+- Enter short on the next candle open after a bearish reversal candle forms at/above the upper band
+
+**Exit Rules:**
+
+1. **Primary Exit (Mean Reversion Target):**
+   - Long: Exit when price closes back inside the channel, i.e., reverts to within ±2σ (specifically, close above the Lower Band, ideally targeting the Middle Band / 20 SMA)
+   - Short: Exit when price closes back inside the channel (close below the Upper Band, targeting the Middle Band)
+
+2. **Partial Exit (Optional):**
+   - Take 50% profit at the Middle Band (20 SMA)
+   - Let remaining 50% run to the opposite band or trail with a stop
+
+3. **Stop-Loss Exit:**
+   - Long: Stop below the most recent swing low or 1.5× ATR below entry
+   - Short: Stop above the most recent swing high or 1.5× ATR above entry
+
+**Risk Management:**
+
+- **Position Sizing**: Risk no more than 1-2% of account equity per trade
+- **ATR-Based Stops**: Use 14-period ATR to set dynamic stops (1.5× ATR)
+- **Divergence Confirmation**: Require divergence across at least 2 swing points to avoid false signals
+- **Time Stop**: Exit if price does not revert within 10-15 candles (momentum may be genuine)
+- **Avoid Trending Markets**: Use ADX filter — avoid entries when ADX > 30 (strong trend) to prevent catching falling knives
+- **Max Concurrent Positions**: Limit to 1-2 positions per instrument
+
+**Required Indicators:**
+
+1. Bollinger Bands (20, 2.0)
+2. MACD (12, 26, 9) — both line and histogram
+3. ATR (14) for stop placement
+4. ADX (14) for trend filter
+5. Volume (optional) — confirm divergence with declining volume on the breakout
+
+**Trade Logic Summary:**
+The strategy waits for a "false breakout" scenario — price pierces the Bollinger Band, but MACD divergence reveals weakening momentum. The trader fades the breakout, entering against the move and targeting a reversion back to the channel (Middle Band as primary target). The ±2σ reversion acts as the exit trigger, ensuring trades close once the mean-reversion thesis is validated.

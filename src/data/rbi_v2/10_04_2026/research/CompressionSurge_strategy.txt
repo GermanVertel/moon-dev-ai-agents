@@ -1,0 +1,45 @@
+STRATEGY_NAME: CompressionSurge
+
+STRATEGY_DETAILS:
+This strategy is a volatility-contraction momentum play. It waits for the market to "coil" (narrow Bollinger Band width) and then rides the expansion move, using a relative-strength ratio to time the exit. It is best suited to trending or breakout-prone markets (equities, crypto, FX majors) on intraday to swing timeframes.
+
+1. KEY STRATEGY COMPONENTS
+- Volatility Compression Filter: 50-period Bollinger Bands. Track BandWidth = (Upper Band − Lower Band) / Middle Band (or simply Upper − Lower). A "contraction" is identified when current BandWidth falls below a threshold relative to its recent history (e.g., BandWidth < 20th percentile of the last 100 bars, or BandWidth < its 50-period average by a set margin). This signals a low-volatility squeeze.
+- Momentum Trigger: Once compression is detected, the strategy looks for a momentum expansion to confirm direction. Since the entry is long-only, confirmation can be a close above the 50-period middle band (SMA) or a bullish candle closing above the upper band.
+- Exit Oscillator: 20-period RSI relative to the Bollinger Band upper band. Ratio = RSI(20) / UpperBand(50). Exit when Ratio > 1.5, indicating momentum has become overextended relative to the band envelope.
+
+2. ENTRY RULES (LONG ONLY)
+- Condition A (Compression): 50-period Bollinger BandWidth is in a contracted state (below threshold/percentile).
+- Condition B (Breakout Confirmation): Price closes above the 50-period middle band (SMA) AND/OR closes above the 50-period upper band on expanding volume.
+- Condition C (Optional momentum filter): RSI(20) > 50 and rising.
+- Enter long on the close of the confirmation bar or on a stop-entry just above the breakout bar's high.
+- Optional: require BandWidth to start expanding (current BandWidth > previous BandWidth) to avoid entering during continued chop.
+
+3. EXIT RULES
+- Primary Exit: Close the long when RSI(20) / UpperBand(50) > 1.5. This ratio rises as RSI climbs and/or the band tightens around price; crossing 1.5 signals the move is stretched.
+- Secondary/Protective Exits:
+  - Price closes back below the 50-period middle band (trend failure).
+  - ATR-based trailing stop (e.g., 2×ATR(14)) to lock in gains.
+  - Time stop: exit if no ratio trigger within N bars (e.g., 20) to avoid dead trades.
+- Take profit can be partial (e.g., 50% at ratio 1.3, remainder at 1.5) to smooth the equity curve.
+
+4. RISK MANAGEMENT
+- Position sizing: risk a fixed % of equity per trade (e.g., 0.5–1%), with stop distance defined by ATR or the lower band.
+- Initial stop: below the breakout bar low, below the 50-period lower band, or 1.5–2×ATR below entry.
+- Max concurrent positions and per-sector/per-symbol exposure caps to avoid correlated squeeze trades.
+- Avoid entries during scheduled high-impact news or illiquid sessions.
+- Because the strategy is long-only, add a market-regime filter (e.g., only trade when price > 200-period SMA) to avoid fighting downtrends.
+
+5. REQUIRED INDICATORS
+- Bollinger Bands (50-period, 2 standard deviations) → Upper, Middle (SMA), Lower, BandWidth.
+- RSI (20-period).
+- ATR (14-period) for stops and trailing.
+- Volume (optional confirmation of breakout).
+- Percentile/rolling-min function to define the compression threshold.
+- Optional: 200-period SMA for regime filter.
+
+6. IMPLEMENTATION NOTES
+- Compute BandWidth history and set contraction threshold dynamically (percentile or multiple of average) rather than a fixed number, since band width scales with price.
+- Guard against division/scale issues in the RSI/UpperBand ratio when price is very low or high—normalize or use RSI relative to a scaled band if needed.
+- Backtest across different volatility regimes; the 1.5 exit threshold may need tuning per instrument.
+- Watch for whipsaws: require both compression AND an expansion confirmation before entering.

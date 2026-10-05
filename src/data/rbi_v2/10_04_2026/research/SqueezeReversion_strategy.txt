@@ -1,0 +1,38 @@
+STRATEGY_NAME: SqueezeReversion
+
+STRATEGY_DETAILS:
+This strategy exploits the well-documented tendency for periods of low volatility to precede explosive price moves. It uses Bollinger Bands as both a volatility gauge and a directional trigger, then fades the breakout once volatility normalizes.
+
+1. KEY STRATEGY COMPONENTS
+- Bollinger Bands: 20-period SMA with 2 standard deviations (upper, middle, lower).
+- Bandwidth (volatility measure): (Upper Band − Lower Band) / Middle Band.
+- Volatility baseline: N-period SMA of Bandwidth (e.g., 20-period) to define "average" volatility.
+- Squeeze condition: Current Bandwidth < Bandwidth SMA (volatility below average).
+- Breakout trigger: Price closes outside either Band while in a squeeze.
+- Exit trigger: Bands expand back to/above their upper volatility threshold (Bandwidth crosses above its SMA), signaling volatility normalization.
+
+2. ENTRY RULES (SHORT SIDE)
+- Confirm a squeeze: Bandwidth < its 20-period SMA for at least 3 consecutive bars.
+- Wait for a close above the Upper Band (upside breakout) or below the Lower Band (downside breakout).
+- Enter SHORT on the asset when the breakout candle closes (or on the next bar open) — the thesis is that the breakout is a volatility spike that will mean-revert once bands expand.
+- Optional filter: only short if price is above the Middle Band (overextension) to avoid shorting into strong downtrends.
+
+3. EXIT RULES
+- Primary exit: Close the short when Bandwidth expands back to or above its upper threshold (Bandwidth ≥ Bandwidth SMA), i.e., the bands have "expanded to the upper band" of volatility.
+- Secondary exit (stop): If price continues against the position by a defined % (e.g., 2× ATR) beyond the entry, exit to cap losses.
+- Time-based exit: Close after a maximum holding period (e.g., 10–15 bars) if neither condition triggers.
+
+4. RISK MANAGEMENT
+- Position sizing: Risk no more than 1–2% of equity per trade.
+- Stop-loss: Place above the recent swing high (for shorts) or use 2× ATR from entry.
+- Take-profit: Bandwidth reversion to its SMA acts as the natural profit target.
+- Avoid trading during scheduled high-impact news/earnings, which can invalidate the mean-reversion premise.
+
+5. REQUIRED INDICATORS
+- Bollinger Bands (20, 2)
+- Bandwidth = (Upper − Lower) / Middle
+- Bandwidth SMA (20) as volatility baseline
+- ATR (14) for stop placement and position sizing
+- Optional: RSI or volume confirmation to filter false breakouts
+
+NOTE: The strategy is inherently contrarian on the short side — it assumes breakouts from low-volatility regimes overextend and revert once volatility expands. Backtest across multiple regimes before live deployment.

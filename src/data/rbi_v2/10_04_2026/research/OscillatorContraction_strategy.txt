@@ -1,0 +1,53 @@
+STRATEGY_NAME: OscillatorContraction
+
+STRATEGY_DETAILS:
+This strategy combines RSI divergence with Bollinger Band overextension and volume confirmation to identify high-probability mean-reversion entries. It is best applied on liquid instruments (futures, large-cap equities, FX majors) on intraday to swing timeframes (5m–1h).
+
+1. KEY STRATEGY COMPONENTS
+- Bollinger Bands (BB): Period 20, Standard Deviation 2.0 (tunable to 2.5 for "overextended" filtering).
+- RSI: Period 14 (optionally 9 for faster signals).
+- Volume: 20-period volume SMA as baseline; spike = volume > 1.5–2.0x SMA.
+- ATR: Period 14 for exit targets and stop sizing.
+- Divergence detection: Price makes a new BB extreme (upper or lower band touch/close beyond) while RSI fails to confirm (lower high in overbought, higher low in oversold).
+
+2. ENTRY RULES
+Short Setup (Overbought Reversion):
+- Price closes at or above the upper Bollinger Band (overextension).
+- RSI is > 70 but forms a lower high versus the prior RSI peak while price makes a higher high (bearish divergence).
+- Volume spike confirms exhaustion: current bar volume > 1.5x 20-period volume SMA.
+- Entry: on the close of the confirmation bar, or on the first bar that closes back inside the upper band.
+
+Long Setup (Oversold Reversion):
+- Price closes at or below the lower Bollinger Band.
+- RSI is < 30 but forms a higher low versus the prior RSI trough while price makes a lower low (bullish divergence).
+- Volume spike confirms capitulation: current bar volume > 1.5x 20-period volume SMA.
+- Entry: on the close of the confirmation bar, or on the first bar that closes back inside the lower band.
+
+Filters:
+- Avoid entries during major news/earnings unless volatility regime is confirmed.
+- Optional trend filter: skip counter-trend entries if price is beyond 3x ATR from the 200-EMA (strong trend regime).
+
+3. EXIT RULES
+- Primary target: 1.5x–2.0x ATR (14) from entry, in the direction of the mean (toward the BB middle band / 20-SMA).
+- Secondary target: BB middle band (20-SMA) touch.
+- Time/roll exit: close position on contract rollback or rollover date for futures; for other instruments, exit after N bars (e.g., 20) if neither target nor stop is hit.
+- Trailing option: trail stop by 1x ATR once price reaches 1x ATR in profit.
+
+4. RISK MANAGEMENT
+- Stop loss: 1.0x–1.5x ATR beyond the extreme (above the upper band high for shorts, below the lower band low for longs).
+- Position sizing: risk 0.5%–1.0% of equity per trade; size = (Account Risk) / (Stop Distance in ATR terms).
+- Max concurrent positions: 1–2 per instrument to avoid correlated exposure.
+- Volatility guard: skip trades if ATR is below the 20th percentile of its 100-bar range (dead market) or above the 95th percentile (chaotic regime).
+- Rollback handling: for futures, flatten or roll positions 1–2 days before expiry to avoid delivery/rollover slippage.
+
+5. REQUIRED INDICATORS
+- Bollinger Bands (20, 2.0)
+- RSI (14)
+- Volume + Volume SMA (20)
+- ATR (14)
+- Optional: 200-EMA trend filter, BB middle band (20-SMA)
+
+6. EXECUTION NOTES
+- Confirm divergence using swing pivots (e.g., 3-bar fractal) to avoid noise.
+- Require at least one bar of confirmation (close back inside the band) before entry to reduce false signals.
+- Log volume spike ratio and RSI divergence strength for post-trade analysis and parameter tuning.

@@ -1,0 +1,78 @@
+STRATEGY_NAME: FractalTrailblazer
+
+STRATEGY_DETAILS:
+A trend-following framework that uses Bill Williams-style fractal patterns to confirm swing pivots, then rides established trends with trailing exits. The core idea: fractals mark local highs/lows; a break beyond a confirmed fractal signals trend continuation, while trailing stops lock in gains and exit on structure failure.
+
+1. KEY STRATEGY COMPONENTS
+- Fractal Definition (5-bar pattern):
+  - Up fractal: a bar with the highest high among itself and the two bars on each side (bars i-2, i-1, i, i+1, i+2).
+  - Down fractal: a bar with the lowest low among itself and the two bars on each side.
+  - Only "confirmed" fractals (fully formed after 2 bars) are valid.
+- Trend Filter:
+  - Use a higher-timeframe or long-period EMA (e.g., 200 EMA) to define trend bias.
+  - Optional: ADX > 20 to ensure trending market conditions.
+- Entry Trigger:
+  - Long: price closes above the most recent confirmed up fractal high, AND price is above the 200 EMA.
+  - Short: price closes below the most recent confirmed down fractal low, AND price is below the 200 EMA.
+- Trend Continuation Logic:
+  - After entry, only add/scale if new fractals form in the trend direction and price breaks them.
+- Exit Trigger:
+  - Trailing stop placed at the most recent opposite fractal (down fractal for longs, up fractal for shorts).
+  - Or use an ATR-based trailing stop (e.g., 2x ATR) as a secondary exit.
+
+2. ENTRY RULES
+- Long Entry:
+  1. Confirm uptrend: close > 200 EMA and EMA slope positive.
+  2. Identify latest confirmed up fractal high (F_up).
+  3. Enter long on a close above F_up (or a buy-stop just above F_up).
+  4. Optional filter: RSI > 50 or MACD histogram > 0 for momentum confirmation.
+- Short Entry:
+  1. Confirm downtrend: close < 200 EMA and EMA slope negative.
+  2. Identify latest confirmed down fractal low (F_dn).
+  3. Enter short on a close below F_dn (or a sell-stop just below F_dn).
+  4. Optional filter: RSI < 50 or MACD histogram < 0.
+- Avoid entries during consolidation: require at least 2 consecutive fractals in trend direction before entry.
+
+3. EXIT RULES
+- Primary Exit (Structure-Based Trailing Stop):
+  - Long: move stop to the most recent confirmed down fractal low each time a new one forms.
+  - Short: move stop to the most recent confirmed up fractal high each time a new one forms.
+- Secondary Exit (Volatility Stop):
+  - Use 2x ATR(14) trailing stop as a backstop if no new fractal forms.
+- Profit Target (optional):
+  - Partial exit at 2R, trail remainder with fractal stop.
+- Time Stop:
+  - Exit if no new fractal forms within N bars (e.g., 20) and price stalls.
+
+4. RISK MANAGEMENT
+- Position Sizing:
+  - Risk 1% of equity per trade.
+  - Stop distance = entry price - most recent opposite fractal (for longs).
+  - Position size = (Account Risk) / (Entry - Stop).
+- Max Concurrent Risk:
+  - Cap total open risk at 3-5% of equity.
+- Stop Placement:
+  - Never place stop closer than 1x ATR to avoid noise.
+- Trade Filtering:
+  - Skip trades when ADX < 20 or when price is range-bound between two fractals.
+- Re-entry Rules:
+  - Allow re-entry only after a new confirmed fractal forms in trend direction.
+
+5. REQUIRED INDICATORS
+- Fractal indicator (5-bar Bill Williams fractal) — primary signal.
+- EMA 200 (or 50/200 pair) — trend filter.
+- ATR(14) — volatility-based stop and position sizing.
+- ADX(14) — trend strength filter (optional but recommended).
+- RSI(14) or MACD — momentum confirmation (optional).
+- Volume — confirm breakout strength (optional).
+
+6. TIMEFRAMES & MARKETS
+- Best on: 1H, 4H, Daily charts.
+- Works well on: FX majors, index futures, large-cap crypto, commodities.
+- Avoid: low-liquidity instruments and choppy ranging markets.
+
+7. IMPLEMENTATION NOTES
+- Fractals repaint until the 2nd bar after the pivot closes — only act on confirmed fractals.
+- Backtest with realistic spread/slippage; fractal breakouts often trigger on volatile bars.
+- Combine with a higher-timeframe trend filter to reduce whipsaws.
+- Log each fractal pivot to visualize trend structure and validate trailing stop placement.

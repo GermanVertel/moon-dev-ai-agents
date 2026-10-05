@@ -1,0 +1,64 @@
+STRATEGY_NAME: FiboDivergence
+
+STRATEGY_DETAILS:
+This strategy combines three technical concepts: RSI divergence, Fibonacci retracement levels, and ATR-based exits. The core idea is to identify momentum shifts (via RSI divergence) that occur at high-probability reversal zones (Fibonacci levels), then manage the trade with volatility-adjusted exits.
+
+**1. Key Strategy Components**
+
+- **Fibonacci Retracement Zones:** Identify recent swing highs and swing lows on the chosen timeframe (e.g., 1H or 4H). Plot Fibonacci levels at 38.2%, 50%, 61.8%, and 78.6%. These act as "decision zones" where price is likely to react.
+- **RSI Divergence Detection:** Use RSI (period 14) to detect divergence against price action:
+  - **Bullish Divergence:** Price makes a lower low, but RSI makes a higher low. This suggests weakening selling pressure.
+  - **Bearish Divergence:** Price makes a higher high, but RSI makes a lower high. This suggests weakening buying pressure.
+- **Confluence Rule:** Only take a trade when divergence forms *while price is interacting with a Fibonacci level* (touching, rejecting, or closing near it). This filters out low-quality divergence signals that occur in the middle of nowhere.
+
+**2. Entry Rules**
+
+- **Long Entry (Bullish Divergence at Fib Support):**
+  - Price pulls back to a Fibonacci support zone (38.2%, 50%, 61.8%, or 78.6% retracement of an uptrend).
+  - RSI prints a bullish divergence (higher low vs. price's lower low).
+  - Enter long on the close of the confirmation candle (e.g., bullish engulfing, hammer, or close above prior candle high).
+- **Short Entry (Bearish Divergence at Fib Resistance):**
+  - Price rallies into a Fibonacci resistance zone (retracement of a downtrend).
+  - RSI prints a bearish divergence (lower high vs. price's higher high).
+  - Enter short on the close of the confirmation candle (e.g., bearish engulfing, shooting star, or close below prior candle low).
+
+**3. Exit Rules**
+
+- **Stop Loss:** Place stop loss beyond the Fibonacci level or the recent swing point that created the divergence. Alternatively, use 1.5x ATR from entry for a volatility-based stop.
+- **Take Profit (ATR Multiples):**
+  - First target: 2x ATR from entry (partial exit, e.g., 50% of position).
+  - Second target: 3x ATR from entry (remaining position).
+  - Optional trailing stop: Move stop to breakeven after 1x ATR profit, then trail by 1.5x ATR.
+- **Time-Based Exit:** If the trade does not hit target within a set number of bars (e.g., 20 bars), exit at market to avoid stagnation.
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade. Calculate position size based on the distance between entry and stop loss.
+- **Risk-Reward:** Ensure minimum 1:2 risk-to-reward ratio before entering. Skip trades where the stop is too wide relative to the ATR-based target.
+- **Confluence Filter:** Avoid trades where divergence is weak (e.g., RSI barely deviates) or where price is in a strong trend that ignores Fibonacci levels.
+- **Market Condition:** Best suited for ranging or corrective markets. Avoid strong trending markets where Fibonacci levels are easily broken.
+
+**5. Required Indicators**
+
+- **RSI (14):** For divergence detection.
+- **Fibonacci Retracement Tool:** For identifying support/resistance zones.
+- **ATR (14):** For stop loss and take profit calculations.
+- **Candlestick Patterns:** For entry confirmation (engulfing, pin bars, etc.).
+- **Optional:** Volume indicator to confirm divergence strength.
+
+**6. Trade Example (Long)**
+
+- Price is in an uptrend, pulls back to the 61.8% Fibonacci level.
+- RSI shows a higher low while price makes a lower low at the Fib level.
+- A bullish engulfing candle closes above the prior candle high → enter long.
+- Stop loss: 1.5x ATR below entry (or below the Fib level).
+- Take profit: 2x ATR (partial) and 3x ATR (full).
+- Move stop to breakeven after 1x ATR profit.
+
+**7. Common Pitfalls to Avoid**
+
+- Divergence can persist for a long time before reversing — always wait for candle confirmation.
+- Fibonacci levels are not exact — use zones, not lines.
+- ATR-based exits may be too tight in low-volatility conditions; adjust multipliers based on market regime.
+
+This strategy works best when combined with strict discipline and backtesting on the specific instrument and timeframe being traded.

@@ -1,0 +1,62 @@
+STRATEGY_NAME: TemporalSpreadHarvest
+
+STRATEGY_DETAILS:
+This strategy is a short-dated, time-boxed options selling approach designed around the European market open liquidity surge. It sells put credit spreads to capture rapid theta decay and volatility premium within a strict 30-minute window, exiting on a 50% profit target or a defined stop-loss.
+
+**1. Key Strategy Components**
+
+- **Instrument:** Put credit spreads (bull put spreads) on liquid, high-beta European underlyings (e.g., DAX index options, Euro Stoxx 50, or liquid single names).
+- **Timing Trigger:** Entry at the official open of European trading hours (e.g., 09:00 CET for Xetra/Eurex, or 08:00 CET for London).
+- **Spread Construction:** Sell an out-of-the-money (OTM) put and simultaneously buy a further OTM put for protection. The short leg captures premium; the long leg caps risk.
+- **Holding Period:** Maximum 30 minutes. Hard time-stop exit at the 30-minute mark if neither profit nor stop is hit.
+- **Target:** Close the spread when it reaches 50% of the initial credit received (profit target).
+- **Stop-Loss:** Exit if the spread's value reaches 150% of the initial credit (i.e., a 50% loss on the position), OR if the underlying price touches the strike of the sold (short) put plus 1 pip — whichever occurs first.
+
+**2. Entry Rules**
+
+- **Time:** At the open of European trading hours (precisely at the opening auction or first continuous print).
+- **Direction:** Sell put spreads (bullish bias / neutral-to-up expectation).
+- **Strike Selection:** 
+  - Short put: ~1 standard deviation OTM (or delta ≈ 0.20–0.30) based on the previous session's implied volatility.
+  - Long put: 1–2 strikes further OTM to define maximum risk.
+- **Credit Requirement:** Only enter if the net credit received meets a minimum threshold (e.g., ≥ 0.30× the spread width) to ensure favorable risk/reward.
+- **Liquidity Filter:** Require tight bid-ask spreads on both legs and sufficient open interest to avoid slippage.
+
+**3. Exit Rules**
+
+- **Profit Target:** Buy back the spread when its market value ≤ 50% of the initial credit received.
+- **Stop-Loss (Price-Based):** Exit immediately if the underlying price touches the short put's strike price + 1 pip. This is the primary hard stop.
+- **Stop-Loss (Value-Based):** Exit if the spread's mark-to-market loss reaches 50% of the initial credit (i.e., spread value = 1.5× initial credit).
+- **Time Stop:** Force-close the entire spread at 30 minutes after entry, regardless of P&L.
+- **Whichever-First Logic:** The stop-loss triggers on the earliest of the price touch or the value-based loss threshold.
+
+**4. Risk Management**
+
+- **Defined Risk:** Maximum loss is capped by the spread width minus the credit received (for the value-based stop, loss is capped at 50% of credit).
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade, calculated on the maximum defined loss of the spread.
+- **Pip Definition:** The "1 pip" buffer above the short strike should be calibrated to the instrument's tick size (e.g., 0.5 or 1.0 index points for DAX options, or 0.0001 for FX-related underlyings).
+- **Volatility Filter:** Avoid entry on days with scheduled high-impact European economic releases (ECB, CPI, GDP) within the 30-minute window, as gap risk can breach the stop.
+- **Correlation Limit:** Limit simultaneous positions in highly correlated underlyings to avoid concentrated directional exposure.
+
+**5. Required Indicators / Data**
+
+- **Implied Volatility (IV):** To select strikes at ~1 SD OTM and assess premium richness.
+- **Delta:** To target 0.20–0.30 delta on the short put.
+- **Underlying Price Feed:** Real-time tick data to monitor the strike + 1 pip stop.
+- **Spread Mark-to-Market:** Live option pricing to evaluate the 50% profit and 50% loss thresholds.
+- **Time Clock:** Precise 30-minute timer for the hard time-stop.
+- **Bid-Ask Spread Monitor:** To ensure liquidity and avoid entering on wide markets.
+
+**6. Edge / Rationale**
+
+- **Theta Capture:** Short-dated options decay rapidly; the first 30 minutes after the European open often see elevated IV that mean-reverts, allowing premium sellers to profit quickly.
+- **Liquidity Surge:** The European open provides deep liquidity, tightening spreads and reducing slippage.
+- **Defined Risk:** The long put leg caps tail risk, making the strategy suitable for high-frequency, small-edge harvesting.
+- **Discipline:** The dual stop (price + value) and hard time-stop prevent the classic "holding losers" pitfall of premium selling.
+
+**7. Failure Modes to Watch**
+
+- **Gap Risk:** Overnight news or opening gaps can jump past the strike + 1 pip stop, causing slippage.
+- **IV Spike:** A sudden volatility expansion can push the spread value to the 50% loss threshold instantly.
+- **Low Premium Days:** On quiet opens, credit may be too thin to justify the risk — the minimum credit filter handles this.
+- **Execution Latency:** The 30-minute window demands fast, automated execution; manual trading is impractical.

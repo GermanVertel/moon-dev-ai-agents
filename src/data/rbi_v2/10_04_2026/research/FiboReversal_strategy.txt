@@ -1,0 +1,40 @@
+STRATEGY_NAME: FiboReversal
+
+STRATEGY_DETAILS:
+This strategy is a counter-trend reversal approach that combines Fibonacci retracement levels with momentum confirmation to catch bounce trades after a downtrend. The core idea is that after a sustained downtrend, price often retraces to a key Fibonacci level (typically 0.618 or 0.786) before resuming upward, and bearish momentum indicators help validate that the retracement is a pullback rather than a trend continuation.
+
+KEY COMPONENTS:
+1. Trend Context Detection — Identify an established downtrend using a moving average slope (e.g., 50 EMA sloping down) or lower highs/lower lows over a lookback window.
+2. Fibonacci Retracement Mapping — Anchor Fibonacci levels from the most recent swing high to swing low. Focus on the 0.618 and 0.786 zones as primary entry areas.
+3. Momentum Confirmation — Require bearish momentum indicators (e.g., RSI below 40, negative MACD histogram, or bearish momentum reading) to confirm the retracement is still in a "pullback" phase before reversal.
+4. Reversal Trigger — Enter long when price touches the Fibonacci level AND momentum begins to turn (e.g., RSI crossing back above 30–40, bullish divergence forming, or a bullish candlestick confirmation).
+
+ENTRY RULES:
+- Confirm an active downtrend on the higher timeframe.
+- Wait for price to retrace into the 0.618–0.786 Fibonacci zone.
+- Ensure bearish momentum is present (RSI < 40, MACD histogram negative) to validate the setup.
+- Enter long when momentum shows the first sign of turning (RSI turning up, bullish divergence, or a bullish engulfing/pin bar at the Fib level).
+- Optional: Require confluence with a support level or round number.
+
+EXIT RULES:
+- Primary exit via ATR-based target: set a take-profit at a percentage of ATR (e.g., 2x–3x ATR from entry).
+- Secondary exit via RSI divergence: close the position if a bearish RSI divergence appears on the entry timeframe, signaling momentum exhaustion.
+- Use a hard stop-loss below the Fibonacci level (e.g., below the 0.786 or swing low) to cap downside.
+- Optional trailing stop using ATR to lock in profits as price moves favorably.
+
+RISK MANAGEMENT:
+- Risk per trade should be limited to 1–2% of account equity.
+- Position sizing based on the distance between entry and stop-loss (ATR or Fib-based stop).
+- Avoid trading against strong bearish momentum without confirmation — the "bearish momentum" filter is critical to avoid catching a falling knife.
+- Consider skipping trades when volatility is extremely high or when the higher-timeframe trend is strongly bearish.
+- Use ATR percentage to dynamically adjust targets and stops to current market volatility.
+
+REQUIRED INDICATORS:
+- Fibonacci retracement tool (0.618, 0.786 levels)
+- RSI (for momentum confirmation and divergence detection)
+- MACD (optional, for bearish momentum validation)
+- ATR (for exit targets, stops, and position sizing)
+- Moving average (e.g., 50 EMA) for trend context
+- Candlestick pattern recognition (for entry confirmation)
+
+This strategy is best suited for ranging-to-reversing markets after a clear downtrend, and performs poorly in strong sustained bear trends where retracements fail.

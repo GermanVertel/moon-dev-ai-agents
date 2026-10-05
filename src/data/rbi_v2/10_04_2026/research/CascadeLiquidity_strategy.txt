@@ -1,0 +1,57 @@
+STRATEGY_NAME: CascadeLiquidity
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy identifies forced liquidation cascades (long squeezes and short squeezes) that occur at or near high-conviction support and resistance zones. The premise: when price approaches a key S/R level, leveraged positions cluster stops/liquidations just beyond it. When those get triggered, they create a violent, self-reinforcing move that often overshoots — then snaps back. We trade the *exhaustion* of that cascade, not the initial breakout.
+
+**Key Strategy Components**
+
+1. **Zone Mapping (S/R Engine)**
+   - Identify support/resistance using swing highs/lows over lookback (e.g., 100–200 bars).
+   - Weight zones by touch count, volume traded at the level, and recency.
+   - Mark "liquidation magnets" — levels where price wicked sharply and reversed (evidence of prior liquidation clusters).
+   - Draw zones as bands (ATR-based width), not single lines.
+
+2. **Liquidation Detection**
+   - Use an open-interest (OI) + funding rate feed where available (e.g., Coinglass, exchange APIs).
+   - **Long liquidation cascade signal:** sharp price drop + OI plunges + funding flips negative + volume spike.
+   - **Short liquidation cascade signal:** sharp price spike + OI plunges + funding spikes positive + volume spike.
+   - On spot-only data, proxy liquidations with: volume spike > 3× average + large candle body (>1.5× ATR) + wick rejection.
+
+3. **Entry Rules**
+   - **Long entry (fade a long-liquidation cascade at support):**
+     - Price sweeps below a validated support zone.
+     - Liquidation proxy fires (volume spike + OI drop).
+     - Wait for a reversal candle (bullish engulfing / long lower wick closing back inside the zone).
+     - Enter on the close of that confirmation candle.
+   - **Short entry (fade a short-liquidation cascade at resistance):**
+     - Price sweeps above a validated resistance zone.
+     - Liquidation proxy fires.
+     - Wait for bearish rejection candle closing back inside the zone.
+     - Enter on confirmation close.
+
+4. **Exit Rules**
+   - **Take profit 1:** opposite edge of the S/R zone (or 1× ATR).
+   - **Take profit 2:** next major S/R zone in the reversal direction.
+   - **Stop loss:** beyond the extreme wick of the liquidation candle + buffer (0.5× ATR).
+   - **Time stop:** exit if no favorable move within N bars (e.g., 10) — cascades resolve fast.
+   - Trailing stop after TP1 is hit.
+
+**Risk Management**
+- Risk per trade: 0.5–1% of equity (cascade trades are high-variance).
+- Max 2 concurrent positions (liquidation events often cluster across correlated assets).
+- No trades during major scheduled events (CPI, FOMC) unless the cascade is already confirmed.
+- Avoid chasing: if price has already retraced >50% of the cascade move before confirmation, skip.
+- Position size inversely scaled to zone width (tighter zone = tighter stop = larger size within risk cap).
+
+**Required Indicators / Data**
+- Volume (with moving average for spike detection)
+- ATR (for zone width, stop buffer, and candle-body thresholds)
+- Open Interest (delta/change) — critical
+- Funding rate — critical
+- Swing high/low detector for S/R mapping
+- Optional: liquidation heatmap data (Coinglass / Hyblock) for zone validation
+
+**Edge Rationale**
+Liquidation cascades are mechanically forced, not sentiment-driven. They exhaust order flow and leave price overextended relative to the zone. Fading the exhaustion at a pre-validated S/R level gives a high reward-to-risk entry with a well-defined invalidation point (the cascade extreme).

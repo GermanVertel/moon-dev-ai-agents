@@ -1,0 +1,35 @@
+STRATEGY_NAME: VolumetricLiquidity
+
+STRATEGY_DETAILS:
+This strategy identifies potential liquidity breakouts by combining volume cluster analysis with volatility filters. It focuses on detecting price levels where significant volume has accumulated (volume clusters) and uses volatility conditions to confirm whether a breakout is likely to be sustained.
+
+1. Key Strategy Components:
+   - Volume Cluster Detection: Identify price zones where trading volume is concentrated over a lookback period (e.g., 20-50 bars). These zones act as liquidity pools.
+   - Volatility Filter: Use ATR (Average True Range) or Bollinger Band width to measure current market volatility. Only take breakouts when volatility is expanding or above a threshold, confirming momentum.
+   - Liquidity Breakout Trigger: A breakout occurs when price closes beyond a volume cluster boundary with above-average volume and expanding volatility.
+
+2. Entry Rules:
+   - Long Entry: Price closes above the upper boundary of a high-volume cluster, with volume > 1.5x average volume of the last 20 bars, and ATR rising or above its 14-period average.
+   - Short Entry: Price closes below the lower boundary of a high-volume cluster, with volume > 1.5x average volume, and ATR rising or above its 14-period average.
+   - Optional confirmation: RSI > 50 for longs, RSI < 50 for shorts.
+
+3. Exit Rules:
+   - Take Profit: Target the next volume cluster or use a fixed risk-reward ratio (e.g., 2:1).
+   - Stop Loss: Place stop just inside the volume cluster boundary (e.g., below the upper boundary for longs, above the lower boundary for shorts).
+   - Trailing Stop: Optional trailing stop using ATR (e.g., 2x ATR) to lock in profits during strong trends.
+   - Time-based Exit: Exit if price fails to move in favor within 5-10 bars after entry.
+
+4. Risk Management:
+   - Position Sizing: Risk no more than 1-2% of account equity per trade.
+   - Volatility Adjustment: Reduce position size when ATR is extremely high to avoid whipsaws.
+   - Avoid Choppy Markets: Skip signals when Bollinger Band width is below a threshold (e.g., 20-period average) to filter low-volatility false breakouts.
+   - Confirmation: Require at least two consecutive closes beyond the cluster boundary for stronger signals.
+
+5. Required Indicators:
+   - Volume (with moving average, e.g., 20-period)
+   - ATR (14-period)
+   - Bollinger Bands (20-period, 2 standard deviations) or Keltner Channels for volatility
+   - RSI (14-period) for optional momentum confirmation
+   - Volume Profile or custom volume cluster detection (e.g., using price bins and volume aggregation)
+
+This strategy is unique because it combines volume cluster analysis (liquidity zones) with volatility expansion filters, reducing false breakouts and targeting high-probability moves. It is suitable for intraday and swing trading on liquid markets (forex, futures, large-cap stocks).

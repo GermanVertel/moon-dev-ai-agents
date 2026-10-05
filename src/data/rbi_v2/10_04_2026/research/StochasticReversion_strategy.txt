@@ -1,0 +1,31 @@
+STRATEGY_NAME: StochasticReversion
+
+STRATEGY_DETAILS:
+This strategy combines long-term volatility analysis with stochastic oscillator signals to identify mean-reversion opportunities. The core premise is that extreme volatility regimes often precede price reversals, and stochastic oscillators can pinpoint overbought/oversold conditions within those regimes.
+
+**Key Strategy Components:**
+1. **Volatility Regime Filter:** Calculate long-term volatility (e.g., 100-period ATR or standard deviation of returns) to classify market into high, normal, or low volatility regimes. Reversal signals are only valid in high-volatility regimes.
+2. **Stochastic Oscillator:** Use %K and %D lines (typically 14,3,3 settings). Extreme readings (>80 overbought, <20 oversold) signal potential reversal zones.
+3. **Divergence Detection:** Look for price making new highs/lows while stochastic makes lower highs/higher lows — a classic reversal confirmation.
+
+**Entry Rules:**
+- **Long Entry:** Volatility is in the top 20% of its long-term range AND stochastic %K crosses above %D from below 20 (oversold) OR bullish divergence forms.
+- **Short Entry:** Volatility is in the top 20% of its long-term range AND stochastic %K crosses below %D from above 80 (overbought) OR bearish divergence forms.
+
+**Exit Rules:**
+- **Profit Target:** Exit when stochastic reaches the opposite extreme (long exits near 80, short exits near 20).
+- **Stop Loss:** Place stop beyond the recent swing high/low by 1.5x ATR.
+- **Time Stop:** Close position if no reversal materializes within 20 bars.
+
+**Risk Management:**
+- Risk no more than 1-2% of account equity per trade.
+- Reduce position size during extreme volatility spikes (e.g., halve size if ATR doubles).
+- Avoid trading during low-volatility regimes — reversals are unreliable there.
+
+**Required Indicators:**
+- Stochastic Oscillator (14,3,3)
+- ATR (100-period) or Standard Deviation (100-period) for volatility regime
+- Optional: Volume profile to confirm exhaustion at extremes
+
+**Notes:**
+This strategy works best on higher timeframes (daily, 4H) where volatility regimes are more meaningful. Backtest across different market conditions to tune the volatility percentile threshold (e.g., 80th percentile vs. 90th) and stochastic extreme levels.

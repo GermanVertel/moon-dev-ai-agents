@@ -1,0 +1,50 @@
+STRATEGY_NAME: KineticConvergence
+
+STRATEGY_DETAILS:
+This strategy combines Ichimoku Cloud momentum dynamics with volume-based confirmation and volatility-adjusted risk management. The core thesis is that when the Tenkan-sen (conversion line) and Kijun-sen (base line) spread compresses to its lower statistical band, it signals a potential momentum shift or trend initiation point, which is then validated by elevated trading volume.
+
+**1. Key Strategy Components**
+
+- **Ichimoku Spread Compression:** Calculate the absolute difference between Tenkan-sen (9-period midpoint) and Kijun-sen (26-period midpoint). Track this spread over a rolling window (e.g., 50-100 periods) to establish a "lower band" — typically the 10th-20th percentile or a lower Bollinger Band of the spread series. Convergence to this band indicates the two lines are unusually close, often preceding a directional move.
+
+- **Volume/ATR Confirmation Filter:** Require that current daily volume exceeds 50% of the Average True Range (ATR) value. This is a non-standard but effective liquidity filter — it ensures the compression is accompanied by meaningful participation, filtering out low-conviction setups. Note: ATR is price-based, so this effectively normalizes volume against recent volatility.
+
+- **Directional Bias:** Since only long entries are taken, the setup should ideally occur when price is at or above the Kijun-sen, or when the cloud (Senkou Span A/B) supports a bullish bias. Optionally require Tenkan-sen > Kijun-sen at the moment of entry, or a bullish crossover forming.
+
+**2. Entry Rules**
+
+- Compute Tenkan-sen = (Highest High + Lowest Low) / 2 over 9 periods.
+- Compute Kijun-sen = (Highest High + Lowest Low) / 2 over 26 periods.
+- Compute Spread = |Tenkan-sen − Kijun-sen|.
+- Compute Lower Band = rolling percentile (e.g., 15th) or lower Bollinger Band (2 std dev) of Spread over N periods.
+- Compute ATR (14-period) and daily Volume.
+- **Entry Trigger:** Spread ≤ Lower Band AND Volume > 0.5 × ATR AND bullish bias confirmed (price > Kijun-sen or Tenkan > Kijun).
+- Enter long at market or on next bar open.
+
+**3. Exit Rules**
+
+- **Stop Loss:** Place initial stop at Entry Price − (2 × ATR). This provides a volatility-adaptive buffer.
+- **Trailing Stop (optional):** Trail the stop by 2 × ATR from the highest close since entry to lock in profits.
+- **Profit Target (optional):** Consider exiting when Tenkan-sen and Kijun-sen spread expands beyond its upper band (mean reversion of the spread), or when a bearish crossover (Tenkan < Kijun) occurs.
+- **Time Stop:** If no meaningful move occurs within a predefined number of bars (e.g., 20), consider exiting to avoid capital stagnation.
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk no more than 1-2% of account equity per trade. Position size = (Account Risk $) / (2 × ATR).
+- **Max Concurrent Positions:** Limit to avoid overexposure, especially since compression setups can cluster.
+- **Correlation Filter:** Avoid entering multiple long positions in highly correlated instruments simultaneously.
+- **Regime Filter:** Consider avoiding entries during extreme low-volatility regimes (ATR at multi-month lows) where stop distance becomes too tight.
+
+**5. Required Indicators**
+
+- Ichimoku Cloud (Tenkan-sen 9, Kijun-sen 26, Senkou Span B 52) — primarily Tenkan and Kijun.
+- Average True Range (ATR), 14-period.
+- Rolling percentile or Bollinger Band applied to the Tenkan-Kijun spread series.
+- Volume (daily).
+- Optional: Senkou Span A/B for cloud bias confirmation.
+
+**6. Notes & Caveats**
+
+- The "volume > 50% of ATR" condition is dimensionally unusual (volume vs. price range); traders should interpret this as a normalized liquidity threshold and may need to scale volume (e.g., use volume relative to its own moving average) for practical implementation.
+- Backtest across multiple timeframes (daily recommended) and instruments to validate the percentile window and ATR multiplier.
+- Compression setups can produce false breakouts; the volume filter and bullish bias requirement help mitigate this, but a confirmation candle (e.g., bullish close above Tenkan-sen) may improve reliability.

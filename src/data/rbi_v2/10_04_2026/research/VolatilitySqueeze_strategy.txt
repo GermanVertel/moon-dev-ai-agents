@@ -1,0 +1,32 @@
+STRATEGY_NAME: Volatility Squeeze
+
+STRATEGY_DETAILS:
+The Volatility Squeeze strategy is designed to capture significant price movements that occur after periods of low volatility. The core premise is that markets alternate between phases of consolidation (low volatility) and expansion (high volatility). By identifying the transition from a low-volatility squeeze to a high-volatility breakout, traders can enter positions early in a new trend.
+
+Key Strategy Components:
+1.  **Volatility Measurement:** Use the Average True Range (ATR) or Bollinger Bands to quantify market volatility. A squeeze is identified when volatility drops to a multi-period low.
+2.  **Consolidation Identification:** Confirm the squeeze by observing price action confined within a narrow range, often marked by Bollinger Bands contracting.
+3.  **Breakout Trigger:** A breakout is signaled when price closes outside the consolidation range (e.g., above the upper Bollinger Band or below the lower band) with a significant increase in volume or ATR.
+4.  **Trend Confirmation:** Use a momentum indicator like the Relative Strength Index (RSI) or Moving Average Convergence Divergence (MACD) to confirm the direction of the breakout.
+
+Entry Rules:
+- **Long Entry:** Enter a long position when the price closes above the upper Bollinger Band after a period of low volatility (e.g., Bollinger Band width at a 6-month low) and the RSI is above 50.
+- **Short Entry:** Enter a short position when the price closes below the lower Bollinger Band after a low-volatility period and the RSI is below 50.
+
+Exit Rules:
+- **Profit Target:** Exit when the price reaches a predetermined target, such as a multiple of the ATR (e.g., 2x ATR) or when momentum indicators show divergence.
+- **Stop-Loss:** Place a stop-loss just below the breakout candle's low for long positions or above the high for short positions.
+- **Trailing Stop:** Use a trailing stop based on ATR to lock in profits as the trend extends.
+
+Risk Management:
+- **Position Sizing:** Risk no more than 1-2% of the account equity per trade. Calculate position size based on the distance between entry and stop-loss.
+- **Volatility Adjustment:** In highly volatile markets, widen stops and reduce position size to account for larger price swings.
+- **False Breakout Filter:** Require a minimum price move (e.g., 1.5x ATR) beyond the band to confirm the breakout and avoid whipsaws.
+
+Required Indicators:
+- Bollinger Bands (20-period, 2 standard deviations)
+- Average True Range (14-period)
+- Relative Strength Index (14-period)
+- Volume (to confirm breakout strength)
+
+This strategy is particularly effective in trending markets and can be adapted to various timeframes, from intraday to daily charts.

@@ -1,0 +1,47 @@
+STRATEGY_NAME: InverseVolume Divergence
+
+STRATEGY_DETAILS:
+This strategy combines inverse volume analysis with candlestick breakdown structures, RSI divergence, and stochastic oscillator divergence to identify high-probability reversal or continuation setups. It focuses on detecting when price action diverges from volume behavior, confirming with dual oscillator divergences.
+
+1. Key Strategy Components:
+   - Inverse Volume Breakdown Structure: Analyze volume spikes or drops that contradict price movement. For example, a price breakdown with decreasing volume may signal a false breakdown, while a breakdown with increasing volume may confirm strength.
+   - Candlestick Patterns: Identify key reversal or continuation patterns (e.g., engulfing, hammer, shooting star, doji) at support/resistance levels or after volume anomalies.
+   - RSI Divergence: Look for bullish divergence (price makes lower lows, RSI makes higher lows) or bearish divergence (price makes higher highs, RSI makes lower highs) to signal weakening momentum.
+   - Stochastic Oscillator Divergence: Confirm RSI divergence with stochastic divergence (e.g., %K and %D lines showing divergence from price).
+   - Confluence: All three elements (inverse volume, candlestick pattern, and dual oscillator divergence) must align for a valid signal.
+
+2. Entry Rules:
+   - Long Entry:
+     - Price forms a breakdown structure (e.g., breaks below support) but volume decreases (inverse volume), suggesting a false breakdown.
+     - A bullish candlestick pattern (e.g., hammer, bullish engulfing) forms at the breakdown point.
+     - RSI shows bullish divergence (price lower low, RSI higher low).
+     - Stochastic shows bullish divergence (price lower low, stochastic higher low).
+     - Enter long on the close of the confirming candlestick or on a break above the candlestick high.
+   - Short Entry:
+     - Price forms a breakout structure (e.g., breaks above resistance) but volume decreases (inverse volume), suggesting a false breakout.
+     - A bearish candlestick pattern (e.g., shooting star, bearish engulfing) forms at the breakout point.
+     - RSI shows bearish divergence (price higher high, RSI lower high).
+     - Stochastic shows bearish divergence (price higher high, stochastic lower high).
+     - Enter short on the close of the confirming candlestick or on a break below the candlestick low.
+
+3. Exit Rules:
+   - Profit Target: Set based on recent swing highs/lows or Fibonacci levels. For long, target the next resistance or a 2:1 risk-reward ratio. For short, target the next support or 2:1 risk-reward.
+   - Stop Loss: Place below the recent swing low for longs or above the recent swing high for shorts, or use an ATR-based stop (e.g., 1.5x ATR).
+   - Trailing Stop: Use a trailing stop (e.g., 1x ATR) after price moves in favor by 1x ATR to lock in profits.
+   - Exit on Divergence Failure: If RSI or stochastic divergence fails (e.g., new price low without new oscillator low), exit immediately.
+
+4. Risk Management:
+   - Position Sizing: Risk no more than 1-2% of account per trade.
+   - Confluence Requirement: Only trade when all three conditions (inverse volume, candlestick pattern, dual divergence) are met to reduce false signals.
+   - Avoid News Events: Skip trades during major news releases to avoid volume anomalies.
+   - Timeframe: Best suited for 15-minute to 4-hour charts for intraday to swing trading.
+   - Backtesting: Validate on historical data with at least 100 trades to ensure statistical significance.
+
+5. Required Indicators:
+   - Volume (with moving average to detect anomalies)
+   - RSI (period 14, with divergence detection)
+   - Stochastic Oscillator (period 14, 3, 3, with divergence detection)
+   - Candlestick pattern recognition (manual or automated)
+   - ATR (period 14) for stop-loss and trailing stop calculation
+
+This strategy leverages the interplay between volume, price structure, and momentum divergences to capture reversals or continuations with high confluence, reducing false signals and improving win rate.

@@ -1,0 +1,66 @@
+STRATEGY_NAME: ClusterBreakout
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy combines structural trend line analysis with volume/price cluster confirmation to identify high-probability breakout entries. Rather than entering on the initial trend line break (which often produces false signals), it waits for the price to decisively break through a consolidation cluster formed by 20 consecutive bars, providing confirmation that the breakout has genuine momentum behind it.
+
+**1. Key Strategy Components:**
+
+- **Ascending Trend Line Construction:** Draw a trend line connecting at least 2-3 higher lows over a defined lookback period. The line must have a positive slope and be validated by price respecting it (touching but not significantly closing below it).
+
+- **20-Bar High-Low Cluster:** Identify a consolidation zone where the highest high and lowest low of the most recent 20 consecutive bars form a tight range. This cluster represents a "coiling" phase where the market is building energy before a breakout. The cluster width should ideally be less than 3-5% of price to qualify as a valid setup.
+
+- **Breakout Confirmation Trigger:** Entry occurs only when BOTH conditions align:
+  - Price breaks above the ascending trend line
+  - Price closes above the highest high of the 20-bar cluster
+  - This dual confirmation filters out weak trend line breaks
+
+**2. Entry Rules (Long Only):**
+
+- **Precondition:** An established ascending trend line with minimum 2 touchpoints
+- **Cluster Formation:** 20 consecutive bars with a definable high-low range
+- **Entry Trigger:** 
+  - Candle closes above the cluster high AND above the trend line
+  - Optional: Volume on breakout bar > 1.5x average volume of last 20 bars
+- **Entry Price:** Market order at close of breakout candle, or stop-buy at cluster high + 1 tick
+
+**3. Exit Rules:**
+
+- **Primary Exit (Profit Target):** 1% retracement level from the highest high reached after entry. Once price advances, trail the exit at 1% below the peak.
+- **Stop Loss Exit:** Place initial stop at the cluster's low or 1% below entry, whichever is tighter.
+- **Time-Based Exit:** If neither target nor stop is hit within 15 bars, exit at market (optional filter to avoid stagnation).
+
+**4. Risk Management:**
+
+- **Position Sizing:** Risk no more than 1-2% of account equity per trade
+- **Risk-to-Reward:** Minimum 1.5:1 ratio; if cluster is too wide (stop too far), skip the trade
+- **Trailing Stop:** Activate the 1% trailing retracement only after price moves 1% in favor
+- **Max Concurrent Positions:** 1-2 to avoid correlated exposure
+- **Volatility Filter:** Avoid trading when ATR is in the bottom 20th percentile (no momentum) or top 10th percentile (excessive whipsaw)
+
+**5. Required Indicators:**
+
+- **Trend Line Tool:** Manual or algorithmic slope detection (linear regression on swing lows)
+- **Highest High / Lowest Low:** 20-period rolling max/min for cluster definition
+- **ATR (14-period):** For volatility filtering and dynamic stop sizing
+- **Volume MA (20-period):** For breakout confirmation
+- **Trailing Peak Tracker:** Records the highest high since entry for the 1% retracement exit
+
+**6. Trade Logic Flow:**
+
+1. Detect ascending trend line (2+ higher lows)
+2. Measure 20-bar high-low cluster width
+3. Wait for close above trend line + cluster high
+4. Enter long with stop at cluster low
+5. Track peak price; exit on 1% retracement from peak
+6. Log trade for performance analysis
+
+**7. Optimization Parameters:**
+
+- Cluster lookback: 15-30 bars (default 20)
+- Retracement exit: 0.5%-2% (default 1%)
+- Volume multiplier: 1.2x-2.0x (default 1.5x)
+- Trend line minimum touches: 2-4
+
+**Key Edge:** The dual confirmation (trend line + cluster) dramatically reduces false breakouts common in single-signal systems, while the tight 1% trailing exit locks in profits during momentum moves.

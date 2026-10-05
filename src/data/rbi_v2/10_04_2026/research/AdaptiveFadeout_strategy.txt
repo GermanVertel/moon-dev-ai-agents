@@ -1,0 +1,71 @@
+STRATEGY_NAME: AdaptiveFadeout
+
+STRATEGY_DETAILS:
+
+This strategy identifies false breakouts by measuring whether a price move beyond a key level is supported by sufficient volatility expansion. False breakouts typically occur when price pierces a level but volatility does not confirm the move, leading to a swift reversal back inside the range.
+
+**Core Concept:**
+A genuine breakout is usually accompanied by a volatility expansion (e.g., ATR rising, Bollinger Band width widening, or a spike in the volatility index). A false breakout occurs when price breaks a level but volatility remains flat or contracts, signaling a lack of conviction. The strategy fades the breakout when volatility fails to confirm.
+
+**Key Strategy Components:**
+
+1. **Reference Level Detection**
+   - Identify recent swing highs/lows or consolidation boundaries using a lookback window (e.g., 20–50 bars).
+   - Use Donchian Channels or prior day's high/low as breakout triggers.
+   - Track the level that price is attempting to break.
+
+2. **Volatility Confirmation Filter**
+   - Calculate ATR (14) and compare current ATR to its 20-period average.
+   - Calculate Bollinger Band Width (BBW) = (Upper Band − Lower Band) / Middle Band.
+   - A valid breakout requires: Current ATR > 1.2 × ATR average AND BBW expanding vs. prior bar.
+   - If volatility fails to expand, the breakout is flagged as a false breakout candidate.
+
+3. **Momentum Divergence Check (optional confirmation)**
+   - Use RSI (14) or MACD histogram.
+   - False breakout often shows price making a new high/low while RSI fails to confirm (bearish/bullish divergence).
+
+**Entry Rules (Fade the False Breakout):**
+
+- **Short Entry (False Upside Breakout):**
+  - Price closes above the upper Donchian/range level.
+  - ATR and BBW fail to expand (or contract).
+  - RSI shows bearish divergence or is overbought (>70).
+  - Enter short on the close of the breakout bar or on the first bearish reversal candle.
+
+- **Long Entry (False Downside Breakout):**
+  - Price closes below the lower Donchian/range level.
+  - ATR and BBW fail to expand.
+  - RSI shows bullish divergence or is oversold (<30).
+  - Enter long on the close of the breakout bar or on the first bullish reversal candle.
+
+**Exit Rules:**
+
+- **Take Profit:** Target the opposite side of the range or the mid-band of the Bollinger Bands. Alternatively, use a 1.5× ATR target.
+- **Stop Loss:** Place stop 0.5× ATR beyond the breakout extreme (e.g., above the false breakout high for shorts).
+- **Time Stop:** Exit if price does not reverse within 3–5 bars, as the breakout may be genuine.
+- **Trailing Stop:** Once price moves 1× ATR in favor, trail with 1× ATR or the 20-period EMA.
+
+**Risk Management:**
+
+- Risk per trade: 0.5%–1% of account equity.
+- Position size = (Account Risk) / (Entry − Stop Loss).
+- Avoid trading during major news events (high volatility spikes can create genuine breakouts).
+- Limit to 2–3 false breakout trades per instrument per day.
+- Use a volatility regime filter: only trade when VIX or realized volatility is in the lower 50th percentile (choppy markets favor false breakouts).
+
+**Required Indicators:**
+
+- Donchian Channels (20-period) or prior swing high/low levels
+- ATR (14) and ATR moving average (20)
+- Bollinger Bands (20, 2) with Band Width
+- RSI (14) for divergence confirmation
+- Optional: Volume profile or VWAP for additional confirmation
+
+**Best Market Conditions:**
+
+- Ranging or choppy markets with low directional momentum.
+- Low-volatility regimes where breakouts frequently fail.
+- Avoid strong trending markets where breakouts are genuine.
+
+**Summary:**
+AdaptiveFadeout exploits the disconnect between price breakouts and volatility expansion. By fading breakouts that lack volatility confirmation, the strategy captures mean-reversion moves back into the range while strictly managing risk through ATR-based stops and position sizing.

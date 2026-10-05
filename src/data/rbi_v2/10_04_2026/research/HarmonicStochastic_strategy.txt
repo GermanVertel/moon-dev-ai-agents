@@ -1,0 +1,44 @@
+STRATEGY_NAME: HarmonicStochastic
+
+STRATEGY_DETAILS:
+The HarmonicStochastic strategy is a high-frequency breakout system that combines harmonic oscillator signals with stochastic convergence to capture short-term price impulses. It is designed for liquid markets and lower timeframes (1m–15m), using momentum alignment and volatility expansion to time entries around breakout levels.
+
+Key Components:
+- Harmonic Oscillator: A smoothed momentum oscillator (e.g., a normalized sine-wave transform of price or a Hilbert-transform-based cycle detector) used to identify cyclical overbought/oversold phases and turning points.
+- Stochastic Convergence: Fast and slow stochastic (%K and %D) lines that must converge (cross or compress) to confirm momentum agreement before a breakout is valid.
+- Breakout Level: Recent swing high/low or a volatility band (e.g., Bollinger Band, Keltner Channel, or Donchian Channel) used as the breakout trigger.
+- Volume/Volatility Filter: ATR or volume expansion to confirm genuine breakout momentum and filter false signals.
+
+Entry Rules (Long):
+1. Harmonic Oscillator is rising from an oversold zone (below 20) or has just crossed above its signal line.
+2. Stochastic Convergence: Fast %K crosses above slow %D, and both are below 50 (early momentum) or crossing upward from oversold.
+3. Price breaks above the recent swing high or upper volatility band with a candle close above the level.
+4. Confirmation: Volume or ATR expansion on the breakout candle.
+
+Entry Rules (Short):
+1. Harmonic Oscillator is falling from an overbought zone (above 80) or has just crossed below its signal line.
+2. Stochastic Convergence: Fast %K crosses below slow %D, and both are above 50 (early momentum) or crossing downward from overbought.
+3. Price breaks below the recent swing low or lower volatility band with a candle close below the level.
+4. Confirmation: Volume or ATR expansion on the breakout candle.
+
+Exit Rules:
+- Take Profit: Fixed risk-reward (e.g., 1.5R–2R) or exit when the Harmonic Oscillator reaches the opposite extreme.
+- Stop Loss: Placed just beyond the breakout level (e.g., below the swing low for longs) or at 1× ATR.
+- Trailing Stop: Optional trailing stop using ATR or a moving average to lock in profits during extended moves.
+- Time Stop: Exit if the trade does not reach target within a set number of bars (e.g., 10–20 bars) to maintain high-frequency efficiency.
+
+Risk Management:
+- Risk per trade: 0.5%–1% of account equity.
+- Maximum concurrent positions: 1–2 to avoid overexposure.
+- Avoid trading during major news events or low-liquidity sessions.
+- Use spread and slippage filters; require minimum volatility (ATR threshold) to avoid choppy markets.
+- Backtest with realistic commissions and slippage due to high-frequency nature.
+
+Required Indicators:
+- Harmonic Oscillator (custom or built-in cycle/momentum oscillator)
+- Stochastic Oscillator (Fast %K, Slow %D; settings e.g., 5,3,3 or 9,3,3)
+- ATR (Average True Range) for volatility and stop sizing
+- Volume or Volume MA for breakout confirmation
+- Donchian Channel, Keltner Channel, or Bollinger Bands for breakout levels
+
+This strategy is best suited for scalpers and intraday traders seeking frequent, momentum-driven breakout entries with dual momentum confirmation to reduce false signals.

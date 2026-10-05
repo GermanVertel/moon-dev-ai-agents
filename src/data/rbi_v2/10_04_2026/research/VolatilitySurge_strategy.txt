@@ -1,0 +1,75 @@
+STRATEGY_NAME: VolatilitySurge
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy exploits moments when Bollinger Band width (a proxy for statistical volatility) expands beyond the market's realized range volatility (ATR). When band spread exceeds ATR, it signals a statistically significant volatility expansion — often coinciding with the onset of a directional momentum move. The strategy captures that momentum by going long, then exits when RSI signals overbought exhaustion or momentum reversal.
+
+---
+
+**1. Key Strategy Components**
+
+- **Bollinger Bands (BB):** Period = 20, Standard Deviations = 2 (default). Upper Band (UB), Lower Band (LB), Basis (SMA 20).
+- **Band Spread / Width:** `BB_Width = UB - LB` (absolute price difference between bands, not normalized).
+- **Average True Range (ATR):** Period = 14 (default).
+- **RSI:** Period = 50 bars (unusually long, smoothing out noise to capture macro momentum shifts).
+- **Long-only bias** per the strategy description.
+
+---
+
+**2. Entry Rules (Long)**
+
+Enter a long position when **all** of the following are true:
+
+1. `BB_Width > ATR` — the band spread exceeds the average true range, indicating a volatility surge / expansion regime.
+2. Price is trading **above the Bollinger Basis (SMA 20)** — confirms bullish directional bias within the expansion.
+3. (Recommended filter) Price closed **above the Upper Band** on the signal bar — confirms breakout momentum, not just a wide band.
+4. Optional confirmation: `RSI(50) > 50` — ensures the long-term momentum is bullish before entry.
+
+**Entry Execution:** Market order at the close of the signal bar (or next bar open for realism).
+
+---
+
+**3. Exit Rules**
+
+Exit the long position when **either** condition triggers:
+
+1. **RSI(50) Crossover Down:** `RSI(50)` crosses below its prior value / below the 50 midline (or a defined threshold such as 70 → 50 crossover). The 50-bar RSI is slow, so this exit avoids premature exits but catches sustained momentum reversals.
+2. **RSI(50) Crossover Up into overbought then back down** — if using a threshold model, exit on the first bearish crossover after an overbought reading.
+3. **Stop-loss:** ATR-based stop (e.g., `Entry − 1.5 × ATR`) to cap downside if volatility collapses.
+4. **Take-profit (optional):** Fixed R multiple (e.g., 2R) or when BB_Width contracts back below ATR.
+
+---
+
+**4. Risk Management**
+
+- **Position sizing:** Risk a fixed % of equity per trade (e.g., 1–2%). Size = `(Equity × Risk%) / (Entry − Stop)`.
+- **Stop-loss:** 1.5× ATR below entry (dynamic, volatility-adjusted).
+- **Max exposure:** Limit to one open long at a time; no pyramiding unless specified.
+- **Regime filter:** Only trade when `BB_Width > ATR` — avoid chop when bands are narrow.
+- **Time stop:** Exit if trade hasn't reached target within N bars (e.g., 20) and momentum stalls.
+- **Slippage/commission:** Model realistic costs, especially during volatility surges.
+
+---
+
+**5. Required Indicators**
+
+| Indicator | Parameters | Purpose |
+|-----------|-----------|---------|
+| Bollinger Bands | 20 period, 2 SD | Volatility band width |
+| ATR | 14 period | Realized range benchmark |
+| RSI | 50 period | Momentum exit signal |
+| SMA | 20 period | Trend/bias filter (BB basis) |
+
+---
+
+**6. Practical Notes**
+
+- The **50-bar RSI** is intentionally slow — it acts as a trend-following exit rather than a fast oscillator, reducing whipsaws.
+- The **BB_Width > ATR** condition is the strategy's signature: it distinguishes genuine volatility expansion from quiet consolidation.
+- Backtest across trending vs. ranging regimes; the strategy should underperform in choppy markets and excel in breakout trends.
+- Consider adding a **volume confirmation** (e.g., volume > 1.5× average) to validate the volatility surge.
+
+---
+
+**Summary:** VolatilitySurge is a long-only, volatility-expansion momentum strategy that enters when Bollinger Band width exceeds ATR and exits via slow RSI(50) crossovers, with ATR-based stops for disciplined risk control.

@@ -1,0 +1,37 @@
+STRATEGY_NAME: FuzzyPivotZone
+
+STRATEGY_DETAILS:
+This strategy combines fuzzy logic with support and resistance zones to identify volatile market turning points. It is designed to catch reversals at key price levels where momentum is likely to shift.
+
+1. Key Strategy Components:
+   - Support & Resistance Detection: Identify major horizontal zones using swing highs/lows, volume profile nodes, and repeated price rejections.
+   - Fuzzy Logic Engine: Convert price proximity to zones, RSI divergence, candle wick ratios, and volume spikes into fuzzy membership values (e.g., "near support", "strong rejection", "overextended").
+   - Volatility Filter: Use ATR or Bollinger Band width to ensure turning points occur during volatile conditions, not in dead ranges.
+   - Turning Point Score: Aggregate fuzzy rules (IF near strong support AND bullish divergence AND high volatility THEN high reversal probability).
+
+2. Entry Rules:
+   - Long Entry: Price enters a support zone, fuzzy score > 0.7, and a bullish reversal candle (hammer, engulfing) closes above the zone low.
+   - Short Entry: Price enters a resistance zone, fuzzy score > 0.7, and a bearish reversal candle (shooting star, bearish engulfing) closes below the zone high.
+   - Confirmation: RSI < 35 for longs, RSI > 65 for shorts, or MACD histogram turning.
+
+3. Exit Rules:
+   - Take Profit: Next opposing zone or 1.5x ATR move.
+   - Stop Loss: 0.5x ATR beyond the zone boundary (below support for longs, above resistance for shorts).
+   - Trailing Stop: Activate after 1x ATR profit, trail by 0.75x ATR.
+   - Time Exit: Close if no reversal move within 5 bars.
+
+4. Risk Management:
+   - Risk per trade: 1% of account equity.
+   - Max concurrent trades: 2.
+   - Avoid trading during major news events or low liquidity sessions.
+   - Reduce position size if fuzzy score is between 0.5 and 0.7 (medium confidence).
+
+5. Required Indicators:
+   - Support/Resistance zones (manual or auto-detected via pivot points).
+   - RSI (14) with divergence detection.
+   - ATR (14) for volatility and stops.
+   - Volume (relative to 20-period average).
+   - Candle pattern recognition (hammer, engulfing, shooting star).
+   - Fuzzy logic rules (custom script or external module).
+
+This strategy is unique because it does not rely on hard thresholds; instead, it uses fuzzy membership functions to handle the ambiguity of "near support" or "strong rejection", making it more adaptive to volatile turning points.

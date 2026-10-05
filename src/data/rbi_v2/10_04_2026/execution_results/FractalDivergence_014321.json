@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev FractalDivergence Backtest Loading... \u2728\n\ud83d\udcca Data loaded: 31066 bars from 2023-01-01 00:00:00 to 2023-11-20 19:15:00\n\ud83d\ude80 Columns: ['Open', 'High', 'Low', 'Close', 'Volume']\n\ud83c\udf19\ud83d\ude80 Starting Moon Dev FractalDivergence Backtest... \u2728\n\ud83c\udf19 Initializing Moon Dev FractalDivergence indicators... \u2728\n\ud83c\udf19 Indicators ready! RSI, EMA50/200, ATR, Fractals loaded \ud83d\ude80\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/30866 [00:00<?, ?bar/s]\n                                                        \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/FractalDivergence_PKG.py\", line 217, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/FractalDivergence_PKG.py\", line 112, in next\n    window_high = max(self.data.High[center - self.fractal_window:center + self.fractal_window + 1])\nValueError: max() arg is an empty sequence\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/FractalDivergence_PKG.py` failed. (See above for error)\n",
+  "execution_time": 4.898755,
+  "timestamp": "2026-10-05T01:43:21.187342"
+}

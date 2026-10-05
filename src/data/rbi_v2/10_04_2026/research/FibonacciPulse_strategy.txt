@@ -1,0 +1,50 @@
+STRATEGY_NAME: FibonacciPulse
+
+STRATEGY_DETAILS:
+This strategy is a multi-layered trend-following system that requires confluence between momentum, price structure, volume, and volatility before entering a trade. It is designed to filter out weak or choppy signals and only participate when the market shows genuine directional conviction.
+
+1. KEY STRATEGY COMPONENTS
+- MACD oscillator with signal line (typically 12, 26, 9) and a separate 26-period EMA of the MACD signal line itself.
+- Fibonacci retracement tool anchored to the most recent significant swing high/low, with the 0.382 level as the primary trigger zone.
+- Volume analysis using a volume moving average to detect expansion (current volume > volume MA).
+- ATR (Average True Range) with a volatility multiple (e.g., current ATR > 1.5x its own moving average) to confirm volatility expansion.
+
+2. INDICATORS REQUIRED
+- MACD (12, 26, 9) with signal line.
+- 26-period EMA applied to the MACD signal line (this is the "MACD signal EMA").
+- Fibonacci retracement levels (focus on 0.382).
+- Volume indicator with a 20-period volume moving average.
+- ATR (14-period) plus an ATR moving average (e.g., 20-period) to compute the ATR multiple.
+
+3. ENTRY RULES
+Long Entry:
+- MACD signal line crosses ABOVE its 26-period EMA.
+- Price is retracing upward and reaches/holds the 0.382 Fibonacci retracement level of the prior downswing (or bounces off 0.382 in an uptrend continuation).
+- Volume is above its 20-period moving average (volume expansion).
+- Current ATR is greater than 1.5x its 20-period ATR average (volatility expansion).
+- All four conditions must align within a defined lookback window (e.g., 3–5 bars) to confirm confluence.
+
+Short Entry:
+- MACD signal line crosses BELOW its 26-period EMA.
+- Price retraces downward to the 0.382 Fibonacci level of the prior upswing (or rejects 0.382 in a downtrend continuation).
+- Volume expansion above the 20-period volume MA.
+- ATR multiple > 1.5x.
+- Same confluence window applies.
+
+4. EXIT RULES
+- Exit on MACD signal line crossing back against its 26-period EMA (reversal signal).
+- Exit when ATR multiple falls below 1.0x (volatility contraction indicating trend exhaustion).
+- Optional trailing stop using ATR (e.g., 2x ATR from entry) to lock in profits.
+- Fibonacci-based target: next retracement level (0.618) or extension (1.272/1.618) can be used as take-profit.
+
+5. RISK MANAGEMENT
+- Position sizing based on ATR: risk a fixed percentage of equity per trade, with stop distance = 1.5–2x ATR.
+- Stop-loss placed just beyond the 0.382 level (e.g., below the swing low for longs, above swing high for shorts) to invalidate the setup.
+- Avoid trading when volume is flat and ATR multiple < 1.0x (low-conviction, range-bound conditions).
+- Maximum concurrent positions and daily loss limits to prevent overexposure during volatile regimes.
+
+6. TIMEFRAMES AND MARKETS
+- Best suited for trending markets on 1H, 4H, or Daily charts.
+- Works well on liquid instruments (major FX pairs, index futures, large-cap crypto) where volume and ATR data are reliable.
+
+This strategy's edge comes from requiring simultaneous momentum shift (MACD/EMA cross), structural confirmation (Fibonacci 0.382), participation (volume), and volatility expansion (ATR multiple) — dramatically reducing false signals compared to a simple MACD crossover.

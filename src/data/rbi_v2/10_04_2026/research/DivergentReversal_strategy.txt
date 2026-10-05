@@ -1,0 +1,62 @@
+STRATEGY_NAME: DivergentReversal
+
+STRATEGY_DETAILS:
+This strategy is a contrarian intraday setup that combines MACD momentum divergence with histogram confirmation and price-action support validation. Despite the wording "bearish divergence," the trade direction is LONG, meaning the setup is interpreted as a bullish reversal signal (classic positive/bullish divergence where price makes a lower low but MACD makes a higher low, or a momentum exhaustion signal at support). Below is the full specification.
+
+1. KEY STRATEGY COMPONENTS
+- Primary Signal: MACD divergence at an intraday support zone.
+- Confirmation 1: MACD histogram turning from negative to positive (or shrinking negative bars), signaling momentum shift.
+- Confirmation 2: Price action confirming intraday support (rejection wick, bullish engulfing, or higher-low structure).
+- Timeframe: Intraday (5m, 15m, or 1H charts). Use a higher timeframe (1H/4H) for trend/context bias.
+- Instrument: Liquid instruments (FX majors, index futures, large-cap equities, crypto majors).
+
+2. INDICATORS REQUIRED
+- MACD (standard 12, 26, 9) with both MACD line, Signal line, and Histogram.
+- Support identification: recent swing lows, prior day high/low, VWAP, or session low.
+- Optional: Volume or volume profile to validate support strength.
+- Optional: ATR for dynamic stop sizing.
+
+3. ENTRY RULES (LONG)
+Step 1 — Locate Divergence:
+- Price prints a lower low (or equal low) into a defined intraday support zone.
+- MACD line prints a higher low vs. the prior swing low (bullish/positive divergence). If the setup is described as "bearish MACD divergence," it must be interpreted as bearish momentum divergence that is exhausting and reversing at support — i.e., the down-move is losing steam.
+
+Step 2 — Histogram Confirmation:
+- MACD histogram shows a bullish crossover (negative to positive) OR a sequence of shrinking negative bars followed by a positive bar.
+- Histogram must confirm on the same or one candle after the divergence low.
+
+Step 3 — Price Action Confirmation:
+- Candle closes back above the intraday support level, OR
+- Bullish rejection wick at support, OR
+- Bullish engulfing / pin bar / inside-bar breakout above the prior candle high.
+
+Entry Trigger:
+- Enter long on the close of the confirmation candle, or
+- Enter on a break above the high of the confirmation candle (stop-entry method for stronger confirmation).
+
+4. EXIT RULES
+- Take Profit 1: Nearest resistance / prior swing high / VWAP (scale out 50%).
+- Take Profit 2: Next structural resistance or measured move equal to the divergence range.
+- Trailing Stop: Trail behind swing lows or use MACD histogram flipping negative as an exit signal.
+- Time Stop: Exit if the trade does not move in favor within N bars (e.g., 10–15 bars on 5m).
+
+5. RISK MANAGEMENT
+- Stop Loss: Place below the divergence low (the swing low that formed the divergence) minus a buffer (e.g., 0.5 × ATR or a few pips).
+- Position Sizing: Risk no more than 0.5%–1% of account equity per trade.
+- Risk/Reward: Minimum 1:2 R:R; skip setups where support is too close to resistance.
+- Max Concurrent Trades: 1–2 to avoid correlated exposure.
+- Avoid trading during major news events unless the setup is on a higher timeframe.
+
+6. TRADE FILTERS / CONFLUENCE
+- Only take longs when the higher timeframe trend is neutral-to-bullish, OR when price is at a major HTF support.
+- Avoid divergence trades in strong, one-directional trending markets without a clear support reaction.
+- Require the divergence to occur at a pre-identified support (not random mid-range).
+- Volume expansion on the reversal candle increases probability.
+
+7. COMMON PITFALLS TO AVOID
+- Divergence can persist in strong trends — always wait for histogram + price action confirmation.
+- False support breaks: require a candle close above support, not just a wick.
+- Overtrading: limit to high-quality setups at key levels.
+
+SUMMARY:
+This is a long-only, intraday mean-reversion/reversal strategy that fuses MACD divergence (momentum exhaustion), MACD histogram crossover (momentum shift), and price-action support confirmation (structure validation). The triple confirmation reduces false signals and targets a reversal bounce off intraday support with defined risk below the divergence low.

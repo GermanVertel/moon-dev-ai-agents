@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Moon Dev's VolatilityCompressionMomentum Backtest Starting! \ud83d\ude80\ud83d\ude80\n\ud83c\udf19 Data loaded: 31066 bars\n\ud83d\ude80 Columns: ['Datetime', 'Open', 'High', 'Low', 'Close', 'Volume']\n\ud83c\udf19 Running backtest...\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/VolatilityCompressionMomentum_PKG.py\", line 176, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_04_2026/backtests_package/VolatilityCompressionMomentum_PKG.py` failed. (See above for error)\n",
+  "execution_time": 5.025018,
+  "timestamp": "2026-10-05T01:35:20.777496"
+}

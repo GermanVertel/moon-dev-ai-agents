@@ -1,0 +1,38 @@
+STRATEGY_NAME: VolatilityPremiumHarvest
+
+STRATEGY_DETAILS:
+This strategy exploits elevated volatility premiums in the options market during the morning session by selling put options when specific market conditions align. The core thesis is that when VIX futures trade above 20 and open interest has declined from the prior day's close, option premiums are inflated relative to realized risk, creating a favorable environment for premium sellers.
+
+KEY STRATEGY COMPONENTS:
+1. Time Window Filter: Only execute trades between 9:00 AM and 11:00 AM (morning session). This window typically exhibits higher volatility and wider bid-ask spreads, which can favor premium sellers due to elevated implied volatility.
+2. VIX Futures Threshold: Require the front-month VIX futures contract to be trading above 20. This ensures a high-volatility regime where put premiums are rich.
+3. Open Interest Decline: Compare current open interest on the target put strike/series to the previous day's closing open interest. Only enter when current OI is LOWER than yesterday's close, signaling reduced participation and potentially less crowded short-put positioning.
+4. Instrument: Sell cash-secured or margin-secured put options on a liquid underlying (e.g., SPY, QQQ, or a high-liquidity single name).
+
+ENTRY RULES:
+- Scan at 9:00 AM for VIX futures > 20.
+- Confirm open interest on the chosen put series is below the prior day's close.
+- Sell puts with a limit order (do not chase fills) targeting a premium at or above the mid-price to capture favorable fills.
+- Strike selection: typically 5-10% out-of-the-money with 7-45 days to expiration, balancing premium capture with assignment risk.
+
+EXIT RULES:
+- Primary exit: Buy back the short put at expiration (or close early) using a limit order to lock in profits, targeting 50-75% of maximum premium collected.
+- Roll or close if the position reaches the profit target before expiration.
+- If the underlying breaches the strike and assignment is imminent, evaluate rolling down-and-out or accepting assignment based on account mandate.
+
+RISK MANAGEMENT:
+- Position sizing: Risk no more than 2-5% of account equity per trade (cash-secured puts require full collateral).
+- Stop-loss: Close the position if the put premium doubles (2x credit received) or if the underlying drops sharply below the strike.
+- Avoid earnings dates and major macro events unless intentionally trading them.
+- Monitor VIX futures term structure; a sharp backwardation spike can signal rising tail risk.
+- Diversify across underlyings and expirations to avoid concentration.
+
+REQUIRED INDICATORS / DATA:
+- VIX futures front-month price (real-time).
+- Open interest data (current vs. prior day close) for the target option series.
+- Option chain with bid/ask, implied volatility, and greeks (delta, theta, vega).
+- Underlying price and volume.
+- Time-of-day clock (9:00-11:00 AM filter).
+- Limit order execution capability with mid-price reference.
+
+This strategy is best suited for experienced options traders with a margin-enabled account and a tolerance for assignment risk, operating in elevated-volatility regimes where premium selling is structurally favored.

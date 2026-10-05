@@ -1,0 +1,39 @@
+STRATEGY_NAME: BandedReversion
+
+STRATEGY_DETAILS:
+
+This is a mean-reversion strategy built around a specific Bollinger Band configuration that identifies oversold conditions relative to a baseline trend, with ATR-based risk controls designed to survive re-tests.
+
+**Core Concept:**
+The strategy exploits a structural anomaly: when the lower Bollinger Band sits ABOVE the 20-period moving average, price has been pushed so far below its mean that the entire lower volatility envelope has detached upward from the SMA. This is a rare, extreme oversold condition that statistically favors a snap-back toward the mean.
+
+**Required Indicators:**
+- Bollinger Bands (20-period SMA basis, 2 standard deviations default)
+- 20-period Simple Moving Average (the BB basis — can be reused)
+- ATR (14-period) for stop placement
+
+**Entry Rules (Long Only):**
+1. Confirm the setup condition: Lower Bollinger Band > 20-period SMA.
+   - This typically happens after a sharp, sustained sell-off where volatility expands and the SMA lags.
+2. Enter long on the first bullish confirmation candle that closes back above the lower band (or on a touch-and-reject of the lower band).
+3. Optional filter: require RSI < 30 or price at least 2.5σ below the mean to avoid false signals during prolonged downtrends.
+
+**Exit Rules:**
+1. **Primary target:** Reversion to the 20-period SMA (the mean). Close 50–100% of the position here.
+2. **Stretch target:** Upper Bollinger Band for runners if momentum is strong.
+3. **Stop loss:** 2× ATR below the entry price. The 2× ATR buffer is intentionally wide to absorb the "re-test" of the lows that frequently occurs before mean reversion completes.
+4. **Time stop:** Exit if the trade hasn't reached the mean within N bars (e.g., 15–20), since mean reversion is time-sensitive.
+
+**Risk Management:**
+- Position size = (Account Risk %) / (2 × ATR) so that every trade risks a fixed fraction of equity regardless of volatility.
+- Max 1–2 concurrent positions; avoid adding to losers.
+- Skip trades where ATR is expanding violently (volatility regime filter) — the re-test may become a breakdown.
+- Trail stop to breakeven once price crosses the 20-period SMA.
+
+**Edge / Rationale:**
+The "lower band above SMA" condition is a volatility-lag signature — the mean hasn't caught up to price yet. Reversion to that mean is mechanically favored, and the 2× ATR stop gives the trade room to survive the re-test that traps tighter-stopped traders.
+
+**Failure Modes to Watch:**
+- Strong trending bear markets where the SMA keeps sliding down (band stays above SMA indefinitely).
+- Low-liquidity instruments where ATR is unreliable.
+- News-driven gaps that blow through the ATR stop.

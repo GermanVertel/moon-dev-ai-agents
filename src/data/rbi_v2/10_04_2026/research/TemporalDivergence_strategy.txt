@@ -1,0 +1,43 @@
+STRATEGY_NAME: TemporalDivergence
+
+STRATEGY_DETAILS:
+This strategy exploits the term-structure spread between short-term futures and long-term options contracts that exhibit opposing momentum. It is a calendar-spread-style momentum-swap system that goes long near-dated futures while simultaneously shorting longer-dated options on the same underlying, capitalizing on divergence in their price trajectories.
+
+KEY STRATEGY COMPONENTS:
+1. Instrument Pairing: Match a short-term futures contract (near expiry, e.g., front-month) with a corresponding long-term options contract (far expiry) on the same underlying asset.
+2. Momentum Spread Signal: Compute the momentum of each leg separately. The trade is only valid when the two legs show opposing directional momentum (futures rising while options premium falling, or vice versa).
+3. Spread Measurement: Track the price spread (futures price minus options premium) and its rate of change to confirm divergence rather than noise.
+4. Regime Filter: Only trade when the spread is widening in the direction that favors the long-futures/short-options structure.
+
+ENTRY RULES:
+- Long Entry: Go long the short-term futures contract AND short the long-term options contract when:
+  - Short-term futures momentum is positive (e.g., 5-10 period ROC > 0)
+  - Long-term options premium momentum is negative (premium decaying or implied vol falling)
+  - The spread between the two is expanding upward
+  - Confirmation: futures price above short-term EMA (e.g., 20-period) while options premium below its EMA
+- Avoid entry if momentum legs are aligned (both up or both down) — that defeats the divergence thesis.
+
+EXIT RULES:
+- Profit Target: Close when the spread reverts or momentum convergence occurs (both legs moving in the same direction again).
+- Stop Loss: Exit if the futures leg breaks below its recent swing low OR the options leg premium spikes above a defined threshold (momentum reversal against position).
+- Time Stop: Exit before the short-term futures contract approaches rollover/expiry to avoid delivery and liquidity risk.
+- Trailing Exit: Trail the futures leg with an ATR-based stop to lock in gains during sustained trends.
+
+RISK MANAGEMENT:
+- Position Sizing: Size each leg so that notional exposure is balanced; because options have leverage, reduce the options leg size to match delta-equivalent exposure of the futures leg.
+- Correlation Check: Only deploy when historical correlation between the two legs is high enough that the spread is mean-reverting, not structurally broken.
+- Max Drawdown Cap: Hard stop at a predefined portfolio drawdown (e.g., 2-3% of account) to prevent divergence blowouts.
+- Liquidity Filter: Only trade contracts with sufficient open interest and tight bid-ask spreads; avoid illiquid far-dated options.
+- Margin Awareness: Account for margin requirements on both futures and short options legs; short options carry unlimited theoretical risk, so cap the short leg with defined-risk structures (e.g., spreads) if needed.
+
+REQUIRED INDICATORS:
+- Rate of Change (ROC) or Momentum indicator on both futures and options premium series
+- Exponential Moving Averages (EMA) on each leg for trend confirmation
+- Average True Range (ATR) for stop placement and volatility sizing
+- Spread oscillator (futures price minus options premium, normalized)
+- Implied Volatility (IV) and IV rank for the options leg (to detect premium decay/expansion)
+- Correlation coefficient between the two legs (rolling window)
+- Open interest and volume data for liquidity screening
+
+NOTES:
+The core edge is temporal arbitrage of momentum — short-term futures respond faster to news/flow than long-dated options, creating transient divergence. The strategy works best in trending-but-decelerating markets where near-term momentum outpaces longer-dated expectations. It fails in sharp regime shifts where both legs reprice together, so the regime filter and correlation check are critical.

@@ -1,0 +1,63 @@
+STRATEGY_NAME: FiboMACD Reversal
+
+STRATEGY_DETAILS:
+This strategy combines Fibonacci retracement levels with MACD crossover signals to identify high-probability trend reversals. The core premise is that when price reaches a key Fibonacci retracement level (typically 38.2%, 50%, or 61.8%) AND the MACD line simultaneously crosses its signal line, it signals a confluence event that increases the reliability of a reversal.
+
+STRATEGY COMPONENTS:
+
+1. FIBONACCI RETRACEMENT SETUP
+- Identify a clear swing high and swing low on the chart (use a lookback of 50-100 bars).
+- Draw Fibonacci retracement levels between the swing points:
+  - For an uptrend (looking for a bullish reversal): retracement from swing low to swing high; key levels are 38.2%, 50%, 61.8%, and 78.6%.
+  - For a downtrend (looking for a bearish reversal): retracement from swing high to swing low; key levels are 38.2%, 50%, 61.8%, and 78.6%.
+- The 50% and 61.8% levels are considered the "golden zone" with the highest reversal probability.
+
+2. MACD INDICATOR
+- Standard MACD settings: 12-period EMA (fast), 26-period EMA (slow), 9-period signal line.
+- MACD line = EMA(12) − EMA(26).
+- Signal line = 9-period EMA of MACD line.
+- Histogram = MACD line − Signal line.
+
+3. ENTRY RULES
+
+Bullish Reversal (Long Entry):
+- Price has retraced downward into a Fibonacci support zone (38.2%–61.8% of a prior uptrend).
+- MACD line crosses ABOVE the signal line (bullish crossover).
+- Confirmation: MACD histogram flips from negative to positive.
+- Optional filter: price forms a bullish candlestick pattern (hammer, bullish engulfing) at the Fib level.
+- Enter long on the close of the candle where the crossover occurs, or on the next candle open.
+
+Bearish Reversal (Short Entry):
+- Price has retraced upward into a Fibonacci resistance zone (38.2%–61.8% of a prior downtrend).
+- MACD line crosses BELOW the signal line (bearish crossover).
+- Confirmation: MACD histogram flips from positive to negative.
+- Optional filter: price forms a bearish candlestick pattern (shooting star, bearish engulfing) at the Fib level.
+- Enter short on the close of the crossover candle, or on the next candle open.
+
+4. EXIT RULES
+- Take Profit: 
+  - Target 1: the 0% Fib level (previous swing high/low) — first scale-out.
+  - Target 2: extension levels (127.2% or 161.8%) for runners.
+- Stop Loss:
+  - For longs: place stop just below the next Fibonacci level (e.g., below 78.6%) or below the swing low.
+  - For shorts: place stop just above the next Fibonacci level or above the swing high.
+- Trailing Stop: once price moves 1R in favor, trail using MACD histogram contraction or a 20-period EMA.
+
+5. RISK MANAGEMENT
+- Risk per trade: 1–2% of account equity.
+- Position sizing: (Account Risk $) / (Entry Price − Stop Price).
+- Minimum risk-reward ratio: 1:2.
+- Avoid trading when MACD crossover occurs far from a Fib level (no confluence = no trade).
+- Skip signals during major news events or low-liquidity sessions.
+
+6. REQUIRED INDICATORS
+- Fibonacci Retracement tool (auto or manual swing detection).
+- MACD (12, 26, 9) with signal line and histogram.
+- Optional: candlestick pattern recognition, volume confirmation, 20/50 EMA for trend context.
+
+7. TIMEFRAMES & MARKETS
+- Best suited for 1H, 4H, and Daily charts where Fibonacci levels hold better.
+- Works across forex, crypto, indices, and liquid equities.
+
+8. STRATEGY LOGIC SUMMARY
+The edge comes from CONFLUENCE: Fibonacci levels identify where price is likely to react, while MACD crossover confirms momentum shift. A trade is only valid when BOTH conditions align — this filters out weak signals and improves win rate, though it reduces trade frequency.

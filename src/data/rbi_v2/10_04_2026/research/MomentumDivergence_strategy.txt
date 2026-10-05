@@ -1,0 +1,61 @@
+STRATEGY_NAME: MomentumDivergence
+
+STRATEGY_DETAILS:
+This strategy combines two momentum-based divergence signals to identify high-probability short entries, then uses volume-adaptive profit targets and volatility-based stops for exits.
+
+**Core Components:**
+
+1. **MACD Bearish Divergence Detection**
+   - Price makes a higher high while MACD makes a lower high (classic bearish divergence)
+   - Confirms weakening bullish momentum despite rising price
+   - Use standard MACD (12, 26, 9) on the chosen timeframe
+
+2. **RSI Bearish Divergence Detection**
+   - Price makes a higher high while RSI makes a lower high
+   - RSI period typically 14
+   - Confirms overbought conditions losing strength
+
+3. **Dual Confirmation Requirement**
+   - Both MACD and RSI must show bearish divergence on the SAME price swing
+   - This dual filter reduces false signals significantly
+   - Only enter when both divergences align at the same pivot high
+
+**Entry Rules (Short):**
+- Identify a swing high where price prints a higher high
+- Confirm MACD histogram/line prints a lower high at that same swing
+- Confirm RSI prints a lower high at that same swing
+- Enter short on the close of the reversal candle (bearish engulfing, shooting star, or break of prior candle low)
+- Optional: wait for a lower low confirmation candle before entry
+
+**Exit Rules:**
+
+1. **Take Profit (Volume-Based):**
+   - Calculate average daily volume percentage change (e.g., 20-period average of |(V_t - V_{t-1})/V_{t-1}| × 100)
+   - Set TP at 2× that average percentage move from entry price
+   - Example: if avg daily volume % change = 3%, TP = 6% below entry
+   - This adapts the target to current market activity/liquidity
+
+2. **Stop Loss (ATR-Based):**
+   - Set SL at 1× ATR (14-period) above entry price
+   - Provides volatility-adjusted risk control
+   - Never move stop against position
+
+**Risk Management:**
+- Risk-to-reward must be at least 1:1.5 before entering (check TP distance vs ATR distance)
+- Position size = (Account Risk %) / (Entry − Stop) distance
+- Max 1-2% account risk per trade
+- Avoid entries within 30 min of major news events
+- Skip signals if ATR is unusually low (choppy) or unusually high (news spike)
+
+**Required Indicators:**
+- MACD (12, 26, 9)
+- RSI (14)
+- ATR (14)
+- Volume with 20-period average % change calculation
+- Swing high/low detection (pivot points, 3-5 bar lookback)
+
+**Timeframe:** Works best on 1H–4H charts for cleaner divergences; avoid <15min due to noise.
+
+**Invalidation:**
+- If price breaks above the swing high that formed the divergence, the setup is invalid
+- Exit early if MACD and RSI both re-align bullish before TP is hit

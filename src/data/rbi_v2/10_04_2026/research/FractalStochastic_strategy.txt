@@ -1,0 +1,52 @@
+STRATEGY_NAME: FractalStochastic
+
+STRATEGY_DETAILS:
+This strategy combines fractal channel breakout detection with stochastic oscillator confirmation to capture sustained trends while filtering out false signals in choppy markets. It is designed for trending instruments on intraday to swing timeframes (e.g., 15m, 1H, 4H).
+
+1. KEY STRATEGY COMPONENTS
+- Fractal Channels: Identify swing highs and swing lows using Bill Williams' fractal logic (a 5-bar pattern where the middle bar has the highest high / lowest low). Connect the most recent confirmed up-fractal and down-fractal to form dynamic channel boundaries.
+- Channel Construction: Use the two most recent opposing fractals to draw an upper resistance line and lower support line. Optionally extend these as projections to anticipate breakout zones.
+- Stochastic Oscillator: Use %K and %D (standard settings 14,3,3) to gauge momentum and avoid entering against overbought/oversold extremes.
+- Trend Bias Filter: Only take long trades when price closes above the upper fractal channel, and short trades when price closes below the lower fractal channel.
+- Volatility Guard: Skip signals when channel width is unusually narrow (consolidation) or unusually wide (exhaustion).
+
+2. ENTRY RULES
+Long Entry:
+- Price closes above the upper fractal channel line (breakout confirmation).
+- Stochastic %K crosses above %D and both are rising.
+- Stochastic is NOT in extreme overbought territory (>80) at the moment of entry, OR a fresh bullish cross occurs after a pullback from overbought.
+- ATR-based volatility filter confirms sufficient range expansion.
+
+Short Entry:
+- Price closes below the lower fractal channel line.
+- Stochastic %K crosses below %D and both are falling.
+- Stochastic is NOT in extreme oversold territory (<20) at entry, OR a fresh bearish cross occurs after a bounce from oversold.
+- ATR-based volatility filter confirms sufficient range expansion.
+
+3. EXIT RULES
+- Take Profit: Trail stop along the opposite fractal channel (i.e., move stop to the most recent opposing fractal as new fractals form).
+- Stop Loss: Place initial stop just beyond the most recent fractal on the opposite side of the trade (below the last down-fractal for longs, above the last up-fractal for shorts).
+- Momentum Exit: Close the trade if stochastic crosses back against the position direction while price is still inside the channel.
+- Channel Reversal Exit: Exit if price closes back inside the channel after a breakout, signaling a failed breakout.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk a fixed percentage (e.g., 1–2%) of account equity per trade, sized by the distance between entry and the fractal-based stop.
+- Stop Distance: Always derived from fractal structure, not fixed pips, so stops adapt to market volatility.
+- Maximum Concurrent Positions: 1–2 per instrument to avoid correlated exposure.
+- Drawdown Control: Pause trading after 3 consecutive losses or a 5% equity drawdown; resume only after a fresh confirmed fractal channel forms.
+- Time Filter: Avoid entries during low-liquidity sessions or major news releases unless volatility filter is satisfied.
+
+5. REQUIRED INDICATORS
+- Fractal indicator (Bill Williams 5-bar fractal) for swing high/low detection.
+- Channel drawing tool or custom script to connect latest opposing fractals.
+- Stochastic Oscillator (14,3,3) with %K and %D lines.
+- ATR (14) for volatility filtering and position sizing.
+- Optional: Moving average (e.g., 50 EMA) as an additional trend bias filter to align with higher-timeframe direction.
+
+6. BEST PRACTICES
+- Confirm fractals only after the 5-bar pattern is fully closed to avoid repainting.
+- Require the breakout candle to close beyond the channel, not just wick through it.
+- Use higher-timeframe fractal channels for trend direction and lower-timeframe for entry timing (multi-timeframe alignment).
+- Backtest across trending and ranging regimes to tune the stochastic thresholds and ATR multiplier.
+
+This combination leverages fractal structure for objective trend boundaries and stochastic momentum for timing, producing a robust trend-following system that adapts to market geometry rather than fixed levels.

@@ -1,0 +1,42 @@
+STRATEGY_NAME: OversoldMomentum
+
+STRATEGY_DETAILS:
+This strategy is a mean-reversion-momentum hybrid that combines an oversold oscillator trigger with a trend-confirmation exit and volatility-based risk control. Despite being labeled "momentum-based breakout," the actual mechanics are contrarian entry (buying weakness) with a momentum-style exit (riding the pullback to the mean).
+
+Note on the stated rules: The entry condition (RSI 50 below 30) is a classic oversold reversal signal, and the stop placement "20% ATR above entry" is unusual for a long position — a long stop should logically sit BELOW entry. I've interpreted this as a likely typo for a stop at 20% of ATR below entry, but I flag both interpretations below.
+
+1. KEY STRATEGY COMPONENTS
+- Primary trigger: 50-period RSI (longer lookback than the standard 14-period) crossing into oversold territory.
+- Trend/exit filter: 20-period moving average (SMA or EMA) used as the profit-taking target.
+- Volatility sizing: ATR used to define the protective stop distance.
+- Direction: Long-only per the description.
+
+2. ENTRY RULES
+- Enter LONG when the 50-period RSI closes below 30.
+- Optional confirmation to avoid catching falling knives: require RSI to cross back ABOVE 30 after dipping below it (a reversal confirmation rather than a raw oversold reading).
+- Optional trend filter: only take the trade if price is above a longer-term MA (e.g., 200-period) to avoid shorting into a structural downtrend.
+- Enter at the next bar's open or on the close of the signal bar.
+
+3. EXIT RULES
+- Primary exit: Close the long when price pulls back UP to the 20-period moving average (the mean-reversion target).
+- Alternative: Exit when RSI recovers above a threshold (e.g., 50 or 70), which often coincides with the price reaching the 20-MA.
+- Time-based exit: If neither target nor stop is hit within N bars, exit to avoid dead capital.
+
+4. RISK MANAGEMENT
+- Stop loss: Place the stop 20% of ATR below entry (interpreting the stated "above" as a likely error). Example: if ATR = 100 points, stop distance = 20 points below entry.
+- If the literal rule is taken (stop 20% ATR ABOVE entry for a long), that would place the stop in profit territory immediately, which is illogical — confirm the intended direction with the strategy author.
+- Position sizing: Risk a fixed % of equity per trade (e.g., 1%); size = (Account Risk) / (Stop Distance).
+- Optional take-profit: The 20-MA itself acts as a dynamic target; consider scaling out (e.g., 50% at the 20-MA, trail the rest).
+
+5. REQUIRED INDICATORS
+- RSI with period = 50.
+- Moving Average with period = 20 (SMA or EMA — specify which; EMA reacts faster).
+- ATR (typically 14-period) for stop distance calculation.
+- Optional: a long-term trend MA (e.g., 200-period) as a regime filter.
+
+6. IMPLEMENTATION NOTES / CAVEATS
+- The 50-period RSI below 30 is a relatively rare event, so signal frequency will be low — expect few trades and long flat periods.
+- Combining a slow RSI (50) with a fast MA (20) creates a mismatch: the MA may be far above price when RSI finally triggers, giving a wide but potentially rewarding target.
+- Backtest across multiple regimes; oversold-buying strategies suffer badly in sustained bear markets without a trend filter.
+- Watch for the "20% ATR" stop being too tight in high-volatility regimes — verify it isn't prematurely stopped out.
+- This is a long-only design; a symmetric short version would mirror the logic (RSI > 70, exit at 20-MA, stop above entry).

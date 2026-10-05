@@ -1,0 +1,51 @@
+STRATEGY_NAME: FibonacciMomentum
+
+STRATEGY_DETAILS:
+This strategy combines Fibonacci retracement levels with momentum confirmation to identify high-probability trend continuation entries. The core idea is that Fibonacci levels alone can produce false signals, so momentum must validate the retracement completion before entering.
+
+1. KEY STRATEGY COMPONENTS
+- Identify a clear directional impulse move (swing high to swing low for downtrend, or swing low to swing high for uptrend).
+- Plot Fibonacci retracement levels on that impulse move: 23.6%, 38.2%, 50%, 61.8%, and 78.6%.
+- Wait for price to pull back into a key Fibonacci zone (typically 38.2%–61.8%, the "golden pocket").
+- Confirm that momentum is rising (for longs) or falling (for shorts) as price approaches or touches the retracement level.
+- Enter only when both conditions align: retracement level reached AND momentum confirmation present.
+
+2. ENTRY RULES
+Long Entry:
+- Prior impulse move is bullish (swing low → swing high).
+- Price retraces down into 38.2%–61.8% zone.
+- Momentum indicator (e.g., RSI, MACD histogram, or Stochastic) is rising or turning up from oversold/neutral.
+- Enter on bullish candlestick confirmation (engulfing, pin bar, or close above prior candle high) at or near the Fibonacci level.
+
+Short Entry:
+- Prior impulse move is bearish (swing high → swing low).
+- Price retraces up into 38.2%–61.8% zone.
+- Momentum indicator is falling or turning down from overbought/neutral.
+- Enter on bearish candlestick confirmation at or near the Fibonacci level.
+
+3. EXIT RULES
+- Take Profit 1: Prior swing high (for longs) or swing low (for shorts) — the 0% retracement level.
+- Take Profit 2: Fibonacci extension levels (127.2%, 161.8%) for extended moves.
+- Stop Loss: Below the 78.6% retracement level (for longs) or above it (for shorts), or below the most recent swing low/high.
+- Optional trailing stop using momentum reversal or a moving average (e.g., 20 EMA).
+
+4. RISK MANAGEMENT
+- Risk no more than 1–2% of account equity per trade.
+- Position size = (Account Risk) / (Entry Price − Stop Loss Price).
+- Only take trades where reward-to-risk ratio is at least 1:2.
+- Avoid trading during major news events or low-liquidity sessions.
+- Skip setups where momentum and price action conflict (e.g., price at Fibonacci level but momentum still strongly trending against the trade).
+
+5. REQUIRED INDICATORS
+- Fibonacci retracement tool (manual or automated swing detection).
+- Momentum oscillator: RSI (14), MACD (12,26,9), or Stochastic (14,3,3).
+- Candlestick pattern recognition for entry confirmation.
+- Optional: 20 EMA or 50 EMA for trend bias and trailing stops.
+- Volume indicator to confirm momentum strength (rising volume on impulse, falling volume on retracement).
+
+6. TIMEFRAME AND MARKET CONTEXT
+- Best suited for trending markets (stocks, forex, crypto, futures).
+- Recommended timeframes: 1H, 4H, and Daily for reliability.
+- Confirm higher timeframe trend direction before taking lower timeframe entries (multi-timeframe alignment).
+
+This strategy reduces false Fibonacci signals by requiring momentum confirmation, improving entry timing and overall win rate.

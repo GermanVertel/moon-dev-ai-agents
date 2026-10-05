@@ -1,0 +1,39 @@
+STRATEGY_NAME: Volume Oscillator Breakout
+
+STRATEGY_DETAILS:
+This strategy combines volume-based oversold detection with a price breakout trigger to catch reversal moves after capitulation-style selling. The core idea is that extreme volume spikes paired with oversold oscillator readings often mark exhaustion points, and the subsequent breakout above a short-term resistance confirms the reversal.
+
+1. Key Strategy Components
+- Volume Oversold Oscillator: A composite indicator that flags when volume surges to an extreme (e.g., volume > 2x its 20-period average) while a momentum oscillator (RSI or stochastic) is in oversold territory (e.g., RSI < 30). This dual condition identifies capitulation.
+- Confirmation Breakout: After the oversold-volume signal, wait for price to break above a short-term resistance level (e.g., the high of the signal bar or a 5-period high).
+- Trend Filter: Optional longer-term moving average (e.g., 200-period EMA) to avoid counter-trend trades in strong downtrends.
+
+2. Entry Rules
+- Long Entry: 
+  a) Volume > 2x 20-period average volume AND RSI(14) < 30 (or stochastic < 20).
+  b) Price closes above the high of the signal bar or above a 5-period high within the next 3 bars.
+  c) Optional: Price above 200-period EMA for trend alignment.
+- Short Entry (mirror):
+  a) Volume > 2x average AND RSI(14) > 70 (or stochastic > 80).
+  b) Price closes below the low of the signal bar or below a 5-period low.
+
+3. Exit Rules
+- Profit Target: 1.5x to 2x ATR(14) from entry, or a fixed risk-reward ratio of 2:1.
+- Stop Loss: Below the signal bar low (for longs) or above the signal bar high (for shorts), or 1x ATR.
+- Trailing Stop: Optional trailing stop using ATR or a moving average (e.g., 10-period EMA) to lock in profits.
+- Time Exit: Close position if no target/stop hit within 10 bars.
+
+4. Risk Management
+- Position Sizing: Risk no more than 1-2% of account equity per trade.
+- Max Concurrent Trades: Limit to 2-3 open positions to avoid overexposure.
+- Avoid News Events: Skip signals around major earnings or economic releases to reduce gap risk.
+- Volatility Filter: Avoid trades when ATR is extremely low (choppy markets) or extremely high (unstable).
+
+5. Required Indicators
+- Volume (with 20-period simple moving average)
+- RSI(14) or Stochastic(14,3,3)
+- ATR(14) for stops and targets
+- 200-period EMA (optional trend filter)
+- 5-period high/low for breakout confirmation
+
+This strategy is best suited for liquid markets (stocks, forex majors, crypto) on intraday to daily timeframes, where volume data is reliable and oversold reversals tend to follow through.

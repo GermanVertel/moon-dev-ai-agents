@@ -1,0 +1,57 @@
+STRATEGY_NAME: Fibonaccic Momentum
+
+STRATEGY_DETAILS:
+This strategy merges Fibonacci retracement levels with MACD momentum confirmation to trade pullbacks within established trends. It is designed for trending markets on intraday to swing timeframes (15m–4H), where price retraces into key Fibonacci zones and MACD validates continuation.
+
+1. KEY STRATEGY COMPONENTS
+- Trend Identification: Use a 200-period EMA (or 50/200 EMA alignment) to define trend direction. Only trade in the direction of the dominant trend.
+- Fibonacci Retracement: After a clear impulse leg (swing low to swing high in an uptrend, or swing high to swing low in a downtrend), plot Fibonacci levels. Key zones: 38.2%, 50%, 61.8%, and the golden pocket (61.8%–65%).
+- MACD Momentum Confirmation: Use MACD (12, 26, 9). Confirmation occurs when:
+  - Uptrend: MACD histogram turns positive or MACD line crosses above signal line while price sits in a Fibonacci support zone.
+  - Downtrend: MACD histogram turns negative or MACD line crosses below signal line while price sits in a Fibonacci resistance zone.
+- Confluence: The trade is only valid when price reaches a Fibonacci level AND MACD shows momentum shifting in the trend direction.
+
+2. ENTRY RULES
+Long Entry (Uptrend):
+- Confirm trend with price above 200 EMA and 50 EMA above 200 EMA.
+- Identify recent swing low and swing high; draw Fibonacci retracement.
+- Wait for price to pull back into 38.2%–61.8% zone.
+- Enter long when MACD line crosses above signal line OR histogram flips from negative to positive.
+- Optional: require bullish candlestick confirmation (engulfing, pin bar) at the Fib level.
+
+Short Entry (Downtrend):
+- Confirm trend with price below 200 EMA and 50 EMA below 200 EMA.
+- Identify recent swing high and swing low; draw Fibonacci retracement.
+- Wait for price to rally into 38.2%–61.8% zone.
+- Enter short when MACD line crosses below signal line OR histogram flips from positive to negative.
+- Optional: require bearish candlestick confirmation at the Fib level.
+
+3. EXIT RULES
+- Take Profit: 
+  - TP1: Previous swing high (uptrend) or swing low (downtrend).
+  - TP2: 127.2% or 161.8% Fibonacci extension.
+- Stop Loss:
+  - Long: Below the 61.8% level or below the swing low that formed the Fib base, whichever is tighter.
+  - Short: Above the 61.8% level or above the swing high that formed the Fib base.
+- Trailing Exit: Move stop to breakeven after TP1; trail using MACD histogram reversal or a 20 EMA trail.
+- Momentum Exit: Close if MACD crosses back against the trade direction before TP1.
+
+4. RISK MANAGEMENT
+- Risk per trade: 1–2% of account equity.
+- Position sizing based on stop distance (entry to stop).
+- Minimum risk-reward ratio: 1:2.
+- Avoid trading during high-impact news or low-liquidity sessions.
+- Maximum 2–3 concurrent positions; avoid correlated pairs.
+- Skip setups where the Fibonacci zone overlaps major resistance/support that contradicts the trend.
+
+5. REQUIRED INDICATORS
+- 200 EMA and 50 EMA (trend filter)
+- Fibonacci Retracement tool (38.2%, 50%, 61.8%, extensions 127.2%, 161.8%)
+- MACD (12, 26, 9) with histogram
+- Optional: candlestick pattern recognition, ATR for volatility-based stops
+
+6. TIMEFRAME & MARKET
+- Best on trending instruments: forex majors, indices, large-cap crypto.
+- Timeframes: 15m, 1H, 4H for entries; higher timeframe (Daily) for trend bias.
+
+This strategy's edge comes from combining structural price levels (Fibonacci) with momentum confirmation (MACD), reducing false entries during weak pullbacks and aligning trades with the prevailing trend.

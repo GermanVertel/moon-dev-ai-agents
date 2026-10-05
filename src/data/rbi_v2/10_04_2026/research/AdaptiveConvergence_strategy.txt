@@ -1,0 +1,40 @@
+STRATEGY_NAME: AdaptiveConvergence
+
+STRATEGY_DETAILS:
+This strategy exploits the spread between a 50-day Simple Moving Average (SMA) and a 20-day Exponential Moving Average (EMA) as a mean-reversion signal, then amplifies returns with 2x leverage while managing risk through ATR-based stops and targets.
+
+CORE LOGIC:
+The 20-day EMA reacts faster to recent price action than the 50-day SMA. When the EMA diverges significantly below the SMA (a "stretched" condition), it signals short-term oversold sentiment likely to revert upward. The strategy enters a 2x leveraged long when this convergence setup appears, betting that the faster EMA will snap back toward the slower SMA.
+
+REQUIRED INDICATORS:
+- 50-day Simple Moving Average (SMA-50)
+- 20-day Exponential Moving Average (EMA-20)
+- ATR (Average True Range), typically 14-period, for dynamic stop/target placement
+
+ENTRY RULES:
+1. Calculate SMA-50 and EMA-20 on daily closes.
+2. Compute the spread: Spread = SMA-50 − EMA-20.
+3. Enter a 2x leveraged LONG when the spread is positive and reaches a meaningful threshold (i.e., EMA-20 has dropped well below SMA-50), indicating a short-term mean-reversion opportunity.
+4. Optional filter: require price to be above a longer-term trend anchor (e.g., 200-day SMA) to avoid catching falling knives in a bear market.
+5. Confirm entry on a bullish reversal candle or when EMA-20 begins turning up toward SMA-50.
+
+EXIT RULES:
+- Profit Target: 3% ATR above entry price (calculated as Entry + 0.03 × ATR).
+- Stop Loss: 1% ATR below entry price (calculated as Entry − 0.01 × ATR).
+- Optional time-based exit: close if the spread converges (EMA-20 crosses back above or meets SMA-50) before target is hit.
+
+RISK MANAGEMENT:
+- Leverage: 2x long exposure — position size must be halved relative to unleveraged capital to keep dollar risk constant.
+- Risk/Reward: The 1% ATR stop vs. 3% ATR target gives a 1:3 reward-to-risk ratio, requiring only ~25% win rate to break even (before fees and leverage costs).
+- Tight stop (1% ATR) means frequent stop-outs are likely; ensure slippage and funding costs are accounted for.
+- Consider a maximum concurrent position cap and avoid entering during high-impact news events or illiquid sessions.
+- Monitor margin carefully — 2x leverage plus a tight ATR stop can trigger liquidation if ATR is small relative to volatility spikes.
+
+POSITION SIZING:
+- Risk per trade = 1% of account equity (adjustable).
+- Position size = (Account Risk) / (Entry − Stop Loss distance), then apply 2x leverage multiplier with corresponding margin buffer.
+
+NOTES & CAVEATS:
+- Best suited to ranging or mildly trending markets where mean reversion dominates.
+- In strong downtrends, the EMA-20 can stay below SMA-50 for extended periods — the trend filter is critical.
+- Backtest across multiple timeframes and instrument types (equities, FX, crypto) to validate the spread threshold that defines "stretched."

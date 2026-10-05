@@ -1,0 +1,50 @@
+STRATEGY_NAME: FractalRangeBreaker
+
+STRATEGY_DETAILS:
+This strategy combines dynamic range detection with fractal-based support/resistance to capture high-probability breakouts. It identifies consolidation zones, confirms key levels via fractal pivots, and trades breakouts with momentum and volume validation.
+
+1. Key Strategy Components
+- Dynamic Range Detection: Calculate the highest high and lowest low over a lookback period (e.g., 20 bars) to define the current range. The range is "dynamic" because it updates each bar and expands/contracts with volatility.
+- Fractal Support/Resistance: Identify fractal pivots using a 5-bar pattern (2 bars left, 2 bars right). A bullish fractal (support) is a low surrounded by higher lows; a bearish fractal (resistance) is a high surrounded by lower highs. Plot these as key levels.
+- Range Breakout Confirmation: A breakout occurs when price closes beyond the dynamic range high/low AND beyond the nearest fractal level. This dual confirmation reduces false breakouts.
+- Momentum & Volume Filter: Use RSI (14) to confirm momentum (RSI > 55 for longs, < 45 for shorts) and volume > 1.5x average volume (20-period) to validate breakout strength.
+
+2. Entry Rules
+- Long Entry:
+  - Price closes above the dynamic range high.
+  - Price closes above the nearest bearish fractal (resistance) level.
+  - RSI(14) > 55.
+  - Volume > 1.5x 20-period average volume.
+  - Enter at next bar open or on breakout candle close.
+- Short Entry:
+  - Price closes below the dynamic range low.
+  - Price closes below the nearest bullish fractal (support) level.
+  - RSI(14) < 45.
+  - Volume > 1.5x 20-period average volume.
+  - Enter at next bar open or on breakout candle close.
+
+3. Exit Rules
+- Profit Target: 2x the range width (range high - range low) from entry, or trail using a 2x ATR(14) stop.
+- Stop Loss: For longs, place stop at the nearest fractal support below entry or 1x ATR(14) below entry, whichever is tighter. For shorts, place stop at the nearest fractal resistance above entry or 1x ATR(14) above entry, whichever is tighter.
+- Time Stop: Exit after 10 bars if neither target nor stop is hit.
+- Trailing Stop: After 1x range width profit, trail stop at 1x ATR(14) from the highest high (longs) or lowest low (shorts).
+
+4. Risk Management
+- Position Sizing: Risk 1% of account equity per trade. Calculate position size as (Account Equity * 0.01) / (Entry Price - Stop Price).
+- Max Daily Loss: Stop trading after 3 consecutive losses or 3% daily drawdown.
+- Correlation Filter: Avoid taking multiple positions in highly correlated assets (e.g., BTC and ETH) simultaneously.
+- Volatility Filter: Skip trades if ATR(14) is below 20% of its 50-period average (low volatility) or above 300% (extreme volatility).
+
+5. Required Indicators
+- Dynamic Range: Highest High and Lowest Low over 20 bars.
+- Fractal Pivots: 5-bar fractal pattern (2 left, 2 right) for support/resistance.
+- RSI(14): Momentum confirmation.
+- Volume: 20-period simple moving average for volume filter.
+- ATR(14): Volatility-based stop and trailing management.
+- Optional: Bollinger Bands (20, 2) to visualize range contraction/expansion.
+
+6. Additional Notes
+- Best suited for trending or breakout-friendly markets (e.g., crypto, forex majors during London/NY sessions).
+- Avoid trading during major news events or low-liquidity periods.
+- Backtest with at least 200 trades to validate edge; optimize lookback period (15-30 bars) and RSI thresholds (50-60 for longs, 40-50 for shorts).
+- Use limit orders at breakout level to reduce slippage, but ensure fill before momentum fades.
