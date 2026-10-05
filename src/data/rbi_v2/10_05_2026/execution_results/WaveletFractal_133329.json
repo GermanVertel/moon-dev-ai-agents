@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/WaveletFractal_PKG.py\", line 4, in <module>\n    import pywt\nModuleNotFoundError: No module named 'pywt'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/WaveletFractal_PKG.py` failed. (See above for error)\n",
+  "execution_time": 3.192971,
+  "timestamp": "2026-10-05T13:33:29.281814"
+}

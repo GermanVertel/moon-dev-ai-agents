@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev: Loading BTC-USD data...\n\ud83c\udf19 Moon Dev: Data loaded with 1009 bars \u2728\n\ud83d\ude80 Moon Dev: Date range 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n\ud83c\udf19 Moon Dev: Starting backtest... \ud83d\ude80\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/StochasticCointegration_PKG.py\", line 233, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/StochasticCointegration_PKG.py` failed. (See above for error)\n",
+  "execution_time": 6.356865,
+  "timestamp": "2026-10-05T12:36:21.972376"
+}

@@ -1,0 +1,40 @@
+STRATEGY_NAME: VolatilityWeave
+
+STRATEGY_DETAILS:
+This strategy combines a volatility-adaptive EMA with Bollinger Bands to create a dual-signal crossover system. The core innovation is that the EMA's lookback period dynamically adjusts based on current market volatility, making it more responsive in fast markets and smoother in calm ones. Bollinger Bands provide trend context through color-coding, and trade signals are generated when the adaptive EMA and a Bollinger Band line cross in opposite directions.
+
+1. KEY STRATEGY COMPONENTS
+- Adaptive EMA: An exponential moving average whose lookback period changes with volatility. When volatility rises, the period shortens (faster reaction); when volatility falls, the period lengthens (smoother line).
+- Volatility Measure: Use ATR (Average True Range) or standard deviation of returns to determine the lookback period. For example: Period = Base_Period × (Median_Volatility / Current_Volatility), clamped between a min (e.g., 5) and max (e.g., 50).
+- Bollinger Bands: Standard 20-period SMA with 2 standard deviations. Bands are colored green when price is in a bullish regime (e.g., price above the middle band and middle band rising) and red when bearish (price below middle band and middle band falling).
+- Signal Lines: The two lines that cross are (a) the adaptive EMA and (b) either the upper or lower Bollinger Band, depending on trend context. In a green (bullish) regime, use the lower band as the signal line; in a red (bearish) regime, use the upper band.
+
+2. ENTRY RULES
+- Long Entry: In a green (bullish) regime, when the adaptive EMA crosses ABOVE the lower Bollinger Band (i.e., price momentum reasserts upward after a pullback).
+- Short Entry: In a red (bearish) regime, when the adaptive EMA crosses BELOW the upper Bollinger Band (i.e., downward momentum resumes after a bounce).
+- Confirmation: Require the candle close beyond the crossover point, and optionally require the Bollinger Band color to match the intended direction.
+
+3. EXIT RULES
+- Long Exit: Close when the adaptive EMA crosses back BELOW the lower Bollinger Band, or when the regime flips to red (price closes below the middle band with middle band falling).
+- Short Exit: Close when the adaptive EMA crosses back ABOVE the upper Bollinger Band, or when the regime flips to green.
+- Optional trailing stop: Use the middle Bollinger Band as a trailing exit for longs (exit if price closes below it) and for shorts (exit if price closes above it).
+
+4. RISK MANAGEMENT
+- Position sizing based on ATR: risk a fixed percentage of equity per trade, with stop distance = 1.5 × ATR from entry.
+- Stop-loss for longs: place below the recent swing low or 1.5 × ATR below entry, whichever is tighter.
+- Stop-loss for shorts: place above the recent swing high or 1.5 × ATR above entry.
+- Avoid trading during extreme volatility spikes (e.g., when ATR exceeds 3× its 20-period average) to prevent whipsaws.
+- Cap maximum lookback period to prevent the adaptive EMA from becoming too sluggish in trending markets.
+
+5. REQUIRED INDICATORS
+- Adaptive EMA (custom, period driven by ATR or rolling standard deviation)
+- Bollinger Bands (20-period SMA, 2 standard deviations)
+- ATR (14-period) for volatility measurement and risk sizing
+- Optional: 50-period EMA for higher-timeframe trend filter
+- Optional: Volume indicator to confirm breakout strength on crossovers
+
+6. IMPLEMENTATION NOTES
+- Calculate volatility ratio each bar: Vol_Ratio = ATR(14) / SMA(ATR(14), 50). Adaptive period = clamp(Base × (1 / Vol_Ratio), Min, Max).
+- Color Bollinger Bands dynamically: green if close > middle band AND middle band > middle band[1]; red if close < middle band AND middle band < middle band[1]; neutral otherwise (do not trade).
+- Only take signals in the direction of the band color to align with the prevailing regime.
+- Backtest across multiple timeframes (15m, 1h, 4h) to tune Base_Period, Min, and Max for the adaptive EMA.

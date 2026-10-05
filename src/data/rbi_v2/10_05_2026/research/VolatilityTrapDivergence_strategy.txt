@@ -1,0 +1,77 @@
+STRATEGY_NAME: VolatilityTrapDivergence
+
+STRATEGY_DETAILS:
+This strategy is a mean-reversion/overextension fade setup that exploits the lag between price momentum (Bollinger Band touch) and momentum confirmation (MACD crossover). The core thesis is that when price pierces the upper 2-standard deviation Bollinger Band but MACD has NOT yet crossed above its signal line, the move lacks genuine momentum confirmation — a classic "trap" condition that often precedes a reversal.
+
+═══════════════════════════════════════
+1. KEY STRATEGY COMPONENTS
+═══════════════════════════════════════
+
+• Bollinger Bands (20-period SMA, 2 standard deviations)
+  - Upper band acts as the overextension trigger
+  - Band width also used as a volatility filter (avoid entering when bands are compressed)
+
+• MACD (12, 26, 9)
+  - MACD line vs. Signal line relationship is the confirmation gate
+  - The key edge: enter ONLY when MACD line is still BELOW signal line at the moment of the upper-band touch
+
+• ATR (14-period) — used for volatility checks and exit/stop sizing
+
+• Divergence detection on MACD histogram / price swing highs
+
+═══════════════════════════════════════
+2. ENTRY RULES (SHORT / FADE SETUP)
+═══════════════════════════════════════
+
+Primary entry condition (all must be true):
+1. Price high touches or exceeds the upper Bollinger Band (2σ).
+2. MACD line is currently BELOW its signal line (no bullish crossover has occurred).
+3. MACD histogram is flat or declining (negative slope) — confirms fading momentum.
+4. ATR is above a minimum threshold (e.g., ATR > 20-period ATR average) to ensure tradable volatility.
+5. Optional filter: Bollinger Band width is NOT in a squeeze (avoid low-volatility whipsaws).
+
+Entry trigger:
+- Enter short on the close of the candle that touches the upper band, OR
+- Enter short on the first candle that closes back INSIDE the upper band (confirmation of rejection).
+
+═══════════════════════════════════════
+3. EXIT RULES
+═══════════════════════════════════════
+
+Exit Type A — MACD Divergence Exit:
+- Monitor for bullish divergence on MACD (price making lower lows while MACD histogram makes higher lows).
+- When divergence is confirmed, close the short position — this signals the momentum is genuinely turning and the mean-reversion move is exhausting.
+
+Exit Type B — ATR Volatility Exit:
+- If ATR spikes beyond a defined multiple (e.g., ATR > 1.5× its 20-period average) against the position, exit immediately to avoid runaway volatility.
+- If ATR collapses below a floor (e.g., ATR < 0.5× average), exit because the move has stalled and risk/reward deteriorates.
+
+Exit Type C — Target/Time Exit:
+- Take profit at the middle Bollinger Band (20-period SMA) as the primary mean-reversion target.
+- Optional runner to the lower Bollinger Band if divergence confirms strongly.
+- Time stop: exit if neither target nor stop is hit within N bars (e.g., 10–15 bars).
+
+═══════════════════════════════════════
+4. RISK MANAGEMENT
+═══════════════════════════════════════
+
+• Stop-loss: Place initial stop at 1.5× ATR above the entry high (or above the upper band touch high).
+• Position sizing: Risk a fixed % of equity per trade (e.g., 1%), sized using ATR-based stop distance.
+• Volatility guard: Skip trades when ATR is below the minimum threshold (dead markets cause false band touches).
+• Correlation guard: Avoid stacking multiple shorts on correlated instruments simultaneously.
+• Max concurrent exposure cap and daily loss limit.
+
+═══════════════════════════════════════
+5. REQUIRED INDICATORS
+═══════════════════════════════════════
+
+1. Bollinger Bands — 20-period SMA, 2.0 standard deviations (upper, middle, lower)
+2. MACD — 12/26/9 (MACD line, signal line, histogram)
+3. ATR — 14-period (plus a 20-period ATR average for volatility filtering)
+4. Optional: Bollinger Band Width indicator for squeeze detection
+5. Optional: Swing high/low detector for divergence confirmation
+
+═══════════════════════════════════════
+CORE EDGE SUMMARY
+═══════════════════════════════════════
+The strategy profits from the statistical tendency of price to revert after tagging the 2σ upper band WITHOUT momentum confirmation. The MACD-not-yet-crossed condition filters out genuine breakouts (where MACD would already be above signal), isolating overextended "traps." Exits are dynamic — driven by MACD divergence (momentum-based) and ATR volatility (risk-based) rather than fixed targets alone, adapting the trade to evolving market conditions.

@@ -1,0 +1,50 @@
+STRATEGY_NAME: VolumeReversal
+
+STRATEGY_DETAILS:
+This strategy identifies oversold stocks that are showing signs of a bullish reversal, confirmed by volume analysis and a subsequent breakout from a consolidation phase. It focuses on daily charts to capture medium-term swing moves.
+
+**Core Components:**
+
+1.  **Undervaluation Screening:**
+    *   **Indicator:** Relative Strength Index (RSI) or Stochastic Oscillator.
+    *   **Criteria:** Look for stocks where the RSI has recently dipped below 30 (oversold) or the Stochastic is below 20. The stock should be trading significantly below its recent highs (e.g., at least 20-30% down from a 52-week high or a major swing high).
+    *   **Purpose:** To filter for stocks that have experienced a significant sell-off and are potentially due for a bounce.
+
+2.  **Price Reversal & Volume Divergence:**
+    *   **Price Action:** Identify a bullish reversal candlestick pattern (e.g., Hammer, Bullish Engulfing, Piercing Line) occurring near a support level (e.g., previous swing low, Fibonacci retracement level, or a round number).
+    *   **Volume Analysis:** This is critical. Look for **bullish volume divergence**. This means that as the price makes a new low during the sell-off, the volume on that down move is *lower* than the volume on previous down moves. Conversely, the reversal candle(s) should show a significant *increase* in volume compared to the preceding down days. This suggests selling pressure is exhausted and buyers are stepping in.
+
+3.  **Consolidation Pattern:**
+    *   After the initial reversal, the stock should enter a period of consolidation. This is a sideways price action where the stock trades within a relatively narrow range (e.g., between the low of the reversal candle and a resistance level). This phase represents a pause and accumulation.
+    *   **Indicators:** Bollinger Bands can be used to identify the consolidation (bands contracting). The price should be oscillating around a moving average (e.g., 20-period EMA).
+
+4.  **Breakout Confirmation:**
+    *   **Entry Trigger:** A breakout above the upper boundary of the consolidation range (the resistance level).
+    *   **Volume Confirmation:** The breakout must be accompanied by a significant increase in volume, ideally higher than the average volume of the consolidation period. This confirms the strength of the move.
+    *   **Indicator Confirmation:** The RSI should be crossing above 50, and the MACD should be showing a bullish crossover (MACD line crossing above the signal line).
+
+**Entry Rules:**
+
+*   **Entry Point:** Enter a long position on the day the price closes above the resistance level of the consolidation pattern with high volume.
+*   **Alternative Entry:** A more aggressive entry can be taken on a retest of the breakout level (previous resistance now acting as support) if it holds.
+
+**Exit Rules:**
+
+*   **Profit Target:** Set a target based on the height of the consolidation pattern (measured move) or at a major resistance level (e.g., previous swing high, 200-period EMA).
+*   **Stop-Loss:** Place a stop-loss below the low of the consolidation pattern or below the breakout candle. A common method is to place it below the most recent swing low.
+*   **Trailing Stop:** Once the trade is in profit, use a trailing stop (e.g., below a rising 20-period EMA or a Chandelier Exit) to lock in gains.
+
+**Risk Management:**
+
+*   **Position Sizing:** Risk no more than 1-2% of the total trading capital on a single trade.
+*   **Risk/Reward Ratio:** Aim for a minimum risk/reward ratio of 1:2 or 1:3.
+*   **Market Context:** Consider the overall market trend. This strategy works best in a bullish or neutral market. Avoid taking long trades in a strong bear market.
+
+**Required Indicators:**
+
+*   **RSI (14-period):** For identifying oversold conditions and momentum shifts.
+*   **Volume:** Essential for confirming divergence and breakout strength.
+*   **Moving Averages (20-period EMA, 50-period SMA):** For identifying trend and consolidation areas.
+*   **Bollinger Bands (20-period, 2 standard deviations):** For visualizing consolidation and volatility contraction.
+*   **MACD (12, 26, 9):** For additional confirmation of momentum and trend changes.
+*   **Support/Resistance Levels:** For identifying key price levels for entries, exits, and stop-losses.

@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Moon Dev's FractalStochReversion Backtest Initializing... \ud83d\ude80\n\ud83c\udf19 Data loaded: 1009 bars from 2024-01-01 00:00:00 to 2026-10-05 00:00:00 \u2728\n\ud83c\udf19 Initializing indicators... \u2728\n\ud83c\udf19 Indicators ready! \ud83d\ude80\n\ud83c\udf19\ud83d\ude80 LONG SIGNAL! Price=66046.12 Stop=57850.99 Target=78338.83 Size=1 \u2728\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/895 [00:00<?, ?bar/s]\n                                                      \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/FractalStochReversion_PKG.py\", line 236, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/FractalStochReversion_PKG.py\", line 90, in next\n    self._manage_trade(price, high, low)\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/FractalStochReversion_PKG.py\", line 198, in _manage_trade\n    self.stop_price = max(self.stop_price, self.position.entry_price)\nAttributeError: 'Position' object has no attribute 'entry_price'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/FractalStochReversion_PKG.py` failed. (See above for error)\n",
+  "execution_time": 5.824615,
+  "timestamp": "2026-10-05T11:52:37.324148"
+}

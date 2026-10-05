@@ -1,0 +1,62 @@
+STRATEGY_NAME: MomentumFlow Divergence
+
+STRATEGY_DETAILS:
+
+This strategy combines the Chaikin Money Flow (CMF) indicator with the Stochastic Oscillator to identify high-probability breakout opportunities. The core premise is that when the Stochastic Oscillator begins a downtrend (indicating short-term bearish momentum or a pullback), but the CMF remains above its moving average (indicating sustained underlying buying pressure and accumulation), a bullish breakout is likely to follow. This divergence between short-term price momentum and underlying money flow reveals hidden strength.
+
+**Key Strategy Components:**
+
+1. **Chaikin Money Flow (CMF):** Measures the volume-weighted average of accumulation/distribution over a specified period (typically 20 periods). It oscillates between -1 and +1. Values above 0 indicate buying pressure; values below 0 indicate selling pressure. The strategy requires CMF to be above its own moving average (e.g., 20-period SMA of CMF) to confirm sustained institutional interest.
+
+2. **Stochastic Oscillator:** A momentum indicator comparing a security's closing price to its price range over a given period (typically %K = 14, %D = 3, smoothing = 3). It oscillates between 0 and 100. The strategy looks for the Stochastic to be in a downtrend (e.g., %K crossing below %D, or the oscillator declining from overbought territory above 80).
+
+3. **Divergence Condition:** The critical signal is when the Stochastic is trending downward (short-term bearish) while CMF is above its average (long-term bullish). This suggests a temporary pullback within a broader uptrend, creating a buying opportunity.
+
+**Entry Rules:**
+
+- **Long Entry:** Enter a long position when:
+  - Stochastic %K crosses below %D (downtrend initiation) OR Stochastic is declining and below 50.
+  - CMF is above its 20-period moving average AND CMF > 0 (positive money flow).
+  - Ideally, the Stochastic is not in oversold territory (<20) to avoid catching a falling knife; a reading between 20-50 is optimal.
+  - Confirmation: Wait for a bullish candlestick pattern (e.g., hammer, bullish engulfing) or for Stochastic %K to cross back above %D.
+
+- **Short Entry (optional, for inverse setup):** Enter a short position when:
+  - Stochastic %K crosses above %D (uptrend initiation) OR Stochastic is rising and above 50.
+  - CMF is below its 20-period moving average AND CMF < 0 (negative money flow).
+  - Confirmation: Bearish candlestick pattern or Stochastic %K crossing back below %D.
+
+**Exit Rules:**
+
+- **Take Profit:** 
+  - For longs: Exit when Stochastic reaches overbought territory (>80) and begins to turn down, or when CMF drops below its moving average.
+  - For shorts: Exit when Stochastic reaches oversold territory (<20) and begins to turn up, or when CMF rises above its moving average.
+- **Stop Loss:** 
+  - For longs: Place stop loss below the most recent swing low or a fixed percentage (e.g., 2-3% below entry).
+  - For shorts: Place stop loss above the most recent swing high or a fixed percentage (e.g., 2-3% above entry).
+- **Trailing Stop:** Consider a trailing stop based on ATR (Average True Range) to lock in profits during strong trends.
+
+**Risk Management:**
+
+- **Position Sizing:** Risk no more than 1-2% of total account equity per trade.
+- **Risk-Reward Ratio:** Aim for a minimum 1:2 risk-reward ratio. Adjust targets based on market volatility.
+- **Timeframe:** This strategy works best on higher timeframes (1H, 4H, Daily) to reduce noise and false signals. Avoid using on very short timeframes (1M, 5M) unless scalping with tight stops.
+- **Market Conditions:** Best suited for trending or range-bound markets with clear support/resistance. Avoid during high-impact news events or low-liquidity periods.
+- **Confirmation:** Always wait for the Stochastic to confirm the downtrend (cross below %D) and for CMF to remain above its average for at least 2-3 bars before entering.
+
+**Required Indicators:**
+
+1. **Chaikin Money Flow (CMF):** Period = 20 (default). Add a 20-period SMA of CMF for the average line.
+2. **Stochastic Oscillator:** %K = 14, %D = 3, Smoothing = 3. Levels: 20 (oversold), 50 (midline), 80 (overbought).
+3. **Optional:** ATR (14) for trailing stops, and volume for additional confirmation.
+
+**Example Trade Setup (Long):**
+
+- Price is in an uptrend on the Daily chart.
+- Stochastic %K crosses below %D and is at 45 (downtrend, not oversold).
+- CMF is at +0.15 and above its 20-period SMA (positive money flow).
+- A bullish engulfing candle forms at support.
+- Enter long, stop loss below the swing low, take profit at the next resistance or when Stochastic >80.
+
+**Conclusion:**
+
+The MomentumFlow Divergence strategy leverages the contrast between short-term momentum (Stochastic) and underlying money flow (CMF) to identify hidden bullish or bearish strength. By waiting for the Stochastic to initiate a downtrend while CMF remains strong, traders can enter on pullbacks within a broader trend, maximizing the probability of a breakout in the direction of the dominant money flow. Proper risk management and confirmation are essential to filter out false signals.

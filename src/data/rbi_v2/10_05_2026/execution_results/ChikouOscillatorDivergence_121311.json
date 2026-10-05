@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev Backtest AI - Chikou Oscillator Divergence Strategy \ud83d\ude80\n\ud83d\udcca Data loaded: 1009 bars\n\ud83d\udcc5 Date range: 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n============================================================\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/ChikouOscillatorDivergence_PKG.py\", line 265, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/ChikouOscillatorDivergence_PKG.py` failed. (See above for error)\n",
+  "execution_time": 5.847876,
+  "timestamp": "2026-10-05T12:13:11.214718"
+}

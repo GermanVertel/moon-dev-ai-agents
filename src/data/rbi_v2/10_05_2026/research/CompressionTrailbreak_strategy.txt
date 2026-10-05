@@ -1,0 +1,50 @@
+STRATEGY_NAME: CompressionTrailbreak
+
+STRATEGY_DETAILS:
+
+This strategy captures explosive directional moves that follow periods of abnormally low volatility. The core premise is that volatility is mean-reverting — after a squeeze, price tends to expand sharply. The strategy combines a Bollinger Band contraction filter, a historical volatility threshold, a breakout trigger, and an ATR-based trailing exit.
+
+1. KEY STRATEGY COMPONENTS
+
+- Bollinger Band Squeeze Detection: Bollinger Bands (20-period SMA, 2 standard deviations) are used to measure current volatility. Band width is calculated as (Upper Band − Lower Band) / Middle Band, producing a normalized, comparable metric.
+
+- Historical Volatility Threshold: A rolling 20-period historical volatility reading (typically annualized standard deviation of log returns, or the standard deviation of returns) establishes a baseline. A "squeeze" is confirmed only when the current Bollinger Band width falls BELOW this 20-period HV threshold — meaning current volatility is compressed relative to recent norms, not just visually tight.
+
+- Breakout Trigger: Once the squeeze condition is active, the strategy waits for a candle to CLOSE above the upper Bollinger Band. This close-above confirmation (rather than an intrabar touch) filters out false pokes and ensures momentum has genuinely shifted upward.
+
+2. ENTRY RULES
+
+- Precondition: Bollinger Band width < 20-period historical volatility threshold (squeeze is active).
+- Trigger: Price closes above the upper Bollinger Band on the same or subsequent bar while the squeeze precondition remains valid.
+- Entry: Go long at the close of the breakout bar (or at the open of the next bar to avoid lookahead bias).
+- Optional confirmation filters: rising volume on the breakout bar, positive slope of the 20-period SMA, or RSI > 50 to avoid entering into overbought exhaustion.
+
+3. EXIT RULES
+
+- Trailing ATR Stop: After entry, place a trailing stop at a fixed multiple of the Average True Range (e.g., 2.0 × ATR(14)) below the highest high achieved since entry. The stop ratchets upward only — never down.
+- The ATR trailing percentage adapts to prevailing volatility: wider stops in volatile regimes, tighter stops in calm regimes, reducing premature stop-outs during normal pullbacks.
+- Additional exit conditions (optional): close below the middle Bollinger Band, or a fixed time-based exit if the move fails to develop within N bars.
+
+4. RISK MANAGEMENT
+
+- Position sizing based on the ATR stop distance: risk a fixed percentage of equity per trade (e.g., 1%), with size = (Account Risk $) / (Entry Price − Initial Stop Price).
+- Initial stop placed at entry − (ATR multiple × ATR) to define maximum loss before the trail activates.
+- Avoid overlapping entries during an active squeeze; allow one position per instrument at a time.
+- Consider a maximum holding period to avoid capital being tied up in stalled breakouts.
+
+5. REQUIRED INDICATORS
+
+- Bollinger Bands (20-period SMA, 2σ) — for squeeze detection and breakout trigger.
+- Bollinger Band Width — derived metric for the contraction filter.
+- Historical Volatility (20-period) — the threshold the band width must fall below.
+- Average True Range (ATR, 14-period) — for the trailing stop and position sizing.
+- Optional: Volume, RSI(14), SMA(20) slope for confirmation.
+
+6. IMPLEMENTATION NOTES
+
+- The squeeze condition should be evaluated on the bar BEFORE the breakout to avoid curve-fitting the same bar.
+- Use completed/closed candles only to prevent repainting.
+- Backtest across multiple assets and volatility regimes, since squeeze breakouts perform best in trending markets and can whipsaw in choppy conditions.
+- Parameter tuning: BB period (20), BB std dev (2.0), HV lookback (20), ATR period (14), ATR trail multiple (2.0) — all should be optimized cautiously to avoid overfitting.
+
+This strategy's edge comes from combining a statistical volatility filter (HV threshold) with a structural breakout (upper band close) and a volatility-adaptive exit (ATR trail), making it distinct from simple Bollinger breakout systems.

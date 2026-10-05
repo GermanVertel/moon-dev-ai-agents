@@ -1,0 +1,47 @@
+STRATEGY_NAME: VWAP Chande Fractal
+
+STRATEGY_DETAILS:
+This strategy combines volume-weighted price momentum with a Chande Momentum Oscillator (CMO) filter and a fractal adaptive moving average (FRAMA) exit mechanism. It is a long-only trend-following system designed to capture sustained upward moves confirmed by volume and momentum.
+
+**Key Components:**
+
+1. **Primary Entry Signal (VWAP Crossover):**
+   - Calculate the 5-day Volume-Weighted Average Price (VWAP).
+   - Calculate the 50-day VWAP.
+   - Enter long when the 5-day VWAP crosses *above* the 50-day VWAP. This indicates short-term volume-weighted price is outpacing the longer-term volume-weighted trend.
+
+2. **Momentum Confirmation (Chande Momentum Oscillator):**
+   - Calculate the 14-day Chande Momentum Oscillator (CMO).
+   - CMO = 100 × (Sum of gains − Sum of losses) / (Sum of gains + Sum of losses) over 14 days.
+   - Only take the entry if CMO > +50 at the time of the VWAP crossover. This ensures strong upward momentum and filters out weak or choppy crossovers.
+
+3. **Exit Signal (FRAMA):**
+   - Calculate the 10-day Fractal Adaptive Moving Average (FRAMA). FRAMA adjusts its smoothing based on the fractal dimension of price, becoming more responsive in trending markets and less responsive in ranging markets.
+   - Exit long when the closing price is below the 10-day FRAMA for 2 consecutive days. This two-day confirmation reduces false exits from single-day noise.
+
+**Entry Rules (Long Only):**
+- Condition 1: 5-day VWAP crosses above 50-day VWAP.
+- Condition 2: 14-day CMO > +50.
+- Both conditions must be true on the same bar (or the CMO condition can be checked on the crossover bar).
+- Enter at the next bar's open or at the close of the signal bar.
+
+**Exit Rules:**
+- Exit when the closing price is below the 10-day FRAMA for 2 consecutive days.
+- Exit at the next bar's open or at the close of the second day.
+
+**Risk Management:**
+- Position sizing: Use a fixed fractional risk model (e.g., risk 1–2% of equity per trade). Since there is no explicit stop-loss in the strategy, consider adding a hard stop below the recent swing low or a percentage-based stop (e.g., 5–8%) to limit drawdowns.
+- Maximum exposure: Avoid pyramiding; one position at a time.
+- Market regime filter: Optional—only take signals when the broader market (e.g., SPY) is above its 200-day moving average to avoid bear market whipsaws.
+- Time stop: If the trade does not move in favor within a certain period (e.g., 20 days), consider exiting to free capital.
+
+**Required Indicators:**
+- 5-day VWAP
+- 50-day VWAP
+- 14-day Chande Momentum Oscillator (CMO)
+- 10-day Fractal Adaptive Moving Average (FRAMA)
+
+**Notes on Implementation:**
+- VWAP is typically calculated intraday, but for daily bars, use the typical price (H+L+C)/3 weighted by volume, then sum over the period. Ensure consistency.
+- FRAMA requires a lookback of at least 10 days and uses the fractal dimension formula. Implementations vary; use a standard FRAMA calculation.
+- Backtest across multiple timeframes and assets to validate robustness. The strategy may perform well in trending markets but could suffer in sideways markets due to the CMO filter and FRAMA exits.

@@ -1,0 +1,89 @@
+STRATEGY_NAME: LiquidationCloudRebound
+
+STRATEGY_DETAILS:
+This strategy combines liquidation-driven capitulation signals with Ichimoku Cloud trend confirmation and orderbook microstructure for entries, exits, and risk placement. It is designed for long-only Bitcoin trades on intraday timeframes (1H execution with 24H liquidation context).
+
+1. CORE STRATEGY COMPONENTS
+
+A. Liquidation Shock Filter (Regime Trigger)
+- Data source: Aggregate 24h liquidation volume across major derivatives exchanges (Binance, Bybit, OKX, etc.), split by longs vs shorts if available.
+- Metric: 24h total liquidation notional.
+- Condition: Current 24h liquidation value must exceed the 90th percentile of its rolling distribution (recommend 30–90 day lookback, e.g., 60 days).
+- Interpretation: Extreme liquidation events signal forced selling exhaustion / capitulation, creating asymmetric long opportunities.
+- Optional refinement: Weight short liquidations more heavily, since cascading short liquidations often precede sharp upside moves.
+
+B. Ichimoku Cloud Rebound Confirmation (Trend + Timing)
+- Indicators: Tenkan-sen (9), Kijun-sen (26), Senkou Span A/B (52), Chikou Span (26) on the 1H chart.
+- Entry trigger requires BOTH:
+  1. Price was recently below or inside the Cloud (within last N bars, e.g., 5–10).
+  2. Price closes ABOVE the Cloud (above both Senkou Span A and B).
+  3. Tenkan-sen crosses above Kijun-sen (or is already above and rising).
+  4. Chikou Span is above price from 26 periods ago (bullish confirmation).
+- This filters out false rebounds during sustained downtrends.
+
+C. Orderbook Imbalance Zones (Risk Placement)
+- Data source: Level 2 orderbook depth (bid/ask) on 1H snapshots or aggregated depth heatmaps.
+- Imbalance zone definition: Price levels where bid depth significantly exceeds ask depth (e.g., bid/ask ratio > 1.5x within ±0.5% bands).
+- These zones act as dynamic support. The stop loss is placed BELOW the nearest significant bid-heavy imbalance zone (with a small buffer, e.g., 0.2–0.3%).
+
+2. ENTRY RULES (LONG)
+
+All conditions must be TRUE on the 1H close:
+1. 24h liquidation volume > 90th percentile (rolling 60-day window).
+2. Price closes above the Ichimoku Cloud.
+3. Tenkan-sen > Kijun-sen (bullish TK cross or sustained).
+4. Chikou Span confirms bullish (above price 26 bars ago).
+5. Optional confluence: RSI(14) on 1H rising from oversold (<40) or reclaiming 50.
+6. Entry: Market or limit order at the close of the confirmation candle.
+
+3. EXIT RULES
+
+A. Primary Target — Cloud Resistance
+- Exit at the upper boundary of the Ichimoku Cloud (Senkou Span A or B, whichever is higher) IF price approaches it and shows rejection (e.g., bearish candle, wick rejection, or failure to close above).
+- Alternative: Use projected Cloud resistance 26 periods ahead (Senkou Span plotted forward) as a dynamic target.
+- Scale-out option: Take 50% profit at first Cloud resistance touch, trail the rest.
+
+B. Trailing Exit
+- Trail stop below each new 1H swing low OR below the Kijun-sen once price is 2x ATR above entry.
+- Exit fully if price closes back INSIDE the Cloud (trend invalidation).
+
+C. Time Stop
+- If the trade does not reach Cloud resistance within 48–72 hours, reassess and consider closing at breakeven or small profit.
+
+4. RISK MANAGEMENT
+
+- Stop Loss: Placed below the nearest hourly orderbook bid-heavy imbalance zone, with a 0.2–0.3% buffer. If no clear imbalance zone exists, default to 1.5x ATR(14) below entry.
+- Position Sizing: Risk max 1–2% of account equity per trade. Size = (Account Risk $) / (Entry − Stop).
+- Max Leverage: 2–3x on derivatives; spot preferred for liquidation-event trades due to volatility.
+- Correlation Guard: Do not open multiple longs if already exposed to BTC beta via alts.
+- Event Filter: Avoid entering within 30 minutes of major macro events (CPI, FOMC) unless liquidation trigger is extreme (>95th percentile).
+
+5. REQUIRED INDICATORS & DATA
+
+- Ichimoku Cloud (9, 26, 52) — 1H chart.
+- ATR(14) — 1H, for stop sizing fallback.
+- RSI(14) — optional confluence.
+- 24h Liquidation Volume Feed — Coinglass, Coinalyze, or exchange APIs; must support percentile calculation over rolling 60 days.
+- Level 2 Orderbook Depth — exchange WebSocket feeds (Binance/Bybit) aggregated into 0.5% bands.
+- Timeframe: 1H execution, 24H liquidation context, 4H optional trend filter.
+
+6. STRATEGY LOGIC SUMMARY (PSEUDOCODE)
+
+IF 24h_liquidation > percentile(24h_liquidation, 90, 60d)
+   AND close > max(SenkouA, SenkouB)
+   AND Tenkan > Kijun
+   AND Chikou > close[26]
+THEN
+   entry = close
+   stop = nearest_bid_imbalance_zone * (1 - 0.003)
+   target = upper_cloud_boundary (current or projected)
+   size = (equity * 0.015) / (entry - stop)
+   EXIT when price hits target OR close < Cloud OR time_stop > 72h
+
+7. EDGE CASES & NOTES
+
+- Liquidation percentiles can be skewed by outlier days; use log-scale or winsorize the distribution.
+- Cloud resistance may be thin in strong trends — allow trailing stop to capture extended moves beyond the Cloud.
+- Orderbook imbalance zones can vanish rapidly; re-fetch depth every 15–30 minutes while in trade.
+- Backtest across 2020–2024 to validate percentile threshold (test 85th, 90th, 95th) and Cloud exit efficiency.
+- Consider a short-side mirror version (LiquidationCloudRejection) for symmetry, but only after long-side validation.

@@ -1,0 +1,76 @@
+STRATEGY_NAME: DivergentCompression
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy capitalizes on hidden momentum shifts that occur when MACD diverges from price action during low-volume compression phases, using Bollinger Band breakeven points as the exit trigger. The premise is that low volume during divergence signals weak conviction in the current trend, making a reversal or continuation move likely once volatility expands.
+
+---
+
+**1. Key Strategy Components**
+
+- **MACD Divergence Detection:** Compare MACD line/histogram direction against price highs/lows.
+  - *Bullish Divergence:* Price makes a lower low while MACD makes a higher low.
+  - *Bearish Divergence:* Price makes a higher high while MACD makes a lower high.
+- **Volume Confirmation Filter:** Only take signals when current volume is below its 20-period moving average (low-volume regime). This confirms the divergence is happening in a "compression" phase.
+- **Bollinger Band Breakeven Points:** Use BB middle band (SMA 20) or the band edges as volatility-adjusted exit thresholds. "Breakeven point" here = the price level where the trade's risk/reward flips, typically the BB midline or the opposite band.
+
+---
+
+**2. Entry Rules**
+
+**Long Entry (Bullish Divergence):**
+- Price forms a lower low while MACD forms a higher low (confirmed on closed candle).
+- Volume < 20-period volume SMA.
+- Price is near or below the lower Bollinger Band (oversold compression).
+- Enter on the close of the confirmation candle.
+
+**Short Entry (Bearish Divergence):**
+- Price forms a higher high while MACD forms a lower high.
+- Volume < 20-period volume SMA.
+- Price is near or above the upper Bollinger Band (overbought compression).
+- Enter on the close of the confirmation candle.
+
+---
+
+**3. Exit Rules**
+
+- **Primary Exit (Volatility Breakeven):**
+  - Long: Exit when price closes above the BB middle band (SMA 20) — the volatility breakeven point where the move is confirmed.
+  - Short: Exit when price closes below the BB middle band.
+- **Extended Exit (Band Touch):**
+  - Long: Exit when price touches or closes above the upper Bollinger Band (volatility expansion target).
+  - Short: Exit when price touches or closes below the lower Bollinger Band.
+- **Stop Loss:**
+  - Long: Stop below the most recent swing low or 1.5× ATR below entry.
+  - Short: Stop above the most recent swing high or 1.5× ATR above entry.
+- **Time Stop:** Exit after 10–15 bars if neither target nor stop is hit (divergence thesis invalidated).
+
+---
+
+**4. Required Indicators**
+
+| Indicator | Settings | Purpose |
+|-----------|----------|---------|
+| MACD | 12, 26, 9 | Divergence detection |
+| Volume SMA | 20-period | Low-volume filter |
+| Bollinger Bands | 20-period, 2 std dev | Compression + breakeven exits |
+| ATR | 14-period | Dynamic stop sizing |
+
+---
+
+**5. Risk Management**
+
+- **Position Sizing:** Risk no more than 1% of equity per trade. Size = (Account × 0.01) / (Entry − Stop).
+- **Risk/Reward Minimum:** Only take trades where the distance to the BB midline (breakeven) is at least 1.5× the stop distance.
+- **Max Concurrent Trades:** 2–3 to avoid correlated exposure during low-volume regimes.
+- **Regime Filter:** Avoid trading during major news events or when volume SMA is rising sharply (contradicts the low-volume premise).
+- **Trailing Option:** Once price passes the BB midline, trail stop to breakeven to lock in gains.
+
+---
+
+**6. Why This Works**
+
+Low volume during divergence signals that the prevailing trend lacks participation — a classic setup for a "compression breakout." Bollinger Bands quantify this compression, and the midline acts as a natural volatility breakeven: once price crosses it, momentum has shifted in favor of the trade. Exiting at band touches captures the volatility expansion that follows compression.
+
+**Best Timeframes:** 15m–4H for intraday/swing; avoid 1m (too noisy for divergence).

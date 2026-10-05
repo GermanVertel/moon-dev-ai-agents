@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Moon Dev Data Loaded! \u2728\ud83c\udf19\n\ud83d\udcca Total bars: 1009\n\ud83d\udcc5 Date range: 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n\ud83d\udcb0 Price range: 39507.37 - 124752.53\n\ud83d\ude80 SqueezeValueRSI Strategy Initializing...\n\n\ud83c\udf19\u2728\ud83d\ude80 Running SqueezeValueRSI Backtest... \ud83d\ude80\u2728\ud83c\udf19\n\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/SqueezeValueRSI_PKG.py\", line 182, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/SqueezeValueRSI_PKG.py` failed. (See above for error)\n",
+  "execution_time": 3.545781,
+  "timestamp": "2026-10-05T12:59:04.225517"
+}

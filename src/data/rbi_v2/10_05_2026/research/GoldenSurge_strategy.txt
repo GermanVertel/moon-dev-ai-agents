@@ -1,0 +1,68 @@
+STRATEGY_NAME: GoldenSurge
+
+STRATEGY_DETAILS:
+The GoldenSurge strategy is a trend-following breakout system that combines moving average crossovers, trend strength confirmation, and momentum-based exits. It aims to capture sustained directional moves while filtering out weak or choppy market conditions.
+
+**Key Strategy Components:**
+
+1. **Primary Trend Filter (EMA Crossover):**
+   - 50-period EMA crossing above the 200-period EMA signals a bullish trend regime (Golden Cross).
+   - The inverse (50 EMA below 200 EMA) invalidates long setups and can be used for short setups.
+   - This acts as the foundational directional bias.
+
+2. **Trend Strength Confirmation (ADX):**
+   - ADX (Average Directional Index) must rise above 25 to confirm the presence of a strong trend.
+   - The word "rises" implies an upward slope on the ADX, not just a static reading above 25.
+   - This filters out false crossovers during ranging or low-volatility markets.
+
+3. **Entry Trigger:**
+   - Enter long when BOTH conditions align:
+     - 50 EMA > 200 EMA (Golden Cross in effect)
+     - ADX crosses above 25 with positive slope
+   - Optional short entry: 50 EMA < 200 EMA (Death Cross) + ADX > 25 rising.
+
+4. **Exit Rules (Two Independent Triggers):**
+   - **Stop-Loss Exit:** 2x ATR (Average True Range) trailing or fixed stop from entry price. Protects against adverse volatility.
+   - **Momentum Exit:** 5-period RSI reaching overbought (>70 for longs) or oversold (<30 for shorts) triggers a profit-taking exit.
+   - Whichever exit triggers first closes the position.
+
+**Entry Rules:**
+- Long: 50 EMA crosses above 200 EMA AND ADX > 25 with rising slope → enter at next candle open.
+- Short (optional): 50 EMA crosses below 200 EMA AND ADX > 25 with rising slope → enter at next candle open.
+- Avoid entries when ADX is falling or below 25 even if EMAs have crossed.
+
+**Exit Rules:**
+- Set initial stop-loss at 2x ATR below entry (for longs) or above entry (for shorts).
+- Optionally trail the stop using 2x ATR as price advances.
+- Exit immediately when 5-period RSI > 70 (long) or < 30 (short).
+- Exit if 50 EMA crosses back below 200 EMA (trend invalidation).
+
+**Risk Management:**
+- Position sizing based on ATR: risk a fixed % of account per trade (e.g., 1-2%), sizing = (Account Risk) / (2 x ATR).
+- Use 2x ATR stop to keep risk consistent across varying volatility regimes.
+- Avoid trading during major news events that could cause ATR spikes.
+- Maximum one position per instrument at a time.
+
+**Required Indicators:**
+- 50-period Exponential Moving Average (EMA)
+- 200-period Exponential Moving Average (EMA)
+- ADX (14-period standard setting) with rising slope detection
+- ATR (14-period) for stop-loss calculation
+- RSI (5-period) for momentum-based exits
+
+**Recommended Timeframes:**
+- Best suited for 1H, 4H, and Daily charts where trends persist.
+- Avoid lower timeframes (1m-15m) due to noise and false ADX readings.
+
+**Strengths:**
+- Combines trend, strength, and momentum confirmation for high-probability entries.
+- Dual exit system balances protection (ATR stop) with profit capture (RSI signal).
+
+**Weaknesses:**
+- Lagging nature of EMA crossover may cause late entries.
+- RSI(5) is highly sensitive and may exit prematurely in strong trends.
+- Whipsaws possible in sideways markets despite ADX filter.
+
+**Optimization Notes:**
+- Consider testing ADX thresholds (20-30) and RSI periods (5-14) for different assets.
+- ATR multiplier (1.5x-3x) can be tuned based on instrument volatility.

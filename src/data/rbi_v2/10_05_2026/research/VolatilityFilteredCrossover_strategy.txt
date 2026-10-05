@@ -1,0 +1,46 @@
+STRATEGY_NAME: VolatilityFilteredCrossover
+
+STRATEGY_DETAILS:
+This strategy combines a classic trend-following signal (EMA crossover) with a volatility regime filter to enter trades during calm markets and exit when volatility expands. The core idea is that EMA crossovers during low-volatility periods tend to produce cleaner, more sustainable trends, while volatility spikes often precede trend reversals or choppy price action.
+
+**Key Strategy Components:**
+1. **Trend Signal:** 50-period EMA crossing above 200-period EMA (Golden Cross) — a bullish trend confirmation.
+2. **Volatility Filter (Entry):** ATR must be in a "low volatility" state, defined as ATR below its 20-day average (or optionally below a percentile threshold of recent ATR values).
+3. **Volatility Exit Trigger:** Exit when ATR spikes above its 20-day average, signaling rising volatility and potential trend exhaustion.
+
+**Entry Rules (Long Only):**
+- Condition A: 50-period EMA crosses above 200-period EMA (crossover event, not just state).
+- Condition B: At the time of crossover, the current ATR (e.g., 14-period) is BELOW its 20-day simple moving average of ATR.
+- Both conditions must be true on the same bar (or within a small window, e.g., 1–3 bars) to enter a long position.
+- Optional confirmation: Price above both EMAs, or volume above average.
+
+**Exit Rules:**
+- Primary Exit: ATR (14-period) rises ABOVE its 20-day average (volatility spike). Close the long position at the next bar's open or at the close of the signal bar.
+- Secondary/Protective Exit: A hard stop-loss based on a multiple of ATR (e.g., 2× ATR below entry) to guard against adverse moves.
+- Optional: Exit if 50 EMA crosses back below 200 EMA (trend invalidation), though the ATR exit is primary.
+
+**Risk Management:**
+- Position sizing: Risk a fixed percentage of equity per trade (e.g., 1–2%), with stop distance = 2× ATR at entry.
+- Max exposure: Limit concurrent positions to 1 (single instrument) or diversify across uncorrelated assets.
+- Avoid trading during known high-impact news events that could cause gap volatility.
+- Re-entry: Only re-enter after a fresh EMA crossover AND ATR returns below its 20-day average.
+
+**Required Indicators:**
+- 50-period EMA (on close)
+- 200-period EMA (on close)
+- ATR (14-period, Wilder's smoothing)
+- 20-period SMA of ATR (for volatility baseline)
+- Optional: Volume SMA (20) for confirmation
+
+**Timeframe & Markets:**
+- Best suited for daily or 4-hour charts on trending instruments (equities, indices, major FX pairs, crypto).
+- Avoid ranging markets; the low-ATR entry filter helps but does not eliminate whipsaws.
+
+**Logic Rationale:**
+Entering only when volatility is compressed increases the probability that the EMA crossover reflects genuine trend initiation rather than noise. Exiting when ATR expands above its average captures the transition from trending to volatile/choppy conditions, locking in profits before reversals. This creates a "calm entry, volatile exit" asymmetry.
+
+**Potential Pitfalls:**
+- Low-ATR periods can persist, delaying entries or causing missed moves.
+- ATR spike exit may trigger prematurely during healthy pullbacks within a strong trend.
+- Whipsaw risk if EMAs cross in low ATR but trend fails quickly.
+- Backtest across multiple regimes to tune ATR periods and thresholds.

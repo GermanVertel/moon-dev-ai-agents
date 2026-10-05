@@ -1,0 +1,58 @@
+STRATEGY_NAME: GoldenPulse Breakout
+
+STRATEGY_DETAILS:
+This strategy combines trend confirmation via EMA crossover, momentum strength via ADX, and volatility-adjusted risk management via ATR, with RSI acting as an early exit trigger. It is designed to capture sustained directional moves after a confirmed trend shift, while avoiding choppy or weak-trend environments.
+
+1. KEY STRATEGY COMPONENTS
+- Trend Confirmation: 50-period EMA crossing the 200-period EMA (Golden Cross for longs, Death Cross for shorts).
+- Momentum Filter: ADX must rise above 25 to confirm that the trend has sufficient strength.
+- Volatility-Based Risk: 2x ATR used for stop-loss placement.
+- Overbought/Oversold Exit: 5-period RSI used to signal exhaustion and trigger exits.
+- Timeframe: Best suited for intraday to swing timeframes (15m, 1H, 4H) where EMA crossovers and ADX signals are meaningful.
+
+2. ENTRY RULES
+Long Entry:
+- 50 EMA crosses above 200 EMA (bullish crossover).
+- ADX rises above 25 (trend strength confirmed).
+- Enter long on the close of the candle that satisfies both conditions, or on a pullback to the 50 EMA for better risk/reward.
+
+Short Entry:
+- 50 EMA crosses below 200 EMA (bearish crossover).
+- ADX rises above 25.
+- Enter short on the close of the candle that satisfies both conditions, or on a pullback to the 50 EMA.
+
+Optional Confirmation:
+- Price should be above the 200 EMA for longs and below for shorts at entry.
+- Avoid entries if ADX is falling or below 25, as this indicates weak trend.
+
+3. EXIT RULES
+Stop-Loss:
+- Long: Entry price minus 2x ATR (14-period).
+- Short: Entry price plus 2x ATR (14-period).
+- Use ATR at the time of entry and keep it fixed, or trail it as the trade progresses.
+
+Take-Profit / Exit Signal:
+- Long: Exit when 5-period RSI rises above 70 (overbought).
+- Short: Exit when 5-period RSI falls below 30 (oversold).
+- Alternatively, exit on the opposite EMA crossover (50 crossing back over 200) or if ADX falls below 20, indicating trend weakening.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk no more than 1-2% of account equity per trade.
+- Stop-Loss: Always use the 2x ATR stop; never trade without a stop.
+- Risk-Reward: Aim for at least 1:2 risk-reward; the RSI exit often provides this if the trend runs.
+- Trade Filter: Only take trades when ADX > 25 and rising; skip ranging markets.
+- Max Concurrent Trades: Limit to 1-2 positions to avoid overexposure to correlated pairs.
+- Trailing Stop: Optional—trail stop by 2x ATR once price moves 1x ATR in favor.
+
+5. REQUIRED INDICATORS
+- 50-period EMA
+- 200-period EMA
+- ADX (14-period) with +DI and -DI
+- ATR (14-period)
+- RSI (5-period)
+
+6. ADDITIONAL NOTES
+- Best pairs: Major forex pairs, indices, or high-liquidity crypto (BTC/ETH).
+- Avoid news events that can cause whipsaws around the EMA crossover.
+- Backtest across different market regimes to ensure robustness.
+- Consider using a higher timeframe (e.g., 4H) for trend confirmation and a lower timeframe (e.g., 1H) for entry timing.

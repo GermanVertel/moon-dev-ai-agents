@@ -1,0 +1,62 @@
+STRATEGY_NAME: VolumetricEngulf
+
+STRATEGY_DETAILS:
+
+## Core Concept
+This strategy identifies high-probability breakout opportunities by combining **candlestick engulfing patterns** with **volume expansion confirmation**. The premise is that when a large candle engulfs the previous candle's range AND does so on significantly elevated volume, it signals institutional participation and a likely directional breakout. Volatility is used as a filter to ensure the market has enough range to produce meaningful moves.
+
+## Key Strategy Components
+
+1. **Engulfing Pattern Detection** — A bullish or bearish candle whose body/range completely engulfs the prior candle's body/range.
+2. **Volume Spike Confirmation** — The engulfing candle's volume must exceed a rolling average (e.g., 1.5x–2x the 20-period volume SMA).
+3. **Volatility Filter** — ATR or Bollinger Band width must be expanding, confirming a regime shift from consolidation to expansion.
+4. **Breakout Trigger** — Price must close beyond a recent swing high/low or consolidation range to confirm directional intent.
+
+## Entry Rules
+
+**Long Entry:**
+- Bullish engulfing candle forms (current close > open, body engulfs prior candle's body).
+- Volume on engulfing candle ≥ 1.8 × 20-period volume SMA.
+- Current ATR > 20-period ATR average (volatility expansion).
+- Price closes above the highest high of the last 10 candles (breakout confirmation).
+- Enter at next candle open or on a stop-buy above the engulfing candle's high.
+
+**Short Entry:**
+- Bearish engulfing candle forms (current close < open, body engulfs prior candle's body).
+- Volume on engulfing candle ≥ 1.8 × 20-period volume SMA.
+- Current ATR > 20-period ATR average.
+- Price closes below the lowest low of the last 10 candles.
+- Enter at next candle open or on a stop-sell below the engulfing candle's low.
+
+## Exit Rules
+
+- **Profit Target:** 2× the engulfing candle's range (measured move), or trail using a 1.5× ATR chandelier stop.
+- **Stop Loss:** Placed at the opposite extreme of the engulfing candle (below its low for longs, above its high for shorts).
+- **Time Exit:** Close position if no breakout follow-through within 5 candles.
+- **Momentum Exit:** Exit if volume dries up below the 20-period SMA on the follow-through candle.
+
+## Risk Management
+
+- **Position Sizing:** Risk no more than 1% of account equity per trade.
+- **Stop Distance:** Use the engulfing candle's opposite extreme as the hard stop — this naturally sizes the position based on volatility.
+- **R-Multiple Target:** Minimum 1.5R reward-to-risk; ideally 2R+.
+- **Max Concurrent Trades:** Limit to 2–3 correlated positions to avoid cluster risk.
+- **Avoid News Events:** Skip entries within 15 minutes of major economic releases to prevent slippage on false breakouts.
+
+## Required Indicators
+
+| Indicator | Purpose |
+|-----------|---------|
+| Volume SMA (20) | Baseline for volume spike detection |
+| ATR (14) | Volatility expansion filter & trailing stop |
+| Swing High/Low (10) | Breakout confirmation level |
+| Candlestick pattern recognition | Engulfing detection |
+| Bollinger Band Width (optional) | Secondary volatility regime filter |
+
+## Ideal Market Conditions
+- Post-consolidation phases (tight ranges before expansion).
+- Liquid instruments (large-cap equities, FX majors, BTC/ETH).
+- Trending or breakout-friendly sessions (e.g., first 2 hours of market open).
+
+## Edge & Rationale
+The combination of **engulfing structure + volume expansion + volatility regime shift** filters out weak patterns that fail without participation. Volume confirms conviction, engulfing confirms intent, and volatility confirms the market is ready to move — stacking three independent confirmations dramatically improves breakout reliability.

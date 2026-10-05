@@ -1,0 +1,56 @@
+STRATEGY_NAME: CompressionBreakout
+
+STRATEGY_DETAILS:
+This strategy identifies periods of abnormally low volatility (a "squeeze") using Bollinger Band width contraction, then trades the subsequent expansion breakout with an ATR-based trailing stop.
+
+KEY STRATEGY COMPONENTS
+1. Volatility Squeeze Detection
+   - Bollinger Bands: 20-period SMA with 2 standard deviations.
+   - Band Width = (Upper Band − Lower Band) / Middle Band (normalized to be price-independent).
+   - Squeeze condition: current Band Width is the NARROWEST over the trailing 20 days (i.e., Band Width == rolling 20-day minimum). This is a stricter, cleaner definition than the common "width < threshold" approach.
+   - Optionally require the squeeze to persist for 1–3 bars to filter noise.
+
+2. Breakout Trigger (Long)
+   - Price must CLOSE above the Upper Bollinger Band on the same bar the squeeze condition was true (or within 1–2 bars after).
+   - Confirmation filters (recommended):
+     * Close > prior bar's high (momentum confirmation).
+     * Volume > 20-period average volume (avoids false breakouts on thin tape).
+   - Entry: next bar open, or market/limit on the breakout close.
+
+ENTRY RULES
+- Long only (strategy as written; can be mirrored for shorts).
+- Conditions on bar t:
+  1. BBWidth[t] == min(BBWidth, 20)
+  2. Close[t] > UpperBand[t]
+  3. (Optional) Volume[t] > SMA(Volume, 20)
+  4. (Optional) Close[t] > High[t-1]
+- Enter long at bar t+1 open.
+
+EXIT RULES
+- Primary exit: 2× ATR trailing stop.
+  * Initial stop = Entry Price − (2 × ATR(14))
+  * Each bar: NewStop = max(PreviousStop, Close − (2 × ATR(14)))
+  * Stop only ratchets up; never loosens.
+  * Exit when price closes below (or touches, per preference) the trailing stop.
+- Optional secondary exit: close below the Middle Band (20-SMA) as a momentum-failure signal.
+- No fixed profit target — let the trend run until the trailing stop is hit.
+
+RISK MANAGEMENT
+- Position sizing: risk a fixed % of equity per trade (e.g., 0.5–1%). Shares = (Equity × Risk%) / (Entry − InitialStop).
+- Max concurrent positions: 1–3 to limit correlated exposure.
+- Time stop: exit if no new high is made within X bars (e.g., 15) and price stalls — optional.
+- Avoid trading during earnings or major news if using single stocks.
+
+REQUIRED INDICATORS
+- Bollinger Bands (20, 2.0) — Upper, Middle, Lower
+- Bollinger Band Width (derived)
+- 20-day rolling minimum of Band Width
+- ATR (14) for the trailing stop
+- 20-period SMA of Volume (optional confirmation)
+- Prior bar high (optional confirmation)
+
+NOTES / EDGE CASES
+- Squeezes often resolve in either direction; the close-above-upper-band filter ensures we only take upside resolution.
+- In choppy markets, false breakouts are common — the volume and prior-high filters materially improve the win rate.
+- The 2× ATR trailing stop naturally adapts: wider during volatile expansions, tighter as the move matures.
+- Backtest across multiple timeframes (daily and 4H are typical) and asset classes (equities, FX, crypto) since squeeze dynamics vary.

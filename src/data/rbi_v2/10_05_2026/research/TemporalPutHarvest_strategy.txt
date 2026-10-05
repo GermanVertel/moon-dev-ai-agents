@@ -1,0 +1,73 @@
+STRATEGY_NAME: TemporalPutHarvest
+
+STRATEGY_DETAILS:
+This strategy is a systematic, calendar-driven options-selling approach that combines monthly timing with weekly price reference levels. It aims to harvest premium by selling cash-secured (or margin-backed) put options at a specific moment each month, using a strike derived from recent price action.
+
+**1. Key Strategy Components**
+
+- **Timing Trigger (Monthly Cycle):** The core entry occurs on the **last trading day of each month**, at the **market open**. This is the "roll" or "entry" moment. The strategy is inherently monthly in cadence — one new position per month.
+- **Strike Selection (Weekly High Reference):** The strike price is set equal to the **closing high from the same week**. Interpretation: the highest closing price observed during the current week (the week containing the last trading day). This creates a strike that is typically at or above the current market price, meaning the put is often **out-of-the-money or near-the-money** at entry.
+- **Leverage via Premium (100% Reinvestment):** The strategy uses **100% of the collected monthly options premium as leverage**. This means the premium received is not held as cash reserve but is redeployed (e.g., as margin, additional exposure, or compounding into the next cycle). This amplifies both returns and risk.
+- **Instrument:** Put options, presumably on an index or liquid underlying (e.g., SPX, SPY, or a single stock with weekly options). The weekly high reference implies weekly expirations or at least weekly price data.
+
+**2. Entry Rules**
+
+- **When:** On the last trading day of the month, at the **opening bell** (market open).
+- **What:** Sell (write) put options.
+- **Strike:** Equal to the **closing high of the current week**. If the week has multiple days, use the highest close among them. If the last trading day is the only day of the week (e.g., holiday-shortened), use that day's close high or the prior week's high as fallback.
+- **Expiration:** Not explicitly stated, but given monthly cadence, likely the next monthly expiration (approximately 30 days out) or the nearest weekly expiration that aligns with the next cycle. Assumption: monthly expiration to match the monthly roll.
+- **Quantity:** Determined by the leverage rule — 100% of premium is used as leverage, so position sizing is aggressive. Typically, one would sell enough contracts such that the premium collected equals the desired leverage base, but here it suggests full margin utilization.
+
+**3. Exit Rules**
+
+- **Primary Exit:** At expiration (if held to expiry). If the put expires out-of-the-money, the premium is kept as profit. If in-the-money, assignment occurs, and the underlying is purchased at the strike (or cash-settled).
+- **Secondary Exit (Management):** The strategy description does not specify early exits, but prudent risk management would include:
+  - Buying back the put if it reaches a certain loss threshold (e.g., 2x premium received).
+  - Rolling the position to the next month if the strike is breached.
+- **Rolling:** Since entry is monthly, the natural exit is the next month's entry day, where the previous position is closed (or expired) and a new one is opened.
+
+**4. Risk Management**
+
+- **Assignment Risk:** Selling puts obligates the seller to buy the underlying at the strike if the price falls below it. With a strike at the weekly high, the put is often near-the-money, increasing assignment probability.
+- **Leverage Risk:** Using 100% of premium as leverage means there is no cash buffer. A sharp downturn can lead to margin calls or forced liquidation. This is a **high-risk** configuration.
+- **Position Sizing:** The strategy implies maximum leverage, which is dangerous. A safer implementation would cap leverage at a fraction of premium (e.g., 20-50%).
+- **Stop-Loss:** Not specified, but recommended: close the position if the underlying drops below the strike by a certain percentage (e.g., 5-10%) or if the option premium doubles.
+- **Diversification:** Concentrating on one monthly put exposes the portfolio to gap risk and volatility spikes. Hedging with long puts or spreads could mitigate.
+- **Volatility Regime:** Premium selling works best in high implied volatility (IV) environments. In low IV, the premium may not justify the risk.
+
+**5. Required Indicators / Data**
+
+- **Weekly Closing High:** The highest closing price of the underlying during the current week. This requires daily close data and a weekly aggregation.
+- **Option Chain Data:** Strike prices, premiums, implied volatility, expiration dates.
+- **Calendar:** To identify the last trading day of each month.
+- **Margin/Leverage Metrics:** To compute how much premium can be used as leverage (e.g., margin requirements, buying power).
+- **Underlying Price:** At the open, to assess moneyness of the strike.
+
+**6. Example Implementation (Pseudo-Code)**
+
+```
+On last trading day of month at 9:30 AM:
+    week_high = max(close of each day in current week)
+    strike = week_high
+    expiration = next monthly expiration
+    premium = get_option_premium(put, strike, expiration)
+    leverage_base = premium  # 100% of premium
+    contracts = calculate_contracts(leverage_base, margin_requirement)
+    sell_put(contracts, strike, expiration)
+    
+At expiration or next roll:
+    if option expires OTM:
+        profit = premium
+    else:
+        assigned = buy underlying at strike
+        # manage assignment (sell covered calls, etc.)
+```
+
+**7. Critical Assessment**
+
+- **Edge:** The strategy sells puts at a strike derived from recent highs, which may capture premium if the market mean-reverts or stays flat. However, the weekly high strike is often above the current price, making the put in-the-money at entry if the market has fallen — this is counterintuitive for premium selling (you want OTM puts).
+- **Flaw:** Using the **closing high** as strike means if the week was bullish, the strike is high, and the put is deep ITM, offering little premium and high assignment risk. If the week was bearish, the strike is lower, but the put may still be ITM. This strike selection is unusual and likely results in frequent assignments.
+- **Leverage:** 100% premium leverage is extremely aggressive and can lead to ruin in a downturn.
+- **Improvement:** Consider using a strike below the weekly high (e.g., 5-10% OTM) and capping leverage at 30% of premium.
+
+**Conclusion:** TemporalPutHarvest is a high-risk, calendar-based put-selling strategy that uses a weekly high as strike and full premium leverage. It requires careful risk management and is best suited for experienced options traders in high-IV environments. The strike selection logic may need refinement to avoid frequent ITM entries.

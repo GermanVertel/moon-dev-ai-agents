@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev: Loading BTC-USD data...\n\ud83c\udf19 Moon Dev: Data loaded with 1009 bars \u2728\n\ud83d\ude80 Moon Dev: Date range 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n\ud83c\udf19 Moon Dev: Starting backtest... \ud83d\ude80\n\ud83c\udf19 Moon Dev: Initializing StochasticCointegration indicators... \u2728\n\ud83c\udf19 Moon Dev: Indicators ready! \ud83d\ude80\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/911 [00:00<?, ?bar/s]\n                                                      \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/StochasticCointegration_BTFinal_v4.py\", line 219, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/StochasticCointegration_BTFinal_v4.py\", line 204, in next\n    size = int(round(risk_amount / max(risk_per_unit, 1e-6)))\nTypeError: type _Indicator doesn't define __round__ method\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/StochasticCointegration_BTFinal_v4.py` failed. (See above for error)\n",
+  "execution_time": 5.486938,
+  "timestamp": "2026-10-05T12:37:11.321422"
+}

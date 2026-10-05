@@ -1,0 +1,45 @@
+STRATEGY_NAME: OscillatorBandSurge
+
+STRATEGY_DETAILS:
+
+This strategy merges RSI momentum with Bollinger Band volatility structure to identify high-conviction long entries. Unlike traditional RSI usage (overbought/oversold), this approach treats RSI as a momentum oscillator whose own Bollinger Bands define statistically significant momentum extremes.
+
+**Core Concept:**
+Apply Bollinger Bands to the RSI indicator itself (not just price), then require alignment with price-based Bollinger Bands. This dual-confirmation filters false momentum signals.
+
+**Required Indicators:**
+1. **Price Bollinger Bands** (20-period SMA, 2 standard deviations)
+   - Upper Band, Middle Band (SMA 20), Lower Band
+2. **RSI** (14-period)
+3. **RSI Bollinger Bands** (applied to RSI line, 20-period SMA, 2 standard deviations)
+   - RSI Upper Band, RSI Middle, RSI Lower Band
+
+**Entry Rules (Long):**
+Both conditions must be true on the same bar (or within 1-2 bars for flexibility):
+1. **RSI Momentum Breakout:** RSI line crosses ABOVE its upper Bollinger Band (RSI > RSI_UpperBand after being below)
+2. **Price Confirmation:** Close price breaks ABOVE the price Middle Bollinger Band (20-SMA)
+
+Optional filter: RSI value should be > 50 at signal (ensures bullish momentum regime).
+
+**Exit Rules:**
+- **Primary Exit:** Close below the price Middle Bollinger Band
+- **Momentum Exit:** RSI crosses back below its RSI Middle Band (momentum fading)
+- **Stop Loss:** Below the most recent swing low OR below the price Lower Bollinger Band (whichever is tighter)
+- **Take Profit:** At price Upper Bollinger Band, or trail with a 2×ATR stop
+
+**Risk Management:**
+- Position size: Risk no more than 1-2% of equity per trade
+- ATR-based stop (2× ATR(14)) to adapt to volatility
+- Avoid entries when price Upper Band and Lower Band are extremely narrow (squeeze) unless breakout confirms with volume
+- Max 1 open position per instrument to avoid clustering
+
+**Confirmation Enhancements:**
+- Volume above 20-period average on breakout bar
+- RSI upper band breakout should be a fresh cross, not a prolonged stay above (avoid chasing)
+- Higher timeframe trend alignment (e.g., price above 200-EMA on daily)
+
+**Best Suited For:**
+Trending or momentum-driven markets (equities, crypto, indices) on 1H–Daily timeframes. Avoid ranging/choppy markets where RSI band breakouts frequently whipsaw.
+
+**Key Insight:**
+The RSI-Bollinger combination captures the moment when momentum itself becomes statistically extreme AND price confirms by reclaiming its own mean. This dual-band alignment significantly reduces the false signals typical of RSI-only or price-BB-only systems.

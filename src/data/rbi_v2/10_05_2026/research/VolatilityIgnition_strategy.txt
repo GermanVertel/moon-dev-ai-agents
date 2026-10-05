@@ -1,0 +1,65 @@
+STRATEGY_NAME: VolatilityIgnition
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy trades breakouts only when two independent confirmation filters align: volatility expansion (ATR regime shift) and volume expansion (participation surge). The premise is that breakouts fail most often in low-volatility, low-volume conditions — so we gate entries behind macro volatility and volume confirmation.
+
+---
+
+**1. Key Strategy Components**
+
+- **Primary Trigger:** Price breakout above recent resistance (or below support for shorts).
+- **Volatility Filter:** 20-period ATR must be *above* its 90-day (approximately 90-period on daily) average. This confirms the market is in an expansion regime, not a compression regime.
+- **Volume Filter:** Current bar's volume must be *above* the 50-day moving average of volume. This confirms real participation behind the move.
+- **Risk Model:** Fixed 2:1 reward-to-risk ratio on every trade.
+
+---
+
+**2. Entry Rules**
+
+**Long Entry (mirror for shorts):**
+1. Price closes above the highest high of the last N bars (define N — e.g., 20-bar Donchian high).
+2. ATR(20) > SMA(ATR(20), 90) — volatility regime is elevated.
+3. Volume > SMA(Volume, 50) — participation is above norm.
+4. All three conditions must be true on the *same* breakout bar (or within a 1-bar confirmation window).
+
+**Short Entry:**
+1. Price closes below the lowest low of the last N bars.
+2. Same ATR and volume filters apply.
+
+---
+
+**3. Exit Rules**
+
+- **Stop Loss:** Placed at a structural distance (e.g., 1× ATR below entry for longs, above for shorts) OR at the breakout level itself.
+- **Take Profit:** Set at exactly 2× the stop distance (2:1 R:R).
+- **Optional Time Stop:** If neither stop nor target is hit within X bars (e.g., 10–15), exit at market to avoid dead trades.
+
+---
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk a fixed % of equity per trade (e.g., 0.5–1%). Position size = (Account Risk $) / (Entry − Stop).
+- **Max Concurrent Trades:** Cap to avoid correlated breakout exposure (e.g., 3–5 positions).
+- **No Re-entry Rule:** After a stop-out, do not re-enter the same breakout level on the same day.
+- **Regime Kill-Switch:** If ATR(20) drops back below its 90-day SMA, disable new entries until expansion returns.
+
+---
+
+**5. Required Indicators**
+
+| Indicator | Purpose | Parameters |
+|---|---|---|
+| ATR | Volatility regime filter | 20-period, vs 90-period SMA |
+| Volume SMA | Participation filter | 50-period |
+| Donchian / Rolling High-Low | Breakout trigger | 20-bar (tunable) |
+| ATR (secondary) | Stop placement | Same 20-period ATR |
+
+---
+
+**6. Edge & Failure Modes**
+
+- **Edge:** Filters out the majority of false breakouts that occur in quiet, low-volume markets — the classic "breakout trap" environment.
+- **Failure Mode:** Whipsaws in choppy but high-volume conditions (news-driven spikes). Mitigate with the time stop and avoid trading right into known event risk.
+- **Best Markets:** Instruments with clear volatility cycles — index futures, large-cap equities, FX majors during session opens.

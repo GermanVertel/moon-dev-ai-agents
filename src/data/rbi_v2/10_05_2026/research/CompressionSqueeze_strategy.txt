@@ -1,0 +1,63 @@
+STRATEGY_NAME: CompressionSqueeze
+
+STRATEGY_DETAILS:
+This strategy identifies periods of volatility compression across two independent volatility estimators (Bollinger Bands and Keltner Channels), then trades the subsequent expansion breakout only when volume confirms institutional participation. The dual-estimator design filters out false squeezes that appear in only one volatility model.
+
+CORE COMPONENTS
+
+1. Bollinger Band Width Percentile (BBWP)
+- Compute 20-period Bollinger Bands (SMA ± 2 standard deviations).
+- Band Width = (Upper Band − Lower Band) / Middle Band.
+- Rank current Band Width against its own trailing 252-bar history (percentile 0–100).
+- Compression threshold: BBWP ≤ 20 (bottom quintile of the past year).
+- This normalizes compression across regimes — a "tight" band in a high-vol market differs from a tight band in a low-vol market.
+
+2. Normalized Keltner Channel Squeeze
+- Compute 20-period EMA with ATR(10) bands at 1.5× multiplier.
+- Squeeze condition: Bollinger Bands sit INSIDE the Keltner Channels (classic TTM Squeeze logic).
+- Normalize squeeze depth: SqueezeRatio = (KC Width − BB Width) / KC Width. Higher values = deeper compression.
+- Require SqueezeRatio > 0 for at least 5 consecutive bars to confirm a genuine coil, not a one-bar flicker.
+
+3. Composite Squeeze Score (0–100)
+- CompositeScore = (100 − BBWP) × 0.5 + (SqueezeRatio × 100) × 0.5.
+- Signal only fires when CompositeScore ≥ 70 AND both sub-conditions are simultaneously true.
+
+ENTRY RULES (Long; mirror for short)
+1. Regime gate: CompositeScore ≥ 70 on the prior bar (compression confirmed).
+2. Expansion trigger: Current close > Upper Bollinger Band AND close > prior bar's high (breakout confirmation).
+3. Momentum filter: Close > 20-period EMA (bias alignment).
+4. Volume confirmation: Current volume ≥ 1.5 × 20-day average volume. This is the critical filter — squeezes without volume expansion frequently fail.
+5. Optional TTM histogram: Require the momentum histogram (close − SMA of close) to flip positive on the trigger bar.
+6. Enter at next bar open (or on the close of the trigger bar for aggressive execution).
+
+EXIT RULES
+- Primary target: 2R measured move — project the Keltner Channel width at the moment of squeeze release as the expected expansion distance.
+- Trailing stop: Chandelier Exit using 2.5 × ATR(14) from the highest high since entry.
+- Time stop: Exit after 15 bars if neither target nor stop is hit (squeezes resolve quickly or not at all).
+- Volatility exit: Close position if BBWP rises above 80 (expansion exhausted) while price stalls below the prior swing high.
+
+RISK MANAGEMENT
+- Position sizing: Risk 1% of equity per trade; stop distance = entry − (Lower Bollinger Band or 1.5 × ATR, whichever is tighter).
+- Maximum 3 concurrent positions to avoid correlated breakout clustering during market-wide squeezes.
+- Daily loss limit: Halt trading for the session after −2% equity.
+- No entries in the final 30 minutes of the session (expansions often reverse into the close).
+- Skip signals on days with scheduled high-impact macro events (FOMC, CPI) unless the squeeze has lasted >15 bars.
+
+REQUIRED INDICATORS
+- Bollinger Bands (20, 2.0)
+- Keltner Channels (20 EMA, ATR 10, 1.5×)
+- ATR (10 and 14)
+- 20-period EMA
+- 20-day average volume
+- 252-bar rolling percentile rank of BB Width
+- TTM Squeeze momentum histogram (optional confirmation)
+
+MARKET CONTEXT FILTERS
+- Best performance in trending regimes; add an ADX(14) > 20 filter on the trigger bar to avoid choppy false expansions.
+- Avoid low-liquidity instruments where the 1.5× volume rule can be triggered by a single large print.
+- Optimal timeframes: 1H to Daily. Below 15m the volume filter becomes noisy.
+
+FAILURE MODES TO MONITOR
+- Squeeze-and-fail: Price breaks the band but closes back inside — require the close beyond the band, not just an intrabar wick.
+- Volume spoofing: Single-block prints can fake volume confirmation; consider using median volume or a 3-bar volume average instead of a single-bar spike.
+- Regime shift: A structural volatility regime change (e.g., new monetary policy cycle) can leave BBWP permanently elevated — recalibrate the 252-bar window if the market's vol baseline shifts.

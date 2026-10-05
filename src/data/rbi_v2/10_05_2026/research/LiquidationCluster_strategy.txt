@@ -1,0 +1,47 @@
+STRATEGY_NAME: LiquidationCluster
+
+STRATEGY_DETAILS:
+This strategy combines liquidation heatmap analysis with Keltner Channel volatility breakouts to identify high-probability mean reversion opportunities near liquidation clusters.
+
+**Core Concept:**
+Price tends to gravitate toward areas with high long liquidation density (liquidation magnets) due to forced selling pressure. When price approaches these clusters with a volatility expansion trigger, it creates a setup for a mean reversion trade back toward the VWAP.
+
+**Required Indicators:**
+1. Keltner Channel (20-period EMA, 2.0 ATR multiplier)
+2. 20-period VWAP
+3. Aggregated Liquidation Heatmap data (long liquidation levels)
+4. ATR (14-period) for volatility measurement
+5. Volume profile or open interest data (optional confirmation)
+
+**Entry Rules (Short Setup):**
+1. Identify high-density long liquidation clusters from aggregated exchange data (Binance, Bybit, OKX combined)
+2. Wait for price to rally INTO or NEAR a significant long liquidation cluster (within 0.5% of cluster center)
+3. Confirm volatility trigger: current ATR > 1.5x the 20-period average ATR
+4. Confirm Keltner Channel breakout: price closes above the upper Keltner Band
+5. Enter short on the first candle that closes back INSIDE the upper Keltner Band (failed breakout / rejection)
+6. Optional confirmation: bearish divergence on RSI or decreasing volume on the breakout attempt
+
+**Exit Rules:**
+1. Primary target: 20-period VWAP (mean reversion target)
+2. Take partial profits (50%) when price reaches VWAP
+3. Trail remaining position using the middle Keltner Band (20 EMA)
+4. Time-based exit: close position if not at VWAP within 8-12 candles
+5. Hard stop: above the recent swing high or 1.5x ATR above entry
+
+**Risk Management:**
+- Position size: 1-2% risk per trade based on stop distance
+- Stop loss: placed above the liquidation cluster high + 0.3% buffer
+- Risk/Reward minimum: 1:2 (entry to stop vs entry to VWAP)
+- Maximum concurrent positions: 2 (avoid correlated setups)
+- Avoid trading during major news events (CPI, FOMC) where liquidation maps become unreliable
+- Reduce size by 50% if liquidation cluster is less than 1% away from entry (tight stop, high whipsaw risk)
+
+**Key Filters:**
+- Only trade when funding rate is positive (longs paying shorts) — confirms crowded long positioning
+- Skip setups where liquidation cluster is >5% away from current price (too far, momentum may continue)
+- Require cluster density to be in top 20% of recent 7-day liquidation levels
+- Avoid counter-trend trades against a strong daily trend (EMA 200 slope)
+
+**Invalidation:**
+- If price reclaims the upper Keltner Band with strong volume, exit immediately (breakout is real, not a fake-out)
+- If a new, larger liquidation cluster forms below current price, reassess — cascade risk increases

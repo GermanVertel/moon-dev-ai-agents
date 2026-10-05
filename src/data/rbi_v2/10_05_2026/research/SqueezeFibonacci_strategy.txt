@@ -1,0 +1,50 @@
+STRATEGY_NAME: SqueezeFibonacci
+
+STRATEGY_DETAILS:
+This strategy combines volatility compression detection (Bollinger Bands inside Keltner Channels) with volume-confirmed breakout entries and Fibonacci-based profit targets. It is a momentum breakout system that only trades when a low-volatility "squeeze" resolves with conviction.
+
+1. KEY STRATEGY COMPONENTS
+- Squeeze Detection: Bollinger Bands (BB) contract inside Keltner Channels (KC). This signals abnormally low volatility and an impending expansion move.
+- Volume Confirmation: A breakout is only valid if accompanied by a volume spike (e.g., volume > 1.5x–2x the 20-period average), filtering out false breakouts.
+- Directional Bias: The breakout direction (close above upper BB/KC or below lower BB/KC) determines long or short.
+- Fibonacci Exit Framework: The initial squeeze range (from the highest high to the lowest low during the squeeze) defines the Fibonacci retracement/extension levels used for exits.
+
+2. INDICATORS REQUIRED
+- Bollinger Bands: 20-period SMA, 2 standard deviations.
+- Keltner Channels: 20-period EMA, ATR multiplier of 1.5 (or 2.0).
+- Volume: 20-period simple moving average for spike comparison.
+- ATR: For channel construction and optional stop sizing.
+- Fibonacci levels: 0.382, 0.5, 0.618 (retracements) and 1.272, 1.618 (extensions) of the squeeze range.
+
+3. ENTRY RULES
+- Squeeze condition: BB upper < KC upper AND BB lower > KC lower for at least 5 consecutive bars.
+- Record squeeze range: highest high (SH) and lowest low (SL) during the squeeze window.
+- Long entry: Price closes above the upper Bollinger Band AND volume > 1.5x 20-period volume average. Enter on the close or next bar open.
+- Short entry: Price closes below the lower Bollinger Band AND volume > 1.5x 20-period volume average.
+- Optional filter: Require the breakout candle to have a strong body (close near its high for longs, near its low for shorts).
+
+4. EXIT RULES (FIBONACCI-BASED)
+- Define range R = SH − SL.
+- Long targets (measured upward from the breakout or from SL):
+  - TP1: SL + 1.0 × R (range extension)
+  - TP2: SL + 1.272 × R
+  - TP3: SL + 1.618 × R
+- Short targets (measured downward from SH):
+  - TP1: SH − 1.0 × R
+  - TP2: SH − 1.272 × R
+  - TP3: SH − 1.618 × R
+- Scale out: 50% at TP1, 30% at TP2, 20% at TP3.
+- Trailing option: After TP1, trail stop using the 0.618 retracement of the move or the 20-period EMA.
+
+5. RISK MANAGEMENT
+- Stop loss: Place at the opposite side of the squeeze range (SL for longs, SH for shorts) or at the 0.618 retracement of the breakout leg, whichever is tighter but not less than 1 × ATR.
+- Position sizing: Risk no more than 1–2% of equity per trade; size = (Account Risk) / (Entry − Stop).
+- Time stop: If price does not reach TP1 within 2× the squeeze duration, exit at market.
+- Re-entry rule: Only one re-entry allowed if stopped out and a fresh volume-confirmed breakout occurs.
+- Avoid trading during major news events or low-liquidity sessions.
+
+6. EXECUTION NOTES
+- Best timeframes: 15m, 1h, 4h (higher timeframes reduce noise).
+- Best markets: Liquid instruments (major FX pairs, index futures, large-cap crypto, liquid equities).
+- Backtest validation: Confirm squeeze frequency, volume spike threshold, and Fibonacci hit rate before live deployment.
+- Combine with market regime filter (e.g., ADX < 20 before breakout) to avoid trading inside already-trending markets.

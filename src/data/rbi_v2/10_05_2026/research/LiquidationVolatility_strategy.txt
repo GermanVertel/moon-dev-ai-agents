@@ -1,0 +1,49 @@
+STRATEGY_NAME: LiquidationVolatility
+
+STRATEGY_DETAILS:
+This strategy exploits volatility-driven liquidation cascades by entering long positions when price has been pushed down to extreme levels relative to recent highs, then riding the mean-reversion bounce back toward equilibrium.
+
+**Core Concept:**
+The premise is that sharp downward moves of 2x ATR from a 20-day high often trigger forced liquidations (long squeezes), creating temporary oversold conditions where price snaps back. The exit targets the opposite extreme—a modest recovery to 1x ATR above the 10-day low—capturing the reversion without overstaying.
+
+**Key Strategy Components:**
+
+1. **Volatility Measurement (ATR):**
+   - Use a 14-period ATR (Average True Range) on daily or 4H candles.
+   - ATR serves as the dynamic "distance" unit for both entry and exit thresholds.
+
+2. **Reference Levels:**
+   - **20-day high:** Highest high over the last 20 periods (rolling).
+   - **10-day low:** Lowest low over the last 10 periods (rolling).
+   - These asymmetric windows (20 vs 10) bias the strategy toward catching deeper pullbacks while exiting quickly.
+
+**Entry Rules (Long Only):**
+- Trigger entry when: `Current Price ≤ (20-day High) − (2 × ATR)`
+- Confirmation filters (recommended):
+  - RSI(14) < 30 (oversold confirmation).
+  - Volume spike on the down move (liquidation signature).
+  - No entry if price has already closed below the 20-day high minus 3× ATR (avoid catching falling knives in a true crash).
+
+**Exit Rules:**
+- Primary target: `Exit when Price ≥ (10-day Low) + (1 × ATR)`
+- Secondary exits:
+  - Time stop: exit after N bars (e.g., 5–10) if neither target nor stop hit.
+  - Trailing stop: once price moves 0.5× ATR in favor, trail by 0.5× ATR.
+
+**Risk Management:**
+- **Stop Loss:** Place hard stop at entry price − (1.5 × ATR). This caps downside if the liquidation cascade continues.
+- **Position Sizing:** Risk no more than 1–2% of equity per trade. Size = (Account Risk) / (Entry − Stop).
+- **Max Concurrent Positions:** 1–2 to avoid correlated exposure during market-wide selloffs.
+- **Regime Filter:** Only trade when ATR is above its 20-period average (high-volatility regime)—the edge depends on volatility, not chop.
+- **Avoid:** Earnings events, macro releases (FOMC/CPI), or when price is in a confirmed bear trend (e.g., below 200-day SMA).
+
+**Required Indicators:**
+- ATR (14)
+- Rolling 20-day High
+- Rolling 10-day Low
+- RSI (14) — optional confirmation
+- Volume (for liquidation spike detection)
+- 200-day SMA — optional regime filter
+
+**Edge Rationale:**
+Liquidation clusters create predictable, short-lived inefficiencies. By anchoring entries to volatility-scaled extremes from recent highs, the strategy avoids overpaying for dips while the tight exit near the 10-day low locks in the reversion before momentum fades.

@@ -1,0 +1,52 @@
+STRATEGY_NAME: VacuumBreakout
+
+STRATEGY_DETAILS:
+This strategy trades breakouts that occur when price escapes an "overnight liquidity void" — a price region where little to no trading occurred during the overnight/Asian session, creating thin liquidity that price can rapidly traverse once triggered. Entries are confirmed by the confluence of a VWAP gap and a Bollinger Band squeeze release, with targets set at recent HFT liquidity zones (clusters of prior high-frequency activity).
+
+CORE COMPONENTS:
+
+1. Overnight Liquidity Void Detection
+   - Define the overnight session window (e.g., 18:00–03:00 ET, or exchange-specific).
+   - Build a volume-by-price profile for that window using 1-min or tick data.
+   - Identify "voids" as contiguous price bands where cumulative overnight volume is below a threshold (e.g., < 10% of the session's median per-bin volume).
+   - Mark void boundaries as the high and low of the thin region.
+
+2. VWAP Gap Confirmation
+   - Calculate session VWAP (anchored to the RTH open) and a rolling intraday VWAP.
+   - Compute the VWAP Gap = (price − VWAP) normalized by ATR or by the standard deviation of the intraday VWAP band.
+   - A valid breakout requires price to open or push through the void boundary with a VWAP gap exceeding a threshold (e.g., > 1.0σ), signaling genuine displacement rather than noise.
+
+3. Bollinger Band Squeeze Confirmation
+   - Use Bollinger Bands (20-period, 2σ) on the 5-min chart.
+   - Detect a squeeze via BandWidth percentile (e.g., BandWidth in the bottom 20% of its 100-period range).
+   - Entry is only taken when the squeeze releases (BandWidth expands) in the direction of the void breakout — i.e., a volatility expansion confirming the breakout has fuel.
+
+4. HFT Liquidity Zone Targeting
+   - Identify recent HFT liquidity clusters using volume-at-price over the last 1–3 sessions, focusing on bins with abnormally high trade counts (not just volume) — a proxy for HFT activity.
+   - Rank these clusters by recency and density.
+   - Set profit targets at the nearest 1–2 HFT zones in the breakout direction; these act as magnets where price often stalls or reverses.
+
+ENTRY RULES:
+- Long: Price breaks above the upper boundary of an overnight liquidity void, VWAP Gap > +1.0σ, and Bollinger BandWidth expands from a squeeze.
+- Short: Price breaks below the lower boundary of an overnight liquidity void, VWAP Gap < −1.0σ, and Bollinger BandWidth expands from a squeeze.
+- Optional filter: require the breakout candle to close beyond the void boundary (no wick-only breakouts).
+
+EXIT RULES:
+- Take partial profit at the first HFT liquidity zone (50% of position).
+- Final target at the second HFT liquidity zone, or trail with a 1.5×ATR stop.
+- Time-based exit: close remaining position if the void is not reached within N bars (e.g., 30 min), as the breakout has lost momentum.
+
+RISK MANAGEMENT:
+- Stop loss: just inside the void boundary (opposite side of the breakout) or 1×ATR, whichever is tighter.
+- Position sizing: risk 0.5–1% of equity per trade; reduce size when the void is narrow (higher slippage risk).
+- Skip trades during major scheduled news (FOMC, CPI) to avoid whipsaw in thin liquidity.
+- Max 2 consecutive losses per session; pause after hitting daily loss limit.
+
+REQUIRED INDICATORS:
+- Overnight volume-by-price profile (custom).
+- Session-anchored VWAP + VWAP standard deviation bands.
+- Bollinger Bands (20, 2) with BandWidth and its percentile rank.
+- ATR (14) for stops and gap normalization.
+- HFT liquidity zone map (volume-at-price + trade-count clustering, last 1–3 sessions).
+
+This strategy's edge comes from exploiting the intersection of thin overnight liquidity, volatility expansion, and institutional/HFT resting liquidity — a combination that produces fast, high-probability directional moves when all three align.

@@ -1,0 +1,36 @@
+STRATEGY_NAME: VolatilityLiquidity
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band width (BBW) analysis with liquidation heatmap zones to identify high-probability breakout setups during volatility contraction phases. The core premise is that when price consolidates (narrow BBW) near significant liquidation clusters, a directional breakout is likely as those liquidity pools act as magnets for price.
+
+**Key Components:**
+1. **Bollinger Band Width (BBW) Thresholds** — Measures the distance between upper and lower bands relative to the middle band (SMA). A contraction is confirmed when BBW drops below a configurable percentile (e.g., 20th percentile of the last 100 bars) or a fixed threshold.
+2. **Liquidation Heatmap Zones** — Derived from aggregated liquidation data (e.g., Coinglass, Hyblock, or exchange-specific feeds). Zones are clusters of leveraged positions likely to be liquidated at specific price levels (long liquidations below price, short liquidations above).
+3. **Confluence Trigger** — Entry requires BOTH: (a) BBW in contraction state, and (b) price within or near a major liquidation zone (within 0.5–1.0 ATR).
+
+**Entry Rules:**
+- **Long Entry:** BBW < contraction threshold AND price is approaching a dense short-liquidation cluster above current price. Enter on a confirmed close above the upper Bollinger Band or a bullish engulfing candle breaking the contraction range.
+- **Short Entry:** BBW < contraction threshold AND price is approaching a dense long-liquidation cluster below current price. Enter on a confirmed close below the lower Bollinger Band or a bearish engulfing candle breaking the contraction range.
+- **Confirmation Filters:** Volume spike (>1.5x 20-period average), RSI divergence alignment, or a momentum oscillator crossover (e.g., MACD).
+
+**Exit Rules:**
+- **Take Profit:** Exit at the opposing liquidity pool — for longs, the next major long-liquidation cluster above; for shorts, the next major short-liquidation cluster below. Alternatively, use a 2R–3R target based on the contraction range height.
+- **Stop Loss:** Place stop just inside the entry-side liquidation zone (e.g., 0.5 ATR beyond the contraction low/high) to avoid stop-hunting wicks.
+- **Trailing Stop:** Once price moves 1R in favor, trail using the middle Bollinger Band or a 1.5 ATR chandelier stop.
+- **Time Stop:** Exit if no breakout occurs within N bars (e.g., 10–15 bars) as contraction may resolve sideways.
+
+**Risk Management:**
+- Max 1–2% risk per trade.
+- Avoid trading during major news events unless the liquidation zone is exceptionally dense.
+- Position sizing scaled inversely with BBW contraction depth (tighter contraction = smaller size due to higher whipsaw risk).
+- Correlation check: avoid stacking multiple positions in correlated assets simultaneously.
+
+**Required Indicators/Data:**
+- Bollinger Bands (20-period, 2 std dev) + BBW calculation
+- Liquidation heatmap data feed (exchange API or third-party aggregator)
+- ATR (14) for stop sizing
+- Volume (20-period average)
+- Optional: RSI (14), MACD (12,26,9) for confirmation
+
+**Edge Rationale:**
+Volatility contraction precedes expansion, and liquidation clusters act as liquidity magnets. When both align, the probability of a directional move toward the opposing pool increases, offering favorable risk-reward with defined invalidation levels.

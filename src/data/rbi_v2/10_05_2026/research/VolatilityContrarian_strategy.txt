@@ -1,0 +1,65 @@
+STRATEGY_NAME: VolatilityContrarian
+
+STRATEGY_DETAILS:
+
+This strategy exploits the predictive information embedded in Option Implied Volatility (OIV) to identify contrarian long-short opportunities arising from divergent sector rotations. The core thesis is that elevated OIV in a sector signals fear/uncertainty that often precedes mean reversion, while depressed OIV signals complacency that precedes reversal — making OIV a contrarian signal for sector rotation timing.
+
+1. KEY STRATEGY COMPONENTS
+
+a) OIV Signal Construction
+- For each sector ETF (or basket of stocks), compute a sector-level OIV metric, e.g., a cap-weighted average of 30-day ATM implied volatility across constituents.
+- Normalize OIV into a z-score relative to its own trailing 252-day history: OIV_z = (OIV_current − mean_252) / std_252.
+- Compute cross-sectional dispersion of OIV_z across sectors to detect "divergent sector rotations" — periods where sectors are moving in opposite volatility regimes.
+
+b) Divergence Detection
+- Rank sectors by OIV_z. High positive z = fear-driven dislocation (candidate long). High negative z = complacency (candidate short).
+- Require divergence confirmation: the spread between top-quartile and bottom-quartile OIV_z must exceed a threshold (e.g., > 1.5 std of historical dispersion) to trigger positioning.
+- Optional confirmation via realized vs. implied volatility spread (variance risk premium) to filter noise.
+
+c) Directional Logic (Contrarian)
+- Long sectors with extreme high OIV_z (oversold/fearful, expected to revert up).
+- Short sectors with extreme low OIV_z (overbought/complacent, expected to revert down).
+- Only act when sector price momentum is decelerating or reversing, to avoid catching falling knives.
+
+2. ENTRY / EXIT RULES
+
+Entry:
+- Enter when OIV_z crosses ±1.5 to ±2.0 AND cross-sectional dispersion exceeds threshold.
+- Long top-ranked (highest OIV_z) sector(s); short bottom-ranked (lowest OIV_z) sector(s).
+- Rebalance weekly or bi-weekly based on signal decay.
+
+Exit:
+- Close long when OIV_z reverts toward 0 (e.g., |OIV_z| < 0.5).
+- Close short when OIV_z rises back toward neutral or dispersion collapses.
+- Hard stop if sector price moves adversely beyond a pre-set ATR multiple (e.g., 2× ATR).
+
+3. RISK MANAGEMENT
+
+a) Position Sizing by Inverse OIV
+- Weight each position inversely to its OIV multiple: w_i ∝ 1 / OIV_i (or 1 / OIV_z magnitude).
+- This scales down exposure to high-volatility (high-OIV) names and up to low-volatility names, equalizing risk contribution.
+- Cap single-sector weight (e.g., ≤ 15%) and enforce gross/net exposure limits.
+
+b) Dollar/Beta Neutrality
+- Maintain market-neutral or beta-neutral construction by matching long and short beta exposures.
+- Rebalance beta hedge weekly.
+
+c) Stop-Loss & Drawdown Controls
+- Per-position stop: 2× ATR or 8% adverse move.
+- Portfolio drawdown circuit breaker: reduce gross exposure by 50% if drawdown exceeds 10%.
+- Monitor OIV term structure (contango/backwardation) as a regime filter; stand down in extreme backwardation.
+
+d) Liquidity & Execution
+- Only trade sectors with adequate options liquidity (tight bid-ask spreads, deep OI).
+- Use VWAP/TWAP execution to minimize slippage on rebalances.
+
+4. REQUIRED INDICATORS / DATA
+
+- Option Implied Volatility (30-day ATM) per sector and constituent.
+- OIV z-score (252-day rolling) and cross-sectional OIV dispersion.
+- Realized volatility (for variance risk premium comparison).
+- Sector price momentum (e.g., 1M/3M returns) and ATR for stops.
+- Sector betas (for neutrality) and correlation matrix (for diversification checks).
+- Options liquidity metrics: bid-ask spread, open interest, volume.
+
+SUMMARY: VolatilityContrarian combines OIV z-scores, cross-sectional dispersion, and inverse-OIV position sizing to systematically trade mean reversion across divergent sector rotations, with strict risk controls and beta-neutral construction.

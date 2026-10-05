@@ -1,0 +1,61 @@
+STRATEGY_NAME: DivergentCloudMomentum
+
+STRATEGY_DETAILS:
+This strategy fuses two classic Japanese-derived technical frameworks — Bollinger Bands (short-term volatility/momentum) and the Ichimoku Cloud (long-term trend/projection) — into a contrarian timing engine. The core thesis is that when short-term price momentum (via Bollinger Bands) diverges from the long-term trend bias projected by the Ichimoku Cloud, a high-probability mean-reversion or reversal trade emerges. Entries are taken on bearish short-term momentum, exits on bullish short-term momentum.
+
+1. KEY STRATEGY COMPONENTS
+- Short-Term Momentum Layer (Bollinger Bands, typically 20-period, 2 std dev):
+  - %B and BandWidth are the primary momentum reads.
+  - Bearish momentum = price closing below the lower band OR %B < 0 with expanding BandWidth.
+  - Bullish momentum = price closing above the upper band OR %B > 1 with expanding BandWidth.
+- Long-Term Projection Layer (Ichimoku Cloud):
+  - Senkou Span A & B define the Kumo (Cloud).
+  - Tenkan-sen (9) and Kijun-sen (26) define short/intermediate equilibrium.
+  - Chikou Span (lagging line, 26 back) confirms trend.
+  - Cloud color and price position relative to Cloud indicate long-term bias.
+- Divergence Condition (the edge):
+  - Bearish divergence setup: Price is ABOVE or INSIDE the Cloud (long-term bullish/neutral), but short-term Bollinger action is bearish (price riding/below lower band). This signals a temporary pullback within an uptrend — a contrarian long entry zone when exhaustion appears.
+  - Bullish divergence setup: Price is BELOW or INSIDE the Cloud (long-term bearish/neutral), but short-term Bollinger action is bullish (price pushing upper band). This signals a temporary rally within a downtrend — a contrarian short entry zone.
+  - Note: The strategy as described enters on bearish momentum and exits on bullish momentum, so the primary trade flow is short-biased at entry, long-biased at exit.
+
+2. ENTRY RULES (Bearish Momentum Entry)
+- Trigger A (Short Entry): Price closes below the lower Bollinger Band (%B < 0) while price remains above the Ichimoku Cloud (bullish long-term bias) — fade the overextended pullback.
+- Trigger B (Short Entry): Price closes below the lower Bollinger Band while Tenkan-sen crosses below Kijun-sen but both remain above the Cloud — signals short-term bearish momentum against a still-bullish structure.
+- Confirmation filters (require at least 2 of 3):
+  - BandWidth expanding (volatility rising, momentum accelerating).
+  - Chikou Span still above price from 26 periods ago (long-term uptrend intact).
+  - RSI(14) < 35 (short-term oversold confirmation for contrarian entry).
+- Entry execution: Market or limit order at the close of the signal candle.
+
+3. EXIT RULES (Bullish Momentum Exit)
+- Primary Exit: Price closes above the upper Bollinger Band (%B > 1) — bullish momentum reversal signal.
+- Secondary Exit: Tenkan-sen crosses back above Kijun-sen.
+- Profit target: Mid-Bollinger Band (SMA 20) or Kijun-sen, whichever is hit first.
+- Time stop: Exit after N bars (e.g., 15) if neither momentum nor target is reached.
+- Trailing exit: Once price re-enters the bands from below, trail stop at the lower band.
+
+4. RISK MANAGEMENT
+- Position sizing: Risk 1–2% of equity per trade; size = (Account Risk $) / (Entry − Stop).
+- Stop Loss: Place stop 1.5× ATR(14) beyond the lower Bollinger Band for shorts (or above upper band for longs). Alternatively, stop at the Cloud's lower boundary (Senkou Span B) for short trades.
+- Max concurrent exposure: 1–2 positions to avoid correlated divergence traps.
+- Volatility guard: Skip signals when BandWidth is in the bottom 10% of its 100-period range (flat market = false divergences).
+- Event filter: Avoid entries within 24h of major scheduled news (FOMC, CPI, earnings).
+- Drawdown circuit breaker: Halt trading after 3 consecutive losses or 5% equity drawdown; reassess parameters.
+
+5. REQUIRED INDICATORS
+- Bollinger Bands: 20-period SMA, 2.0 standard deviations (plot %B and BandWidth).
+- Ichimoku Cloud: Tenkan-sen (9), Kijun-sen (26), Senkou Span B (52), Chikou Span (26 back), displaced forward 26 periods.
+- ATR (14) for stop placement and volatility sizing.
+- RSI (14) as a momentum confirmation filter.
+- Optional: Volume SMA(20) to confirm expansion on signal bars.
+
+6. TIMEFRAMES & INSTRUMENTS
+- Best suited to 1H–4H charts on liquid instruments (major FX pairs, index futures, large-cap equities, BTC/ETH).
+- Avoid illiquid or low-volatility instruments where Bollinger BandWidth compresses persistently.
+
+7. STRATEGY LOGIC SUMMARY
+- Long-term trend (Ichimoku Cloud) sets the directional bias.
+- Short-term momentum extremes (Bollinger Bands) create contrarian entry timing.
+- Divergence between the two = the tradeable edge.
+- Enter on bearish short-term momentum within a bullish long-term structure (and vice versa), exit on the opposite short-term momentum extreme.
+- Strict ATR-based stops and volatility/news filters protect against false divergence signals.

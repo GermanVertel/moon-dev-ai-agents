@@ -1,0 +1,53 @@
+STRATEGY_NAME: SqueezeVolume
+
+STRATEGY_DETAILS:
+The SqueezeVolume strategy is a volatility breakout system that identifies periods of extreme market compression using Bollinger Band width, then waits for a confirmed directional breakout driven by volume expansion. It is designed to capture explosive moves that follow low-volatility consolidation phases.
+
+1. KEY STRATEGY COMPONENTS
+- Bollinger Bands (BB): Typically 20-period SMA with 2 standard deviations.
+- Bollinger Band Width (BBW): Calculated as (Upper Band − Lower Band) / Middle Band (or simply Upper − Lower in price terms). This measures volatility compression/expansion.
+- 6-month low of BBW: The lowest BBW reading over roughly 126 trading days (6 months). This signals a "squeeze" — an unusually quiet market.
+- Volume confirmation: A volume spike above the 20-day average volume (e.g., Volume > 1.5× 20-day SMA of Volume) to validate the breakout.
+- Breakout trigger: Price closes above the upper band (long) or below the lower band (short).
+
+2. ENTRY RULES
+- Precondition (Squeeze Detection): BBW has reached its 6-month low within the last N bars (e.g., within the past 5–10 bars). This confirms the market is in a compressed state.
+- Long Entry:
+  - Price closes above the Upper Bollinger Band.
+  - Volume on the breakout bar exceeds the 20-day average volume by a defined multiplier (e.g., ≥ 1.5×).
+  - Optional filter: Breakout bar is bullish and closes in the upper portion of its range.
+- Short Entry:
+  - Price closes below the Lower Bollinger Band.
+  - Volume on the breakout bar exceeds the 20-day average volume by the same multiplier.
+  - Optional filter: Breakout bar is bearish and closes in the lower portion of its range.
+- Only one position at a time; no new entries while a trade is open.
+
+3. EXIT RULES
+- Primary Exit (Band Re-entry): Exit when price closes back inside the Bollinger Bands (i.e., below the upper band for longs, above the lower band for shorts). This captures the initial breakout move.
+- Alternative/Trailing Exit: Use a trailing stop based on the middle band (20-period SMA) or an ATR-based trailing stop (e.g., 2× ATR) to let winners run while protecting profits.
+- Time-based Exit: If the trade does not reach a profit target within a set number of bars (e.g., 20 bars) and volatility re-compresses, exit to avoid stagnation.
+- Stop-Loss: Place initial stop at the opposite band, the middle band, or a fixed ATR multiple (e.g., 1.5× ATR) from entry.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk a fixed percentage of equity per trade (e.g., 0.5%–1%). Position size = (Account Risk) / (Entry Price − Stop Price).
+- Stop-Loss: Mandatory hard stop to cap losses if the breakout fails (false breakout). Use ATR-based or band-based stops.
+- Volume Filter: Require the volume spike to reduce false breakouts. If volume does not confirm, skip the trade.
+- Maximum Exposure: Limit concurrent positions and avoid trading during major news events or illiquid sessions.
+- Re-entry Rules: After a stop-out, require a new squeeze (BBW at 6-month low) and a fresh volume-confirmed breakout before re-entering.
+
+5. REQUIRED INDICATORS
+- Bollinger Bands (20, 2) — Upper, Middle (SMA 20), Lower.
+- Bollinger Band Width (BBW) — derived from the bands.
+- 6-month (≈126-day) rolling minimum of BBW.
+- Volume and 20-day SMA of Volume.
+- Optional: ATR (14) for stops and trailing exits.
+- Optional: Bar close position (close vs. high/low) for breakout quality.
+
+6. IMPLEMENTATION NOTES
+- Timeframe: Works best on daily or 4-hour charts where 6-month lookbacks are meaningful. Can be adapted to intraday with adjusted lookbacks.
+- Squeeze Window: Define how many bars after the BBW low the breakout is still valid (e.g., 10 bars). Too long and the setup is stale.
+- Volume Multiplier: Tune between 1.2× and 2.0× the 20-day average depending on the instrument's typical volume behavior.
+- False Breakout Mitigation: Consider requiring a close beyond the band (not just an intrabar touch) and the volume spike on the same bar.
+- Backtesting: Test across trending and ranging regimes; the strategy thrives in transitions from low to high volatility.
+
+This strategy combines the classic "Bollinger Squeeze" concept with a strict volume confirmation to filter out weak breakouts, making it a robust volatility-expansion system.

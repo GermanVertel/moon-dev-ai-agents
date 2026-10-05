@@ -1,0 +1,41 @@
+STRATEGY_NAME: AdaptiveCompression
+
+STRATEGY_DETAILS:
+This strategy exploits volatility compression regimes — periods where market energy has coiled tightly — and combines them with a trend-confirmation trigger to catch the expansion phase that typically follows. The core thesis is that unusually low volatility (ATR at extreme lows) is a precursor to directional moves, and the 50-day MA crossover provides the directional bias.
+
+1. KEY STRATEGY COMPONENTS
+- Volatility Regime Filter: 20-day ATR must fall below its own 10th percentile (calculated over a lookback window, e.g., 252 trading days / 1 year) to signal a "compression" regime.
+- Trend Confirmation Trigger: Price must cross above the 50-day simple moving average (SMA) while in the compression regime.
+- Dual Exit Logic: Hard stop based on volatility (2× ATR) OR time-based exit (5 trading days), whichever comes first.
+
+2. ENTRY RULES
+- Condition A (Regime): ATR(20) < 10th percentile of ATR(20) over trailing 252 days.
+- Condition B (Trigger): Close price crosses from below to above the 50-day SMA on the same bar or within the compression window.
+- Entry: Enter long at the close of the signal bar (or next open for realism).
+- Optional filter: Require the 50-day SMA slope to be flat or rising to avoid fighting downtrends.
+
+3. EXIT RULES
+- Stop-Loss: 2 × ATR(20) below the entry price (measured at entry, then held static or trailed).
+- Time Exit: Close the position after 5 trading days regardless of P&L.
+- Whichever triggers first takes precedence.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk per trade should be capped (e.g., 1% of equity). Since stop distance = 2×ATR, position size = (Equity × Risk%) / (2 × ATR).
+- Volatility-Aware Sizing: Because entries occur during low-ATR regimes, stops are naturally tighter, allowing larger nominal positions — but watch for gap risk.
+- Max Concurrent Positions: Limit to avoid correlated exposure during market-wide compression.
+- Regime Guard: Skip signals if broader market (e.g., SPY) is in its own high-volatility regime.
+
+5. REQUIRED INDICATORS
+- ATR(20) — Average True Range, 20-period.
+- ATR(20) 10th percentile — rolling 252-day percentile rank.
+- SMA(50) — 50-day simple moving average of price.
+- Optional: SMA(50) slope, market regime filter (VIX or SPY ATR).
+
+6. RATIONALE & EDGE
+Low-volatility compression is statistically associated with subsequent volatility expansion (volatility clustering). By requiring a 50-day MA breakout, the strategy waits for the market to reveal directional intent rather than guessing the breakout direction. The 2× ATR stop adapts to the prevailing volatility, and the 5-day time exit prevents overstaying in failed breakouts — capturing the short-lived "expansion burst" characteristic of post-compression moves.
+
+7. IMPLEMENTATION NOTES
+- Use adjusted prices to avoid dividend/split artifacts in ATR and SMA.
+- Percentile should be computed on a rolling basis (not full-sample) to avoid lookahead bias.
+- Backtest across multiple regimes (trending, choppy, crisis) to validate robustness.
+- Consider parameter sensitivity: 10th percentile vs 15th, 5-day vs 7-day hold, 2× vs 2.5× ATR stop.

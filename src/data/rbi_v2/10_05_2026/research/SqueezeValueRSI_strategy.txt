@@ -1,0 +1,46 @@
+STRATEGY_NAME: SqueezeValueRSI
+
+STRATEGY_DETAILS:
+This strategy combines short-squeeze dynamics with short-term mean reversion, using a value-oriented filter (short interest relative to volume) to identify stocks likely to experience a sharp upside reversal when oversold.
+
+1. Key Strategy Components
+- Universe: Liquid US equities with available short interest data (e.g., Russell 1000 or S&P 1500).
+- Core Signal: High Short Interest Ratio (SIR) = Short Interest / Average Daily Volume, indicating crowded short positioning and squeeze potential.
+- Timing Trigger: 1-day RSI oversold condition to time entries at short-term exhaustion points.
+- Value Bias: Prefer stocks trading below intrinsic value proxies (e.g., low P/B, low P/S, or positive free cash flow yield) to avoid pure meme-driven squeezes.
+
+2. Entry Rules
+- Short Interest Ratio (SIR) ≥ 5 days-to-cover (i.e., short interest ≥ 5x average daily volume).
+- 1-day RSI ≤ 20 (deeply oversold on a single-session basis).
+- Price above $5 and average daily dollar volume > $5M for liquidity.
+- Value filter: P/B < 3 or FCF yield > 3% (optional, to enforce value tilt).
+- Enter long at next open after signal confirmation.
+
+3. Exit Rules
+- Primary exit: 1-day RSI ≥ 70 (mean reversion completion) OR
+- Profit target: +5% to +8% from entry.
+- Stop loss: -3% from entry (tight, given squeeze volatility).
+- Time stop: Exit after 3 trading days if neither target nor stop is hit.
+- Optional trailing stop: 2% once position is +3% in profit.
+
+4. Risk Management
+- Position sizing: Max 2% of portfolio per trade due to high volatility of squeeze candidates.
+- Max concurrent positions: 5-10 to diversify idiosyncratic squeeze risk.
+- Avoid earnings dates (within 2 days) to prevent gap risk.
+- Sector cap: No more than 3 positions in the same sector.
+- Use limit orders on entry to avoid slippage in illiquid squeeze names.
+
+5. Required Indicators
+- 1-day RSI (Wilder's smoothing, period = 1) — note: with period 1, RSI reduces to a binary up/down signal; typically practitioners use RSI(2) or RSI(3) for this purpose. If strictly 1-day, treat as "down day" signal.
+- Short Interest and Average Daily Volume (from FINRA or exchange data, updated bi-weekly).
+- Days-to-Cover = Short Interest / Avg Daily Volume.
+- Optional: P/B ratio, FCF yield for value filter.
+- Price and volume data (daily bars).
+
+6. Implementation Notes
+- Signals should be computed after market close using prior day's short interest data.
+- Backtest with realistic borrow/short data lag (short interest is reported with ~2-week delay).
+- Consider that extreme SIR + oversold RSI often precedes violent squeezes — but also frequent false starts; the value filter helps reduce noise.
+- Benchmark against a simple RSI(2) mean-reversion strategy to isolate the squeeze premium.
+
+This strategy blends contrarian short-term mean reversion with structural short-squeeze catalysts, filtered by valuation to avoid chasing low-quality momentum traps.

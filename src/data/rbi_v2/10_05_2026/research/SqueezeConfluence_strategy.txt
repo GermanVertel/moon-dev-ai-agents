@@ -1,0 +1,47 @@
+STRATEGY_NAME: SqueezeConfluence
+
+STRATEGY_DETAILS:
+This strategy exploits the convergence of two volatility-based channel systems — Keltner Channels (ATR-based) and Bollinger Bands (standard deviation-based) — to identify high-probability breakout conditions. When both channel systems compress simultaneously, it signals an unusually tight consolidation (a "squeeze") that often precedes an explosive directional move.
+
+CORE LOGIC:
+The dual squeeze acts as a volatility compression filter. Bollinger Bands narrow when standard deviation drops, while Keltner Channels narrow when ATR drops. When the Bollinger Bands contract INSIDE the Keltner Channels, volatility has been squeezed to an extreme — this is the classic "TTM Squeeze" condition. Breakouts from this state tend to have strong follow-through because energy has been coiling.
+
+ENTRY RULES (Long):
+1. Squeeze Condition: Bollinger Band upper/lower must be INSIDE Keltner Channel upper/lower (BB width < KC width).
+2. Breakout Trigger: Price closes ABOVE both the upper Bollinger Band AND the upper Keltner Channel on the same bar.
+3. Volume Confirmation: Volume on the breakout bar must exceed the 20-period average volume by at least 1.5x (volume spike).
+4. Optional Momentum Filter: MACD histogram must be rising / positive, or price above a short EMA (e.g., 20 EMA) for directional bias.
+5. Enter on close of the breakout candle (or next bar open).
+
+ENTRY RULES (Short):
+Mirror of long: Bollinger Bands inside Keltner Channels, then close BELOW both lower bands with a 1.5x+ volume spike. MACD histogram falling/negative as confirmation.
+
+EXIT RULES:
+1. Primary Exit: Price re-enters EITHER band (closes back inside the Bollinger Band OR back inside the Keltner Channel) — whichever triggers first.
+2. Stop Loss: Place stop at the opposite band or at a fixed ATR multiple (e.g., 1.5x ATR) from entry.
+3. Optional Trailing Exit: Trail using the middle Bollinger Band (SMA 20) or the Keltner midline once price moves favorably.
+4. Time Stop: Exit if no follow-through within N bars (e.g., 10) and squeeze re-forms without expansion.
+
+RISK MANAGEMENT:
+- Position sizing based on ATR (risk fixed % of equity per trade).
+- Avoid entries during low-liquidity sessions (volume filter naturally handles this).
+- Require the squeeze to have persisted for a minimum number of bars (e.g., 5+) to avoid false compressions.
+- One position per instrument per direction; no pyramiding into a fresh breakout.
+
+REQUIRED INDICATORS:
+- Bollinger Bands (typically 20-period SMA, 2.0 std dev)
+- Keltner Channels (typically 20-period EMA, 1.5x ATR multiplier)
+- Volume (with 20-period moving average for spike detection)
+- ATR (for Keltner bands and stop sizing)
+- MACD (optional momentum confirmation)
+- 20 EMA (optional trend bias filter)
+
+KEY PARAMETERS TO TUNE:
+- BB period & std dev multiplier
+- KC period & ATR multiplier
+- Volume spike threshold (1.2x–2.0x)
+- Minimum squeeze duration in bars
+- ATR stop multiple
+
+WHY IT WORKS:
+The simultaneous compression of two independent volatility measures filters out noise and identifies genuine equilibrium. The volume spike confirms that real participation is driving the breakout, not a thin-market fakeout. The dual-band exit rule keeps winners running until momentum genuinely fades (re-entry into either band), while the ATR stop caps downside risk.

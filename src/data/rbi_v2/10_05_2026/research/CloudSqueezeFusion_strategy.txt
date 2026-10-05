@@ -1,0 +1,65 @@
+STRATEGY_NAME: CloudSqueeze Fusion
+
+STRATEGY_DETAILS:
+
+**Overview:**
+A long-only, multi-timeframe confluence strategy that combines Heikin-Ashi trend clarity, Ichimoku Cloud regime filtering, and TTM Squeeze momentum release detection. Entries trigger only when all three systems align, producing high-conviction trend continuation trades on the 4-hour chart.
+
+**Key Strategy Components:**
+
+1. **Heikin-Ashi Filter (Trend Smoothing)**
+   - Applied to the 4-hour chart to reduce noise and confirm trend direction.
+   - A bullish HA candle (no lower wick, green body) signals sustained buying pressure.
+   - Entry condition: HA candle **closes above** the Ichimoku Cloud (both Senkou Span A and B).
+
+2. **Ichimoku Cloud (Regime Filter)**
+   - Standard settings: Tenkan-sen (9), Kijun-sen (26), Senkou Span B (52).
+   - Price must close **above** the Kumo (Cloud) — confirms bullish regime.
+   - Optional strengthening: Tenkan-sen > Kijun-sen (bullish TK cross).
+   - Cloud flip (price closing back below the Kumo) is a primary exit trigger.
+
+3. **TTM Squeeze (Momentum Trigger)**
+   - Bollinger Bands (20, 2.0) and Keltner Channels (20, 1.5) plotted around price.
+   - Squeeze = BB inside KC (consolidation/energy buildup).
+   - Entry fires when the momentum histogram **turns positive** as the squeeze releases — confirming bullish momentum expansion.
+   - Histogram color/location relative to zero line is critical.
+
+**Entry Rules (Long):**
+1. 4H Heikin-Ashi candle closes above the Ichimoku Cloud.
+2. TTM Squeeze momentum histogram flips from negative/zero to positive on the same or most recent closed candle.
+3. Optional confluence: Squeeze just fired (BB expanded outside KC) OR was in squeeze and is now releasing upward.
+4. Enter at the open of the next 4H candle.
+
+**Exit Rules:**
+1. **Cloud Flip Exit:** Price closes below the Ichimoku Cloud (bearish Kumo break).
+2. **Squeeze Contraction Exit:** TTM Squeeze momentum histogram turns negative OR squeeze re-engages (BB re-enters KC) signaling momentum exhaustion.
+3. **HA Reversal Exit:** Two consecutive bearish Heikin-Ashi candles forming after a bullish run.
+4. **Optional trailing:** Trail stop below Kijun-sen or prior HA candle low.
+
+**Risk Management:**
+- **Position sizing:** Risk 1–2% of account equity per trade.
+- **Initial stop-loss:** Placed below the most recent HA swing low OR below the Kijun-sen line, whichever is tighter but still respects ATR.
+- **ATR-based buffer:** Stop = entry − (1.5 × ATR(14)) to avoid noise stop-outs.
+- **Take-profit:** Partial exit at 2R, trail remainder using Kijun-sen or Cloud top.
+- **Max concurrent positions:** 1–2 to avoid correlated exposure.
+- **Avoid trading:** During low-liquidity sessions, major news events, or when the Cloud is extremely thin (flat regime).
+
+**Required Indicators:**
+- Heikin-Ashi candles (4H)
+- Ichimoku Cloud (9, 26, 52, 26 displacement)
+- TTM Squeeze (BB 20/2.0 + KC 20/1.5, momentum histogram)
+- ATR(14) for volatility-based stops
+- Optional: Volume filter to confirm breakout strength
+
+**Strengths:**
+- Triple confirmation reduces false signals.
+- Combines trend (HA + Ichimoku) with volatility expansion (TTM Squeeze) — captures explosive moves after consolidation.
+- Clear, rule-based exits prevent emotional holding.
+
+**Weaknesses:**
+- Lagging indicators may cause late entries.
+- Fewer trade signals due to strict confluence requirement.
+- Choppy markets can trigger whipsaws at Cloud boundaries.
+
+**Best Market Conditions:**
+Trending markets emerging from consolidation phases, particularly in crypto and FX pairs on the 4H timeframe.

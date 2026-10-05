@@ -1,0 +1,53 @@
+STRATEGY_NAME: CompressionSurge
+
+STRATEGY_DETAILS:
+The CompressionSurge strategy is a volatility-expansion breakout system that waits for the market to "compress" (low Bollinger Band Width) and then "surge" (volume spike + close above upper band). It only trades when both a squeeze condition and a volume confirmation align, filtering out low-conviction breakouts.
+
+1. KEY STRATEGY COMPONENTS
+- Bollinger Bands: 20-period SMA with 2 standard deviations (upper, middle, lower).
+- Bollinger Band Width (BBW): (Upper Band − Lower Band) / Middle Band. Tracked over a 20-day lookback.
+- Squeeze Condition: Current BBW is at its lowest value in the last 20 days (a 20-day low), signaling volatility compression.
+- Volume Confirmation: Current bar volume ≥ 1.5× the 20-day average volume (150% spike).
+- Breakout Trigger: Price closes ABOVE the upper Bollinger Band on the same bar that satisfies both squeeze and volume conditions.
+- ATR Trailing Stop: 14-period ATR, exit when price trails 2× ATR below the highest close (or highest high) since entry.
+
+2. ENTRY RULES (Long-only by default; mirror for shorts if enabled)
+- Precondition A: BBW == lowest BBW over the last 20 bars.
+- Precondition B: Volume ≥ 1.5 × SMA(Volume, 20).
+- Trigger: Close > Upper Bollinger Band.
+- All three must occur on the SAME bar (or allow Precondition A/B within the last 1–2 bars for flexibility, configurable).
+- Enter at next bar open (or market close of signal bar, per execution preference).
+
+3. EXIT RULES
+- Primary: 2× ATR(14) trailing stop.
+  - Track the highest close (or highest high) since entry.
+  - Stop level = Highest Close Since Entry − (2 × ATR at entry, or dynamic ATR).
+  - Exit when price closes below the trailing stop level.
+- Optional secondary exits:
+  - Close below the middle Bollinger Band (mean reversion exit).
+  - Time-based exit after N bars (e.g., 20) if neither stop nor target hit.
+- No fixed profit target — let the trailing stop capture the volatility expansion move.
+
+4. RISK MANAGEMENT
+- Position sizing: Risk a fixed % of equity per trade (e.g., 1%), calculated as (Entry − Initial Stop) where Initial Stop = Entry − 2×ATR.
+- Maximum risk per trade is defined by the 2×ATR distance; size accordingly.
+- Avoid entering if ATR is unusually large relative to historical range (prevents oversized stops).
+- Limit concurrent positions and correlated exposure (e.g., max 1 position per symbol).
+- Consider a hard stop at 2×ATR below entry in case of gap-downs that bypass trailing logic.
+
+5. REQUIRED INDICATORS
+- Bollinger Bands (20, 2) — Upper, Middle, Lower.
+- Bollinger Band Width (derived from BB).
+- 20-day SMA of Volume.
+- ATR (14).
+- Highest Close / Highest High tracker since entry (for trailing stop).
+
+6. IMPLEMENTATION NOTES
+- Lookback for BBW low: 20 bars (configurable).
+- Volume multiplier: 1.5× (configurable).
+- ATR trailing multiple: 2.0 (configurable).
+- Signal bar must satisfy squeeze + volume + close-above-upper simultaneously for highest quality; relax to a 2-bar window if trade frequency is too low.
+- Best suited to liquid instruments with reliable volume data (equities, futures, major FX with tick volume).
+- Backtest across varying volatility regimes; the squeeze filter naturally avoids choppy, low-volatility whipsaws but can miss slow-grinding trends.
+
+SUMMARY: CompressionSurge exploits the classic "squeeze then expansion" dynamic — low BBW signals coiled energy, a 150% volume spike confirms conviction, and a close above the upper band triggers entry. The 2×ATR trailing stop lets winners run through the volatility expansion while capping downside risk.

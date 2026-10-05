@@ -1,0 +1,78 @@
+STRATEGY_NAME: KineticDivergence
+
+STRATEGY_DETAILS:
+
+**Overview**
+KineticDivergence is a hybrid mean-reversion/breakout strategy that fuses Keltner Channel structure with RSI momentum divergence to time entries at statistically extreme price levels. The core edge comes from requiring BOTH a channel break (volatility-adjusted extreme) AND an RSI divergence (momentum exhaustion) before entering — this dual-confirmation filter reduces false breakouts common in single-indicator systems.
+
+**Key Components**
+
+1. **Keltner Channel (volatility envelope)**
+   - EMA Period: 20
+   - ATR Period: 10
+   - ATR Multiplier: 2.0
+   - Upper Band = EMA(20) + (2.0 × ATR(10))
+   - Lower Band = EMA(20) − (2.0 × ATR(10))
+
+2. **RSI (momentum oscillator)**
+   - Period: 14 (standard)
+   - Overbought threshold: 70
+   - Oversold threshold: 30
+   - Divergence detection window: 5–15 bars
+
+3. **ATR (for exits)**
+   - ATR Period: 14
+   - Exit multiplier: 1.5× ATR from entry (fixed)
+
+**Entry Rules**
+
+*Long Entry (bullish divergence + lower channel break):*
+- Price closes BELOW the lower Keltner Band (oversold extension)
+- RSI makes a HIGHER LOW while price makes a LOWER LOW (bullish divergence)
+- RSI is below 30 at the divergence pivot
+- Entry on the close of the confirmation candle (first bullish close after divergence forms)
+
+*Short Entry (bearish divergence + upper channel break):*
+- Price closes ABOVE the upper Keltner Band (overbought extension)
+- RSI makes a LOWER HIGH while price makes a HIGHER HIGH (bearish divergence)
+- RSI is above 70 at the divergence pivot
+- Entry on the close of the confirmation candle (first bearish close after divergence forms)
+
+**Exit Rules**
+
+- **Take Profit:** Fixed 1.5× ATR(14) measured from entry price
+- **Stop Loss:** Fixed 1.0× ATR(14) on the opposite side of entry
+- **Time Stop:** Exit after 20 bars if neither target nor stop is hit
+- **Trailing option:** Once price moves 1.0× ATR in favor, trail stop to breakeven
+
+**Risk Management**
+
+- Risk per trade: 1–2% of account equity
+- Position size = (Account Risk $) / (Entry − Stop distance in $)
+- Max concurrent positions: 2 (to avoid correlated exposure)
+- Avoid trading during major news events / low-liquidity sessions
+- Skip signals if ATR is below its 20-period average (dead volatility = unreliable breaks)
+
+**Required Indicators / Data**
+
+- EMA(20) — Keltner midline
+- ATR(10) — Keltner width
+- ATR(14) — exit sizing
+- RSI(14) — divergence detection
+- Pivot high/low detection (fractal or swing logic, 3-bar lookback)
+- Bar close data (avoid intrabar signals)
+
+**Best Markets & Timeframes**
+
+- Works best on 1H–4H charts in FX, crypto, and index futures
+- Ranges and post-extension reversions are the sweet spot
+- Avoid strong trending regimes (channel breaks become continuations, not reversals)
+
+**Strengths & Weaknesses**
+
+- ✅ Dual confirmation drastically reduces false breakout entries
+- ✅ Volatility-adaptive bands self-adjust to market conditions
+- ✅ Fixed ATR exits give consistent R-multiples for backtesting
+- ⚠️ Divergence detection is subjective — needs strict pivot rules
+- ⚠️ Can miss strong trend continuations (by design)
+- ⚠️ Requires patience; signals are infrequent

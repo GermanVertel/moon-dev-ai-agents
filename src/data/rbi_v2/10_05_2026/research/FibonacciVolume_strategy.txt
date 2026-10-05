@@ -1,0 +1,65 @@
+STRATEGY_NAME: FibonacciVolume
+
+STRATEGY_DETAILS:
+This strategy combines Fibonacci retracement levels with volume analysis to identify high-probability pullback entries, then uses momentum-based exits to capture reversals or trend continuations.
+
+**Core Concept:**
+Trade pullbacks to key Fibonacci retracement levels (38.2%, 50%, 61.8%) during an established trend, but only when the pullback occurs on declining volume — signaling a healthy correction rather than a reversal. Exit when momentum indicators signal exhaustion or reversal.
+
+**1. Trend Identification (Precondition):**
+- Use a 50-period EMA and 200-period EMA on the primary timeframe.
+- Uptrend: Price above 200 EMA and 50 EMA above 200 EMA.
+- Downtrend: Price below 200 EMA and 50 EMA below 200 EMA.
+- Only take long setups in uptrends, short setups in downtrends.
+
+**2. Fibonacci Setup:**
+- Identify the most recent significant swing (swing low to swing high for uptrend; swing high to swing low for downtrend).
+- Draw Fibonacci retracement levels: 23.6%, 38.2%, 50%, 61.8%, 78.6%.
+- Focus on the 38.2%, 50%, and 61.8% zones — these are the primary pullback entry areas. The 50% and 61.8% levels carry the highest confluence weight.
+
+**3. Volume Filter (Critical Entry Condition):**
+- Compute a 20-period Volume SMA.
+- On the pullback leg toward the Fibonacci level, volume must be declining — each successive down candle in an uptrend (or up candle in a downtrend) should show volume below the 20-period average.
+- Entry trigger requires the volume on the touch candle to be at least 20–30% below the 20-period Volume SMA.
+- This "reduced volume" condition distinguishes a healthy pullback from distribution/accumulation that could precede a reversal.
+
+**4. Entry Rules:**
+- **Long Entry:** In an uptrend, price retraces into the 38.2%–61.8% Fibonacci zone, touches a level, and the touch candle closes with volume below the reduced-volume threshold. Enter on the close of the candle or on the next candle's break above the touch candle high.
+- **Short Entry:** In a downtrend, price rallies into the 38.2%–61.8% Fibonacci zone with reduced volume. Enter on close or on break below the touch candle low.
+- Optional confluence: bullish/bearish candlestick pattern (hammer, engulfing) at the Fibonacci level strengthens the signal.
+
+**5. Exit Rules:**
+Use momentum divergence and MACD signals as exits — whichever triggers first.
+
+- **RSI Divergence Exit:**
+  - Use RSI (14).
+  - Bearish divergence for longs: price makes a higher high while RSI makes a lower high. Exit long.
+  - Bullish divergence for shorts: price makes a lower low while RSI makes a higher low. Exit short.
+
+- **MACD Crossover Exit:**
+  - MACD (12, 26, 9).
+  - Exit long on bearish MACD crossover (MACD line crosses below signal line).
+  - Exit short on bullish MACD crossover (MACD line crosses above signal line).
+
+- **Primary Target:** Previous swing high (for longs) or swing low (for shorts). Consider partial profit-taking at the 0% retracement (prior swing extreme).
+
+**6. Risk Management:**
+- **Stop-Loss:** Place stop just beyond the next Fibonacci level (e.g., for a long entered at 50%, stop below 61.8%; for entry at 61.8%, stop below 78.6%). Alternatively, use an ATR-based stop (1.5× ATR below entry).
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade.
+- **Risk-Reward:** Target a minimum 1:2 risk-to-reward ratio. If the distance to the prior swing high doesn't offer 2R, skip the trade.
+- **Invalidation:** If price closes beyond the 78.6% retracement level, the pullback thesis is invalidated — exit immediately.
+- **Time Stop:** If the trade doesn't reach target or trigger an exit signal within a set number of bars (e.g., 30), reassess and consider closing.
+
+**7. Required Indicators:**
+- Fibonacci retracement tool (auto or manual swing detection)
+- Volume + 20-period Volume SMA
+- 50 EMA and 200 EMA (trend filter)
+- RSI (14) for divergence detection
+- MACD (12, 26, 9) for crossover exit
+- ATR (14) for stop placement (optional)
+
+**8. Best Practices:**
+- Higher timeframe confluence: align Fibonacci levels with higher-timeframe support/resistance for stronger setups.
+- Avoid trading Fibonacci pullbacks during low-liquidity sessions or around major news events.
+- The reduced-volume filter is the edge — do not skip it, even if the Fibonacci level looks perfect.
+- Backtest across multiple markets and timeframes to tune the volume-reduction threshold and RSI/MACD exit sensitivity.

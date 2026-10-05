@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Moon Dev FibBand Reversal Backtest Initializing... \ud83d\ude80\n\ud83d\udcc2 Loading data from: /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi/BTC-USD-15m.csv\n\ud83e\uddf9 Cleaned columns: ['datetime', 'open', 'high', 'low', 'close', 'volume', 'unnamed: 6']\n\u2705 Data ready! Shape: (1009, 5), Range: 2024-01-01 00:00:00 \u2192 2026-10-05 00:00:00\n\ud83c\udf19\u2728 Starting Moon Dev Backtest Engine... \ud83d\ude80\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/FibBandReversal_BTFinal_v1.py\", line 351, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/FibBandReversal_BTFinal_v1.py` failed. (See above for error)\n",
+  "execution_time": 3.029774,
+  "timestamp": "2026-10-05T12:48:55.570616"
+}

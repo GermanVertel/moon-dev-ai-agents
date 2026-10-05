@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev Backtest Starting... \u2728\n\ud83d\udcca Data loaded: 1009 bars\n\ud83d\ude80 Date range: 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n\ud83c\udf19 Moon Dev launching backtest... \ud83d\ude80\u2728\n\ud83c\udf19 Initializing Moon Dev CompressionBreakout indicators... \u2728\n\ud83c\udf19 Indicators ready! Let's ride the volatility expansion \ud83d\ude80\n\ud83d\ude80 Moon Dev LONG BREAKOUT! Price=115507.54 BB_Upper=115397.20 ADX=15.0 BW=0.0718 Size=5 \ud83c\udf19\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/960 [00:00<?, ?bar/s]\n                                                      \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/CompressionBreakout_BTFinal_v1.py\", line 243, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/CompressionBreakout_BTFinal_v1.py\", line 121, in next\n    bars_held = len(self.data) - self.position.entry_bar\nAttributeError: 'Position' object has no attribute 'entry_bar'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/CompressionBreakout_BTFinal_v1.py` failed. (See above for error)\n",
+  "execution_time": 3.339487,
+  "timestamp": "2026-10-05T15:05:39.925869"
+}

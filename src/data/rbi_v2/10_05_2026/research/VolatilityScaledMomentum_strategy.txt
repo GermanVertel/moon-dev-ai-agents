@@ -1,0 +1,37 @@
+STRATEGY_NAME: VolatilityScaled Momentum
+
+STRATEGY_DETAILS:
+This strategy combines a high-beta momentum breakout with volatility-adjusted position sizing and a volume confirmation filter. It is long-only and designed to capture strong upward moves in high-beta instruments while dynamically scaling exposure based on recent volatility.
+
+Key Components:
+1. Momentum Signal: Enter long when price makes a new 3-day high (highest high of the last 3 trading days, excluding the current bar until breakout confirmation). This captures short-term momentum bursts.
+2. High-Beta Filter: The strategy is intended for instruments with high beta (e.g., beta > 1.5 relative to a benchmark). This ensures the strategy focuses on assets that amplify market moves, increasing potential returns during momentum phases.
+3. Volume Threshold: Only take the signal if the current bar's volume is at least 80% of the average volume over a lookback period (e.g., 20-period simple moving average of volume). This filters out low-conviction breakouts. The threshold is "long-only" meaning it applies only to long entries.
+4. Volatility Scaling: Position size is scaled by the ATR's 20-period exponential moving average (ATR-EMA20). Specifically, the position size is inversely proportional to the ATR-EMA20 value, so that when volatility is high, position size is reduced, and when volatility is low, position size is increased. This targets a constant risk contribution.
+
+Entry Rules:
+- Long entry: 
+  a) Price makes a new 3-day high (today's high > highest high of the previous 3 days).
+  b) Current volume >= 0.8 * SMA(volume, 20).
+  c) Instrument has high beta (pre-screened or dynamically calculated).
+- Position size = (Account Risk per Trade) / (ATR_EMA20 * Multiplier). For example, risk 1% of equity per trade, and set position size = (0.01 * Equity) / (ATR_EMA20 * PointValue). This ensures each trade risks a fixed dollar amount adjusted for volatility.
+
+Exit Rules:
+- Exit long when price makes a new 3-day low (today's low < lowest low of the previous 3 days) OR when a trailing stop based on ATR is hit. A simple exit: close the position if the close falls below the 3-day low.
+- Alternatively, use a time-based exit (e.g., hold for N days) or a profit target (e.g., 2x ATR). The strategy description does not specify exit, so a momentum reversal exit (3-day low) is consistent.
+
+Risk Management:
+- Position sizing is volatility-scaled to maintain consistent risk.
+- Long-only, so no short exposure.
+- Volume filter reduces false breakouts.
+- High-beta focus increases risk, so strict position sizing is crucial.
+- Consider a maximum position size cap to avoid over-leverage in low-volatility regimes.
+- Use stop-loss orders based on ATR (e.g., 2 * ATR below entry) to limit downside.
+
+Required Indicators:
+- 3-day high/low (rolling max/min of high/low over 3 periods).
+- Volume SMA (20 periods) for volume threshold.
+- ATR (14 periods typical) and its 20-period EMA for scaling.
+- Beta calculation (if not pre-screened) relative to a benchmark index over a lookback (e.g., 60 days).
+
+This strategy is best suited for trending markets and high-beta stocks or ETFs. It should be backtested with realistic slippage and commissions, especially since high-beta assets can have wider spreads. The volume threshold and volatility scaling help improve risk-adjusted returns.

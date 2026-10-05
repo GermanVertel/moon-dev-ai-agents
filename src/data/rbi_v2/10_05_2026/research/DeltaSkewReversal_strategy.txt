@@ -1,0 +1,46 @@
+STRATEGY_NAME: DeltaSkewReversal
+
+STRATEGY_DETAILS:
+This strategy is a short-term, options-based mean-reversion approach that exploits overbought conditions by purchasing puts with a specific delta profile while simultaneously selling calls with a different delta profile. The T+7 expiration suggests a weekly options cycle, targeting quick reversals.
+
+**Key Strategy Components:**
+- **Core Thesis:** When an underlying asset is overbought (e.g., RSI > 70, price extended above moving averages), the trader expects a near-term pullback. To profit from this, they buy puts (bearish) and sell calls (bearish/neutral), creating a net short delta position.
+- **Options Selection:**
+  - **Buy Puts:** Expiration T+7 days (one week out). Delta > 0.5 means in-the-money puts (delta between 0.5 and 1.0). These have higher intrinsic value and lower time decay relative to OTM puts, providing a more direct bearish exposure with less premium erosion.
+  - **Sell Calls:** Delta < -0. (Note: The prompt appears truncated; likely intended delta < -0.5 or delta < -0.3, but as written, it’s incomplete. Assuming a typical short call strike with delta between -0.3 and -0.5, i.e., out-of-the-money calls.) Selling calls generates premium income to offset the cost of buying puts and profits from time decay if the asset stays below the strike.
+- **Net Position:** The combination of long puts (positive delta? Actually puts have negative delta) and short calls (negative delta) results in a net negative delta, i.e., bearish. The strategy is essentially a bearish debit/credit spread variant, but with different expirations? No, both T+7. It could be a synthetic short via options.
+
+**Entry Rules:**
+1. Identify an overbought condition on the underlying:
+   - RSI (14) > 70 on daily or 4-hour chart.
+   - Price above upper Bollinger Band (20,2) or significantly above 20-period SMA.
+   - Optionally, bearish divergence on RSI or MACD.
+2. Check options chain for T+7 expiration.
+3. Select a put option with delta > 0.5 (e.g., delta 0.55–0.70). This is typically slightly ITM or ATM.
+4. Select a call option with delta < -0. (likely -0.3 to -0.5, i.e., OTM call). Ensure the call strike is above current price.
+5. Execute simultaneously: Buy the put, sell the call. Ensure the net debit/credit is acceptable (prefer net credit or small debit).
+6. Position size: Risk no more than 1-2% of account per trade.
+
+**Exit Rules:**
+- **Profit Target:** Close the position when the underlying drops by a predetermined percentage (e.g., 2-5%) or when the combined option position reaches a 50-100% profit.
+- **Time Exit:** Close the position 1-2 days before expiration to avoid gamma risk and assignment.
+- **Stop Loss:** If the underlying rallies above a certain level (e.g., above the short call strike or a 2% move against), close the position to limit losses. Alternatively, use a mental stop at 50% of the premium paid/received.
+- **Overbought Condition Resolution:** If RSI drops below 50 or price returns to mean, consider exiting.
+
+**Risk Management:**
+- **Assignment Risk:** Short calls can be assigned early if deep ITM or before dividends. Monitor and close if assignment is likely.
+- **Max Loss:** Theoretically unlimited on the short call if not covered. However, the long put provides some downside protection, but if the underlying rallies sharply, the short call loses while the put loses value. The net loss can be substantial. Therefore, this strategy should only be used with strict stop losses or as a spread with defined risk (e.g., buy a higher strike call to cap losses). As described, it’s not a defined-risk strategy unless the short call is covered by shares or a higher strike long call.
+- **Position Sizing:** Use small allocations due to unlimited risk potential.
+- **Liquidity:** Ensure both options have tight bid-ask spreads and sufficient volume.
+
+**Required Indicators:**
+- RSI (14) – to identify overbought.
+- Bollinger Bands (20,2) – for overextension.
+- Moving Averages (e.g., 20, 50) – for trend context.
+- Options Greeks: Delta (for strike selection), Theta (time decay), Vega (volatility impact).
+- Implied Volatility (IV) – high IV makes selling calls more attractive, but also makes buying puts expensive. Consider IV rank.
+
+**Notes:**
+- The strategy as described is incomplete (delta < -0. is ambiguous). It likely intends delta < -0.5 or similar. Clarify before trading.
+- This is a high-risk strategy due to the short call leg. Consider converting to a bear put spread or a collar to define risk.
+- Backtest with historical options data to validate edge.

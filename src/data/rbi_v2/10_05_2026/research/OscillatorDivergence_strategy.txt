@@ -1,0 +1,52 @@
+STRATEGY_NAME: OscillatorDivergence
+
+STRATEGY_DETAILS:
+This strategy identifies extreme price discrepancies by combining momentum oscillators (RSI, Stochastic, or CCI) with volatility measures (ATR, Bollinger Band Width, or Keltner Channel Width). The core premise is that when price makes an extreme move relative to its recent volatility, momentum oscillators will diverge from price action, signaling a high-probability reversal or continuation setup.
+
+1. KEY STRATEGY COMPONENTS
+- Momentum Oscillator: Use RSI (14-period) or Stochastic (%K 14, %D 3) to measure overbought/oversold conditions.
+- Volatility Measure: Use ATR (14-period) or Bollinger Band Width to normalize price movement and identify statistically extreme deviations.
+- Divergence Detection: Compare oscillator readings against price highs/lows to spot bullish or bearish divergence.
+- Volatility Z-Score: Calculate how many standard deviations current volatility is from its mean to detect volatility expansion/contraction regimes.
+
+2. ENTRY RULES
+Long Entry (Bullish Divergence + Extreme Oversold):
+- RSI < 30 (or Stochastic %K < 20) AND price makes a lower low while RSI makes a higher low (bullish divergence).
+- Price is at or below the lower Bollinger Band (2 std dev) OR ATR Z-score > 1.5 (volatility spike).
+- Confirmation: Bullish reversal candlestick (hammer, engulfing) or RSI crossing back above 30.
+- Enter long on the close of the confirmation candle.
+
+Short Entry (Bearish Divergence + Extreme Overbought):
+- RSI > 70 (or Stochastic %K > 80) AND price makes a higher high while RSI makes a lower high (bearish divergence).
+- Price is at or above the upper Bollinger Band OR ATR Z-score > 1.5.
+- Confirmation: Bearish reversal candlestick (shooting star, engulfing) or RSI crossing back below 70.
+- Enter short on the close of the confirmation candle.
+
+3. EXIT RULES
+- Take Profit: Target the middle Bollinger Band (20 SMA) or the opposite oscillator extreme (RSI 50 midline).
+- Stop Loss: Place stop beyond the recent swing high/low plus 1.5x ATR.
+- Trailing Stop: Once price moves 1x ATR in favor, trail stop by 1x ATR.
+- Time-Based Exit: Close position if no target hit within 10-15 bars (momentum divergence should resolve quickly).
+- Volatility Exit: Exit if ATR Z-score drops below 0.5 (volatility contraction invalidates the setup).
+
+4. RISK MANAGEMENT
+- Position Size: Risk no more than 1% of account equity per trade.
+- Risk-Reward: Minimum 1:2 risk-to-reward ratio required.
+- Max Concurrent Trades: Limit to 2-3 open positions to avoid correlated exposure.
+- Avoid News Events: Skip entries within 30 minutes of major economic releases.
+- Regime Filter: Only trade when ADX > 20 (trending) for continuation setups, or ADX < 20 (ranging) for pure mean-reversion setups.
+
+5. REQUIRED INDICATORS
+- RSI (14) or Stochastic (14,3,3)
+- ATR (14) and ATR Z-Score (20-period lookback)
+- Bollinger Bands (20, 2) and Bollinger Band Width
+- ADX (14) for regime filtering
+- Volume (optional confirmation: divergence with declining volume is stronger)
+- Candlestick pattern recognition (hammer, engulfing, shooting star, doji)
+
+6. TIMEFRAMES
+- Best on 1H, 4H, and Daily charts.
+- Avoid timeframes below 15 minutes due to noise.
+- Multi-timeframe confirmation: Align signal on higher timeframe (e.g., 4H signal confirmed by Daily RSI direction).
+
+This strategy thrives in volatile, mean-reverting markets and avoids low-volatility chop by requiring both oscillator extremes and volatility expansion before triggering entries.

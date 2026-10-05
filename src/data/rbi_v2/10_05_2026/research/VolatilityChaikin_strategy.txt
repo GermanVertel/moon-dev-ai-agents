@@ -1,0 +1,62 @@
+STRATEGY_NAME: VolatilityChaikin
+
+STRATEGY_DETAILS:
+
+**Overview:**
+This strategy combines Bollinger Band squeeze detection (low volatility consolidation) with Chaikin Oscillator momentum confirmation to catch explosive upside breakouts. The edge comes from timing entries at the moment of volatility expansion, confirmed by volume-weighted money flow, then scaling out at Fibonacci-derived volatility targets rather than fixed price levels.
+
+**Key Strategy Components:**
+
+1. **Bollinger Band Squeeze Detection**
+   - Indicator: Bollinger Bands (20-period SMA, 2 standard deviations)
+   - Squeeze condition: Bandwidth (Upper - Lower) / Middle is at or near a multi-period low (e.g., lowest 10% of last 100 bars)
+   - Optional: Use Bollinger BandWidth indicator or Keltner Channel overlay to confirm squeeze (BB inside KC)
+   - The squeeze signals energy accumulation before expansion
+
+2. **Chaikin Oscillator Confirmation**
+   - Indicator: Chaikin Oscillator (3-period EMA of Accumulation/Distribution Line minus 10-period EMA of ADL)
+   - Signal: Chaikin Oscillator crosses above zero during or just after the squeeze
+   - This confirms volume-backed buying pressure is building before the breakout
+
+3. **Fibonacci Extension Targets**
+   - Derived from the volatility range: measure the squeeze range (highest high to lowest low during squeeze)
+   - Project Fibonacci extensions: 1.272, 1.618, 2.618 of the squeeze range above the breakout point
+   - These serve as scaled exit targets
+
+**Entry Rules:**
+- **Condition A:** Bollinger Band squeeze is active (bandwidth in bottom decile of recent range)
+- **Condition B:** Chaikin Oscillator crosses from negative to positive (crosses above zero)
+- **Condition C:** Price closes above the upper Bollinger Band on the same or next bar after Condition B
+- **Entry:** Enter long at close of the breakout bar, or on a stop-buy just above the upper band
+- **Confirmation filter:** Volume on breakout bar should exceed 20-period average volume
+
+**Exit Rules:**
+- **Target 1 (Partial):** Exit 50% of position at 1.272 Fibonacci extension of squeeze range
+- **Target 2 (Partial):** Exit 30% of position at 1.618 Fibonacci extension
+- **Target 3 (Runner):** Exit remaining 20% at 2.618 Fibonacci extension, or trail with a 2x ATR stop
+- **Time stop:** If neither target is hit within 15 bars, exit at market
+- **Momentum exit:** Exit remaining position if Chaikin Oscillator crosses back below zero
+
+**Risk Management:**
+- **Stop Loss:** Place initial stop below the lower Bollinger Band or below the squeeze low, whichever is tighter (typically 1–1.5x ATR)
+- **Position sizing:** Risk no more than 1% of account equity per trade based on stop distance
+- **Trailing stop:** After Target 1 is hit, move stop to breakeven; after Target 2, trail with 2x ATR
+- **Max concurrent positions:** Limit to 2–3 to avoid correlated exposure during market-wide squeezes
+- **Avoid trading:** During major news events or if spread is unusually wide
+
+**Required Indicators:**
+- Bollinger Bands (20, 2.0)
+- Bollinger BandWidth (for squeeze ranking)
+- Chaikin Oscillator (3, 10)
+- Accumulation/Distribution Line (underlying for Chaikin)
+- ATR (14) for stop and trail sizing
+- Volume SMA (20) for breakout confirmation
+- Optional: Keltner Channel (20, 1.5) for squeeze validation
+
+**Best Timeframes & Markets:**
+- Timeframes: 15m, 1H, 4H (squeeze needs enough bars to form)
+- Markets: Liquid equities, futures (ES, NQ), and high-cap crypto (BTC, ETH)
+- Avoid low-liquidity instruments where Chaikin Oscillator signals are noisy
+
+**Strategy Logic Summary:**
+Squeeze = coiled spring. Chaikin cross above zero = volume-backed ignition. Breakout above upper band = trigger. Fibonacci extensions = volatility-scaled profit zones. The combination filters out false breakouts by requiring both volatility compression AND money-flow confirmation before committing capital.

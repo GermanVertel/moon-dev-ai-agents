@@ -1,0 +1,97 @@
+STRATEGY_NAME: VortexConvergence
+
+STRATEGY_DETAILS:
+This strategy fuses two complementary intraday tools: VWAP slope behavior and the Vortex Indicator (VI). The core thesis is that when VWAP slope and Vortex crossover signals converge, they confirm a genuine intraday breakout; when they diverge, they warn of a false move. Entries are taken only on confluence, while exits are governed by opposing Vortex crossovers or price reverting beyond dynamic VWAP bands.
+
+1. KEY STRATEGY COMPONENTS
+
+A. VWAP Slope Analysis
+- Compute session VWAP (anchored to market open, reset daily).
+- Calculate slope over a short lookback (e.g., 5–10 bars) using linear regression or simple delta of VWAP.
+- Classify slope as:
+  - Steep Up: slope > +threshold (e.g., +0.02% per bar)
+  - Steep Down: slope < -threshold
+  - Flat: within threshold band
+- Slope convergence = VWAP slope direction agrees with Vortex crossover direction.
+- Slope divergence = VWAP slope opposes Vortex crossover direction.
+
+B. Vortex Indicator
+- VI+ = |High - Prior Low| summed over N periods
+- VI- = |Low - Prior High| summed over N periods
+- Standard N = 14 (intraday: 5–14 depending on timeframe).
+- Bullish crossover: VI+ crosses above VI-
+- Bearish crossover: VI- crosses above VI+
+
+C. Dynamic VWAP Bands
+- Upper Band = VWAP + (k × ATR) or VWAP + (k × rolling std dev of price-VWAP)
+- Lower Band = VWAP - (k × same measure)
+- k typically 1.5–2.5
+- Bands expand/contract with volatility, making them "dynamic."
+
+D. Confluence Filter
+- Long setup: Bullish Vortex crossover AND VWAP slope Steep Up (convergence)
+- Short setup: Bearish Vortex crossover AND VWAP slope Steep Down (convergence)
+- If crossover occurs but VWAP slope is Flat or opposing (divergence), skip the trade.
+
+2. ENTRY RULES
+
+Long Entry:
+- VI+ crosses above VI- on the current bar
+- VWAP slope is Steep Up over the lookback
+- Price is above VWAP (confirms bullish positioning)
+- Optional: price breaks above recent consolidation high or upper VWAP band
+- Enter at close of signal bar or on next bar open
+
+Short Entry:
+- VI- crosses above VI+ on the current bar
+- VWAP slope is Steep Down
+- Price is below VWAP
+- Optional: price breaks below recent consolidation low or lower VWAP band
+- Enter at close of signal bar or next bar open
+
+No-Trade Conditions:
+- Vortex crossover with Flat or opposing VWAP slope (divergence)
+- Price already extended beyond outer VWAP band (avoid chasing)
+- Low-volume periods (e.g., lunch hour) unless strategy is explicitly volume-filtered
+
+3. EXIT RULES
+
+Primary Exit (Vortex Reversal):
+- Long exit: VI- crosses above VI+ (opposing Vortex signal)
+- Short exit: VI+ crosses above VI-
+
+Secondary Exit (VWAP Band Reversion):
+- Long exit: price closes below VWAP (mean reversion) or below lower band
+- Short exit: price closes above VWAP or above upper band
+- This acts as a "reverting beyond dynamic VWAP bands" stop/target
+
+Tertiary Exit (Time/Profit):
+- End-of-day flat (intraday only)
+- Optional profit target at 1.5R–2R
+- Optional trailing stop using VWAP as trail line
+
+4. RISK MANAGEMENT
+
+- Position sizing: risk 0.5%–1% of account per trade
+- Stop-loss for longs: below signal bar low, below VWAP, or below lower band (whichever is tighter but logical)
+- Stop-loss for shorts: above signal bar high, above VWAP, or above upper band
+- Max daily loss limit: 2%–3% of account; stop trading after hit
+- Max concurrent trades: 1–2 to avoid correlated exposure
+- Avoid trading during major news releases unless volatility filter is satisfied
+- Use ATR-based stops to adapt to intraday volatility regimes
+
+5. REQUIRED INDICATORS
+
+- VWAP (session-anchored, reset daily)
+- VWAP slope (linear regression or delta over N bars)
+- Vortex Indicator (VI+, VI-, period 5–14)
+- ATR or rolling standard deviation (for dynamic band width)
+- Optional: volume filter, time-of-day filter, consolidation range detector
+
+6. EXECUTION NOTES
+
+- Best timeframes: 1-min, 5-min, or 15-min charts
+- Best instruments: liquid intraday markets (index futures, large-cap equities, major FX pairs)
+- Convergence trades tend to have higher win rate; divergence signals are best used as a filter to avoid false breakouts
+- Backtest across trending vs. ranging sessions — this strategy performs best in trending intraday regimes where VWAP slope is persistent
+- Consider logging convergence vs. divergence outcomes to refine slope threshold and Vortex period

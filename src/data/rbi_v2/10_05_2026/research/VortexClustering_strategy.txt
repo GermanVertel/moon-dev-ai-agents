@@ -1,0 +1,99 @@
+STRATEGY_NAME: VortexClustering
+
+STRATEGY_DETAILS:
+This strategy fuses the Vortex Indicator's directional crossover signals with Chande Momentum Oscillator divergence confirmation, then uses volatility-adjusted Bollinger Bands for exits. The core idea is to only take VI crossovers when momentum is at an extreme (oversold/overbought), filtering out weak trend signals, and to exit using bands that dynamically widen/narrow based on recent volatility clustering.
+
+## 1. KEY STRATEGY COMPONENTS
+
+**A. Vortex Indicator (VI)**
+- Compute VI+ (positive vortex movement) and VI- (negative vortex movement) using a lookback period (default: 14).
+- VI+ = |Current High − Prior Low| summed over N / True Range summed over N
+- VI- = |Current Low − Prior High| summed over N / True Range summed over N
+- **Bullish crossover**: VI+ crosses above VI-
+- **Bearish crossover**: VI- crosses above VI+
+
+**B. Chande Momentum Oscillator (CMO)**
+- CMO = 100 × (Sum of gains − Sum of losses) / (Sum of gains + Sum of losses) over N periods (default: 14)
+- Range: −100 to +100
+- **Oversold**: CMO < −50 (long entry zone)
+- **Overbought**: CMO > +50 (short entry zone)
+
+**C. CMO Divergence Detection**
+- **Bullish divergence**: Price makes a lower low while CMO makes a higher low
+- **Bearish divergence**: Price makes a higher high while CMO makes a lower high
+- Use a pivot-detection window (e.g., 5 bars each side) to identify swing highs/lows in both price and CMO.
+
+**D. Volatility Clustering (for Bollinger Bands)**
+- Measure recent volatility using ATR or realized volatility (std dev of returns).
+- Detect "clustering" by comparing short-term volatility (e.g., 10-period ATR) to long-term volatility (e.g., 50-period ATR).
+- **Volatility ratio** = ATR_short / ATR_long
+- When ratio > 1.2 → volatility expanding (cluster of high-vol bars) → widen Bollinger Bands
+- When ratio < 0.8 → volatility contracting → narrow Bollinger Bands
+
+## 2. ENTRY RULES
+
+**Long Entry (all must be true):**
+1. VI+ crosses above VI- (bullish vortex crossover)
+2. CMO is in oversold territory (CMO < −50) OR bullish CMO divergence is present within the last 3 bars
+3. Price is not already above the upper adaptive Bollinger Band (avoid chasing)
+4. Optional filter: overall trend context (e.g., price above 200-EMA for trend-following variant, or disabled for mean-reversion variant)
+
+**Short Entry (all must be true):**
+1. VI- crosses above VI+ (bearish vortex crossover)
+2. CMO is in overbought territory (CMO > +50) OR bearish CMO divergence is present within the last 3 bars
+3. Price is not already below the lower adaptive Bollinger Band
+4. Optional filter: price below 200-EMA for trend-following variant
+
+**Signal Confirmation Window:**
+- The VI crossover and CMO condition must occur within a 2–3 bar window of each other to avoid stale signals.
+
+## 3. EXIT RULES
+
+**Long Exit:**
+- Price closes above the **upper adaptive Bollinger Band** (SMA + k × σ × volatility_multiplier), OR
+- VI- crosses back above VI+ (bearish vortex reversal), OR
+- Hard stop-loss hit (see risk management)
+
+**Short Exit:**
+- Price closes below the **lower adaptive Bollinger Band** (SMA − k × σ × volatility_multiplier), OR
+- VI+ crosses back above VI- (bullish vortex reversal), OR
+- Hard stop-loss hit
+
+**Adaptive Bollinger Band Construction:**
+- Middle band: SMA(20)
+- Band width: k × standard deviation(20), where k = 2.0 default
+- **Volatility adjustment**: multiply band width by volatility_ratio (clamped between 0.7 and 1.8)
+  - Expanding volatility → wider bands → exits triggered later (let winners run in trending vol regimes)
+  - Contracting volatility → narrower bands → exits triggered earlier (lock in profits in quiet regimes)
+
+## 4. RISK MANAGEMENT
+
+- **Position sizing**: Risk 1–2% of equity per trade. Size = (Account × Risk%) / (Entry − Stop).
+- **Initial stop-loss**:
+  - Long: below the most recent swing low, or ATR-based (entry − 1.5 × ATR)
+  - Short: above the most recent swing high, or ATR-based (entry + 1.5 × ATR)
+- **Trailing stop**: After price moves 1× ATR in favor, trail stop at 1× ATR from the extreme.
+- **Time stop**: Exit if position is flat after N bars (e.g., 20) and no exit trigger has fired.
+- **Max concurrent positions**: 1 per instrument to avoid overexposure.
+- **Volatility guard**: Reduce size by 50% when volatility_ratio > 1.5 (high-vol clustering regimes).
+
+## 5. REQUIRED INDICATORS
+
+| Indicator | Purpose | Default Params |
+|-----------|---------|----------------|
+| Vortex Indicator | Directional crossover trigger | Period = 14 |
+| Chande Momentum Oscillator | Oversold/overbought + divergence | Period = 14 |
+| Bollinger Bands (adaptive) | Exit trigger | Period = 20, k = 2.0 |
+| ATR | Volatility clustering + stops | Period = 10 (short), 50 (long) |
+| Pivot detector | CMO/price divergence | Lookback = 5 |
+| SMA (optional) | Trend filter | Period = 200 |
+
+## 6. IMPLEMENTATION NOTES
+
+- **Data**: Use clean OHLCV data (1H or 4H recommended; daily for swing trading).
+- **Divergence detection** should confirm the second pivot before firing — avoid repainting.
+- **Backtest considerations**: Account for slippage and commissions; the VI crossover is prone to whipsaws in ranging markets, which is why the CMO filter is essential.
+- **Parameter tuning**: Run walk-forward optimization on VI period, CMO threshold, and Bollinger k to avoid curve-fitting.
+- **Regime awareness**: This strategy performs best in markets transitioning from consolidation to trend (where VI crossovers are meaningful and CMO extremes mark reversals). Disable or reduce size in choppy, low-volatility regimes identified by volatility_ratio < 0.7.
+
+**Strategy Edge Summary:** By requiring VI crossover + CMO extreme/divergence, the system filters false breakouts. The volatility-clustered Bollinger Bands allow exits to adapt to changing market regimes — widening during expansions to capture trends and narrowing during contractions to preserve capital.

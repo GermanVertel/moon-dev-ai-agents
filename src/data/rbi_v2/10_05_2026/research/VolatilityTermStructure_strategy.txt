@@ -1,0 +1,71 @@
+STRATEGY_NAME: VolatilityTermStructure
+
+STRATEGY_DETAILS:
+
+**Overview**
+This is a statistical arbitrage strategy that exploits relative mispricings in implied volatility (IV) across futures contracts with different expiration dates on the same underlying. Rather than taking directional price bets, the strategy trades the *spread* between implied volatilities of near-dated and far-dated contracts, betting on mean reversion of the volatility term structure. The aggressive 100%+ cumulative return target over 3 months implies high leverage, frequent turnover, and tight risk controls — this is a high-conviction, high-frequency-ish relative value play.
+
+**Core Concept: The Volatility Term Structure**
+- Implied volatility does not stay flat across expirations. It forms a curve (term structure) that is normally in contango (longer-dated IV > shorter-dated IV) or backwardation during stress.
+- When the shape of this curve deviates abnormally from its historical norm, a statistical arbitrage opportunity exists.
+- The strategy goes long the "cheap" IV contract and short the "rich" IV contract simultaneously, isolating the spread from directional price risk.
+
+**Key Strategy Components**
+
+1. **Data & Instrument Selection**
+   - Universe: Liquid futures options on a single underlying (e.g., crude oil, gold, equity index) with at least 3–4 distinct expirations.
+   - Must have reliable IV surfaces and synchronized quotes.
+   - Focus on the two legs with the most liquid options (typically the front month and the next 1–2 expirations).
+
+2. **Spread Construction**
+   - Compute the IV spread: `Spread = IV_near − IV_far` (or a ratio/regression residual).
+   - Normalize using a rolling z-score over a 20–60 day window:
+     `z = (Spread − mean(Spread)) / std(Spread)`
+   - Optionally regress near-dated IV on far-dated IV to remove common volatility factors, then trade the residual (a true stat-arb construction).
+
+3. **Signal Generation (Entry)**
+   - **Short the spread (short near IV / long far IV):** when `z > +2.0` (near-dated IV abnormally rich vs far-dated).
+   - **Long the spread (long near IV / short far IV):** when `z < −2.0` (near-dated IV abnormally cheap).
+   - Require confirmation that the deviation is not driven by a scheduled event (earnings, OPEC meeting, FOMC) — filter out event-driven dislocations.
+
+4. **Position Sizing (Vega-Neutral)**
+   - Size each leg so that the *vega* of the two legs offsets: `Vega_near × Qty_near ≈ Vega_far × Qty_far`.
+   - This isolates the term-structure spread and neutralizes overall volatility exposure.
+   - Optionally delta-hedge the underlying futures each leg to remove residual directional risk.
+
+**Entry Rules**
+- Enter when |z| ≥ 2.0 AND the spread has begun to revert (momentum confirmation on the spread, e.g., 2-day reversal).
+- Avoid entering within 3 days of a major scheduled event.
+- Require minimum liquidity: open interest and bid-ask spread thresholds on both legs.
+
+**Exit Rules**
+- **Profit target:** Close when z returns to within ±0.5 of the mean (primary exit).
+- **Time stop:** Close if the position does not revert within 10 trading days (prevents capital lock-up).
+- **Hard stop:** Close if |z| expands beyond 3.5 (regime break / structural dislocation).
+- **Expiration roll:** Roll or close positions before the front contract enters its final 5 days to avoid gamma/pin risk.
+
+**Risk Management**
+- **Vega neutrality** is the primary risk control — no net long/short volatility.
+- **Position limits:** Cap total vega exposure per spread and aggregate across all spreads.
+- **Correlation/regime filter:** Reduce size or stand down when realized volatility spikes above a threshold (e.g., VIX-equivalent > 90th percentile), as term structure relationships break down in crises.
+- **Stop-loss discipline:** The hard z-stop at 3.5 is critical — term structure dislocations can widen violently during stress.
+- **Margin management:** Because the 100%+ / 3-month target requires leverage, maintain strict margin buffers (never exceed ~50% of available margin) to survive adverse moves.
+- **Diversification:** Spread across multiple underlyings to reduce single-market event risk.
+
+**Required Indicators / Data**
+1. Implied volatility surface (per expiration) — from options pricing model (Black-76 for futures options).
+2. Rolling mean and standard deviation of the IV spread (20–60 day window).
+3. Z-score of the spread.
+4. Vega and delta per leg (for neutralization).
+5. Realized volatility (regime filter).
+6. Futures term structure / basis (context).
+7. Event calendar (earnings, macro releases, expirations).
+
+**Reality Check on the 100% / 3-Month Target**
+Achieving >100% in 3 months requires roughly 25%+ monthly returns — only feasible with high leverage and high win-rate, high-frequency spread trades. This demands:
+- Tight execution (low slippage, fast fills).
+- Disciplined compounding and position scaling.
+- Acceptance of significant drawdown risk. Realistic expected Sharpe is high only if the stat-arb edge is genuine and stable; otherwise leverage amplifies losses symmetrically.
+
+**Summary Workflow**
+1. Build IV surface → 2. Compute near/far IV spread → 3. Z-score it → 4. Enter on |z|≥2 with event filter → 5. Size vega-neutral → 6. Exit on z→0.5, time stop, or z>3.5 stop → 7. Roll before expiration → 8. Scale leverage to target return while capping margin usage.

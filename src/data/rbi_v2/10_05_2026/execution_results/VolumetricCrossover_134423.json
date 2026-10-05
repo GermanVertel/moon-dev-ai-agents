@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev is loading the cosmic data... \u2728\n\ud83c\udf19 Moon Dev loaded 1009 rows of stellar data! \ud83d\ude80\n\u2728 Columns: ['Open', 'High', 'Low', 'Close', 'Volume']\n\ud83c\udf19 Moon Dev launching the backtest... \ud83d\ude80\u2728\n\ud83c\udf19 Initializing indicators... \u2728\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/VolumetricCrossover_BTFinal_v1.py\", line 144, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1325, in run\n    strategy.init()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/VolumetricCrossover_BTFinal_v1.py\", line 48, in init\n    close = self.data.Close.astype('float64').values\nAttributeError: '_Array' object has no attribute 'values'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/VolumetricCrossover_BTFinal_v1.py` failed. (See above for error)\n",
+  "execution_time": 2.291715,
+  "timestamp": "2026-10-05T13:44:23.783494"
+}

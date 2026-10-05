@@ -1,0 +1,78 @@
+STRATEGY_NAME: LiquidatedSqueeze
+
+STRATEGY_DETAILS:
+This strategy is a short-side, event-driven setup that combines market microstructure (liquidation clusters), volatility compression (Bollinger Band squeeze), derivatives sentiment (funding rates), and volume-profile structure (high-volume nodes). It is designed to catch sharp downside expansions after a coiled, low-volatility regime, with liquidation cascades acting as fuel.
+
+1. KEY STRATEGY COMPONENTS
+
+A. Liquidation Cluster Mapping
+- Build a liquidation heatmap using estimated liquidation levels from leverage data (e.g., aggregated open interest by price bucket, exchange liquidation feeds, or modeled liquidation bands from common leverage multiples like 10x, 25x, 50x, 100x).
+- Identify "clustered liquidation zones": price bands where a high density of long liquidations is estimated to sit below current price.
+- These zones act as magnets/accelerants during a breakdown — once price enters them, forced selling can cascade.
+
+B. Bollinger Band Squeeze (Volatility Compression)
+- Indicators: Bollinger Bands (20-period SMA, 2 standard deviations) plus BandWidth = (Upper − Lower) / Middle.
+- Squeeze condition: BandWidth is in the lowest percentile (e.g., bottom 20%) of its recent range (lookback 100–200 bars), or BandWidth crosses below a threshold.
+- This signals stored energy; the subsequent expansion direction is the trade direction.
+
+C. Negative Funding Rate Surge
+- Track perpetual funding rates across major venues (aggregate or primary exchange).
+- Confirmation condition: funding flips negative AND its magnitude surges (e.g., funding below a threshold like −0.01% per 8h, or a z-score of funding < −2 vs. its 30-day mean).
+- Interpretation: shorts are overcrowded / longs are capitulating, which supports continuation of downside momentum — but also warns of squeeze risk, so entries must be timed with the breakdown, not against it.
+
+D. Breakdown Trigger
+- Price closes below the lower Bollinger Band AND below the squeeze range low (the consolidation floor).
+- Ideally the breakdown price intersects or is heading directly into a mapped liquidation cluster zone.
+
+E. High-Volume Node (HVN) Reference
+- From a volume profile (fixed range or rolling), identify High-Volume Nodes — price levels with the greatest traded volume.
+- The nearest HVN above the entry is used as the exit target (retest level), since price often mean-reverts to these acceptance zones after a liquidation-driven move.
+
+2. ENTRY RULES (SHORT)
+
+All conditions must align:
+1. Squeeze active: Bollinger BandWidth in bottom percentile (e.g., <20th percentile over 150 bars).
+2. Breakdown: Candle closes below the lower Bollinger Band and below the squeeze range low on the entry timeframe (e.g., 1H or 4H).
+3. Liquidation alignment: The breakdown level sits at or within a clustered long-liquidation zone (density above a threshold).
+4. Funding confirmation: Aggregate funding rate is negative and its z-score < −2 (or below a hard threshold such as −0.01%/8h).
+5. Optional momentum filter: RSI < 40 or MACD histogram turning negative to avoid catching a false breakdown during a bullish divergence.
+
+Entry execution: Market/limit short on the close of the breakdown candle, or on a retest of the broken squeeze low from below.
+
+3. EXIT RULES
+
+Primary exit (profit target):
+- Retest of the nearest High-Volume Node above the entry price. Place a limit buy to cover at or just below that HVN (front-run the level slightly).
+
+Secondary exits:
+- Liquidation exhaustion: If price sweeps through the liquidation cluster and open interest drops sharply with a long lower wick / reversal candle, close the position.
+- Funding normalization: If funding returns to neutral/positive, momentum thesis weakens — consider scaling out.
+- Time stop: If price chops sideways without reaching the HVN within N bars (e.g., 12–24 bars), exit to avoid squeeze risk.
+
+Stop loss:
+- Place stop above the squeeze range high or above the most recent swing high / the HVN being targeted, whichever is tighter but still outside normal noise (e.g., 1.0–1.5× ATR above entry).
+- Hard invalidation: A close back above the lower Bollinger Band or back inside the squeeze range.
+
+4. RISK MANAGEMENT
+
+- Position sizing: Risk a fixed % of equity per trade (e.g., 0.5–1%). Because liquidation cascades can be violent and slippage is real, assume worse fills than expected.
+- Leverage discipline: Even though this is a short-volatility-expansion trade, cap leverage (e.g., 2–3x) to survive wick-driven squeezes.
+- Squeeze-risk awareness: Negative funding + crowded shorts = short-squeeze risk. Never add to a losing short; only scale in if price confirms with a new lower low and funding remains deeply negative.
+- Correlation cap: Avoid stacking multiple shorts in highly correlated assets simultaneously.
+- Event filter: Reduce size or stand aside around major macro events, exchange maintenance, or known listing/delisting news that can distort liquidation maps.
+- Slippage buffer: Account for 0.1–0.3% slippage on entry and exit in fast markets.
+
+5. REQUIRED INDICATORS & DATA
+
+- Bollinger Bands (20, 2) + BandWidth percentile.
+- Volume Profile (fixed range or rolling) to compute High-Volume Nodes.
+- Funding rate feed (perpetual swaps, aggregated across major exchanges).
+- Open Interest data (for liquidation modeling and exhaustion detection).
+- Liquidation heatmap / estimated liquidation levels (from leverage buckets or exchange feeds).
+- RSI (14) and/or MACD (optional momentum confirmation).
+- ATR (14) for stop placement and volatility normalization.
+- Timeframe: 1H or 4H for signals; 15m for execution refinement.
+
+6. STRATEGY LOGIC SUMMARY
+
+The edge comes from the confluence of four independent signals that rarely align: volatility compression (squeeze), structural fragility (liquidation clusters), derivatives crowding (negative funding surge), and a confirmed breakdown. When these align, forced liquidations can produce a fast, directional move toward the next liquidity/acceptance zone (HVN). The HVN retest serves as a natural, volume-based profit target where the move is likely to stall or reverse. The main risk is a short squeeze triggered by the very negative funding that confirms the setup — hence strict stops, capped leverage, and no averaging down.

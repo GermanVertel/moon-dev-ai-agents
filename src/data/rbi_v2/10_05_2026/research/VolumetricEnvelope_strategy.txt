@@ -1,0 +1,80 @@
+STRATEGY_NAME: VolumetricEnvelope
+
+STRATEGY_DETAILS:
+
+This strategy combines a dynamic VWAP envelope breakout system with On-Balance Volume (OBV) confirmation and Bollinger Band volatility-percentile exits. It is designed to catch genuine accumulation-driven breakouts while avoiding false signals during low-conviction or overextended conditions.
+
+**1. Key Strategy Components**
+
+- **Dynamic VWAP Envelope:** Instead of a static VWAP line, construct an envelope around VWAP using rolling standard deviation of price relative to VWAP (similar to VWAP bands). The envelope width adapts to recent volatility, so breakout thresholds expand and contract with market conditions.
+  - Compute VWAP anchored to a rolling window (e.g., 20–50 bars) or session-anchored depending on timeframe.
+  - Upper Band = VWAP + (k × σ_vwap)
+  - Lower Band = VWAP − (k × σ_vwap)
+  - `k` typically 1.5–2.5, tuned per instrument.
+
+- **OBV Accumulation Confirmation:** OBV must be in an uptrend and making higher highs alongside price before a long breakout is valid.
+  - OBV slope over N bars > 0.
+  - OBV makes a new N-bar high within the last few bars.
+  - Optionally require OBV divergence check: price flat/down while OBV rises = accumulation.
+
+- **Bollinger Band Expansion Exit:** Exits are triggered when Bollinger Band width (or ATR-based expansion) exceeds a historical volatility percentile threshold, signaling exhaustion or a volatility blow-off.
+  - Compute Bollinger Band Width (BBW) = (Upper − Lower) / Middle.
+  - Compare current BBW to the 80th–90th percentile of BBW over a lookback (e.g., 100–200 bars).
+  - When BBW > percentile threshold AND price is extended above the upper band, exit longs.
+
+**2. Entry Rules (Long)**
+
+1. Price closes above the Upper VWAP Envelope band.
+2. OBV confirms accumulation:
+   - OBV > OBV moving average (e.g., 20-period).
+   - OBV slope positive over last 5–10 bars.
+   - OBV makes a higher high concurrent with or just before the price breakout.
+3. Optional filter: Volume on breakout bar > 1.5× average volume.
+4. Enter on close of breakout bar or on first pullback that holds above VWAP.
+
+**Short entries (mirror):**
+1. Price closes below Lower VWAP Envelope band.
+2. OBV confirms distribution (OBV falling, lower lows, below its MA).
+3. Enter on close or first failed retest of VWAP from below.
+
+**3. Exit Rules**
+
+- **Primary Exit (Volatility Expansion):**
+  - Long exit when BBW exceeds the 85th percentile of its historical range AND price closes back inside the upper Bollinger Band.
+  - Short exit when BBW exceeds the 85th percentile AND price closes back inside the lower Bollinger Band.
+
+- **Secondary Exits:**
+  - Trailing stop at VWAP (exit long if price closes below VWAP).
+  - Stop loss at the Lower VWAP Envelope band (or 1.5× ATR below entry).
+  - Time-based exit if no BBW expansion within X bars (stagnation).
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk 0.5–1% of equity per trade. Size = Risk Amount / (Entry − Stop).
+- **Stop Loss:** Placed at the opposite VWAP envelope band or 1.5× ATR, whichever is tighter.
+- **Take Profit:** Partial scale-out (50%) at 1R, trail remainder using VWAP or BBW expansion signal.
+- **Max Concurrent Positions:** 2–3 to limit correlated exposure.
+- **Avoid trading during:** Low-volume sessions, major news events, or when BBW is already in the top decile (overextended).
+
+**5. Required Indicators**
+
+| Indicator | Purpose | Typical Settings |
+|---|---|---|
+| VWAP (rolling or session) | Envelope center | 20–50 bars |
+| Std Dev of Price−VWAP | Envelope width | Same window |
+| OBV | Accumulation confirmation | Default |
+| OBV Moving Average | Trend filter | 20-period |
+| Bollinger Bands | Volatility expansion exit | 20-period, 2σ |
+| Bollinger Band Width | Percentile exit trigger | 100–200 bar lookback |
+| ATR | Stop sizing | 14-period |
+| Volume MA | Breakout filter | 20-period |
+
+**6. Recommended Timeframes & Instruments**
+
+- Best suited for liquid instruments: index futures (ES, NQ), large-cap equities, major FX pairs, and liquid crypto (BTC, ETH).
+- Timeframes: 5m–1H for intraday; 4H–Daily for swing trading.
+- Avoid illiquid or low-volume instruments where VWAP and OBV signals degrade.
+
+**7. Edge Rationale**
+
+The VWAP envelope captures institutional reference pricing, so breakouts above it signal real demand. OBV filters out fake breakouts by requiring actual volume-backed accumulation. The BBW percentile exit ensures profits are taken when volatility expands to statistically extreme levels — historically a mean-reversion signal — locking gains before exhaustion reversals.

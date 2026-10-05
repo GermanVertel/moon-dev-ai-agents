@@ -1,0 +1,47 @@
+STRATEGY_NAME: CompressionVolt
+
+STRATEGY_DETAILS:
+The CompressionVolt strategy is a volatility expansion system that identifies periods of extreme market compression (low volatility) and then trades the inevitable expansion. It combines Bollinger Band Width (BBW) as a squeeze detector with RSI as a directional filter, and uses the Bollinger Bands themselves as dynamic breakout triggers for exits.
+
+1. Key Strategy Components:
+   - **Bollinger Bands (BB):** Standard settings of 20-period SMA and 2 standard deviations.
+   - **Bollinger Band Width (BBW):** Calculated as (Upper Band - Lower Band) / Middle Band. A 20-day low in BBW indicates the market is in a tight consolidation, often preceding a significant move.
+   - **RSI (Relative Strength Index):** 14-period RSI used to gauge momentum and determine the likely direction of the breakout.
+   - **Entry Condition:** The strategy looks for a squeeze (BBW at a 20-day low) combined with an RSI reading that is either overbought (>70) or oversold (<30). This suggests that despite the low volatility, momentum is already leaning strongly in one direction.
+   - **Exit Condition:** A breakout beyond the Bollinger Bands. If long, exit when price closes below the lower band; if short, exit when price closes above the upper band. This acts as a trailing stop and profit-taking mechanism.
+
+2. Entry Rules:
+   - **Long Entry:** 
+     - BBW is at its lowest level in the past 20 days.
+     - RSI(14) is above 70.
+     - Enter at the close of the candle that meets both conditions.
+   - **Short Entry:**
+     - BBW is at its lowest level in the past 20 days.
+     - RSI(14) is below 30.
+     - Enter at the close of the candle that meets both conditions.
+   - **Note:** Only one position at a time. No pyramiding.
+
+3. Exit Rules:
+   - **Long Exit:** Close the position when the price closes below the Lower Bollinger Band.
+   - **Short Exit:** Close the position when the price closes above the Upper Bollinger Band.
+   - **Alternative Exit:** If a new squeeze signal occurs in the opposite direction, close the current position and reverse.
+
+4. Risk Management:
+   - **Position Sizing:** Risk a fixed percentage of equity per trade (e.g., 1-2%). Calculate position size based on the distance between entry price and the initial stop-loss (which can be set at the opposite Bollinger Band or a fixed ATR multiple).
+   - **Stop-Loss:** For long trades, place a stop-loss just below the Lower Bollinger Band or at a 2x ATR below entry. For short trades, place a stop-loss just above the Upper Bollinger Band or at a 2x ATR above entry.
+   - **Take-Profit:** The primary exit is the Bollinger Band breakout, but traders may also use a trailing stop or a fixed risk-reward ratio (e.g., 2:1) as an additional profit target.
+   - **Avoid Choppy Markets:** The strategy is designed for volatility expansion, so avoid trading during low-volume or range-bound periods where false breakouts are common.
+
+5. Required Indicators:
+   - Bollinger Bands (20, 2)
+   - Bollinger Band Width (20-period low)
+   - RSI (14)
+   - Optional: ATR (14) for stop-loss calculation and position sizing.
+
+6. Additional Considerations:
+   - **Timeframe:** Works best on higher timeframes (1H, 4H, Daily) to avoid noise.
+   - **Confirmation:** Some traders may wait for a candle close beyond the Bollinger Band to confirm the breakout before entering.
+   - **Backtesting:** Test on multiple assets and market conditions to ensure robustness. The strategy may perform poorly in strongly trending markets where BBW remains low for extended periods.
+   - **False Signals:** The combination of BBW low and RSI extreme can sometimes occur before a false breakout. Using a stop-loss is crucial.
+
+This strategy aims to capture explosive moves following periods of low volatility, using RSI to filter for the most probable direction and Bollinger Bands to manage exits dynamically.

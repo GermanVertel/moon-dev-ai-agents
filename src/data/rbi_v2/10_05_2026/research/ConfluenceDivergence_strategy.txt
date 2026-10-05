@@ -1,0 +1,43 @@
+STRATEGY_NAME: ConfluenceDivergence
+
+STRATEGY_DETAILS:
+This strategy combines momentum oscillator divergence with volume confirmation to identify high-probability long entries from oversold conditions, using Bollinger Bands for structured profit-taking.
+
+**Core Concept:**
+The strategy seeks a "triple confirmation" setup: RSI divergence + MACD divergence + rising volume. Divergence signals that selling momentum is weakening despite price making lower lows (or flat lows), while increasing volume confirms that buyers are stepping in to absorb the selling pressure.
+
+**Required Indicators:**
+1. **RSI (14-period)** – Standard Relative Strength Index, oversold threshold at 30.
+2. **MACD (12, 26, 9)** – Standard MACD line, signal line, and histogram.
+3. **Volume** – Simple moving average of volume (e.g., 20-period) to compare current volume against average.
+4. **Bollinger Bands (20-period, 2 standard deviations)** – Used for the upper band exit target.
+
+**Entry Rules (Long):**
+All conditions must be met on the same or consecutive bars:
+1. **Oversold Context:** RSI has recently been below 30 (within the last N bars, e.g., 10).
+2. **RSI Bullish Divergence:** Price makes a lower low (or equal low) while RSI makes a higher low.
+3. **MACD Bullish Divergence:** Price makes a lower low (or equal low) while MACD line (or histogram) makes a higher low.
+4. **Volume Confirmation:** Current bar's volume is above the 20-period volume SMA (e.g., >1.2x average).
+5. **Trigger:** Enter long on the close of the bar that confirms the divergence, or on a bullish reversal candle (e.g., bullish engulfing or hammer).
+
+**Exit Rules:**
+1. **Primary Target:** Close the position when price touches or closes above the upper Bollinger Band.
+2. **Profit Target Override:** If price reaches +2% profit before hitting the upper band, close the position (whichever comes first).
+3. **Stop Loss:** Place stop below the recent swing low (the low that formed the divergence), or a fixed 1.5–2% stop, whichever is tighter.
+4. **Time Stop:** If neither target nor stop is hit within a defined window (e.g., 20 bars), exit at market.
+
+**Risk Management:**
+- Risk per trade should not exceed 1–2% of account equity.
+- Position size = (Account Risk $) / (Entry Price − Stop Price).
+- Avoid entering if broader market trend (e.g., 200 EMA on higher timeframe) is strongly bearish, to reduce false divergence signals.
+- Only take the first valid signal per instrument per session to avoid over-trading.
+
+**Trade Management Notes:**
+- Divergence is a leading signal and can produce false positives; the volume filter is critical to reduce noise.
+- Consider trailing the stop to breakeven once price reaches +1%.
+- The Bollinger upper band acts as a dynamic resistance; in strong trends price may "walk the band," so the 2% target provides a concrete exit if the band is not reached.
+
+**Best Market Conditions:**
+- Ranging or early-trend-reversal environments.
+- Works best on liquid instruments (major FX pairs, large-cap stocks, BTC/ETH) where RSI/MACD signals are reliable.
+- Timeframes: 15m to 4H for intraday/swing balance.

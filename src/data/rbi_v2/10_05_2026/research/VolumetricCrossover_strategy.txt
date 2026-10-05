@@ -1,0 +1,56 @@
+STRATEGY_NAME: VolumetricCrossover
+
+STRATEGY_DETAILS:
+
+This strategy combines a classic EMA crossover trend signal with a volume-confirmation filter and an ATR-based trailing exit. The core idea is to only act on the 50/200 EMA crossover when it is validated by an abnormal surge in trading activity, which helps filter out weak, low-conviction crossovers that often produce false signals.
+
+**1. Key Strategy Components**
+
+- **Trend Signal:** 50-period EMA crossing the 200-period EMA (Golden Cross = bullish, Death Cross = bearish).
+- **Volume Confirmation Filter:** The crossover must occur during a volume spike exceeding 2x the 20-day average volume.
+- **Breakout Entry:** Enter in the direction of the crossover once both the EMA cross and the volume spike are confirmed on the same bar (or within a small confirmation window).
+- **Trailing Exit:** Use a 1.5x ATR trailing stop to lock in profits and let winners run.
+
+**2. Entry Rules**
+
+Long Entry:
+- 50 EMA crosses above 200 EMA (bullish crossover).
+- Current bar volume > 2 × 20-period SMA of volume.
+- Optional: price closes above both EMAs to confirm breakout direction.
+- Enter long at the close of the confirmation candle (or next bar open).
+
+Short Entry:
+- 50 EMA crosses below 200 EMA (bearish crossover).
+- Current bar volume > 2 × 20-period SMA of volume.
+- Optional: price closes below both EMAs to confirm breakdown.
+- Enter short at the close of the confirmation candle (or next bar open).
+
+Note: If the crossover occurs without the volume spike, skip the trade — this is the key filter that gives the strategy its edge.
+
+**3. Exit Rules**
+
+- **Trailing Stop:** Set an initial stop at 1.5 × ATR (14-period) from entry price, then trail it as price moves favorably.
+  - For longs: trail stop = highest close since entry − (1.5 × ATR).
+  - For shorts: trail stop = lowest close since entry + (1.5 × ATR).
+- **Exit Trigger:** Close the position when price hits the trailing stop.
+- Optional secondary exit: opposite EMA crossover (50 crossing back through 200) as a hard trend-reversal exit.
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk a fixed percentage of equity per trade (e.g., 1–2%), sized using the distance to the ATR stop.
+- **Stop Distance:** 1.5 × ATR(14) — self-adjusting to volatility.
+- **Max Concurrent Positions:** Limit to avoid overexposure during choppy markets.
+- **Avoid Choppy Regimes:** The volume filter naturally reduces whipsaw trades, but consider an additional ADX or trend-strength filter if needed.
+- **Slippage/Spread:** Account for costs, especially on lower-liquidity instruments where volume spikes may be noisy.
+
+**5. Required Indicators**
+
+- 50-period EMA
+- 200-period EMA
+- Volume (with 20-period SMA of volume for the 2x threshold)
+- ATR (14-period) for the trailing stop
+- Optional: ADX or trend filter to avoid ranging markets
+
+**6. Strategy Logic Summary**
+
+The 50/200 EMA crossover identifies a potential trend regime change. The volume spike (>2x 20-day average) acts as a conviction filter — real breakouts tend to attract institutional participation, which shows up as abnormal volume. Once confirmed, the trade is entered and managed with a volatility-adaptive trailing stop (1.5x ATR), allowing the strategy to capture large trend moves while cutting losses when momentum fades.

@@ -1,0 +1,86 @@
+STRATEGY_NAME: SqueezeFundingBreakout
+
+STRATEGY_DETAILS:
+This strategy targets explosive volatility expansions that follow periods of compression, using funding rates as a directional sentiment filter and volume as a confirmation trigger. It combines three orthogonal signals — volatility regime, derivatives positioning, and participation — to reduce false breakouts.
+
+1. KEY STRATEGY COMPONENTS
+
+- Volatility Regime Detection (Bollinger Bandwidth)
+  - Compute Bollinger Bands using a 20-period SMA and 2 standard deviations.
+  - Bandwidth = (Upper Band − Lower Band) / Middle Band.
+  - Identify a "squeeze" when Bandwidth falls below a threshold, e.g., the 20th percentile of its own 100-period history (or below a fixed value like 0.04 for crypto).
+  - Optionally require the squeeze to persist for at least 3–5 bars to confirm genuine compression.
+
+- Funding Rate Filter (Negative Funding)
+  - Pull perpetual funding rates (8-hour intervals on most exchanges).
+  - Require funding to be negative AND trending more negative over the last 1–3 funding windows.
+  - Interpretation: negative funding means shorts are paying longs — crowded short positioning. A breakout above the upper band then triggers a short squeeze, amplifying the move.
+
+- Volume Surge Confirmation
+  - Use a 20-period volume SMA.
+  - Require breakout bar volume ≥ 1.5× the volume SMA (adjustable to 1.2–2.0×).
+  - This filters low-conviction fakeouts that frequently occur at squeeze edges.
+
+2. ENTRY RULES
+
+Long Entry:
+- Prior condition: Bollinger Bandwidth in squeeze (below threshold) for ≥ 3 bars.
+- Funding rate negative and declining (more negative than prior window).
+- Price closes ABOVE the upper Bollinger Band.
+- Volume on the breakout bar ≥ 1.5× 20-period volume SMA.
+- Enter long at close of the breakout bar or on the next bar open.
+
+Short Entry:
+- Prior condition: Bollinger Bandwidth in squeeze for ≥ 3 bars.
+- Funding rate negative and declining (crowded shorts) — this is the primary long bias; shorts are taken only on confirmed downside breakdowns, ideally with funding turning less negative or positive to avoid fighting the squeeze setup.
+- Price closes BELOW the lower Bollinger Band.
+- Volume on the breakout bar ≥ 1.5× 20-period volume SMA.
+- Enter short at close of the breakout bar or next bar open.
+
+Note: Because negative funding structurally favors longs, the short side should be treated as a secondary, lower-conviction trade — consider half position size or skip if funding is deeply negative.
+
+3. EXIT RULES
+
+- Initial Stop Loss:
+  - Long: below the lower Bollinger Band or below the breakout bar low (whichever is tighter), typically 1.5–2× ATR.
+  - Short: above the upper Bollinger Band or above the breakout bar high, 1.5–2× ATR.
+
+- Profit Targets:
+  - Target 1: 2× ATR from entry (scale out 50%).
+  - Target 2: 3–4× ATR or trail with a 20-period EMA / Chandelier Exit.
+  - Alternative: exit when Bandwidth re-expands past its 80th percentile (volatility peak) or when price closes back inside the bands.
+
+- Time Stop:
+  - If the trade does not move 1× ATR in favor within 10–15 bars, exit to avoid dead-money squeeze failures.
+
+- Funding-Based Exit:
+  - Long: exit if funding flips strongly positive (crowd now long, squeeze exhausted).
+  - Short: exit if funding becomes deeply negative (squeeze risk against the short).
+
+4. RISK MANAGEMENT
+
+- Position Sizing: Risk 0.5–1% of equity per trade. Because squeeze breakouts can whipsaw, keep size conservative.
+- ATR-Based Stops: Always anchor stops to ATR (e.g., 1.5–2× ATR) rather than fixed percentages, since volatility regimes vary.
+- Max Concurrent Positions: 1–2 to avoid correlated crypto exposure.
+- Correlation Filter: Avoid taking multiple longs across highly correlated majors (BTC/ETH) simultaneously.
+- Slippage Buffer: Squeeze breakouts often gap; assume 0.1–0.3% slippage on entries and exits.
+- Regime Filter: Only trade when overall market volatility (e.g., 30-day realized vol) is not already extreme — squeeze setups work best from calm regimes.
+
+5. REQUIRED INDICATORS / DATA
+
+- Bollinger Bands (20, 2.0) — for bands and bandwidth.
+- Bollinger Bandwidth percentile (100-period lookback) — for squeeze detection.
+- Funding rate feed (perpetual futures, 8-hour intervals) — for sentiment filter.
+- Volume SMA (20) — for surge confirmation.
+- ATR (14) — for stops and targets.
+- EMA (20) — optional trailing exit.
+- Realized volatility (30-day) — optional regime filter.
+
+6. IMPLEMENTATION NOTES
+
+- Timeframe: 1H or 4H works best; 15m produces too many false squeezes.
+- Markets: Liquid perpetual futures (BTC, ETH, SOL) where funding data is reliable.
+- Backtest considerations: Include funding costs in PnL — holding through funding windows matters, especially for the short side.
+- Parameter tuning: Squeeze threshold (20th percentile), volume multiplier (1.5×), and ATR stop (1.5–2×) are the three most sensitive parameters — optimize via walk-forward analysis, not single-period fitting.
+
+This strategy's edge comes from the alignment of three independent signals: compressed volatility (energy stored), crowded short positioning via negative funding (fuel), and volume surge (ignition). Any one alone produces noise; together they identify high-probability volatility expansions.

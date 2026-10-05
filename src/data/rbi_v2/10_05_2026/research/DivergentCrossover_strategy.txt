@@ -1,0 +1,62 @@
+STRATEGY_NAME: DivergentCrossover
+
+STRATEGY_DETAILS:
+This strategy combines trend-following (EMA crossover) with momentum confirmation (RSI + divergence) and a volume filter to reduce false signals. It is designed for long-only entries in an environment where momentum is supportive but not overextended.
+
+**1. Key Strategy Components**
+- **Trend Confirmation:** 20-period EMA crossing above the 50-period EMA signals a bullish trend shift.
+- **Momentum Filter:** 14-period RSI must be below 70 (i.e., not overbought) to avoid chasing extended moves.
+- **Divergence Signal:** A momentum indicator based on RSI divergence — typically, bullish RSI divergence (price makes a lower low while RSI makes a higher low) — must be present or recently confirmed to add conviction.
+- **Volume Confirmation:** Current volume must be within ±20% of the 20-day average volume to ensure the move is backed by normal, healthy participation (not a low-liquidity spike or a volume anomaly).
+
+**2. Entry Rules**
+- **Primary Trigger:** 20 EMA crosses above 50 EMA (golden cross).
+- **RSI Condition:** 14-period RSI < 70 at the time of the crossover (or on the signal bar).
+- **Divergence Condition:** A bullish RSI divergence must be identified on the recent swing low (e.g., over the last 10–20 bars). The divergence can be confirmed via a higher RSI low against a lower price low.
+- **Volume Condition:** Volume on the signal bar (or average of last 3 bars) must be between 80% and 120% of the 20-period average volume.
+- **Execution:** Enter long at the close of the signal bar or on the next bar open if all conditions are met.
+
+**3. Exit Rules**
+- **Profit Target:** Optional — use a risk-reward ratio (e.g., 2:1 or 3:1) or trail with a shorter EMA (e.g., 10-period EMA).
+- **Stop Loss:** Place below the most recent swing low or a fixed percentage (e.g., 2% below entry).
+- **Trend Reversal Exit:** Exit if the 20 EMA crosses back below the 50 EMA.
+- **RSI Overbought Exit:** Consider partial or full exit if RSI exceeds 75–80 (overbought) while price stalls.
+- **Volume Anomaly Exit:** If volume spikes >200% of average on a down bar, consider tightening stops.
+
+**4. Risk Management**
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade.
+- **Stop Loss:** Hard stop at swing low or 2% below entry, whichever is tighter.
+- **Trailing Stop:** Optional — trail using 10-period EMA or ATR-based trailing stop (e.g., 2× ATR).
+- **Max Concurrent Positions:** Limit to 3–5 to avoid overexposure.
+- **Avoid News Events:** Skip entries around major earnings or economic releases unless volume filter confirms normal participation.
+
+**5. Required Indicators**
+- 20-period EMA (on close)
+- 50-period EMA (on close)
+- 14-period RSI (on close)
+- RSI Divergence detection (bullish: price lower low, RSI higher low over lookback of 10–20 bars)
+- 20-period average volume
+- Optional: ATR (14) for volatility-based stops
+
+**6. Best Timeframes & Markets**
+- **Timeframes:** 1H, 4H, or Daily charts for swing trading.
+- **Markets:** Liquid equities, ETFs, or major forex pairs with reliable volume data (avoid low-liquidity crypto pairs where volume is unreliable).
+
+**7. Signal Confirmation Logic (Pseudo-code)**
+```
+if EMA20 > EMA50 and EMA20[1] <= EMA50[1]:  # crossover
+    if RSI14 < 70:
+        if bullish_RSI_divergence(lookback=15):
+            if 0.8 * avg_volume20 <= volume <= 1.2 * avg_volume20:
+                enter_long()
+```
+
+**8. Strengths & Weaknesses**
+- **Strengths:** Combines trend, momentum, divergence, and volume — reduces false breakouts and overbought entries.
+- **Weaknesses:** Divergence can be subjective; volume filter may delay entries in fast markets; EMA crossovers lag.
+
+**9. Optimization Notes**
+- Test divergence lookback (10–25 bars).
+- Test volume tolerance (10%–30%).
+- Test RSI upper bound (65–75).
+- Walk-forward test to avoid curve fitting.

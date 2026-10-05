@@ -1,0 +1,43 @@
+STRATEGY_NAME: ElderDivergence
+
+STRATEGY_DETAILS:
+This strategy combines Elder Ray Bull Power divergence with volume and trend-strength filters to identify short entries during weakening bullish momentum.
+
+**Key Strategy Components:**
+1. **Elder Ray Bull Power (Bull Power)**: Measures the strength of buyers by calculating the distance between the high price and the 13-period EMA (High - EMA13). Positive values indicate bullish dominance; declining values signal fading buying pressure.
+2. **Price Highs**: Track recent swing highs (e.g., via a lookback of 20 bars) to identify when price is making higher highs.
+3. **Volume**: Use a 20-period volume SMA as the baseline. Declining volume is confirmed when current volume is below the volume SMA or when volume is trending downward over the last 3–5 bars.
+4. **ADX (14-period)**: Used as a trend filter. ADX > 25 confirms a trending market, ensuring the divergence occurs in a directional environment rather than choppy consolidation.
+5. **Bull Power 5-period SMA**: Serves as the exit trigger and helps confirm momentum shifts.
+
+**Entry Rules (Short):**
+- Price makes a higher high (or equal high) compared to the prior swing high within the lookback window.
+- Elder Ray Bull Power makes a LOWER high at the same time (bearish divergence).
+- Volume is declining (current volume < 20-period volume SMA, or volume slope negative over last 3–5 bars).
+- ADX (14) > 25.
+- Optionally, require Bull Power to still be positive at entry (to catch the shift from bullish to bearish).
+- Enter short on the close of the bar that confirms the divergence, or on a break below the prior bar's low for confirmation.
+
+**Exit Rules:**
+- Close the short position when Elder Ray Bull Power crosses ABOVE its 5-period SMA (indicating a short-term bullish momentum shift).
+- Alternatively, use a stop-loss at a recent swing high or a fixed ATR-based stop (e.g., 1.5 × ATR(14)) to manage risk if the exit signal is delayed.
+
+**Risk Management:**
+- Position sizing based on ATR(14) to normalize volatility across instruments.
+- Stop-loss placed above the most recent swing high or at 1.5–2 × ATR from entry.
+- Take-profit optional; primary exit is the Bull Power/SMA crossover.
+- Avoid trading during low-liquidity sessions or when ADX is falling below 25 after entry.
+
+**Required Indicators:**
+- Elder Ray Bull Power (High − EMA13)
+- EMA(13) for Bull Power calculation
+- SMA(5) applied to Bull Power
+- Volume SMA(20)
+- ADX(14)
+- ATR(14) for risk sizing
+- Swing high detection (e.g., 20-bar highest high)
+
+**Notes:**
+- Best suited for instruments with clear trending phases (e.g., indices, FX majors, large-cap stocks).
+- Divergence signals should be validated across at least two consecutive price/Bull Power peaks to reduce false positives.
+- Combine with a higher-timeframe trend filter (e.g., price below 200 EMA) to align shorts with the dominant trend.

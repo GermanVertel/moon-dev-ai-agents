@@ -1,0 +1,40 @@
+STRATEGY_NAME: ExhaustionFade
+
+STRATEGY_DETAILS:
+This strategy fades short-term price spikes during low-trend, weakening-momentum conditions, using Chaikin Oscillator zero-crosses as the primary trigger, filtered by ADX regime and confirmed by volume-profile imbalance zones.
+
+1. KEY STRATEGY COMPONENTS
+- Regime filter: ADX(14) below 20 confirms a range-bound / non-trending market, where mean-reversion fades have the highest edge.
+- Momentum trigger: Chaikin Oscillator (3,10) crossing below zero signals short-term distribution / money-flow exhaustion after an upward spike.
+- Spike detection: Price must have printed a short-term overextension (e.g., close > 2 standard deviations above a short EMA, or a multi-bar thrust into a known imbalance zone) before entry.
+- Confirmation layer: 4-hour volume profile must show a low-volume node (LVN) / imbalance gap above current price that acts as resistance — price tends to reject into these zones.
+- Direction: Primarily SHORT the fade. (Mirror logic for longs when ADX<20 and Chaikin crosses above zero with a demand imbalance below.)
+
+2. ENTRY RULES (SHORT)
+- ADX(14) on the execution timeframe < 20.
+- Chaikin Oscillator (3,10) crosses from positive to negative (cross below 0).
+- Price has spiked into a 4H volume-profile imbalance zone (low-volume node / value-area gap) identified from the prior 4H session's profile.
+- Optional confluence: bearish rejection candle (upper wick) or RSI(14) > 65 rolling over.
+- Enter on the close of the confirmation bar (or on a break of the prior bar's low for conservative entry).
+
+3. EXIT RULES
+- Trailing stop: 1.5 × ATR(14) from the highest favorable price since entry (ratchets only in the profit direction).
+- Primary target: return to the POC (point of control) or the nearest high-volume node of the 4H profile.
+- Time stop: exit if the trade hasn't reached target within N bars (e.g., 12–24 bars) or if ADX rises back above 25 (trend resumption invalidates the fade).
+- Invalidation: immediate exit if price closes back above the spike high / imbalance zone.
+
+4. RISK MANAGEMENT
+- Position sizing: risk ≤ 1% of equity per trade; size = (1% × equity) / (1.5 × ATR).
+- Stop-loss: initial hard stop at 1.5 × ATR beyond the spike extreme (before the trailing stop activates).
+- Max concurrent fades: 1–2 to avoid correlated whipsaw in choppy regimes.
+- Skip trades during news events / low-liquidity sessions where spike behavior is unreliable.
+- Track win-rate by session; disable the strategy if ADX regime shifts persistently above 25.
+
+5. REQUIRED INDICATORS
+- ADX(14) — regime filter.
+- Chaikin Oscillator (3,10) — primary momentum trigger.
+- ATR(14) — trailing stop and position sizing.
+- 4-hour Volume Profile (POC, value area, LVN/imbalance zones) — confirmation and targets.
+- Optional: EMA(20) and RSI(14) for spike/rejection confirmation.
+
+Summary: ExhaustionFade shorts short-term price spikes in low-ADX (range) regimes, triggered by a Chaikin Oscillator cross below zero and confirmed by a 4H volume-profile imbalance zone, exiting via a 1.5× ATR trailing stop or a return to the profile POC.

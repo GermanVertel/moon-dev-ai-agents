@@ -1,0 +1,49 @@
+STRATEGY_NAME: VolumetricBandRider
+
+STRATEGY_DETAILS:
+
+This strategy combines Bollinger Band breakouts with volume confirmation to capture momentum-driven price expansions. It uses volume as a directional filter to distinguish genuine breakouts from false signals.
+
+**Core Components:**
+
+1. **Bollinger Bands (20-period SMA, 2 standard deviations)**
+   - Upper Band = SMA(20) + 2σ
+   - Lower Band = SMA(20) − 2σ
+   - Bands expand/contract based on volatility
+
+2. **Volume Analysis**
+   - Compare current bar volume to a rolling average (e.g., 20-period Volume SMA)
+   - Rising volume = conviction behind the move
+   - Falling volume = weakening participation
+
+**Entry Rules:**
+
+- **Long Entry:** Price closes above the Upper Bollinger Band AND current volume > volume SMA (increasing volume). This signals a bullish volatility expansion backed by real buying pressure.
+- **Short Entry:** Price closes below the Lower Bollinger Band AND current volume < volume SMA (decreasing volume). The falling volume on the downside suggests a weak, unsustainable breakdown that may reverse or accelerate in a thin market — used here as a short trigger per the strategy's asymmetric logic.
+
+**Exit Rules:**
+
+- **Stop Loss:** Placed at the opposite reference point or a fixed ATR-based distance from entry (e.g., 1× ATR).
+- **Take Profit:** Set at 2× the stop distance to enforce a strict 2:1 risk-reward ratio.
+- Example: If stop = 1.5 points, target = 3.0 points.
+- Optionally, exit early if price re-enters the bands (mean reversion signal).
+
+**Risk Management:**
+
+- Position size = (Account Risk %) ÷ (Entry − Stop Distance)
+- Max risk per trade: 1–2% of equity
+- Avoid trading during low-liquidity sessions or major news blackouts
+- Consider skipping signals when Bollinger Band width is unusually narrow (squeeze) unless confirmed by a strong volume spike
+
+**Required Indicators:**
+
+- Bollinger Bands (20, 2)
+- Volume + Volume SMA (20)
+- ATR (14) for stop sizing
+- Optional: ADX to filter ranging vs. trending conditions
+
+**Notes & Caveats:**
+
+- The asymmetric volume logic (longs need rising volume, shorts need falling volume) is unusual — verify with backtesting whether falling-volume breakdowns are truly predictive or if this reflects a contrarian squeeze setup.
+- Best suited for liquid instruments with reliable volume data (futures, large-cap equities, major FX pairs).
+- Whipsaw risk is high in choppy markets; ADX or band-width filters help reduce false breakouts.

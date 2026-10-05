@@ -1,0 +1,47 @@
+STRATEGY_NAME: CompressionRider
+
+STRATEGY_DETAILS:
+This strategy captures explosive directional moves that follow periods of unusually low volatility, using Bollinger Band contraction as the signal that a breakout is imminent. It rides the expansion phase with an ATR-based trailing stop to lock in gains while giving the move room to develop.
+
+CORE LOGIC
+Volatility is mean-reverting. When Bollinger Bands squeeze to their tightest width in 20 days, it signals energy building up before a directional release. A close above the upper band confirms the breakout direction (long bias only in this version), and the trade is managed with a trailing stop tied to ATR so the exit adapts to the prevailing volatility regime.
+
+INDICATORS REQUIRED
+- Bollinger Bands: 20-period SMA, 2 standard deviations (upper, middle, lower)
+- Band Width: (Upper Band − Lower Band) / Middle Band — computed each bar
+- 20-day minimum of Band Width (rolling lookback) to identify the squeeze
+- ATR: 14-period Average True Range
+- Price close data
+
+ENTRY RULES (LONG)
+1. Compute Band Width for the current bar.
+2. Compute the lowest Band Width value over the trailing 20 bars (including current).
+3. Squeeze condition: current Band Width equals the 20-day minimum (or is within a small tolerance, e.g., the 5th percentile of the last 20 values) — this flags the tightest contraction.
+4. Breakout confirmation: price closes ABOVE the upper Bollinger Band on the same bar or within 1–2 bars of the squeeze flag.
+5. Optional filter: require the close to be above the 20-period middle band and/or require volume above its 20-period average to avoid false breaks.
+6. Enter long at the next bar's open (or on the close of the confirmation bar for aggressive execution).
+
+EXIT RULES
+1. Initial stop: entry price minus (ATR_multiple × ATR), where ATR_multiple is typically 2.0–3.0.
+2. Trailing stop: once the trade moves in favor, trail the stop at (ATR_trail_multiple × ATR) below the highest close (or highest high) reached since entry. Common value: 2.0–2.5 × ATR.
+3. The trailing stop only ratchets upward — never lowers it.
+4. Optional profit target: exit if price closes back below the middle Bollinger Band, signaling loss of momentum.
+5. Exit on stop hit (intrabar) or on a close below the trailing stop level, depending on execution preference.
+
+RISK MANAGEMENT
+- Position sizing: risk a fixed fraction of equity per trade (e.g., 1%). Position size = (Account Risk $) / (Entry Price − Initial Stop Price).
+- ATR-based stops automatically widen in volatile markets and tighten in calm ones, keeping risk roughly constant in dollar terms.
+- Avoid entering if the squeeze is too recent relative to a major news event, or if ATR is already extremely elevated (breakout may be exhausted).
+- Cap concurrent positions and avoid correlated instruments to prevent clustered risk.
+- Consider a time stop: exit if the trade hasn't reached a defined profit threshold within N bars (e.g., 15), since failed squeezes often chop sideways.
+
+PARAMETERS TO TUNE
+- Bollinger period (default 20) and standard deviation multiplier (default 2.0)
+- Squeeze lookback (default 20 bars)
+- ATR period (default 14)
+- Initial stop ATR multiple (default 2.5)
+- Trailing stop ATR multiple (default 2.0)
+- Optional volume confirmation threshold
+
+RATIONALE
+The Bollinger squeeze isolates low-volatility regimes where breakouts have the highest reward-to-risk. Requiring a close above the upper band filters for genuine upside momentum rather than mere noise. The ATR trailing stop is the key differentiator: it lets winners run during volatility expansion while progressively protecting profits, adapting automatically to changing market conditions instead of using a fixed percentage.

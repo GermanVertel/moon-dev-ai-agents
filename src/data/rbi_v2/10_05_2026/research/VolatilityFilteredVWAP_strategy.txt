@@ -1,0 +1,53 @@
+STRATEGY_NAME: VolatilityFiltered VWAP
+
+STRATEGY_DETAILS:
+
+This strategy combines a volatility regime filter with a volume-weighted price reference and adaptive trailing exits to capture trend continuation moves in quiet markets.
+
+**Core Concept:**
+Trade VWAP crossovers only when the market is in a low-volatility regime, then manage the position with Fibonacci-based trailing stops that adapt to the current volatility environment.
+
+**1. Key Strategy Components**
+
+- **Volatility-Adjusted VWAP:** Standard VWAP (typically session or anchored) with bands scaled by current ATR, so the crossover threshold widens or narrows with volatility. This reduces false signals during noisy periods.
+- **ATR Percentile Regime Filter:** Calculate 14-day ATR, then compute its percentile rank over a lookback (e.g., 100–252 days). Only allow entries when ATR percentile is below a threshold (e.g., 30th percentile) — i.e., low-volatility regime.
+- **Dynamic Fibonacci Trailing Stop:** Use recent swing high/low to project Fibonacci retracement levels (23.6%, 38.2%, 50%, 61.8%). The trailing stop ratchets up along these levels as price advances.
+
+**2. Entry Rules**
+
+- Long entry when:
+  - Price closes above the volatility-adjusted VWAP (VWAP + k×ATR band).
+  - 14-day ATR percentile < 30 (low volatility regime).
+  - Optional confirmation: volume expansion on the breakout candle.
+- Avoid entries during high-volatility regimes (ATR percentile > 50) to sidestep whipsaws.
+
+**3. Exit Rules**
+
+- **Trailing Stop:** After entry, identify the swing low. As price makes new highs, recompute Fibonacci retracement levels from the most recent swing low to swing high.
+- Place stop at the 38.2% or 50% retracement level (configurable), moving it upward only (never down).
+- **Hard Exit:** Close if price closes back below VWAP, signaling failed breakout.
+- **Time Stop (optional):** Exit if position hasn't reached 1×ATR profit within N bars.
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk fixed % of equity per trade (e.g., 0.5–1%). Stop distance = entry − trailing stop level.
+- **Max Stop Distance:** Cap initial stop at 2×ATR to avoid oversized risk in choppy conditions.
+- **Correlation Cap:** Limit concurrent positions in correlated assets.
+- **Regime Kill-Switch:** If ATR percentile spikes above 70, tighten stops or flatten.
+
+**5. Required Indicators**
+
+- VWAP (session or anchored, per timeframe)
+- ATR (14-period) + ATR percentile rank (lookback 100–252)
+- Volume (for VWAP and optional confirmation)
+- Swing high/low detector (e.g., 5-bar or 10-bar pivot)
+- Fibonacci retracement calculator (dynamic, recalculated on new swings)
+
+**6. Best Suited For**
+
+- Intraday to swing timeframes on liquid instruments (ES, NQ, major FX, large-cap equities).
+- Trending-but-quiet markets where low volatility precedes expansion — the strategy aims to catch the start of a volatility breakout while keeping exits tight via adaptive Fibonacci trails.
+
+**Strengths:** Filters out choppy high-vol regimes; VWAP gives institutional reference; Fibonacci trail locks profits dynamically.
+
+**Weaknesses:** Low-vol regimes can persist without follow-through; VWAP resets (session) may cause premature exits on multi-day holds.

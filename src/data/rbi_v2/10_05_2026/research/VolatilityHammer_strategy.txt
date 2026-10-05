@@ -1,0 +1,48 @@
+STRATEGY_NAME: VolatilityHammer
+
+STRATEGY_DETAILS:
+This strategy combines volatility-based filtering with candlestick reversal patterns to sell put options at expiration. The core premise is that elevated VIX levels (>20) indicate high implied volatility and elevated option premiums, making short puts attractive for income generation. The Hammer candlestick pattern signals a potential bullish reversal, suggesting downside momentum is exhausting.
+
+KEY STRATEGY COMPONENTS:
+1. Volatility Filter: VIX must be above 20 at the time of entry (or at least on the entry day).
+2. Candlestick Pattern: A Hammer candlestick must form on the underlying asset (e.g., SPY, QQQ, or individual stock) on the daily chart.
+3. Expiration Timing: Sell put options that expire at the next available expiration (weekly or monthly) to capture elevated premium.
+4. Underlying Selection: Liquid, optionable assets with tight bid-ask spreads and sufficient open interest.
+
+ENTRY RULES:
+- Confirm VIX > 20. If VIX is below 20, no trade.
+- Identify a Hammer candlestick on the daily chart of the underlying. A Hammer has:
+  - Small real body at the top of the range.
+  - Long lower shadow (at least 2x the real body).
+  - Little or no upper shadow.
+  - Ideally appears after a downtrend or at support.
+- Sell an out-of-the-money (OTM) put option with a strike price below the Hammer's low, typically 1-2 standard deviations below current price.
+- Choose expiration: nearest weekly or monthly expiration (e.g., 7-30 days to expiration).
+- Enter at or near the close of the day the Hammer forms.
+
+EXIT RULES:
+- Take profit: Buy back the put when it reaches 50% of the initial credit received.
+- Stop loss: Buy back the put if the underlying closes below the Hammer's low by a predetermined amount (e.g., 1-2%) or if the put premium doubles.
+- Time-based exit: Close the position at expiration if not already closed. If assigned, manage the resulting stock position (e.g., sell covered calls).
+- VIX-based exit: If VIX drops below 15, consider closing early to lock in profits as volatility premium decays.
+
+RISK MANAGEMENT:
+- Position sizing: Risk no more than 1-2% of account equity per trade. Since selling puts has unlimited downside risk (until stock goes to zero), use margin or cash-secured puts.
+- Diversification: Avoid overconcentration in one underlying or sector.
+- Stop loss discipline: Always use a stop loss to prevent large drawdowns.
+- Avoid earnings: Do not hold through earnings announcements unless intentionally trading the event.
+- Assignment plan: Be prepared to own the stock at the strike price; only sell puts on stocks you are willing to own.
+
+REQUIRED INDICATORS:
+- VIX index level (real-time or daily close).
+- Candlestick chart with Hammer pattern recognition (can be manual or via scanner).
+- Option chain data: strike prices, premiums, implied volatility, open interest, bid-ask spread.
+- Support/resistance levels to validate Hammer location.
+- Optional: Moving averages (e.g., 50-day, 200-day) to confirm trend context.
+
+ADDITIONAL NOTES:
+- Backtest the strategy across different market regimes, as high VIX environments can be volatile and unpredictable.
+- Consider using a delta-based strike selection (e.g., sell puts with delta around -0.20 to -0.30).
+- Monitor liquidity: Ensure the option has tight spreads and sufficient volume.
+- The Hammer pattern is more reliable when it forms at a known support level or after a significant decline.
+- Combine with other indicators (e.g., RSI oversold) to increase probability of success.

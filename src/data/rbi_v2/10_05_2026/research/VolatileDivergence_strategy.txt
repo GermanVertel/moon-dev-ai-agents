@@ -1,0 +1,63 @@
+STRATEGY_NAME: VolatileDivergence
+
+STRATEGY_DETAILS:
+
+This strategy combines volatility-based breakout detection with RSI divergence confirmation to capture high-probability momentum moves while filtering out false breakouts. The core premise is that genuine breakouts are often preceded or accompanied by momentum divergence signals that validate the directional bias.
+
+**Core Components:**
+
+1. **Volatility Measurement** - Use ATR (Average True Range) or Bollinger Band width to identify consolidation phases and detect expansion. Calculate a volatility threshold (e.g., ATR-based bands or Keltner Channels) to define breakout levels.
+
+2. **RSI Divergence Detection** - Monitor RSI (14-period) for divergence patterns:
+   - **Bullish Divergence**: Price makes lower lows while RSI makes higher lows
+   - **Bearish Divergence**: Price makes higher highs while RSI makes lower highs
+
+3. **Breakout Confirmation** - Only take breakout trades when divergence aligns with breakout direction, reducing whipsaw risk.
+
+**Entry Rules:**
+
+*Long Entry:*
+- Price breaks above the upper volatility band (e.g., previous N-bar high + ATR multiplier, or upper Keltner/Bollinger band)
+- Bullish RSI divergence detected within the last 10-15 bars
+- Volume confirmation (optional): breakout bar volume > 1.5x average
+- RSI crosses above 50 or exits oversold zone
+
+*Short Entry:*
+- Price breaks below the lower volatility band
+- Bearish RSI divergence detected within the last 10-15 bars
+- Volume confirmation on breakdown bar
+- RSI crosses below 50 or exits overbought zone
+
+**Exit Rules:**
+
+- **Take Profit**: 1.5x to 2x the ATR distance from entry, or trail using a Chandelier Exit
+- **Stop Loss**: Placed at the opposite volatility band or 1x ATR beyond entry
+- **Trailing Stop**: Activate after 1x ATR profit; trail by 1.5x ATR
+- **Time Exit**: Close position if no follow-through within 10 bars
+- **Divergence Invalidation**: Exit if opposing divergence appears
+
+**Risk Management:**
+
+- Risk per trade: 1-2% of account equity
+- Position size = (Account Risk) / (Entry - Stop Distance)
+- Maximum 2-3 concurrent positions
+- Avoid trading during major news events (high-impact releases)
+- Skip signals when ATR is unusually low (dead markets) or extraordinarily high (panic volatility)
+- Require minimum 1:2 risk-to-reward ratio
+
+**Required Indicators:**
+
+1. **ATR (14)** - For volatility bands and stop sizing
+2. **RSI (14)** - For divergence detection
+3. **Keltner Channels or Bollinger Bands (20, 2)** - For breakout levels
+4. **Volume MA (20)** - For breakout confirmation
+5. **Pivot Highs/Lows (5-bar)** - For divergence plotting
+6. **EMA (50 or 200)** - Optional trend filter to align trades with higher timeframe direction
+
+**Timeframe & Market Conditions:**
+
+- Best on 15m, 1H, or 4H charts
+- Works well in trending or expanding-volatility regimes
+- Poor performance in choppy, low-volatility ranges—use a regime filter (e.g., ADX > 20)
+
+**Key Edge:** The divergence filter acts as a "quality gate," ensuring breakouts are backed by momentum exhaustion in the opposite direction, which statistically increases follow-through probability and reduces false breakout losses.

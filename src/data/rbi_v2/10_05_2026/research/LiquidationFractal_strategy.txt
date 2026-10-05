@@ -1,0 +1,67 @@
+STRATEGY_NAME: LiquidationFractal
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy capitalizes on forced-selling/forced-buying cascades in leveraged markets. When a cluster of liquidations occurs, it creates a temporary price dislocation that tends to mean-revert once the cascade exhausts. The edge comes from identifying *where* liquidations cluster (via order book delta + funding extremes) and *when* to enter the reversal (via Fibonacci retracement of the spike).
+
+**1. Key Strategy Components**
+
+- **Liquidation Zone Detection**
+  - Monitor order book delta imbalance: track aggressive market sell/buy volume vs. resting liquidity. A delta imbalance > 3:1 with a simultaneous volume spike (>2x 20-period average) signals a liquidation cascade.
+  - Identify "liquidation spike range": the high-to-low (or low-to-high) candle/impulse that contains the cascade. Mark this range on the chart.
+  - Cluster confirmation: require at least 2–3 consecutive bars with elevated delta imbalance to avoid single-print noise.
+
+- **Funding Rate Extremes**
+  - Pull funding rate from perpetual swap markets.
+  - Long-side cascade setup: funding rate > +0.05% per 8h (over-leveraged longs) → liquidation spike downward expected.
+  - Short-side cascade setup: funding rate < -0.05% per 8h (over-leveraged shorts) → liquidation spike upward expected.
+  - Extremes act as a *context filter*, not an entry trigger — they confirm the crowd is one-sided.
+
+- **Fibonacci Retracement Trigger**
+  - After the liquidation spike completes, draw Fib levels on the spike range (0% = spike end, 100% = spike start).
+  - Entry trigger: price retraces beyond the 61.8% level back toward the pre-spike origin.
+  - This ensures the cascade has exhausted and price is genuinely reverting, not just pausing mid-cascade.
+
+**2. Entry Rules**
+
+*Long Reversal (after downward liquidation cascade):*
+1. Funding rate was extremely negative OR longs were flushed (delta imbalance heavily sell-side).
+2. Downward spike range identified and marked.
+3. Price retraces upward and closes above the 61.8% Fib level of the spike.
+4. Enter long on the close of the candle that confirms the 61.8% break, OR on a limit at the 61.8% level with a bullish rejection wick.
+
+*Short Reversal (after upward liquidation cascade):*
+1. Funding rate was extremely positive OR shorts were flushed.
+2. Upward spike range identified and marked.
+3. Price retraces downward and closes below the 61.8% Fib level.
+4. Enter short on confirmation close or limit at 61.8% with bearish rejection.
+
+**3. Exit Rules**
+
+- **Take Profit 1:** 38.2% Fib of the spike range (partial — 50% of position).
+- **Take Profit 2:** 100% retracement back to the spike origin (pre-liquidation price).
+- **Trailing stop:** Once TP1 hit, trail stop at the 50% Fib level.
+- **Time stop:** If price doesn't reach TP1 within 12–24 bars, exit at market (cascade reversals are fast; slow = invalid).
+
+**4. Risk Management**
+
+- **Stop Loss:** Just beyond the spike extreme (the wick high/low). For longs: stop below the spike low. For shorts: stop above the spike high. This is the invalidation point — if price makes a new extreme, the cascade wasn't done.
+- **Position Sizing:** Risk max 1–1.5% of account per trade. Liquidation reversals can be violent; keep size conservative.
+- **Max concurrent positions:** 1–2 (correlated assets can cascade together).
+- **Avoid:** Low-liquidity sessions, major news events (CPI, FOMC), and assets with <$50M daily volume — liquidation patterns are unreliable there.
+
+**5. Required Indicators / Data**
+
+- Order book delta (bid/ask aggressor imbalance) — via exchange API or aggregated tape.
+- Volume (20-period MA for spike detection).
+- Funding rate feed (perpetual swaps — Binance, Bybit, OKX).
+- Open Interest change (optional confirmation — OI drop + price spike = liquidation).
+- Fibonacci retracement tool (61.8%, 50%, 38.2% levels auto-plotted on spike range).
+- ATR (for dynamic stop buffer and to filter out spikes that are too small relative to normal volatility — require spike range ≥ 1.5x ATR).
+
+**6. Edge & Failure Modes**
+
+- **Edge:** Liquidations are non-discretionary — forced sellers/buyers must transact regardless of price. This creates predictable overshoots that revert once the cascade ends.
+- **Failure mode:** In trending/regime-shift markets, liquidations can cascade *into* a new trend. The 61.8% retracement filter and funding extreme filter help avoid chasing mid-cascade, but a hard stop at the spike extreme is essential.
+- **Best conditions:** Range-bound or mean-reverting regimes with elevated leverage. Worst in strong directional breakouts.

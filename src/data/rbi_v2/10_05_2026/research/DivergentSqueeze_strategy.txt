@@ -1,0 +1,43 @@
+STRATEGY_NAME: DivergentSqueeze
+
+STRATEGY_DETAILS:
+This strategy exploits the tension between two opposing signals — a Bollinger Band upper breach (bullish momentum) and an oversold RSI reading (bearish exhaustion) — to capture short-term mean-reversion bounces within an otherwise strong trend. The contrarian edge comes from buying into temporary pullbacks that occur while price is still pressing the upper band, suggesting the underlying trend remains intact.
+
+1. KEY STRATEGY COMPONENTS
+   - Bollinger Bands (20-period SMA, 2 standard deviations): used to detect when price closes above the upper band, signaling strong upward momentum and elevated volatility.
+   - RSI (14-period): used to detect oversold conditions (RSI < 30, or optionally < 35 for more signals) that contradict the bullish band breach.
+   - 3-day average rate of return: used as the exit trigger, measuring the rolling mean of daily returns over the last 3 sessions.
+   - The dual-signal condition (upper band breach + oversold RSI) is rare, so the strategy is designed for selective, high-conviction entries rather than continuous trading.
+
+2. ENTRY RULES
+   - Long entry when BOTH conditions are true on the same bar:
+     a) Close > Upper Bollinger Band (20, 2)
+     b) RSI(14) < 30 (oversold)
+   - Entry is executed at the next bar's open (or close of signal bar) to avoid lookahead bias.
+   - Optional filter: only take signals when the 20-period SMA slope is positive, confirming the broader trend is up.
+
+3. EXIT RULES
+   - Compute the 3-day average rate of return: AvgRet3 = mean of daily returns over the last 3 bars.
+   - Exit long when AvgRet3 turns negative, or when a predefined profit target / trailing stop is hit (see risk management).
+   - Optional time-based exit: close position after N bars (e.g., 5) if no exit condition triggers, to avoid holding through trend reversals.
+   - No short entries — strategy is long-only by design.
+
+4. RISK MANAGEMENT
+   - Position sizing: risk a fixed fraction (e.g., 1–2%) of equity per trade, sized off the distance between entry and stop.
+   - Stop-loss: place below the most recent swing low or at a fixed ATR-multiple (e.g., 2× ATR(14)) beneath entry.
+   - Take-profit: optional fixed target (e.g., 1.5× the stop distance) to lock in mean-reversion bounces.
+   - Max concurrent positions: 1 (or capped per instrument) to avoid correlated exposure.
+   - Avoid trading during earnings releases or major macro events that can invalidate technical signals.
+
+5. REQUIRED INDICATORS
+   - Bollinger Bands: 20-period SMA, 2 standard deviations (upper, middle, lower).
+   - RSI: 14-period.
+   - ATR: 14-period (for stop placement).
+   - Daily returns series (for the 3-day average rate of return exit).
+   - Optional: 20-period SMA slope for trend filter.
+
+6. IMPLEMENTATION NOTES
+   - Signals are rare; backtests should span multiple years and multiple instruments to gather enough trades.
+   - Because the entry condition is counterintuitive (buying overbought band breaches with oversold RSI), validate with walk-forward testing to avoid curve-fitting.
+   - Consider using intraday data for entries and daily data for the 3-day return exit, or keep everything on the daily timeframe for simplicity.
+   - Watch for survivorship bias and ensure transaction costs are modeled, as mean-reversion strategies can be sensitive to slippage.

@@ -1,0 +1,58 @@
+STRATEGY_NAME: VolatilityVWAPBreakout
+
+STRATEGY_DETAILS:
+This is a volatility-adjusted breakout system that combines volume-weighted price context with dynamic volatility bands to capture directional moves, using a retracement-based exit for profit protection.
+
+CORE COMPONENTS:
+1. **VWAP Baseline (20-period)**: Acts as the "fair value" anchor. Use a rolling 20-period VWAP (not session VWAP) to keep the band responsive to recent volume-weighted price. Reset behavior should be consistent with your timeframe (intraday or swing).
+
+2. **ATR Bands (2x multiplier)**: 
+   - Upper Band = VWAP_20 + (2 × ATR)
+   - Lower Band = VWAP_20 − (2 × ATR)
+   - ATR period: 14 (standard) on the same timeframe as the VWAP.
+   - Bands expand/contract with volatility, so breakouts are volatility-normalized.
+
+3. **Breakout Trigger**:
+   - **Long Entry**: Price closes ABOVE the Upper Band.
+   - **Short Entry**: Price closes BELOW the Lower Band.
+   - Require a CLOSE beyond the band (not just a wick) to reduce false signals.
+
+ENTRY RULES:
+- Long: Close > (VWAP_20 + 2×ATR_14)
+- Short: Close < (VWAP_20 − 2×ATR_14)
+- Optional filter: Confirm with rising volume on breakout bar, or require price to hold above/below band for 1 additional bar.
+
+EXIT RULES (50% Retracement of Breakout Move):
+- Define the breakout move as the distance from the band level (entry reference) to the highest high (for longs) or lowest low (for shorts) reached after entry.
+- **Long Exit**: Price retraces 50% from the post-entry high back toward the entry band level.
+  - Exit Level = Entry_Band_Level + 0.5 × (Post_Entry_High − Entry_Band_Level)
+- **Short Exit**: Price retraces 50% from the post-entry low back toward the entry band level.
+  - Exit Level = Entry_Band_Level − 0.5 × (Entry_Band_Level − Post_Entry_Low)
+- This is a trailing-style exit that locks in gains as the move extends.
+
+RISK MANAGEMENT:
+- **Initial Stop-Loss**: Place at the opposite band or at VWAP_20 (whichever is tighter/more logical). A common choice: stop at VWAP_20 for longs, since a return to fair value invalidates the breakout thesis.
+- **Position Sizing**: Size inversely to ATR so risk per trade is constant across volatility regimes.
+- **Max Holding Period**: Optional time-stop (e.g., N bars) to avoid dead trades if neither target nor stop hits.
+- **Re-entry**: Allow re-entry only if a fresh close beyond the band occurs after a stop-out.
+
+REQUIRED INDICATORS:
+- Rolling VWAP (20-period)
+- ATR (14-period)
+- Price close and high/low for retracement tracking
+- Optional: Volume (for confirmation filter)
+
+TIMEFRAME & MARKET SUITABILITY:
+- Best on liquid instruments with clear volume data (futures, major FX, large-cap equities, crypto majors).
+- Works on intraday (5m–1h) for momentum bursts and on daily for swing breakouts.
+- Avoid low-liquidity or ranging markets where VWAP bands compress and produce chop.
+
+STRENGTHS:
+- Volatility-normalized entries reduce whipsaw in quiet periods.
+- VWAP anchor gives institutional-relevant reference.
+- 50% retracement exit dynamically adapts to the size of each move rather than using fixed targets.
+
+WEAKNESSES:
+- Can give back ~half of unrealized gains by design.
+- Prone to false breakouts in choppy, low-ATR conditions.
+- Rolling VWAP (vs. session VWAP) may behave differently across timeframes—test carefully.

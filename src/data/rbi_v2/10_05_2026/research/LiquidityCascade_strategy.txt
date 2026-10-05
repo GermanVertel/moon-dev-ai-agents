@@ -1,0 +1,56 @@
+STRATEGY_NAME: LiquidityCascade
+
+STRATEGY_DETAILS:
+This strategy trades breakouts that occur when price breaches clusters of liquidation levels identified through on-chain leverage data. The core premise is that concentrated liquidation zones act as magnets and trigger points — when price breaks through them, cascading forced liquidations create momentum-driven moves that can be captured with confirmation.
+
+**1. Key Strategy Components**
+
+- **On-Chain Leverage Data Ingestion**: Pull liquidation heatmap data (e.g., from Coinglass, Hyblock, or exchange APIs) to map clusters of pending liquidation levels across price bands. Identify "high-density" zones where large notional leverage is stacked (typically 2x-3x standard deviation above mean cluster density).
+- **Liquidation Cluster Mapping**: Group liquidation levels into buckets by price proximity (e.g., 0.5% bands). A cluster qualifies when aggregated liquidation notional exceeds a threshold (e.g., $50M+ for BTC, scaled for other assets).
+- **Breakout Trigger Zone**: The nearest qualifying cluster above (for longs) or below (for shorts) current price becomes the trigger level.
+- **Confirmation Filter**: A candle must close beyond the cluster boundary (not just wick through) to avoid fakeouts.
+
+**2. Entry Rules**
+
+**Long Entry:**
+- Price approaches an upside liquidation cluster from below.
+- A candle closes above the cluster's upper boundary.
+- Volume on the breakout candle is ≥ 1.5x the 20-period average volume (volume surge confirmation).
+- Optional: Open Interest shows a spike or sharp drop consistent with liquidations firing.
+- Enter at the close of the confirmation candle or on the next candle's open.
+
+**Short Entry:**
+- Price approaches a downside liquidation cluster from above.
+- A candle closes below the cluster's lower boundary.
+- Volume surge ≥ 1.5x the 20-period average.
+- Enter at confirmation candle close or next open.
+
+**Invalidation:**
+- If price closes back inside the cluster within 2 candles, treat as failed breakout and skip.
+
+**3. Exit Rules**
+
+- **Primary Exit — Order Flow Imbalance S/R**: After entry, monitor subsequent order flow (order book depth, CVD, footprint data) to identify new imbalances (large bid/ask walls, absorption zones). These become dynamic support (for longs) / resistance (for shorts).
+- **Trailing Exit Logic**:
+  - For longs: trail stop beneath the most recent higher-low order flow imbalance zone.
+  - For shorts: trail stop above the most recent lower-high imbalance zone.
+- **Take Profit**: Scale out at the next major liquidation cluster in the direction of the trade (these act as magnets but also reversal zones). Exit 50% at first target, trail the rest.
+- **Time Stop**: If the trade hasn't reached 1R within N candles (e.g., 10), consider exiting to avoid chop.
+
+**4. Risk Management**
+
+- **Position Sizing**: Risk 0.5–1% of equity per trade. Given breakout volatility, keep sizing conservative.
+- **Stop Loss Initial Placement**: Just inside the broken cluster boundary (e.g., 0.3–0.5% beyond the breakout level) to invalidate quickly if the breakout fails.
+- **Max Concurrent Positions**: 2–3 to avoid correlated exposure during volatile cascades.
+- **Volatility Filter**: Skip trades during low-volume sessions (e.g., weekends for crypto) or when ATR is below a threshold — cascades need energy.
+- **Liquidation Cluster Freshness**: Only trade clusters that have been building for ≥ 24 hours; stale clusters often get absorbed without cascade.
+
+**5. Required Indicators & Data**
+
+- **On-Chain/Exchange Data**: Liquidation heatmap, Open Interest, funding rates.
+- **Volume**: 20-period average for surge detection.
+- **Order Flow Tools**: Cumulative Volume Delta (CVD), order book depth heatmap, footprint charts for imbalance detection.
+- **ATR**: For volatility filtering and dynamic stop sizing.
+- **Price Action**: Candle close confirmation (avoid wick-only breakouts).
+
+**Core Edge**: Most traders chase breakouts blindly. This strategy only trades breakouts that align with on-chain liquidation clusters — zones where forced selling/buying is mathematically likely to accelerate price — and confirms with volume, then manages exits using real-time order flow rather than static levels.

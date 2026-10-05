@@ -1,0 +1,46 @@
+STRATEGY_NAME: VortexVolume Pullback
+
+STRATEGY_DETAILS:
+This strategy combines the Vortex Indicator (VI) for trend confirmation with On-Balance Volume (OBV) divergence analysis to identify high-probability pullback entries within established trends. It exits when Vortex signals trend exhaustion and a volume surge confirms reversal risk.
+
+**Core Components:**
+
+1. **Vortex Indicator (VI)** — Uses two lines: VI+ (positive trend movement) and VI- (negative trend movement), typically with a 14-period lookback. A bullish trend is confirmed when VI+ is above VI- and both are rising or diverging. A bearish trend is confirmed when VI- is above VI+.
+
+2. **On-Balance Volume (OBV)** — Cumulative volume indicator that adds volume on up-closes and subtracts on down-closes. Used here to detect divergence between price and volume flow during pullbacks.
+
+3. **Trend Strength Filter** — Require VI+ and VI- separation to exceed a minimum threshold (e.g., VI+ minus VI- greater than 0.1) to ensure a genuinely strong trend, not a choppy range.
+
+**Entry Rules (Long Pullback in Uptrend):**
+- Confirm strong uptrend: VI+ > VI- for at least 3 consecutive bars, with widening spread.
+- Price pulls back (e.g., 2–4 consecutive lower closes or a retracement to a short EMA like the 10-period).
+- OBV does NOT make a lower low during the pullback — ideally OBV holds flat or makes a higher low, signaling accumulation despite the price dip (bullish OBV divergence).
+- Enter long when price resumes upward (e.g., closes above prior bar's high or reclaims the 10-EMA).
+
+**Entry Rules (Short Pullback in Downtrend):**
+- Confirm strong downtrend: VI- > VI+ for at least 3 consecutive bars, with widening spread.
+- Price rallies (2–4 consecutive higher closes or retracement to 10-EMA).
+- OBV does NOT make a higher high during the rally — ideally OBV holds flat or makes a lower high (bearish OBV divergence).
+- Enter short when price resumes downward (closes below prior bar's low or loses the 10-EMA).
+
+**Exit Rules:**
+- **Trend Exhaustion Signal:** VI+ and VI- converge or cross (VI+ crosses below VI- for longs, or VI- crosses below VI+ for shorts).
+- **Volume Surge Confirmation:** Exit when the exhaustion signal coincides with a volume spike — current bar volume exceeds its 20-period average by 1.5x or more. This combination filters out weak crossovers and confirms genuine trend fatigue.
+- Optional trailing stop: Exit if price closes beyond the 20-EMA against the position, or use ATR-based stop (e.g., 2x ATR from entry).
+
+**Risk Management:**
+- Position sizing based on ATR: risk no more than 1–2% of account equity per trade.
+- Initial stop-loss placed below the pullback low (longs) or above the pullback high (shorts), or a fixed 1.5–2x ATR distance.
+- Avoid trading when VI+ and VI- are tightly intertwined (range-bound market) — this is the primary false-signal filter.
+- Do not enter if OBV confirms the pullback direction (i.e., OBV makes a new low in an uptrend pullback) — that signals distribution rather than accumulation.
+
+**Required Indicators:**
+- Vortex Indicator (VI+, VI-), 14-period
+- On-Balance Volume (OBV)
+- 10-period EMA (pullback reference)
+- 20-period EMA (trend/trailing reference)
+- ATR (14-period) for stop placement and position sizing
+- Volume moving average (20-period) for surge detection
+
+**Timeframe & Market Suitability:**
+Best suited for trending instruments on 1H–Daily timeframes (equities, futures, major FX pairs). Avoid low-liquidity markets where OBV is noisy. The strategy thrives in steady trends with healthy pullbacks and struggles in choppy, range-bound conditions.

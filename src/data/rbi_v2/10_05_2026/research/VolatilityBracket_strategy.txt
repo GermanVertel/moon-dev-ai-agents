@@ -1,0 +1,58 @@
+STRATEGY_NAME: VolatilityBracket
+
+STRATEGY_DETAILS:
+This strategy combines volatility measurement with horizontal support/resistance zones to create adaptive entry and exit brackets around key price levels. The core idea is that volatility expands and contracts around structural levels, and trading the interaction between the two produces higher-probability setups than either signal alone.
+
+1. KEY STRATEGY COMPONENTS
+
+- Volatility Gauge: Use ATR (Average True Range, 14-period) or Bollinger Band width to quantify current market volatility. ATR is preferred for stop/target sizing because it is absolute and directly usable in price terms.
+- Volatility Regime Filter: Compare current ATR to its own moving average (e.g., ATR(14) vs SMA of ATR(14) over 50 bars). Classify regime as:
+  - Low volatility (compression): ATR below its average — favors breakout entries at S/R.
+  - High volatility (expansion): ATR above its average — favors reversal/fade entries at S/R.
+- Support/Resistance Mapping: Identify horizontal levels using swing highs/lows (fractal pivots, 5-bar left/right), plus high-volume price nodes if volume data is available. Cluster levels within 0.5 × ATR to avoid redundant lines. Each level gets a zone width of ±0.25 × ATR.
+- Level Strength Score: Rank levels by number of touches, recency, and reaction size. Only trade the top 3–5 active levels to avoid noise.
+
+2. ENTRY RULES
+
+Breakout Mode (low-volatility regime):
+- Price closes beyond a resistance zone by more than 0.3 × ATR with above-average volume.
+- Enter long on breakout above resistance; enter short on breakdown below support.
+- Confirmation: ATR begins expanding on the breakout bar (current ATR > prior ATR).
+
+Reversal Mode (high-volatility regime):
+- Price wicks into a support/resistance zone but closes back inside it (rejection candle).
+- Enter long at support rejection, short at resistance rejection.
+- Confirmation: RSI divergence or a bullish/bearish engulfing pattern at the level.
+
+3. EXIT RULES
+
+- Stop Loss: Placed at 1.0 × ATR beyond the entry zone (below support for longs, above resistance for shorts). In breakout mode, stop sits just inside the broken level (0.5 × ATR).
+- Take Profit: 
+  - Breakout mode: target the next opposing S/R level, or 2.0 × ATR, whichever is closer.
+  - Reversal mode: target the mid-range or nearest opposing level, typically 1.5 × ATR.
+- Trailing Stop: Once price moves 1.0 × ATR in favor, trail using a 1.5 × ATR chandelier stop to capture extended moves.
+- Time Stop: Exit if the trade does not reach +0.5 × ATR within 10 bars (signals the level is not responding).
+
+4. RISK MANAGEMENT
+
+- Position Sizing: Risk a fixed 1% of equity per trade. Size = (Equity × 0.01) / (Stop distance in price).
+- Max Concurrent Risk: No more than 3% total open risk across all positions.
+- Volatility Circuit Breaker: If ATR spikes above 2× its 50-period average, reduce position size by half and widen stops to 1.5 × ATR.
+- Correlation Guard: Avoid taking simultaneous long/short trades on highly correlated instruments at the same level.
+- Daily Loss Limit: Stop trading for the day after a 3% drawdown.
+
+5. REQUIRED INDICATORS
+
+- ATR (14) and its 50-period SMA (volatility regime)
+- Bollinger Bands (20, 2) — optional secondary volatility confirmation
+- Fractal pivot indicator or swing high/low detection (5-bar)
+- Volume moving average (20) for breakout confirmation
+- RSI (14) for divergence confirmation on reversals
+- Horizontal line/zone plotting tool with ATR-based width
+
+6. EXECUTION NOTES
+
+- Best timeframes: 1H and 4H for swing trading; 15M for intraday with tighter ATR multipliers.
+- Avoid trading within 30 minutes of major news releases unless in breakout mode with confirmed volume.
+- Backtest across both trending and ranging regimes to validate that each mode triggers in the correct volatility environment.
+- Log every trade with the regime label (compression/expansion) to track which mode performs better over time and adjust mode weights accordingly.

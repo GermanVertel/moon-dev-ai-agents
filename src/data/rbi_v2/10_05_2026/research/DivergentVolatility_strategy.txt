@@ -1,0 +1,56 @@
+STRATEGY_NAME: DivergentVolatility
+
+STRATEGY_DETAILS:
+This is a contrarian bearish strategy that exploits conflicting momentum signals between MACD and RSI, then uses ATR expansion as the exit trigger. The core edge is that bullish MACD divergence (price making lower lows while MACD makes higher lows) can lure in long traders, but when RSI simultaneously shows bearish divergence (price making higher highs while RSI makes lower highs), the underlying momentum is actually weakening — creating a short setup before a volatility-driven breakdown.
+
+KEY STRATEGY COMPONENTS:
+
+1. MACD Bullish Divergence Detection
+   - Look for price making a lower low while MACD line (or MACD histogram) makes a higher low.
+   - Confirms on the swing low comparison: Price_Low_2 < Price_Low_1 AND MACD_Low_2 > MACD_Low_1.
+   - This is the "trap" signal — retail longs see bullish divergence and buy.
+
+2. RSI Bearish Divergence Detection
+   - Simultaneously, RSI must show bearish divergence: Price_High_2 > Price_High_1 AND RSI_High_2 < RSI_High_1.
+   - This reveals weakening internal momentum despite rising price.
+   - The dual divergence (bullish MACD + bearish RSI) is the key filter — do NOT enter on MACD divergence alone.
+
+3. Entry Trigger
+   - Enter SHORT only when BOTH divergences are confirmed within a defined lookback window (e.g., 20–50 bars).
+   - Optional confirmation: wait for a bearish candle close below the prior swing low, or a MACD histogram cross below zero.
+
+4. Exit Rule — ATR Volatility Expansion
+   - Exit the short when ATR expands beyond a threshold (e.g., ATR > 1.5x its 20-period moving average, or ATR crosses above a user-defined multiplier).
+   - Rationale: volatility expansion often signals capitulation or a sharp move — lock in profits before mean reversion.
+   - Can also use a hard stop at ATR-based distance (entry ± 2x ATR) as a safety net.
+
+ENTRY RULES:
+- Timeframe: 1H or 4H recommended for cleaner divergence signals.
+- Confirm MACD bullish divergence at a swing low.
+- Confirm RSI bearish divergence at a corresponding swing high within the same window.
+- Enter short at market or on a bearish confirmation candle close.
+
+EXIT RULES:
+- Primary exit: ATR expansion (ATR > 1.5x ATR_MA20, or ATR breaking a Bollinger-style upper band).
+- Secondary exit: MACD histogram flips positive (momentum reversal against trade).
+- Stop loss: 2x ATR above entry (fixed risk).
+- Take profit: optional fixed R:R (e.g., 1:2) in case ATR never expands.
+
+RISK MANAGEMENT:
+- Position size = (Account Risk %) / (2x ATR stop distance).
+- Max risk per trade: 1–2% of equity.
+- Avoid trading during low-liquidity sessions (ATR will be unreliable).
+- Do not stack multiple shorts in the same divergence zone.
+
+REQUIRED INDICATORS:
+- MACD (12, 26, 9) — for bullish divergence detection.
+- RSI (14) — for bearish divergence detection.
+- ATR (14) — for volatility expansion exit and stop placement.
+- Swing high/low pivot detection (e.g., 5-bar pivots) — to anchor divergence comparisons.
+- Optional: 20-period ATR moving average as the expansion baseline.
+
+NOTES / EDGE CASES:
+- Divergence detection is subjective — use automated pivot logic, not visual eyeballing.
+- Require a minimum bar gap between the two pivots (e.g., 5+ bars) to avoid noise.
+- In strong uptrends, bearish RSI divergence can persist for many bars — the ATR exit protects against overstaying.
+- Backtest across trending and ranging regimes; this strategy performs best near exhaustion tops.

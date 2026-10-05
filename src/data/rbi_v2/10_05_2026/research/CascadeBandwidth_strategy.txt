@@ -1,0 +1,67 @@
+STRATEGY_NAME: CascadeBandwidth
+
+STRATEGY_DETAILS:
+This strategy trades volatility expansions that follow liquidation cascades, using clustered long/short ratio flips as the catalyst signal, Bollinger Bandwidth extremes as the entry trigger, and anchored VWAP inflection points as the exit mechanism. It is designed for derivatives markets (perpetuals/futures) where long/short ratio data and liquidation data are available.
+
+1. CORE STRATEGY COMPONENTS
+
+A. Liquidation Cascade Detection
+- Monitor liquidation data (long liquidations and short liquidations) in real time.
+- Define a "cascade" as a rolling window (e.g., 5–15 minutes) where total liquidations exceed a dynamic threshold — for example, 2–3 standard deviations above the rolling average liquidation volume.
+- Directional bias: A long-liquidation cascade (longs forcibly closed) typically precedes a sharp downward move and subsequent volatility expansion; a short-liquidation cascade precedes an upward squeeze.
+
+B. Clustered Long/Short Ratio Flips
+- Track the exchange long/short account ratio (or position ratio).
+- Identify "clusters" of flips: multiple rapid transitions across the 1.0 threshold (or a defined neutral band, e.g., 0.95–1.05) within a short window (e.g., 3–5 flips in 15–30 minutes).
+- Clustered flips signal indecision and trapped positioning immediately after a cascade — a precursor to violent volatility expansion.
+- Confirm cascade direction by checking whether the flips occur against the dominant liquidation side (i.e., a long cascade followed by repeated ratio flips = trapped longs unwinding).
+
+C. Bollinger Bandwidth Extremes (Entry Trigger)
+- Compute Bollinger Bands (20-period SMA, 2 standard deviations) on the chosen timeframe (e.g., 5m or 15m).
+- Bandwidth = (Upper Band − Lower Band) / Middle Band.
+- Entry condition: Bandwidth is at an extreme low (squeeze, e.g., below the 20th percentile of its recent 100-period range) AND a cascade + clustered flip signal has just fired.
+- The squeeze represents coiled energy; the cascade represents the release mechanism. Combined, they signal an imminent volatility expansion.
+- Directional entry: Enter in the direction of the post-cascade move — long if a short-liquidation cascade dominates (short squeeze), short if a long-liquidation cascade dominates.
+
+2. ENTRY RULES
+- Long Entry:
+  - Short-liquidation cascade detected (liquidation volume spike on the short side).
+  - Clustered long/short ratio flips confirmed (≥3 flips within 15–30 min).
+  - Bollinger Bandwidth at or below the 20th percentile of its 100-period range.
+  - Price closes above the Bollinger middle band (confirmation of upward expansion).
+- Short Entry:
+  - Long-liquidation cascade detected.
+  - Clustered long/short ratio flips confirmed.
+  - Bollinger Bandwidth at extreme low.
+  - Price closes below the Bollinger middle band.
+- Use limit orders near the middle band or market orders on the confirmation candle close to avoid slippage during expansion.
+
+3. EXIT RULES
+- Primary Exit: Anchored VWAP Inflection Point
+  - Anchor VWAP to the swing low (for longs) or swing high (for shorts) that immediately preceded the cascade.
+  - Exit when price touches the anchored VWAP AND the VWAP slope flattens or inflects (i.e., the slope changes sign or approaches zero), indicating momentum exhaustion.
+  - Alternatively, exit on the first rejection candle at the anchored VWAP (wick through, close back below/above).
+- Secondary Exit: Bollinger Bandwidth expansion into the upper percentile (e.g., >80th percentile) combined with a bearish/bullish reversal candle.
+- Time Stop: If neither condition triggers within N bars (e.g., 20–30 bars), exit at market to avoid decay of the edge.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk 0.5–1% of account equity per trade. Because volatility is expanding, use a fixed fractional risk model rather than fixed position size.
+- Stop Loss: Place stop just beyond the cascade extreme (the swing low for longs, swing high for shorts). Add a buffer of 0.5× ATR(14) to account for wick noise.
+- Take Profit: Partial scale-out at 1R and 2R; let the remainder run to the anchored VWAP inflection exit.
+- Max Concurrent Trades: 1 per asset to avoid correlated liquidation-cascade exposure across correlated markets.
+- Volatility Filter: Skip trades if ATR is already in the top 10th percentile (expansion already priced in) or if funding rates are extreme (>0.1% per 8h) in the trade direction.
+- Liquidation Data Lag: Ensure liquidation feed latency is <2 seconds; otherwise, the cascade signal is stale and entries should be skipped.
+
+5. REQUIRED INDICATORS / DATA
+- Bollinger Bands (20, 2) with Bandwidth calculation and percentile ranking.
+- Anchored VWAP (anchor set at pre-cascade swing point).
+- ATR (14) for stop buffer and volatility filter.
+- Real-time liquidation feed (long vs. short liquidation volume).
+- Long/Short account ratio (or position ratio) with flip-count logic.
+- Optional: Open Interest delta and funding rate as confirmation filters.
+
+6. EXECUTION NOTES
+- Timeframes: 5m and 15m work best; 1m is too noisy for ratio-flip clustering, 1h is too slow for cascade capture.
+- Markets: BTC/ETH perpetuals with deep liquidity and reliable liquidation data.
+- Signal Confirmation: Require all three core signals (cascade + clustered flips + bandwidth extreme) to align; any two of three is insufficient and leads to false positives.
+- Backtest Considerations: Model slippage of 5–15 bps during expansion phases, as liquidity thins during cascades.

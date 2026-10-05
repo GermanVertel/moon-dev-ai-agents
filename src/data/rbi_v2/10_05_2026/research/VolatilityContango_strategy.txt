@@ -1,0 +1,40 @@
+STRATEGY_NAME: VolatilityContango
+
+STRATEGY_DETAILS:
+This strategy exploits the term structure premium between VIX futures and spot VIX (the cash index) as a timing signal for buying protective put options. It is "momentum-neutral" in that it does not rely on price direction of the underlying equity index — instead it trades the volatility term structure dislocation.
+
+1. KEY STRATEGY COMPONENTS
+- Signal source: VIX futures (front-month) vs. VIX cash index.
+- Core metric: Basis = (VIX Futures − VIX Cash) / VIX Cash.
+- Trigger threshold: Basis > 10% (i.e., futures trading at a steep premium to cash — deep contango).
+- Instrument traded: Put options with ~60 days to expiration (DTE), typically on SPY/SPX or the underlying index.
+- Rationale: A wide contango (futures >> cash) signals complacency and elevated roll yield. Historically, such extremes precede volatility mean-reversion, making long-put exposure favorable.
+
+2. ENTRY RULES
+- Compute daily basis: (VIX_Futures_Front − VIX_Cash) / VIX_Cash.
+- Enter when basis > 0.10 (10%).
+- Buy ATM or slightly OTM puts with ~60 DTE.
+- Position size: fixed fractional risk (e.g., 1–2% of equity per trade, since premium is the max loss).
+- Optional filter: require basis to be in the top decile of its trailing 1-year distribution to avoid noise.
+
+3. EXIT RULES
+- Stop-loss: close the position if the option premium loses 2x the amount paid (i.e., stop at −100% of premium → effectively the premium is lost; interpret as a hard 100% loss cap or scale to 2x notional risk). Practical reading: exit when unrealized loss equals 2× premium paid, using a defined risk budget.
+- Profit target: take profit when basis compresses back below 5%, or when VIX spikes and put value rises (e.g., +50% to +100%).
+- Time exit: close by 15–20 DTE to avoid accelerated theta decay.
+- Signal exit: unwind if basis falls back to normal/backwardation.
+
+4. RISK MANAGEMENT
+- Max loss per trade = premium paid (defined risk with long options).
+- Stop-loss at 2× premium as a discipline rule (note: long options cannot lose more than premium; the 2× rule likely refers to a risk-budget multiple or a scaled position).
+- Diversify entry timing — avoid clustering all entries on a single basis spike.
+- Cap total premium at risk across concurrent positions (e.g., ≤5% of portfolio).
+- Monitor liquidity and bid/ask spread on the chosen puts.
+
+5. REQUIRED INDICATORS / DATA
+- VIX cash index (^VIX).
+- VIX front-month futures (VX1) or VIX futures ETF proxy (VXX/UVXY).
+- Basis calculation: (Futures − Cash) / Cash.
+- Option chain data: strikes, 60-DTE expirations, implied volatility, bid/ask.
+- Optional: trailing distribution of basis for percentile filtering; VIX term-structure slope.
+
+Note: The "2x premium" stop is unusual for long options (max loss = premium). It is best implemented as a risk-budget rule — e.g., size the position so the premium equals half the intended risk unit, then stop at a 2× premium loss threshold on a marked-to-market basis, or treat it as a hard rule to exit on any doubling of downside before expiry.

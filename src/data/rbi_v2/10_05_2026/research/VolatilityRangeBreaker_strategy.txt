@@ -1,0 +1,116 @@
+STRATEGY_NAME: VolatilityRangeBreaker
+
+STRATEGY_DETAILS:
+
+This strategy captures momentum-driven price expansion when the market breaks out of a defined consolidation range, using volatility-adjusted filters to avoid false breakouts. Below is a complete breakdown.
+
+---
+
+## 1. Core Concept
+
+The strategy identifies periods of low volatility (range-bound consolidation) and trades the subsequent expansion. The key innovation is that the breakout levels are **dynamically recalculated** based on recent volatility, rather than fixed or purely time-based levels. This adapts to changing market conditions and filters out noise during choppy markets.
+
+---
+
+## 2. Key Strategy Components
+
+### A. Range Detection
+- Use a lookback period (e.g., 20 bars) to identify a consolidation phase.
+- Define the range high and low as the highest high and lowest low over the lookback window.
+- Confirm consolidation when the range width (high − low) is below a volatility threshold (e.g., ATR-based or percentile-based).
+
+### B. Dynamic Breakout Levels
+- Instead of fixed highs/lows, compute breakout triggers using:
+  - **Upper Trigger** = Range High + (k × ATR) — a buffer to avoid wick noise.
+  - **Lower Trigger** = Range Low − (k × ATR).
+- `k` is a tunable multiplier (commonly 0.25–0.5).
+- ATR period typically 14; range lookback 20.
+
+### C. Volatility Filter
+- Only take breakouts when ATR is expanding (current ATR > ATR moving average) or when Bollinger Band width is at a low percentile (squeeze).
+- This ensures you're trading expansion after contraction, not random noise.
+
+### D. Trend Confirmation (Optional but recommended)
+- Use a higher-timeframe EMA (e.g., 50-period) to bias direction:
+  - Long breakouts only if price > EMA50.
+  - Short breakouts only if price < EMA50.
+
+---
+
+## 3. Entry Rules
+
+**Long Entry:**
+1. Price closes above Upper Trigger.
+2. ATR is expanding or BB width is in the lowest 20th percentile of the last 100 bars.
+3. (Optional) Price above EMA50 on higher timeframe.
+4. Enter at close of breakout bar or on next bar open.
+
+**Short Entry:**
+1. Price closes below Lower Trigger.
+2. Same volatility and trend filters apply (inverse).
+3. Enter at close or next bar open.
+
+---
+
+## 4. Exit Rules
+
+**Profit Target:**
+- Take profit at 1.5×–2× the ATR at entry, or at the next major resistance/support level.
+
+**Stop Loss:**
+- Place stop at the opposite side of the range (Range Low for longs, Range High for shorts) minus/plus a small ATR buffer.
+- Alternatively, use a fixed ATR-based stop (e.g., 1.5× ATR).
+
+**Trailing Stop (optional):**
+- Trail using a Chandelier Exit or ATR trailing stop to capture extended trends.
+
+**Time-Based Exit:**
+- Exit if price re-enters the range and closes inside for 2 consecutive bars (failed breakout).
+
+---
+
+## 5. Risk Management
+
+- **Position Sizing:** Risk 0.5%–1% of account equity per trade. Size = (Account × Risk%) / (Entry − Stop).
+- **Max Concurrent Trades:** Limit to 1–2 to avoid correlated exposure.
+- **Daily Loss Limit:** Stop trading after 2× the per-trade risk is lost in a day.
+- **Avoid News Events:** Skip trades within 15 minutes of high-impact economic releases.
+- **False Breakout Guard:** Require a close beyond the trigger, not just an intrabar wick.
+
+---
+
+## 6. Required Indicators
+
+| Indicator | Purpose | Typical Settings |
+|-----------|---------|------------------|
+| ATR | Volatility measurement & breakout buffer | 14 |
+| Highest High / Lowest Low | Range boundaries | 20 bars |
+| Bollinger Bands | Squeeze detection | 20, 2.0 |
+| EMA | Trend bias filter | 50 (higher TF) |
+| Volume (optional) | Confirm breakout strength | 20-period avg |
+
+---
+
+## 7. Strengths & Weaknesses
+
+**Strengths:**
+- Adapts to changing volatility regimes.
+- Filters false breakouts via ATR buffer and volatility condition.
+- Clear, rule-based entries/exits.
+
+**Weaknesses:**
+- Can miss fast breakouts if buffer is too wide.
+- Underperforms in strongly trending markets without pullbacks.
+- Requires parameter tuning across instruments/timeframes.
+
+---
+
+## 8. Recommended Markets & Timeframes
+
+- **Markets:** Forex majors, index futures (ES, NQ), liquid crypto (BTC, ETH).
+- **Timeframes:** 15m, 1H, 4H for swing/intraday.
+- **Avoid:** Illiquid instruments and low-volume sessions.
+
+---
+
+**Summary:** VolatilityRangeBreaker combines range detection, dynamic ATR-based breakout triggers, and volatility expansion filters to trade high-probability breakouts while minimizing whipsaws. Proper risk management and trend bias confirmation are essential for consistent performance.

@@ -1,0 +1,99 @@
+STRATEGY_NAME: CumulativeBandMomentum
+
+STRATEGY_DETAILS:
+This strategy is a momentum-based trend-following system that uses the cumulative product of Bollinger Band lower bands as its core signal generator, combined with volatility-adjusted stop-loss placement. Below is the complete breakdown.
+
+---
+
+**1. KEY STRATEGY COMPONENTS**
+
+- **Core Signal — Cumulative Product of Lower Bands:**
+  - Calculate 50-period Bollinger Bands (typically 20-period SMA ± 2 standard deviations, but here the lookback for the band computation may be tuned; the "50-period" refers to the rolling window over which the cumulative product is tracked).
+  - Extract the **Lower Band** value for each bar: `LB_t = SMA_t - (k * σ_t)` where `k` = 2 (standard) and `σ_t` is the rolling standard deviation.
+  - Compute the **cumulative product** of the lower band values over the rolling 50-period window:
+    - `CP_t = Π (LB_{t-i})` for i = 0 to 49
+  - Because lower band values are prices (positive numbers), the cumulative product is always positive in raw form. To make the signal meaningful, the strategy likely uses the **cumulative product of normalized/centered lower bands** (e.g., `LB_t - SMA_t`, or `LB_t / SMA_t - 1`), which can flip sign.
+  - **Long condition:** `CP_t > 0` → bullish momentum regime.
+  - **Short condition:** `CP_t < 0` → bearish momentum regime.
+
+- **Momentum Regime Logic:**
+  - A persistently positive cumulative product indicates the lower band is consistently above its reference (i.e., volatility is compressing upward / price is trending up with support rising).
+  - A negative cumulative product signals the opposite — downward momentum with expanding downside volatility.
+
+---
+
+**2. ENTRY RULES**
+
+- **Long Entry:**
+  - When `CP_t > 0` (cumulative product of lower bands turns positive) AND no existing long position is open.
+  - Enter at the close of the signal bar (or next bar open to avoid look-ahead bias).
+
+- **Short Entry:**
+  - When `CP_t < 0` (cumulative product turns negative) AND no existing short position is open.
+  - Enter at the close of the signal bar (or next bar open).
+
+- **Position Flipping:**
+  - If currently long and `CP_t` flips negative → close long and open short.
+  - If currently short and `CP_t` flips positive → close short and open long.
+  - This makes the strategy **always-in-market** (reversal system) unless a stop-loss triggers a flat state.
+
+---
+
+**3. EXIT RULES**
+
+- **Primary Exit — Signal Reversal:**
+  - Exit long when `CP_t` crosses below zero.
+  - Exit short when `CP_t` crosses above zero.
+
+- **Stop-Loss Exit:**
+  - Stop-loss is placed **2 standard deviations away from the mid-point (SMA)** of the Bollinger Bands.
+  - For a **long position:** Stop = `SMA_t - (2 * σ_t)` = the Lower Band itself (since k=2).
+  - For a **short position:** Stop = `SMA_t + (2 * σ_t)` = the Upper Band.
+  - Note: If the standard deviation multiplier for the stop equals the band multiplier, the stop coincides with the band. If the strategy intends a wider stop, use a separate σ multiplier (e.g., 2σ from midpoint while bands use a different k).
+
+- **Stop-Loss Behavior:**
+  - Stops are typically **trailing** — recalculated each bar using the current SMA and σ, so they ratchet in the favorable direction.
+  - If price touches the stop intra-bar, exit at the stop level (or next bar open for realism).
+
+---
+
+**4. RISK MANAGEMENT**
+
+- **Volatility-Adaptive Stops:**
+  - Because the stop distance is tied to 2σ, stops automatically widen in high-volatility regimes and tighten in low-volatility regimes. This prevents premature exits during volatile trends while protecting capital in calm markets.
+
+- **Position Sizing:**
+  - Recommended: risk a fixed percentage of equity per trade (e.g., 1–2%).
+  - Position size = `(Account Risk %) / (Entry Price − Stop Price)`.
+  - This normalizes risk across varying volatility environments.
+
+- **Always-In-Market Caveat:**
+  - Since the system flips on signal reversal, whipsaws in choppy markets can cause frequent reversals. Consider a **confirmation filter** (e.g., require `CP_t` to exceed a threshold, or require 2 consecutive bars of the same sign) to reduce false flips.
+
+- **Maximum Drawdown Guard:**
+  - Optional: pause trading if drawdown exceeds a predefined threshold (e.g., 15%) until `CP_t` re-establishes a clean trend.
+
+---
+
+**5. REQUIRED INDICATORS**
+
+| Indicator | Purpose | Parameters |
+|-----------|---------|------------|
+| Bollinger Bands (Lower) | Signal source | 20-period SMA, 2σ (adjustable) |
+| Bollinger Bands (Mid/SMA) | Stop-loss reference | Same period as bands |
+| Standard Deviation (σ) | Stop distance & band width | Same period as bands |
+| Cumulative Product (rolling) | Momentum regime signal | 50-period window |
+| ATR (optional) | Alternative volatility filter | 14-period |
+
+---
+
+**6. IMPLEMENTATION NOTES**
+
+- **Data Handling:** Ensure lower band values are never zero or negative before taking the product — if using raw prices, normalize first (e.g., subtract the SMA or take log) to allow sign flips.
+- **Warm-Up Period:** Requires at least 50 + band-period bars before the first valid signal.
+- **Backtesting:** Test on multiple timeframes (1H, 4H, Daily) and asset classes (FX, equities, crypto) to validate robustness.
+- **Slippage & Fees:** Because the strategy can flip frequently, transaction costs materially affect net performance — model them carefully.
+
+---
+
+**SUMMARY:** CumulativeBandMomentum exploits the sign of a rolling cumulative product of Bollinger lower bands to define trend direction, entering long on positive momentum and short on negative momentum, while using a 2σ-from-midpoint volatility stop to manage risk. It is a reversal-style, always-in-market momentum system best suited to trending markets with clear volatility regimes.

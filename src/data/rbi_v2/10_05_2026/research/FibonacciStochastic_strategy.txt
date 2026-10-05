@@ -1,0 +1,59 @@
+STRATEGY_NAME: FibonacciStochastic
+
+STRATEGY_DETAILS:
+This trend-following strategy combines Fibonacci retracement levels with Stochastic Oscillator signals to identify high-probability continuation entries within established trends. The core idea is to wait for a pullback into a key Fibonacci zone (typically 38.2%–61.8%) during a confirmed trend, then use the Stochastic to time the entry as momentum re-aligns with the trend direction.
+
+1. KEY STRATEGY COMPONENTS
+- Trend Identification: Determine the dominant trend using a higher-timeframe filter (e.g., 200-period EMA, or price making higher highs/higher lows). Only trade in the direction of the prevailing trend.
+- Fibonacci Retracement Zones: Anchor the Fibonacci tool to the most recent significant swing low and swing high (for uptrends) or swing high and swing low (for downtrends). Key zones: 38.2%, 50%, 61.8%, and the 78.6% "deep" level.
+- Stochastic Oscillator: Use Stochastic (14,3,3) or (5,3,3) to detect oversold conditions in uptrends and overbought conditions in downtrends, plus bullish/bearish crossovers.
+- Confluence Requirement: A valid setup requires BOTH price to be inside a Fibonacci zone AND the Stochastic to give a reversal/crossover signal in the trend direction.
+
+2. ENTRY RULES
+Long Entry (Uptrend):
+- Trend filter confirms uptrend (price above 200 EMA, or higher highs/higher lows).
+- Price pulls back into 38.2%–61.8% Fibonacci zone (or 78.6% for aggressive entries).
+- Stochastic %K crosses above %D from below 20 (oversold) OR %K turns up from below 20.
+- Enter on the candle close that confirms the Stochastic crossover, ideally with a bullish reversal candlestick (hammer, engulfing).
+
+Short Entry (Downtrend):
+- Trend filter confirms downtrend (price below 200 EMA, or lower highs/lower lows).
+- Price rallies into 38.2%–61.8% Fibonacci zone (or 78.6% for aggressive entries).
+- Stochastic %K crosses below %D from above 80 (overbought) OR %K turns down from above 80.
+- Enter on the candle close that confirms the Stochastic crossover, ideally with a bearish reversal candlestick.
+
+3. EXIT RULES
+- Take Profit: 
+  - TP1: Previous swing high (for longs) / swing low (for shorts) — the 100% Fibonacci extension.
+  - TP2: 127.2% or 161.8% Fibonacci extension.
+  - Optional TP3: Trail using a moving average (e.g., 20 EMA) or ATR-based trailing stop.
+- Stop Loss: 
+  - Place below the swing low (for longs) or above the swing high (for shorts).
+  - Alternatively, place just beyond the 78.6% Fibonacci level (invalidation of the retracement).
+- Exit on Trend Failure: Close the position if price breaks the opposite Fibonacci extreme or the 200 EMA flips direction.
+
+4. RISK MANAGEMENT
+- Risk per trade: 1%–2% of account equity.
+- Position sizing: Calculate based on the distance between entry and stop loss.
+- Risk-Reward: Minimum 1:2 ratio; target 1:3 or better by using Fibonacci extensions.
+- Avoid trading during major news events or low-liquidity sessions.
+- Do not enter if the retracement exceeds 78.6% (trend likely weakening).
+- Cap simultaneous positions and avoid over-concentration in correlated instruments.
+
+5. REQUIRED INDICATORS
+- Fibonacci Retracement Tool (38.2%, 50%, 61.8%, 78.6%, 127.2%, 161.8%)
+- Stochastic Oscillator (14,3,3 or 5,3,3) with %K and %D lines
+- 200-period EMA (trend filter)
+- Optional: 20 EMA (trailing stop), ATR (volatility-based stops), volume confirmation
+
+6. TIMEFRAMES & MARKETS
+- Best suited for trending markets: forex majors, indices, commodities, and large-cap crypto.
+- Recommended timeframes: 1H, 4H, and Daily for swing/position trading; 15M for intraday with strict filters.
+- Multi-timeframe analysis: Identify trend on the higher timeframe, execute on the lower timeframe.
+
+7. COMMON PITFALLS TO AVOID
+- Entering on the Fibonacci touch alone without Stochastic confirmation.
+- Trading counter-trend pullbacks that are actually reversals.
+- Ignoring the 78.6% invalidation level.
+- Over-tightening stops inside the Fibonacci zone (noise can trigger premature exits).
+- Forcing setups when no clear swing structure exists.

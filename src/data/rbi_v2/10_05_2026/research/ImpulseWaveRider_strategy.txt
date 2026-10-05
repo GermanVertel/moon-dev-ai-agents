@@ -1,0 +1,68 @@
+STRATEGY_NAME: ImpulseWaveRider
+
+STRATEGY_DETAILS:
+This strategy combines Elliott Wave impulse-count logic with leverage-aware trend following. It is designed to identify and ride high-probability directional moves during the trending phase of a wave sequence, using leverage only when wave structure and momentum align.
+
+1. KEY STRATEGY COMPONENTS
+- Wave Count Framework: Use Elliott Wave principles to label the market structure. Focus on impulse waves (waves 1, 3, 5) and avoid corrective waves (waves 2, 4, A-B-C) for entries.
+- Trend Confirmation: Only take trades in the direction of the dominant higher-timeframe trend. The higher timeframe must show a clear impulse sequence or a confirmed trend leg.
+- Leverage Trigger: Leverage is applied only when the market is in a confirmed impulse wave (typically wave 3 or wave 5) and momentum confirms continuation.
+- Momentum Alignment: Use momentum oscillators to confirm that the current wave is gaining strength, not exhausting.
+- Timeframe Confluence: Analyze multiple timeframes (e.g., daily for wave count, 4H for trend, 1H for entry) to ensure alignment.
+
+2. ENTRY RULES
+- Long Entry:
+  - Higher timeframe (Daily/4H) shows a bullish impulse wave structure (wave 1 complete, wave 2 retracement complete, wave 3 beginning or in progress).
+  - Price breaks above the wave 1 high or a key resistance level with strong momentum.
+  - Momentum indicators (e.g., RSI > 60, MACD bullish crossover, or ADX > 25) confirm upward strength.
+  - Entry on a pullback to a support zone (e.g., 0.382–0.618 Fibonacci retracement of the prior wave) or on a breakout continuation.
+- Short Entry:
+  - Higher timeframe shows a bearish impulse wave structure (wave 1 down complete, wave 2 up complete, wave 3 down beginning).
+  - Price breaks below the wave 1 low or key support with strong momentum.
+  - Momentum indicators (RSI < 40, MACD bearish crossover, ADX > 25) confirm downward strength.
+  - Entry on a rally to resistance (Fibonacci retracement) or on a breakdown continuation.
+
+3. EXIT RULES
+- Profit Targets:
+  - Wave 3 targets: 1.618–2.618 extension of wave 1.
+  - Wave 5 targets: 0.618–1.0 extension of waves 1–3, or when momentum diverges.
+  - Scale out at Fibonacci extension levels (e.g., 1.272, 1.618, 2.0).
+- Stop Loss:
+  - Place stop below the most recent swing low (for longs) or above the most recent swing high (for shorts).
+  - Alternatively, stop below the wave 2 low (for wave 3 entries) or below wave 4 low (for wave 5 entries).
+  - Use ATR-based stops (e.g., 1.5–2x ATR) to account for volatility.
+- Trailing Stop:
+  - After price moves 1x risk in favor, trail stop using a moving average (e.g., 20 EMA) or a Chandelier Exit.
+  - Tighten trailing stop as wave count approaches completion (e.g., wave 5).
+- Exit on Wave Invalidation:
+  - If price breaks the wave 2 low (for longs) or wave 2 high (for shorts), the impulse count is invalidated—exit immediately.
+
+4. RISK MANAGEMENT
+- Leverage Rules:
+  - Use low leverage (1–3x) during wave 1 or wave 5 entries.
+  - Use moderate leverage (3–5x) during confirmed wave 3 entries with strong momentum.
+  - Never exceed 5x leverage; adjust based on volatility (ATR) and account size.
+- Position Sizing:
+  - Risk no more than 1–2% of account equity per trade.
+  - Calculate position size based on stop distance and leverage.
+- Maximum Drawdown Control:
+  - Reduce leverage or pause trading after 3 consecutive losses or a 5% drawdown.
+  - Avoid trading during corrective waves or choppy markets (ADX < 20).
+- Correlation Check:
+  - Avoid taking multiple correlated positions (e.g., BTC and ETH longs) that could amplify risk.
+
+5. REQUIRED INDICATORS
+- Elliott Wave Analysis: Manual or semi-automated wave counting (e.g., using ZigZag, Fibonacci retracements/extensions).
+- Moving Averages: 20 EMA and 50 EMA for trend direction and trailing stops.
+- Momentum Oscillators: RSI (14) for overbought/oversold and divergence; MACD for trend confirmation.
+- ADX (14): To measure trend strength (>25 for trending markets).
+- Fibonacci Tools: Retracement and extension levels for entries, targets, and stops.
+- ATR (14): For volatility-based stop placement and leverage adjustment.
+- Volume: Confirm impulse waves with increasing volume; decreasing volume may signal wave exhaustion.
+
+6. ADDITIONAL NOTES
+- Wave counting is subjective; use multiple timeframes and confluence to increase probability.
+- Avoid trading during corrective waves (waves 2, 4, A-B-C) unless using a separate mean-reversion strategy.
+- Leverage amplifies both gains and losses; strict risk management is critical.
+- Backtest the strategy across different market conditions (trending, ranging) to validate edge.
+- Keep a trading journal to track wave count accuracy and leverage performance.

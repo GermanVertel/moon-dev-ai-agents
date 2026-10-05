@@ -1,0 +1,52 @@
+STRATEGY_NAME: ContrarianFundingBreakout
+
+STRATEGY_DETAILS:
+This strategy combines a sentiment-based contrarian signal (extreme funding rate) with a momentum confirmation (price breakout) and a dynamic exit mechanism (retracement + volatility stop). It aims to capture explosive upside moves that occur when bearish positioning (reflected in very low funding) is forced to unwind as price breaks to new highs.
+
+1. KEY STRATEGY COMPONENTS
+- Funding Rate Extreme: 24-hour funding rate reaching its lowest level in 30 days. This indicates that shorts are paying longs heavily (or longs are being paid very little), signaling crowded bearish positioning and a potential short squeeze.
+- Price Breakout Confirmation: Price must breach the 10-day high. This confirms that the market is starting to move against the crowded short side, validating the contrarian thesis.
+- Combined Trigger: Both conditions must be true simultaneously (or within a short window, e.g., same daily close) to enter long.
+- Exit Logic: Two independent exit rules:
+  a) 50% retracement from the peak price achieved since entry (trailing peak).
+  b) Volatility-based stop: a stop placed at a distance equal to a multiple of recent volatility (e.g., 2x ATR) below the peak or entry.
+- The exit is triggered by whichever occurs first.
+
+2. ENTRY RULES
+- Timeframe: Daily bars (or 24-hour periods for crypto). Funding rate is typically 8-hour or 24-hour; use the 24-hour funding rate as specified.
+- Condition 1: 24h funding rate == lowest value over the past 30 days (30-day low). Use a rolling 30-day lookback.
+- Condition 2: Price (close or intraday high) > highest high of the previous 10 days (10-day high breakout).
+- Entry: Enter long at the next bar's open (or at the close of the bar that satisfies both conditions) with a market order.
+- Position Sizing: Use a fixed fractional risk model (e.g., risk 1% of equity per trade). The stop distance (volatility-based) determines the position size.
+
+3. EXIT RULES
+- Track the highest price (peak) since entry.
+- Exit Rule A (Retracement): If price retraces 50% from the peak to the entry price (i.e., peak - (peak - entry) * 0.5), exit at market. This locks in profits while allowing for some pullback.
+- Exit Rule B (Volatility Stop): Place a stop-loss at peak - (ATR_multiplier * ATR). For example, 2 * ATR(14) below the peak. This stop trails the peak upward.
+- Whichever exit is hit first triggers a full exit.
+- Optional: If price makes a new low below the entry before reaching the peak, the volatility stop (if placed below entry) may trigger. Ensure the stop is not wider than the maximum acceptable risk.
+
+4. RISK MANAGEMENT
+- Initial Stop: At entry, set the volatility stop at entry_price - (ATR_multiplier * ATR). This defines the initial risk (R).
+- Position Size: Size = (Account Equity * Risk_Per_Trade) / (ATR_multiplier * ATR). For example, risk 1% of a $10,000 account = $100. If ATR = $500 and multiplier = 2, stop distance = $1000, so position size = 0.1 units (or equivalent).
+- Trailing Stop: As price rises, move the volatility stop up to peak - (ATR_multiplier * ATR). Never move it down.
+- Retracement Exit: The 50% retracement from peak is an additional profit-taking rule. It may trigger before the volatility stop if volatility is low.
+- Max Risk per Trade: 1-2% of equity.
+- No Pyramiding: One entry per signal. No adding to position.
+- Re-entry: After exit, wait for a new signal (new 30-day funding low + new 10-day high breakout).
+
+5. REQUIRED INDICATORS
+- 24-hour Funding Rate (from exchange API or data provider).
+- 30-day rolling minimum of the 24-hour funding rate.
+- 10-day rolling maximum of price (high or close).
+- ATR (Average True Range) with period 14 (or similar) for volatility measurement.
+- Peak price tracker (highest high since entry).
+
+6. ADDITIONAL NOTES
+- Market Context: This strategy works best in trending or squeeze environments. Avoid low-liquidity periods.
+- Data Frequency: Use daily closes for signals. Funding rate is typically updated every 8 hours; use the 24-hour aggregate (e.g., sum of 8-hour rates over 24h, or the 24h average).
+- Backtesting: Ensure funding rate data is aligned with price data. Use conservative assumptions for slippage and fees.
+- Parameter Optimization: The 30-day and 10-day lookbacks, ATR multiplier, and retracement percentage (50%) can be optimized, but avoid overfitting.
+- Edge Case: If the 30-day funding low occurs on the same day as the 10-day high breakout, enter. If the funding low is followed by a breakout days later, the signal is still valid as long as the funding rate remains at or near the 30-day low (e.g., within the lowest 5% of the 30-day range).
+
+This strategy is unique because it combines a contrarian sentiment signal (funding rate extreme) with a momentum breakout, and uses a dual-exit system (retracement + volatility stop) to manage profits and risk dynamically.

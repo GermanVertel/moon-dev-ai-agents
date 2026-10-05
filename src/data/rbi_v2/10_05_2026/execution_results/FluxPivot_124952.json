@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev FluxPivot Backtest Starting... \u2728\n\ud83d\ude80 Data loaded: 1009 bars from 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/FluxPivot_BTFinal_v1.py\", line 153, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1325, in run\n    strategy.init()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/FluxPivot_BTFinal_v1.py\", line 66, in init\n    rng = (high - low).replace(0, np.nan)\nAttributeError: '_Array' object has no attribute 'replace'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/FluxPivot_BTFinal_v1.py` failed. (See above for error)\n",
+  "execution_time": 2.368668,
+  "timestamp": "2026-10-05T12:49:52.338371"
+}

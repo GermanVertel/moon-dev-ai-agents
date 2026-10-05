@@ -1,0 +1,36 @@
+STRATEGY_NAME: VolumetricFibonacci
+
+STRATEGY_DETAILS:
+This strategy combines volume-driven momentum exhaustion with Fibonacci retracement targets to trade counter-trend reversals. It seeks to fade overextended moves when a volume surge confirms exhaustion, then exits on a Fibonacci-based retracement.
+
+**Core Concept**
+Counter-trend mean reversion. When price is overbought/oversold (RSI extremes) AND volume spikes above a Bollinger Bandwidth-derived threshold, the move is likely exhausting. Enter against the trend and target a retracement of at least 38.2% of the prior impulse leg.
+
+**Indicators Required**
+1. **RSI (14-period)** — overbought > 70, oversold < 30.
+2. **Bollinger Bands (20-period, 2 std dev)** — used to compute Bollinger Bandwidth: `BBW = (Upper - Lower) / Middle`.
+3. **Bollinger Bandwidth Threshold** — a rolling percentile (e.g., 80th–90th percentile of BBW over lookback N) or a fixed multiple of average BBW. A volume surge is confirmed when volume > threshold AND BBW expands beyond its trigger level.
+4. **Volume** — with a moving average (e.g., 20-period) to define "surge" (e.g., volume > 1.5x–2x average).
+5. **Fibonacci Retracement Tool** — measured on the most recent impulse swing (swing low → swing high for shorts, swing high → swing low for longs).
+
+**Entry Rules**
+- **Short entry:** RSI > 70 (overbought) AND volume > volume threshold AND BBW > bandwidth trigger. Confirms exhaustion of an up-move.
+- **Long entry:** RSI < 30 (oversold) AND volume > volume threshold AND BBW > bandwidth trigger. Confirms exhaustion of a down-move.
+- Optionally require a bearish/bullish rejection candle at the extreme for confirmation.
+
+**Exit Rules**
+- **Primary exit:** Price retraces beyond the 38.2% Fibonacci level of the prior impulse leg. Take profit once this level is breached (or use it as a trailing target with partial exits at 38.2%, 50%, 61.8%).
+- **Stop loss:** Place beyond the swing extreme (the high for shorts, the low for longs) plus a small buffer (e.g., ATR-based).
+- **Time stop:** Exit if neither target nor stop is hit within X bars, as volume-driven reversals should resolve quickly.
+
+**Risk Management**
+- Risk per trade: 1–2% of equity.
+- Position sizing based on distance from entry to stop (swing extreme + buffer).
+- Avoid trading during low-liquidity sessions where volume spikes are unreliable.
+- Require BBW expansion to avoid entering during contraction phases where false signals are common.
+- Consider scaling out: 50% at 38.2%, remaining at 50% or 61.8%.
+
+**Notes / Edge Cases**
+- Volume surge + BBW expansion together filter out simple RSI divergence noise.
+- Fibonacci retracement must be re-anchored to the most recent confirmed swing; stale swings reduce accuracy.
+- Works best on liquid instruments with clean impulse/retracement structure (FX majors, index futures, large-cap equities).

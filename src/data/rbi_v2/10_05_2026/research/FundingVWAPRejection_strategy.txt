@@ -1,0 +1,61 @@
+STRATEGY_NAME: FundingVWAPRejection
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy exploits the mean-reverting tendency of over-leveraged long positioning in perpetual futures. When funding rates spike above +0.1%, longs are paying heavily to stay in position — a sign of crowded sentiment. If price is simultaneously rejecting a weekly VWAP cluster, the setup suggests trapped longs vulnerable to a squeeze. Entry is short; exit occurs when funding normalizes (crowd unwinds) or price liquidity-grabs below the daily lower Bollinger Band (exhaustion/stop-hunt completion).
+
+**Key Components:**
+
+1. **Funding Rate Signal (Primary Trigger)**
+   - Monitor perpetual funding rate (8-hour interval on most venues).
+   - Threshold: funding > +0.1% per period (annualized ≈ +109%).
+   - Sustained readings (>2 consecutive periods above threshold) increase conviction.
+   - Rising funding slope = strengthening signal.
+
+2. **Weekly VWAP Cluster (Location Filter)**
+   - Calculate weekly VWAP (anchored Monday 00:00 UTC) plus prior 2–3 weekly VWAPs.
+   - Cluster = zone where 2+ weekly VWAPs overlap within ~0.3% of price.
+   - Price must show **rejection** at cluster: wick into zone + bearish close on 1H or 4H chart.
+   - Rejection candle should show upper wick ≥ 50% of candle range.
+
+3. **Daily Bollinger Band (Exit/Exhaustion Reference)**
+   - 20-period SMA, 2 standard deviations on daily chart.
+   - Lower band acts as liquidity-grab target zone.
+
+**Entry Rules (Short):**
+- Funding rate > +0.1% (current or last completed period).
+- Price is within or just below a weekly VWAP cluster (within 0.5%).
+- Confirmed rejection: 1H bearish engulfing, shooting star, or bearish pin bar at cluster.
+- Optional confluence: RSI(14) on 4H > 65 (overbought) or bearish divergence.
+- Enter short on close of rejection candle or on break of its low.
+
+**Exit Rules:**
+- **Primary exit (profit):** Funding rate normalizes to ≤ +0.02% (crowd unwound) — close 100%.
+- **Secondary exit (target):** Price sweeps below daily lower Bollinger Band (liquidity grab) — close 100% or scale out 75%.
+- **Partial scale:** Close 50% at 1× ATR(14) profit; trail remainder.
+- **Time stop:** If funding remains elevated but price stalls > 3 days without hitting target, reduce size.
+
+**Stop Loss:**
+- Hard stop: 1.5× ATR(14) above entry, OR
+- Structural stop: close above the weekly VWAP cluster + 0.5% buffer.
+- If funding spikes further (>+0.2%) while price rises, exit immediately — trend strength invalidates thesis.
+
+**Risk Management:**
+- Position size: 1–2% account risk per trade.
+- Max 2 concurrent shorts across correlated assets.
+- Reduce size by 50% if BTC funding is also > +0.1% (market-wide leverage = higher squeeze risk both ways).
+- Avoid entries within 30 min of major macro events (CPI, FOMC).
+
+**Required Indicators/Data:**
+- Perpetual funding rate feed (exchange API, 8H intervals).
+- Weekly anchored VWAP ×3 (current + prior 2 weeks).
+- Daily Bollinger Bands (20, 2).
+- ATR(14) on 4H for stops and targets.
+- RSI(14) on 4H (optional confluence).
+- 1H/4H candlestick pattern recognition.
+
+**Best Suited For:**
+- Liquid perpetuals (BTC, ETH, top-20 alts).
+- Late-stage rallies / euphoric phases where funding is stretched.
+- Ranging-to-distribution markets, not strong trending breakouts.

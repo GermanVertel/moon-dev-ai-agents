@@ -1,0 +1,71 @@
+STRATEGY_NAME: FibBand Reversal
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy combines Fibonacci retracement levels with Bollinger Bands to create high-probability reversal zones. The premise is that when price breaks outside Bollinger Bands AND aligns with a key Fibonacci retracement level, it signals an overextended move likely to reverse. VIX levels then govern exit timing based on market volatility regimes.
+
+---
+
+**1. Key Strategy Components**
+
+- **Fibonacci Retracement Levels:** Plot on the most recent significant swing high/low (lookback 50–100 bars). Key levels: 0.236, 0.382, 0.500, 0.618, 0.786. The 0.618 and 0.786 are considered "golden zones" for reversals.
+- **Bollinger Bands:** Settings of 20-period SMA with 2.0 standard deviations. Bands dynamically expand/contract with volatility.
+- **VIX (Volatility Index):** Used as a regime filter and exit trigger. High VIX = fear/oversold conditions; low VIX = complacency/overbought conditions.
+- **Confluence Zone:** The intersection where a Fibonacci level sits near or inside a Bollinger Band — this is the "reversal zone."
+
+---
+
+**2. Entry Rules**
+
+**Long Entry (Bullish Reversal):**
+- Price closes BELOW the lower Bollinger Band (oversold breakout).
+- The candle's low or close is within ±0.5% of a key Fibonacci retracement level (0.618 or 0.786 preferred).
+- VIX is elevated (above its 20-period average) but NOT spiking violently (avoid VIX > 40 unless confirmed reversal candle).
+- Confirmation: Next candle closes back INSIDE the lower Bollinger Band (bullish rejection wick or engulfing candle).
+
+**Short Entry (Bearish Reversal):**
+- Price closes ABOVE the upper Bollinger Band (overbought breakout).
+- The candle's high or close is within ±0.5% of a key Fibonacci retracement level (0.618 or 0.786 preferred).
+- VIX is low or declining (complacency zone), signaling exhaustion of the rally.
+- Confirmation: Next candle closes back INSIDE the upper Bollinger Band (bearish rejection wick or engulfing candle).
+
+---
+
+**3. Exit Rules**
+
+- **Profit Target:** Previous swing high (for longs) or swing low (for shorts), or the opposite Bollinger Band (mean reversion target = middle band / 20 SMA).
+- **VIX-Based Exit:**
+  - For longs: Exit when VIX drops below its 10-period low (fear subsiding → rally maturing) OR when VIX spikes above 35 (panic → cut losses).
+  - For shorts: Exit when VIX rises above its 10-period high (fear returning → downtrend maturing) OR when VIX drops below 12 (complacency → short squeeze risk).
+- **Time Stop:** Exit if trade does not reach +1R within 10 bars.
+
+---
+
+**4. Risk Management**
+
+- **Stop Loss:** Place just beyond the Fibonacci level that triggered entry (e.g., below 0.786 for longs, above 0.786 for shorts), plus a small buffer (0.3–0.5 ATR).
+- **Position Sizing:** Risk 1% of account equity per trade. Adjust size inversely to VIX — reduce size when VIX > 30.
+- **Max Exposure:** No more than 3 concurrent positions; avoid trading during major news events (FOMC, CPI).
+- **R:R Minimum:** Only take trades with at least 1:2 risk-to-reward potential.
+
+---
+
+**5. Required Indicators**
+
+| Indicator | Purpose | Settings |
+|-----------|---------|----------|
+| Bollinger Bands | Volatility envelope & breakout detection | 20 SMA, 2.0 SD |
+| Fibonacci Retracement | Reversal zone identification | Auto-swing (50–100 bars) |
+| VIX | Regime filter & exit trigger | 10 & 20-period MAs |
+| ATR | Stop-loss buffer sizing | 14-period |
+| Volume | Confirmation of rejection candles | Optional, 20-period MA |
+
+---
+
+**6. Trade Management Notes**
+
+- Best timeframes: 1H, 4H, and Daily for swing reversals.
+- Skip trades when Bollinger Band width is extremely narrow (squeeze) — wait for expansion.
+- The strongest signals occur when Fibonacci 0.618/0.786 aligns with the outer Bollinger Band AND VIX is at an extreme.
+- Backtest across trending and ranging markets — this strategy performs best in mean-reverting regimes.

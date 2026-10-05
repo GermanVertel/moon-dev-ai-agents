@@ -1,0 +1,99 @@
+STRATEGY_NAME: VolumetricOI-Breakout
+
+STRATEGY_DETAILS:
+
+This strategy combines volume-weighted Keltner Channels (VWKC) with open interest (OI) Rate of Change (ROC) to identify high-conviction breakouts. The core thesis is that a genuine breakout must be accompanied by expanding volume (captured via VWKC) AND rising open interest momentum (captured via OI ROC), filtering out false breakouts driven by short-covering or thin liquidity.
+
+---
+
+**1. KEY STRATEGY COMPONENTS**
+
+- **Volume-Weighted Keltner Channel (VWKC):**
+  - Centerline: Volume-Weighted Moving Average (VWMA) over N periods (default 20) instead of the standard EMA.
+  - Upper/Lower Bands: VWMA ± (Multiplier × ATR), where ATR is calculated over the same N periods (default multiplier = 2.0).
+  - Using VWMA instead of EMA ensures the channel reflects true traded price levels, not just time-weighted averages.
+
+- **Open Interest Rate of Change (OI ROC):**
+  - OI_ROC = ((OI_current − OI_n_periods_ago) / OI_n_periods_ago) × 100
+  - Default lookback: 10 periods (adjustable based on timeframe).
+  - Measures whether new positions are being added (rising OI) or closed (falling OI).
+
+- **Breakout Confirmation Logic:**
+  - A valid LONG breakout requires: Price closes ABOVE upper VWKC band AND OI_ROC > threshold (default +2%).
+  - A valid SHORT breakout requires: Price closes BELOW lower VWKC band AND OI_ROC > threshold (default +2%).
+  - Note: OI rises in BOTH long and short breakouts (new positions on either side), so the threshold is positive for both directions.
+
+---
+
+**2. ENTRY RULES**
+
+**Long Entry:**
+1. Price closes above the upper VWKC band.
+2. OI_ROC ≥ +2% over the lookback period.
+3. Volume on the breakout candle ≥ 1.5× the 20-period average volume.
+4. Optional filter: ROC of price > 0 (momentum confirmation).
+
+**Short Entry:**
+1. Price closes below the lower VWKC band.
+2. OI_ROC ≥ +2% over the lookback period.
+3. Volume on the breakout candle ≥ 1.5× the 20-period average volume.
+4. Optional filter: ROC of price < 0.
+
+**Entry Execution:**
+- Enter at the close of the confirming candle OR on the next candle's open.
+- Avoid entries during the first/last 15 minutes of session (if intraday) to reduce noise.
+
+---
+
+**3. EXIT RULES**
+
+**Take Profit:**
+- Primary target: 2× ATR from entry price in the direction of the trade.
+- Trailing option: Trail stop along the VWKC centerline (VWMA).
+
+**Stop Loss:**
+- Initial stop: 1× ATR beyond the opposite VWKC band, OR
+- Fixed stop: 1.5× ATR from entry.
+- Hard rule: Exit immediately if price closes back INSIDE the VWKC band (failed breakout).
+
+**Momentum-Based Exit:**
+- Exit if OI_ROC flips negative (positions being closed → breakout losing conviction).
+- Exit if volume drops below 0.8× the 20-period average on a continuation candle.
+
+---
+
+**4. RISK MANAGEMENT**
+
+- **Position Sizing:** Risk no more than 1% of account equity per trade. Size = (Account × 0.01) / (Entry − Stop).
+- **Max Concurrent Positions:** 2–3 to avoid correlated exposure.
+- **Daily Loss Limit:** Halt trading after −3% daily drawdown.
+- **Correlation Filter:** Avoid entering multiple breakouts in the same sector/instrument family simultaneously.
+- **Time Stop:** If trade hasn't hit TP or SL within X bars (default 30), exit at market.
+- **Slippage Buffer:** Assume 0.05–0.1% slippage on breakout entries (breakouts often fill poorly).
+
+---
+
+**5. REQUIRED INDICATORS / DATA**
+
+| Component | Indicator/Data | Parameters |
+|-----------|---------------|------------|
+| Channel Center | VWMA | 20 periods |
+| Channel Width | ATR | 20 periods, multiplier 2.0 |
+| OI Momentum | OI ROC | 10-period lookback |
+| Volume Filter | Volume SMA | 20 periods, 1.5× threshold |
+| Price Momentum | Price ROC | 10 periods (optional) |
+| Volatility | ATR | 14 or 20 periods |
+
+**Data Requirements:**
+- OHLCV price data (1m, 5m, 15m, or 1H timeframes work best).
+- Open Interest data (futures/options/perpetuals — not available for spot equities).
+- Best suited for: Futures, crypto perpetuals, options-heavy instruments.
+
+---
+
+**6. STRATEGY EDGE & NOTES**
+
+- **Why it works:** Traditional Keltner breakouts fail when volume is thin or when price moves are driven by position closing (OI falling). Requiring BOTH volume expansion AND OI growth isolates breakouts backed by real new capital.
+- **Best regimes:** Trending markets with rising volatility. Underperforms in choppy/range-bound conditions.
+- **Divergence warning:** If price breaks out but OI_ROC is negative → likely short-covering rally → SKIP the trade.
+- **Backtest tip:** Test separately on instruments with reliable OI reporting (CME futures, Binance perps, etc.).

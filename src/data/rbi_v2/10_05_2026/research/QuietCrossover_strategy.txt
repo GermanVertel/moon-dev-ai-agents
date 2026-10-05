@@ -1,0 +1,51 @@
+STRATEGY_NAME: QuietCrossover
+
+STRATEGY_DETAILS:
+This strategy is a trend-reversal capture system that deliberately enters during low-volatility consolidation phases, positioning itself ahead of emerging trends rather than chasing confirmed momentum. It uses the classic EMA crossover as the directional trigger but filters it through ADX to avoid entering during already-established trends.
+
+**Core Components:**
+
+1. **Trend Direction Filter (EMA Crossover)**
+   - Fast EMA: 50-period EMA
+   - Slow EMA: 200-period EMA
+   - Signal: Long entry when 50 EMA crosses above 200 EMA (golden cross)
+
+2. **Volatility/Strength Filter (ADX)**
+   - ADX (Average Directional Index) with default 14-period setting
+   - Entry condition: ADX < 20 at the time of (or shortly after) the crossover
+   - Exit condition: ADX > 30
+
+**Entry Rules:**
+- Enter long when the 50-period EMA crosses above the 200-period EMA
+- Confirm ADX is currently below 20 (indicating a weak/rangebound market with low directional strength)
+- This combination suggests a nascent trend forming out of a quiet, low-volatility base — a potential early-stage reversal or trend initiation
+- Optional confirmation: wait for the crossover candle to close to avoid intrabar whipsaws
+
+**Exit Rules:**
+- Exit the long position when ADX rises above 30
+- Rationale: ADX > 30 signals a strong, mature trend. The strategy takes profit as momentum peaks, avoiding late-stage trend exhaustion and potential reversal
+- No fixed stop-loss required by the base rules, but recommended as a safety net
+
+**Risk Management:**
+- Recommended hard stop-loss: place below the recent swing low or at a fixed percentage (e.g., 2–3% below entry) to protect against failed crossovers
+- Position sizing should account for the fact that low-ADX crossovers can produce false signals in choppy markets
+- Consider a time-based stop: if ADX never rises above 30 within a defined window (e.g., 20–30 bars), exit to free up capital
+- Avoid over-leveraging: crossovers in low-volatility regimes can be slow to develop
+
+**Required Indicators:**
+- 50-period Exponential Moving Average (EMA)
+- 200-period Exponential Moving Average (EMA)
+- Average Directional Index (ADX), 14-period
+
+**Key Edge / Rationale:**
+Most crossover strategies suffer from late entries after trends are already extended. By requiring ADX < 20, this strategy specifically targets the *birth* of a trend — entering when the market is quiet and directional conviction is low, then riding the move as ADX climbs. Exiting at ADX > 30 captures the strongest portion of the trend while sidestepping the choppy topping phase.
+
+**Best Suited For:**
+- Trending instruments with cyclical volatility (e.g., major forex pairs, index futures, large-cap equities)
+- Higher timeframes (4H, Daily) to reduce noise and false crossovers
+- Markets that alternate between consolidation and trending phases
+
+**Weaknesses to Watch:**
+- False crossovers in prolonged sideways markets (ADX stays low, EMA whipsaws)
+- Opportunity cost if ADX never reaches 30 (position may stagnate)
+- Requires patience — entries can occur before price action visibly confirms the trend

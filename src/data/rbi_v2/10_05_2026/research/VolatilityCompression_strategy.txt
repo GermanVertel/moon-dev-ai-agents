@@ -1,0 +1,58 @@
+STRATEGY_NAME: VolatilityCompression
+
+STRATEGY_DETAILS:
+
+**Overview:**
+This strategy exploits periods of low volatility (compression) as a precursor to upward price expansion. It combines a volatility filter (ATR vs. its moving average) with a long-term trend filter (200-day SMA) to identify high-probability long entries, then applies dual protective exits to manage risk.
+
+**Key Strategy Components:**
+
+1. **Volatility Filter (ATR Compression):**
+   - Indicator: 10-day ATR (short-term volatility)
+   - Benchmark: 20-day SMA of the ATR (longer-term volatility baseline)
+   - Condition: 10-day ATR < 20-day SMA of ATR
+   - Rationale: When short-term volatility falls below its recent average, the market is "coiling" — often preceding a directional breakout. This filters out choppy, high-volatility environments.
+
+2. **Trend Filter (Long-Term Direction):**
+   - Indicator: 200-day Simple Moving Average
+   - Condition: Price closes above the 200-day SMA
+   - Rationale: Ensures entries align with the dominant long-term uptrend, avoiding counter-trend traps during bearish regimes.
+
+3. **Entry Rule:**
+   - Enter a LONG position when BOTH conditions are met simultaneously on a daily close:
+     - 10-day ATR < 20-day SMA(ATR)
+     - Close > 200-day SMA
+
+**Exit Rules:**
+
+1. **ATR Stop-Loss (Volatility-Adjusted):**
+   - Set stop at: Entry Price − (2 × ATR at entry)
+   - Purpose: Adapts stop distance to current market volatility; wider stops in volatile conditions, tighter in calm ones.
+
+2. **Trailing Stop (Percentage-Based):**
+   - Set trailing stop at 5% below the highest price reached since entry
+   - Purpose: Locks in profits during sustained trends while allowing normal pullbacks.
+
+3. **Exit Trigger:** Whichever stop is hit first closes the position.
+
+**Risk Management:**
+- Dual exit mechanism ensures both volatility-aware and fixed-percentage protection.
+- Position sizing should be calculated so that the 2×ATR stop equals a fixed % of account equity (e.g., 1–2% risk per trade).
+- Avoid entering if ATR is at an extreme low that could indicate illiquidity or a pending news event.
+- Consider re-entry only after a fresh compression signal forms.
+
+**Required Indicators:**
+- ATR (Average True Range), period = 10
+- SMA of ATR, period = 20
+- SMA of Close, period = 200
+- Trailing stop tracker (5% from peak)
+
+**Best Suited For:**
+- Trending markets with periodic consolidation phases
+- Daily timeframe (swing trading)
+- Liquid instruments (equities, ETFs, major FX pairs, large-cap crypto)
+
+**Potential Weaknesses:**
+- Whipsaw risk if price briefly closes above 200-SMA then reverses
+- ATR compression can persist for extended periods, delaying entries
+- 5% trailing stop may be too tight for highly volatile assets — consider ATR-based trailing as an alternative

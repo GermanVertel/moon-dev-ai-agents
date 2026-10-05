@@ -1,0 +1,47 @@
+STRATEGY_NAME: CompressionReversion
+
+STRATEGY_DETAILS:
+This strategy exploits the well-documented tendency for volatility to cluster and mean-revert. When Bollinger Band width contracts to an extreme low, it signals a market coiling for an expansion move. The strategy enters anticipating that the eventual breakout will revert toward the mean rather than trend indefinitely, capturing the initial impulse leg.
+
+**Key Strategy Components:**
+
+1. **Volatility Compression Detection (Entry Trigger)**
+   - Calculate Bollinger Bands using a 20-period SMA with 2 standard deviations.
+   - Compute Band Width = (Upper Band − Lower Band) / Middle Band (normalized).
+   - Identify a "squeeze" when current Band Width is at its 20-day low (the narrowest reading in the lookback window).
+   - This compression signals energy accumulation and an imminent volatility expansion.
+
+2. **Entry Logic**
+   - When the squeeze condition is confirmed, prepare for a breakout in either direction.
+   - Enter long when price closes above the upper Bollinger Band.
+   - Enter short when price closes below the lower Bollinger Band.
+   - The first directional break out of the squeeze defines the trade side.
+
+3. **ATR Confirmation Filter**
+   - Calculate ATR (14-period).
+   - Require the breakout candle's range or the close-to-band distance to exceed 2× ATR to validate the move.
+   - This filter eliminates weak, false breakouts and ensures genuine volatility expansion.
+
+4. **Exit Rules (Mean-Reversion Target)**
+   - Primary exit: price reverts to the middle Bollinger Band (20-period SMA), the statistical mean.
+   - Secondary exit: price closes back inside the opposite band, signaling exhaustion.
+   - Time-based exit: if the trade doesn't reach target within a set number of bars (e.g., 10–15), close to avoid drift.
+
+5. **Risk Management**
+   - Stop-loss placed at 1.5× ATR beyond the entry band (below upper band for longs, above lower band for shorts).
+   - Position sizing based on fixed fractional risk (e.g., 1% of equity per trade).
+   - Optional: trail stop to breakeven once price moves 1× ATR in favor.
+
+**Required Indicators:**
+- Bollinger Bands (20, 2)
+- Bollinger Band Width (20-day low detection)
+- ATR (14-period)
+- 20-period SMA (mean target)
+
+**Trade Management Notes:**
+- Avoid trading during low-liquidity sessions where squeezes can produce erratic breaks.
+- Confirm squeeze validity by ensuring Band Width has been declining over the prior 5–10 bars, not just a single low reading.
+- Since this is a mean-reversion play, do not hold through the middle band expecting trend continuation—take profits at the mean.
+
+**Edge Rationale:**
+Volatility is mean-reverting and cyclical. Extreme compression is statistically followed by expansion, and the initial expansion from a squeeze often overshoots before reverting. By entering on the confirmed breakout and exiting at the mean, the strategy captures the highest-probability portion of the move while avoiding the risk of chasing an extended trend.

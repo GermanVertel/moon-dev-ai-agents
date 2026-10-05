@@ -1,0 +1,250 @@
+import numpy as np
+import pandas as pd
+import talib
+from backtesting import Backtest, Strategy
+
+# Load data
+data_path = "/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi/BTC-USD-15m.csv"
+data = pd.read_csv(data_path)
+
+# Clean column names
+data.columns = data.columns.str.strip().str.lower()
+data = data.drop(columns=[col for col in data.columns if 'unnamed' in col.lower()])
+
+# Map columns to proper case
+data = data.rename(columns={
+    'open': 'Open',
+    'high': 'High',
+    'low': 'Low',
+    'close': 'Close',
+    'volume': 'Volume'
+})
+
+# Ensure datetime index
+if 'datetime' in data.columns:
+    data['datetime'] = pd.to_datetime(data['datetime'])
+    data = data.set_index('datetime')
+elif 'Datetime' in data.columns:
+    data['Datetime'] = pd.to_datetime(data['Datetime'])
+    data = data.set_index('Datetime')
+
+print("🌙✨ Moon Dev ElasticConfluence Backtest Starting! 🚀")
+print(f"📊 Data loaded: {len(data)} bars")
+print(f"📈 Columns: {list(data.columns)}")
+
+
+class ElasticConfluence(Strategy):
+    ema_fast_period = 10
+    sma_slow_period = 50
+    rsi_period = 14
+    atr_period = 14
+    vol_period = 20
+    spread_lookback = 100
+    spread_std_mult = 2.0
+    vol_mult = 1.5
+    rsi_oversold = 35
+    rsi_overbought = 65
+    atr_stop_mult = 2.0
+    atr_trail_mult = 1.5
+    atr_trail_trigger = 1.0
+    risk_pct = 0.02
+    div_lookback = 10
+
+    def init(self):
+        print("🌙 Initializing ElasticConfluence indicators... ✨")
+        close = pd.Series(self.data.Close, index=self.data.index)
+        high = pd.Series(self.data.High, index=self.data.index)
+        low = pd.Series(self.data.Low, index=self.data.index)
+        volume = pd.Series(self.data.Volume, index=self.data.index)
+
+        self.ema_fast_ind = self.I(talib.EMA, close, timeperiod=self.ema_fast_period)
+        self.sma_slow_ind = self.I(talib.SMA, close, timeperiod=self.sma_slow_period)
+        self.rsi_ind = self.I(talib.RSI, close, timeperiod=self.rsi_period)
+        self.atr_ind = self.I(talib.ATR, high, low, close, timeperiod=self.atr_period)
+        self.vol_sma_ind = self.I(talib.SMA, volume, timeperiod=self.vol_period)
+
+        # Spread percentage
+        def spread_calc(ema, sma):
+            ema = np.asarray(ema, dtype=float)
+            sma = np.asarray(sma, dtype=float)
+            with np.errstate(divide='ignore', invalid='ignore'):
+                s = (ema - sma) / sma * 100.0
+            return s
+
+        self.spread_ind = self.I(spread_calc, self.ema_fast_ind, self.sma_slow_ind)
+
+        # Rolling mean/std of spread
+        def rolling_mean(arr, n):
+            return pd.Series(arr).rolling(n).mean().values
+
+        def rolling_std(arr, n):
+            return pd.Series(arr).rolling(n).std().values
+
+        self.spread_mean_ind = self.I(rolling_mean, self.spread_ind, self.spread_lookback)
+        self.spread_std_ind = self.I(rolling_std, self.spread_ind, self.spread_lookback)
+
+        # ATR average for volatility filter
+        self.atr_avg_ind = self.I(talib.SMA, self.atr_ind, timeperiod=50)
+
+        # Track trade state
+        self.entry_price_val = None
+        self.stop_price_val = None
+        self.trail_active = False
+        self.highest_since_entry = None
+
+        print("🚀 Indicators ready! Let's find those reversals! 🌙")
+
+    def _bullish_divergence(self, i):
+        """Check for bullish RSI divergence: price lower low, RSI higher low."""
+        lb = self.div_lookback
+        if i < lb + 1:
+            return False
+        low_now = self.data.Low[i]
+        low_prev = self.data.Low[i - lb]
+        rsi_now = self.rsi_ind[i]
+        rsi_prev = self.rsi_ind[i - lb]
+        if np.isnan(rsi_now) or np.isnan(rsi_prev):
+            return False
+        price_ll = low_now < low_prev
+        rsi_hl = rsi_now > rsi_prev
+        oversold = rsi_now < 45 or rsi_prev < 35
+        return price_ll and rsi_hl and oversold
+
+    def next(self):
+        i = len(self.data) - 1
+        if i < max(self.spread_lookback, self.sma_slow_period, 50) + 5:
+            return
+
+        price = self.data.Close[i]
+        ema = self.ema_fast_ind[i]
+        sma = self.sma_slow_ind[i]
+        rsi = self.rsi_ind[i]
+        atr = self.atr_ind[i]
+        vol = self.data.Volume[i]
+        vol_avg = self.vol_sma_ind[i]
+        spread = self.spread_ind[i]
+        spread_mean = self.spread_mean_ind[i]
+        spread_std = self.spread_std_ind[i]
+        atr_avg = self.atr_avg_ind[i]
+
+        # Skip if abnormal volatility
+        if not np.isnan(atr_avg) and atr_avg > 0 and not np.isnan(atr) and atr > 2.0 * atr_avg:
+            return
+
+        # Manage open position
+        if self.position:
+            if self.highest_since_entry is None or price > self.highest_since_entry:
+                self.highest_since_entry = price
+
+            if self.entry_price_val is not None and not np.isnan(atr) and atr > 0:
+                if not self.trail_active and (self.highest_since_entry - self.entry_price_val) >= self.atr_trail_trigger * atr:
+                    self.trail_active = True
+                    print(f"🌙✨ Trailing stop activated at {price:.2f} 🚀")
+
+                if self.trail_active:
+                    new_stop = self.highest_since_entry - self.atr_trail_mult * atr
+                    if self.stop_price_val is None or new_stop > self.stop_price_val:
+                        self.stop_price_val = new_stop
+
+            # Stop loss
+            if self.stop_price_val is not None and self.data.Low[i] <= self.stop_price_val:
+                print(f"🛑 Stop loss hit at {self.stop_price_val:.2f} | Exit price ~{price:.2f}")
+                self.position.close()
+                self._reset_trade_state()
+                return
+
+            # Primary exit: EMA crosses back above SMA (spread >= 0)
+            if not np.isnan(spread) and spread >= 0:
+                print(f"🎯 Equilibrium return! EMA crossed above SMA. Exit at {price:.2f}")
+                self.position.close()
+                self._reset_trade_state()
+                return
+
+            # RSI overbought exit
+            if not np.isnan(rsi) and rsi >= self.rsi_overbought:
+                print(f"💰 RSI overbought ({rsi:.1f}) — taking profit at {price:.2f}")
+                self.position.close()
+                self._reset_trade_state()
+                return
+
+            # Price touches SMA from below
+            if not np.isnan(sma) and price >= sma:
+                print(f"📈 Price touched SMA50 ({sma:.2f}) — exit at {price:.2f}")
+                self.position.close()
+                self._reset_trade_state()
+                return
+
+            return
+
+        # Entry logic
+        if np.isnan(spread) or np.isnan(spread_std) or np.isnan(spread_mean):
+            return
+        if np.isnan(vol_avg) or vol_avg <= 0:
+            return
+        if np.isnan(atr) or atr <= 0:
+            return
+
+        lower_threshold = spread_mean - self.spread_std_mult * spread_std
+
+        # Condition A: spread at/below lower stretch threshold
+        cond_a = spread <= lower_threshold and spread < 0
+
+        # Condition B: bullish RSI divergence
+        cond_b = self._bullish_divergence(i)
+
+        # Condition C: volume spike on bullish candle
+        bullish_candle = self.data.Close[i] > self.data.Open[i]
+        cond_c = (vol >= self.vol_mult * vol_avg) and bullish_candle
+
+        # Relaxed entry: allow A + C OR A + B OR B + C (any 2 of 3)
+        signals_count = int(cond_a) + int(cond_b) + int(cond_c)
+        entry_condition = signals_count >= 2 and cond_a
+
+        if entry_condition:
+            stop_price = price - self.atr_stop_mult * atr
+            risk_per_unit = price - stop_price
+            if risk_per_unit <= 0:
+                return
+
+            equity = self.equity
+            risk_amount = equity * self.risk_pct
+            size = int(round(risk_amount / risk_per_unit))
+            if size < 1:
+                size = 1
+
+            # Ensure size doesn't exceed affordable units
+            max_affordable = int(equity / price)
+            if max_affordable < 1:
+                return
+            if size > max_affordable:
+                size = max_affordable
+
+            print(f"🌙🚀 ELASTIC CONFLUENCE LONG SIGNAL! 🚀🌙")
+            print(f"   💫 Price: {price:.2f} | Spread: {spread:.3f}% (thr {lower_threshold:.3f})")
+            print(f"   📊 RSI: {rsi:.1f} | Vol: {vol:.2f} vs avg {vol_avg:.2f}")
+            print(f"   🛑 Stop: {stop_price:.2f} | ATR: {atr:.2f} | Size: {size}")
+
+            self.buy(size=size, sl=stop_price)
+            self.entry_price_val = price
+            self.stop_price_val = stop_price
+            self.trail_active = False
+            self.highest_since_entry = price
+
+    def _reset_trade_state(self):
+        self.entry_price_val = None
+        self.stop_price_val = None
+        self.trail_active = False
+        self.highest_since_entry = None
+
+
+bt = Backtest(
+    data,
+    ElasticConfluence,
+    cash=1_000_000,
+    commission=0.002,
+    exclusive_orders=True,
+)
+
+stats = bt.run()
+print(stats)
+print(stats._strategy)

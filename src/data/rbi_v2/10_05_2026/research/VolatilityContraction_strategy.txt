@@ -1,0 +1,32 @@
+STRATEGY_NAME: VolatilityContraction
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy captures upside volatility expansions that occur after periods of volume contraction. The key insight is that a close above the upper Bollinger Band combined with *declining* volume signals a "quiet breakout" — price is moving up on low participation, which often precedes a sustained move rather than a blow-off top. The RSI exit at 70 locks in gains before momentum exhaustion, while the ATR-based target provides a volatility-adjusted profit objective.
+
+**Required Indicators:**
+1. **Bollinger Bands** (typically 20-period SMA, 2 standard deviations) — upper band is the breakout trigger.
+2. **Volume** (with a short lookback, e.g., 5-10 period average) — must be declining on the breakout candle.
+3. **RSI** (14-period) — exit signal when it crosses below 70.
+4. **ATR** (14-period) — used to set the profit target at 1.5× ATR from entry.
+
+**Entry Rules (Long):**
+- Price closes **above the upper Bollinger Band**.
+- Volume on the breakout candle is **lower** than the prior candle's volume (declining volume confirmation).
+- Optional filter: RSI should be rising but not yet above 70 at entry, ensuring room to run.
+- Enter at the close of the breakout candle (or next open).
+
+**Exit Rules:**
+- **Primary exit:** RSI crosses **below 70** (momentum fade signal).
+- **Profit target:** 1.5 × ATR(14) above the entry price — take partial or full profit here.
+- **Stop loss:** Place at the middle Bollinger Band (SMA) or 1 × ATR below entry, whichever is tighter.
+- If neither target nor RSI exit triggers, reassess after a fixed number of bars (e.g., 10).
+
+**Risk Management:**
+- Position size based on ATR: risk no more than 1% of account per trade, with stop distance = 1 × ATR.
+- Avoid entries when ATR is already at extreme highs (volatility already expanded) — this strategy thrives on fresh expansions.
+- Trail stop to breakeven once price reaches 1 × ATR profit.
+
+**Rationale:**
+Declining volume on a Bollinger breakout suggests the move is not driven by a crowd chasing price, but by a genuine supply/demand imbalance. The RSI<70 exit prevents holding through overbought reversals, while the ATR target adapts profit-taking to current market volatility.

@@ -1,0 +1,54 @@
+STRATEGY_NAME: VolatilityPulse
+
+STRATEGY_DETAILS:
+This strategy trades volatility regime shifts by requiring a synchronized Bollinger Bandwidth expansion and MACD histogram flip, filtered by a volume-weighted price condition. It aims to catch the transition from low-volatility consolidation to directional expansion, but only when price is trading below a long-term volume-weighted benchmark.
+
+1. KEY STRATEGY COMPONENTS
+- Bollinger Bandwidth Expansion: Measures the distance between the upper and lower Bollinger Bands relative to the middle band (SMA). Expansion signals a volatility regime shift from compression to expansion.
+- MACD Histogram Flip: A momentum reset signal where the MACD histogram changes sign (negative to positive for long, positive to negative for short), indicating a shift in momentum direction.
+- 200-day Volume-Weighted Moving Average (VWMA): Used as a regime filter. Entries are only allowed when price is below the VWMA, biasing the strategy toward mean-reversion or early trend capture in undervalued/oversold conditions.
+- Confluence Requirement: Both the bandwidth expansion and MACD histogram flip must occur on the same bar or within a tight window (e.g., 1-3 bars) to avoid false signals.
+
+2. ENTRY RULES
+- Long Entry:
+  - Bollinger Bandwidth (BBW) is below its recent average (e.g., 20-period BBW average) and then expands above a threshold (e.g., 1.5x its 20-period average) on the current bar.
+  - MACD histogram flips from negative to positive on the same bar or within the last 2 bars.
+  - Price is below the 200-day VWMA at the time of entry.
+- Short Entry:
+  - BBW expands above threshold.
+  - MACD histogram flips from positive to negative.
+  - Price is above the 200-day VWMA (mirror condition for short bias).
+- Optional Confirmation: Volume on the signal bar should be above its 20-period average to validate the volatility expansion.
+
+3. EXIT RULES
+- Long Exit:
+  - MACD histogram flips back to negative, OR
+  - Price closes above the 200-day VWMA (regime filter invalidated), OR
+  - Bollinger Bandwidth contracts back below its 20-period average (volatility regime ends).
+- Short Exit:
+  - MACD histogram flips back to positive, OR
+  - Price closes below the 200-day VWMA, OR
+  - BBW contracts below its 20-period average.
+- Profit Target / Stop Loss:
+  - Stop Loss: 1.5x ATR(14) from entry, or below the lower Bollinger Band for longs (above upper band for shorts).
+  - Take Profit: 2x risk (2R) or trail using the middle Bollinger Band.
+
+4. REQUIRED INDICATORS
+- Bollinger Bands (20-period SMA, 2 standard deviations) and derived Bollinger Bandwidth (Upper - Lower) / Middle.
+- MACD (12, 26, 9) with histogram (MACD line - Signal line).
+- 200-day Volume-Weighted Moving Average (VWMA).
+- ATR(14) for stop placement and position sizing.
+- Volume SMA(20) for optional confirmation.
+
+5. RISK MANAGEMENT
+- Position Sizing: Risk no more than 1% of account equity per trade, calculated using the ATR-based stop distance.
+- Max Concurrent Trades: Limit to 1-2 positions to avoid overexposure during choppy volatility regimes.
+- Regime Filter: Avoid trading if the 200-day VWMA is flat or if BBW is already at extreme highs (late-stage expansion).
+- Time Stop: Exit if the trade does not reach 1R within 10 bars, as the volatility pulse may have failed.
+- Slippage/Commission: Account for higher spreads during volatility expansions; use limit orders where possible.
+
+6. IMPLEMENTATION NOTES
+- Use a 1-3 bar window for the MACD flip to align with BBW expansion, as exact same-bar confluence can be rare.
+- Backtest across multiple timeframes (daily preferred for 200-day VWMA relevance; intraday requires adjusted VWMA period).
+- Optimize BBW expansion threshold (e.g., 1.2x to 2.0x average) and MACD parameters, but avoid overfitting.
+- This strategy works best in markets that alternate between compression and expansion (e.g., indices, forex majors, crypto).

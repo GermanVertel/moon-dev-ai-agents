@@ -1,0 +1,45 @@
+STRATEGY_NAME: BandedPremiumHarvest
+
+STRATEGY_DETAILS:
+This strategy sells overbought put options when Bollinger Bands' upper bands intersect with the price's highest highs over the last 5 days, while ensuring at least 20% of open interest remains. It combines technical overbought signals with liquidity/participation filters to harvest premium from elevated implied volatility.
+
+1. Key Strategy Components
+- Instrument: Put options (typically short-dated, e.g., weekly or monthly expirations) on a liquid underlying (index or large-cap stock).
+- Core Signal: Bollinger Bands upper band intersects with the highest high of the last 5 trading days.
+- Liquidity Filter: Open interest must be at least 20% of its recent peak (or at least 20% of the option's initial open interest) to ensure tradability and avoid illiquid contracts.
+- Directional Bias: Contrarian/mean-reversion — selling puts when the underlying is overbought (upper band touch) to collect premium, expecting a pullback or consolidation.
+- Timeframe: Daily charts for signal generation; intraday or end-of-day execution.
+
+2. Entry Rules
+- Calculate Bollinger Bands (typically 20-period SMA, 2 standard deviations).
+- Identify the highest high of the last 5 trading days (rolling 5-day high).
+- Entry trigger: The upper Bollinger Band intersects or is touched by the 5-day highest high (i.e., price reaches or exceeds the upper band at a level equal to the 5-day high).
+- Confirm open interest condition: The specific put option contract (or the option chain's aggregate open interest for the chosen strike/expiration) must have at least 20% of its recent peak open interest remaining. If OI has dropped below 20% of peak, skip the trade.
+- Select an out-of-the-money (OTM) put strike with sufficient liquidity (tight bid-ask spread, volume > 0) and delta typically between -0.20 and -0.40, depending on risk appetite.
+- Sell (write) the put option, collecting premium.
+
+3. Exit Rules
+- Profit target: Buy back the put when premium decays to 50% of the initial credit received (or a predefined percentage, e.g., 50-75%).
+- Stop-loss: Buy back the put if the underlying price falls below the short strike by a predefined buffer (e.g., 1-2 standard deviations) or if the option premium doubles (100% loss on credit).
+- Time-based exit: Close the position at a set number of days before expiration (e.g., 5-7 DTE) to avoid gamma risk.
+- Assignment management: If assigned, either accept the shares and manage as a covered call or close the position for a loss.
+
+4. Risk Management
+- Position sizing: Risk no more than 1-2% of account equity per trade (based on max loss = strike price - premium received, times contract multiplier).
+- Diversification: Limit exposure to a single underlying or sector.
+- Margin requirements: Ensure sufficient cash or margin to cover assignment (cash-secured puts or margin puts).
+- Volatility filter: Avoid selling puts when implied volatility is extremely low (premium too small) or when a major event (earnings, FOMC) is imminent.
+- Open interest monitoring: Continuously check OI; if it falls below 20% of peak, consider exiting early due to liquidity risk.
+
+5. Required Indicators
+- Bollinger Bands (20-period SMA, 2 standard deviations) — upper band.
+- Rolling 5-day highest high (price high over last 5 sessions).
+- Open interest data for the specific option contract (and its recent peak for the 20% threshold).
+- Optional: Implied volatility rank/percentile, delta, and volume for strike selection.
+- Charting platform or API that provides real-time options data (OI, volume, greeks) and historical price data.
+
+6. Additional Notes
+- The strategy assumes mean reversion after an overbought condition; it performs best in range-bound or mildly bullish markets.
+- The 20% open interest filter helps avoid contracts where market makers have withdrawn liquidity, reducing slippage and assignment risk.
+- Backtest with historical options data to calibrate the Bollinger Band parameters, the 5-day high lookback, and the OI threshold.
+- Consider combining with a bearish candlestick pattern (e.g., shooting star) at the upper band for additional confirmation.

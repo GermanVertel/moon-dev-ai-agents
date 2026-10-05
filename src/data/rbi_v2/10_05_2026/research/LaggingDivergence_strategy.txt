@@ -1,0 +1,53 @@
+STRATEGY_NAME: LaggingDivergence
+
+STRATEGY_DETAILS:
+This strategy combines the Ichimoku Chikou Span (lagging line) with RSI momentum extremes and MACD histogram divergence for entries and exits. It is a multi-indicator confluence system designed to catch reversals at exhaustion points.
+
+**Core Components:**
+
+1. **Chikou Span (Lagging Line)** — The current close plotted 26 periods back. Divergence occurs when the Chikou Span disagrees with the price action visible 26 bars ago (e.g., price making higher highs while Chikou makes lower highs = bearish divergence).
+
+2. **RSI (14-period)** — Used as a confirmation filter. Only take signals when RSI > 70 (overbought) for shorts or RSI < 30 (oversold) for longs.
+
+3. **MACD Histogram (12, 26, 9)** — Used exclusively for exits via histogram divergence (shrinking bars against position direction).
+
+**Entry Rules:**
+
+*Short Entry (Bearish Confluence):*
+- Price makes a higher high vs. 26 bars ago
+- Chikou Span makes a lower high vs. its value 26 bars ago (bearish divergence)
+- RSI(14) > 70
+- Enter short on the close of the candle that completes the divergence
+
+*Long Entry (Bullish Confluence):*
+- Price makes a lower low vs. 26 bars ago
+- Chikou Span makes a higher low vs. its value 26 bars ago (bullish divergence)
+- RSI(14) < 30
+- Enter long on the close of the candle that completes the divergence
+
+**Exit Rules:**
+
+*Short Exit:*
+- MACD histogram prints a higher low while price prints a lower low (bullish histogram divergence)
+- Or hard stop at 2× ATR(14) above entry
+
+*Long Exit:*
+- MACD histogram prints a lower high while price prints a higher high (bearish histogram divergence)
+- Or hard stop at 2× ATR(14) below entry
+
+**Risk Management:**
+- Position size: risk 1% of equity per trade, calculated from ATR-based stop distance
+- Max 2 concurrent positions
+- No new entries within 5 bars of a prior exit on the same instrument (avoid chop re-entry)
+- Skip signals during the first 30 minutes of the session (avoid opening volatility noise)
+- Trailing stop activates once trade reaches 1.5× ATR profit, trailing at 1× ATR
+
+**Required Indicators:**
+- Ichimoku Cloud (Chikou Span only, or full set for context)
+- RSI (14)
+- MACD (12, 26, 9) — histogram focus
+- ATR (14) for stops and sizing
+
+**Timeframes:** Best on 1H–4H charts; divergence signals are more reliable when higher timeframe (Daily) trend agrees with the trade direction.
+
+**Notes:** The Chikou Span requires 26 bars of forward-looking data, so signals confirm on candle close — never enter intra-candle. Divergence should be measured against the exact bar 26 periods prior to avoid lookahead bias.

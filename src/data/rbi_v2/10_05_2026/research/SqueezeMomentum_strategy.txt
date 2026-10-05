@@ -1,0 +1,74 @@
+STRATEGY_NAME: SqueezeMomentum
+
+STRATEGY_DETAILS:
+
+**Overview**
+SqueezeMomentum is a hybrid volatility-momentum strategy that identifies high-probability directional trades by requiring two conditions to align simultaneously: (1) a strong underlying trend as measured by ADX, and (2) a volatility compression (squeeze) as measured by Bollinger Band width contracting to a low percentile. Entries occur when the squeeze "fires" in the direction of the prevailing trend, and exits are governed by a Keltner Channel breach against the trend direction, which signals trend exhaustion or reversal.
+
+This strategy exploits the well-documented behavior that volatility is mean-reverting and that low-volatility regimes are frequently followed by explosive directional moves. By filtering with ADX, it avoids trading squeezes during choppy, trendless markets where breakouts tend to fail.
+
+---
+
+**1. Key Strategy Components**
+
+- **ADX (Average Directional Index)** — measures trend strength (not direction). Used as a filter. Typical period: 14.
+- **+DI / -DI** — directional indicators derived from ADX calculation, used to determine trend direction.
+- **Bollinger Bands** — period 20, standard deviation 2.0. Used to measure volatility via bandwidth.
+- **Bollinger Band Width (BBW)** — computed as (Upper Band − Lower Band) / Middle Band. Used to detect volatility compression.
+- **BBW Percentile / Threshold** — the current BBW is compared to a lookback (e.g., 100–125 bars) to identify when volatility is in the lowest X% (e.g., bottom 20–25%).
+- **Keltner Channels** — period 20, ATR multiplier 1.5–2.0. Used exclusively for exits.
+
+---
+
+**2. Entry Rules (Long Example)**
+
+All conditions must be true on the same bar (or within a small window):
+
+1. **Trend Strength Filter:** ADX > 20 (or 25 for stricter filtering).
+2. **Trend Direction Filter:** +DI > −DI (for longs).
+3. **Volatility Compression:** Current BBW is at or below the 20th percentile of BBW over the last 100–125 bars (i.e., a squeeze is in effect).
+4. **Squeeze Release Trigger:** Price closes above the Upper Bollinger Band, OR the BBW begins expanding after the squeeze (BBW turns up from a low).
+5. **Confirmation (optional):** Volume expansion or a bullish candle close.
+
+**Short Entry** mirrors the above: ADX > 20, −DI > +DI, BBW in the low percentile, and price closes below the Lower Bollinger Band.
+
+---
+
+**3. Exit Rules**
+
+- **Primary Exit (Trend Reversal):** Exit a long when price closes below the **lower Keltner Channel band**. Exit a short when price closes above the **upper Keltner Channel band**. This acts as a trailing stop that respects volatility.
+- **ADX Weakening Exit:** Optional — exit if ADX falls below 20 or if +DI/−DI crossover flips against the position.
+- **Time Stop:** Optional — exit after N bars if neither target nor stop is hit.
+
+---
+
+**4. Risk Management**
+
+- **Initial Stop-Loss:** Place at the opposite Bollinger Band, or at a fixed ATR multiple (e.g., 1.5× ATR) from entry.
+- **Position Sizing:** Risk a fixed percentage of equity per trade (e.g., 0.5–1%). Because squeezes produce wide-range breakouts, size positions based on ATR to normalize risk.
+- **Trailing Stop:** Use the Keltner Channel as a dynamic trailing stop once the trade is in profit.
+- **Max Concurrent Positions:** Limit to 1–2 per instrument to avoid correlated squeeze signals.
+- **Avoid News Events:** Skip signals immediately before major scheduled news, as squeezes can resolve unpredictably.
+
+---
+
+**5. Required Indicators (Summary)**
+
+| Indicator | Purpose | Default Settings |
+|---|---|---|
+| ADX | Trend strength filter | 14 |
+| +DI / −DI | Trend direction | 14 |
+| Bollinger Bands | Volatility measurement | 20, 2.0 |
+| Bollinger Band Width | Squeeze detection | Derived |
+| BBW Percentile | Compression threshold | 100–125 bars, 20th pct |
+| Keltner Channels | Exit trigger | 20, 1.5–2.0 ATR |
+| ATR | Position sizing & stops | 14 |
+
+---
+
+**6. Logic Rationale**
+
+- **Why ADX + BBW?** ADX alone confirms trend but says nothing about timing. BBW alone confirms compression but says nothing about direction. Together, they isolate the rare condition where a strong trend exists *and* volatility is coiled — the classic setup for a high-momentum expansion move.
+- **Why Keltner for exits?** Keltner Channels (based on ATR) adapt faster to volatility changes than Bollinger Bands and provide a clean, objective "trend is over" signal when price closes beyond the opposite band.
+
+**Best Markets/Timeframes:** Trending instruments (FX majors, index futures, liquid crypto) on 1H to Daily timeframes. Avoid ranging/choppy markets where ADX rarely exceeds 20.

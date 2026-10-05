@@ -1,0 +1,2 @@
+rank,strategy_name,unique_id,style_tag,status,total_score,is_return_pct,is_sharpe,is_max_dd_pct,is_trades,is_win_rate,is_pf,multi_pass_count,oos_return_pct,oos_sharpe,oos_trades,rejection_reason,timestamp
+1,TestSMA,test1234,Trend-Following,CERTIFIED_WINNER,8.5,25.5,1.45,-12.0,120,,,3/3,10.2,1.1,45,None - Certified Winner,2026-10-05T12:00:00

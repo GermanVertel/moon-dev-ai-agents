@@ -1,0 +1,51 @@
+STRATEGY_NAME: Volumetric Squeeze-Breakout
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band volatility compression (the "squeeze") with volume delta confirmation to trade high-probability breakouts. It filters out false breakouts by requiring a 3x surge in volume delta, then uses a measured-move profit target and structural stop placement.
+
+1. KEY STRATEGY COMPONENTS
+- Volatility Compression Detection: Bollinger Bands must be in a "squeeze" state, meaning band width (Upper Band − Lower Band) contracts to a multi-period low. This signals energy buildup before expansion.
+- Volume Delta Confirmation: A breakout is only valid if accompanied by a 3x surge in volume delta (net buying vs. selling pressure) relative to its recent average. This distinguishes genuine institutional participation from noise.
+- Directional Breakout: Price must close outside the Bollinger Band (above Upper for longs, below Lower for shorts).
+- Engulfing Candle Context: The breakout candle should engulf the prior candle's range, providing a structural reference for stop placement.
+
+2. ENTRY RULES
+Long Entry:
+- Bollinger Band width is at or near its N-period low (squeeze condition).
+- Price closes above the Upper Bollinger Band.
+- Volume delta ≥ 3x the average volume delta of the last N bars.
+- Entry candle is bullish and engulfs the prior candle's body/range.
+- Enter at close of the breakout candle or on a small pullback retest.
+
+Short Entry:
+- Bollinger Band width at N-period low (squeeze condition).
+- Price closes below the Lower Bollinger Band.
+- Volume delta ≥ 3x the average (net selling surge).
+- Entry candle is bearish and engulfs the prior candle's range.
+- Enter at close or on retest.
+
+3. EXIT RULES
+- Profit Target: 1.5x the squeeze range, measured from the breakout point. Squeeze range = (Upper Band − Lower Band) at the moment of the tightest compression. Target = Breakout Price ± (1.5 × Squeeze Range).
+- Stop Loss: Placed just beyond the low of the engulfing candle (for longs) or just above the high (for shorts), with a small buffer.
+- Optional Trailing Stop: Trail below the engulfing candle low or use a moving average once price reaches 1x the squeeze range.
+
+4. RISK MANAGEMENT
+- Position sizing based on distance between entry and stop (engulfing candle low/high).
+- Risk per trade capped at 1–2% of account equity.
+- Skip trades where the squeeze range is abnormally large (poor R:R) or where volume delta surge is accompanied by a wick-heavy candle (rejection).
+- Avoid trading during low-liquidity sessions or major news events that distort volume delta.
+- Require minimum R:R of 1.5:1 before entry; if stop is too wide, reduce size or skip.
+
+5. REQUIRED INDICATORS
+- Bollinger Bands (typically 20-period SMA, 2 standard deviations) — for squeeze detection and breakout levels.
+- Bollinger Band Width / Bandwidth indicator — to quantify squeeze (N-period low).
+- Volume Delta — net buy/sell volume (from order flow or tick data); needs a rolling average to compute the 3x surge.
+- Candlestick pattern recognition — to identify engulfing candles.
+- Optional: ATR for volatility context and trailing stop sizing.
+
+6. EXECUTION NOTES
+- Confirm squeeze on a closing basis, not intrabar, to avoid premature signals.
+- Volume delta surge should be measured over the same timeframe as the breakout candle.
+- Consider a secondary confirmation (e.g., RSI not overbought/oversold at breakout) to reduce chasing extended moves.
+- Backtest across multiple timeframes; squeeze breakouts work best on 15m–4H charts in trending markets.
+- Log squeeze range, volume delta multiple, and R:R for each trade to refine the 3x threshold.

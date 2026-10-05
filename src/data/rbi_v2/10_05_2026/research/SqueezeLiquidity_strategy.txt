@@ -1,0 +1,82 @@
+STRATEGY_NAME: SqueezeLiquidity
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy combines two complementary signals: a statistical volatility contraction filter (Bollinger Bandwidth percentile) and a microstructure confirmation layer (order book liquidity clusters). The premise is that low-volatility regimes ("squeezes") precede explosive directional moves, and the order book reveals where real liquidity sits — so entries are only taken when price breaks a band *and* pushes into/th rough thin liquidity zones where a genuine move can accelerate.
+
+---
+
+**1. Key Strategy Components**
+
+- **Volatility Contraction Filter (Regime Gate)**
+  - Compute Bollinger Bands (typically 20-period SMA, 2 std dev).
+  - Calculate Bollinger Bandwidth: `BBW = (Upper Band − Lower Band) / Middle Band`.
+  - Convert BBW into a rolling percentile rank (e.g., 100–252 bar lookback).
+  - **Gate condition:** BBW percentile < 10. Only trade when the market is in the bottom decile of recent volatility.
+
+- **Order Book Liquidity Clusters (Microstructure Layer)**
+  - Build a depth profile from L2 order book snapshots (bid/ask sizes aggregated by price bucket).
+  - Identify **liquidity clusters**: price levels where cumulative resting size exceeds a threshold (e.g., top 10% of depth by price bucket).
+  - Classify nearby clusters as either **support walls** (below price) or **resistance walls** (above price).
+  - Track **liquidity depletion**: rate at which size at a cluster is consumed by market orders.
+
+- **Breakout Trigger**
+  - Price must **close** beyond the upper or lower Bollinger Band (not just wick).
+  - Direction must align with the path of least liquidity resistance (i.e., break toward a thin zone or through a recently depleted wall).
+
+---
+
+**2. Entry Rules**
+
+**Long Entry:**
+1. BBW percentile < 10 (squeeze active).
+2. Price closes above the Upper Bollinger Band.
+3. Above the close, the nearest liquidity cluster is either:
+   - Absent within X% (thin path), OR
+   - A resistance wall that has been ≥50% depleted in the last N bars.
+4. Optional confirmation: rising volume or increasing trade-through rate.
+
+**Short Entry:**
+1. BBW percentile < 10.
+2. Price closes below the Lower Bollinger Band.
+3. Below the close, the nearest liquidity cluster is thin or a support wall that is being rapidly depleted.
+
+**Position Sizing:** Normalize by ATR or by the width of the band at entry to keep risk consistent across volatility regimes.
+
+---
+
+**3. Exit Rules**
+
+- **Primary Exit — Mean Reversion:** Close position when price reverts to the Bollinger middle band (20-SMA). This captures the statistical snap-back after an extended breakout.
+- **Secondary Exit — Liquidity Zone Depletion:** Exit if the cluster that justified the entry is fully consumed and price stalls (no follow-through within M bars). This protects against false breakouts where liquidity was the only driver.
+- **Trailing Exit:** Optional ATR-based trailing stop once price moves 1R in favor, to capture extended trends when mean reversion doesn't occur.
+
+---
+
+**4. Risk Management**
+
+- **Stop Loss:** Place beyond the opposite band or beyond the nearest liquidity cluster on the wrong side of the trade. Use the wider of the two for safety.
+- **Max Risk per Trade:** 0.5–1% of equity, adjusted so that the stop distance equates to a fixed R.
+- **Time Stop:** If no mean reversion or liquidity depletion event occurs within N bars (e.g., 2–3× the squeeze duration), exit at market.
+- **Regime Kill Switch:** Disable entries if BBW percentile rises above 50 without a completed trade — indicates the squeeze resolved without participation.
+- **Correlation Cap:** Limit concurrent exposure to instruments with correlated order book dynamics (e.g., BTC/ETH).
+
+---
+
+**5. Required Indicators & Data**
+
+- Bollinger Bands (20, 2) — Upper, Middle, Lower.
+- Bollinger Bandwidth + rolling percentile rank (lookback 100–252).
+- ATR (14) for sizing and trailing stops.
+- L2 order book feed with:
+  - Aggregated depth by price bucket.
+  - Cluster detection algorithm (threshold on cumulative size).
+  - Depletion tracker (size consumed over rolling window).
+- Volume / trade-through rate (optional confirmation).
+- Bar timeframe: typically 15m–4H depending on instrument liquidity.
+
+---
+
+**6. Why This Works**
+Volatility contraction is a well-documented precursor to expansion, but raw breakouts fail frequently because they hit hidden liquidity walls. By requiring the breakout to occur into thin or depleted liquidity, the strategy filters for breakouts with a genuine path of least resistance — turning a coin-flip breakout into a higher-probability event. The dual exit (mean reversion OR liquidity depletion) ensures the trade closes whether the move is a quick snap-back or a failed push.

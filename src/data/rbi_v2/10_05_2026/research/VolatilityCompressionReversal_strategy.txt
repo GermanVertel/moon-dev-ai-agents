@@ -1,0 +1,45 @@
+STRATEGY_NAME: Volatility Compression Reversal
+
+STRATEGY_DETAILS:
+This strategy is a mean-reversion short setup triggered by Bollinger Band compression combined with a volume spike anomaly. Note that the entry direction (long) and the stop/take-profit levels described are internally inconsistent for a long position, so the rules below are interpreted as a short-side mean reversion trade, which is the only way the stop-loss/take-profit geometry makes sense. I'll flag this ambiguity explicitly.
+
+**Core Logic / Rationale**
+- Bollinger Band width below 2 standard deviations signals low volatility / compression, which often precedes a volatility expansion and price mean reversion.
+- A volume reading exactly 2x the average daily volume signals abnormal participation, often a climax or exhaustion move.
+- The combination suggests a reversal from an extended move, so the strategy fades the move (short) rather than joining it.
+
+**1. Key Strategy Components**
+- Bollinger Bands: 20-period SMA with 2 standard deviation bands (standard settings).
+- Band Width Filter: Bollinger Band width must be BELOW 2 standard deviations (i.e., compressed relative to its own recent distribution).
+- Volume Filter: Current day's volume must equal EXACTLY 2x the average daily trading volume (20-day average recommended). "Exactly" is impractical in live trading — use a tolerance band, e.g., 1.95x–2.05x.
+- Time Window: Entry must occur within the next 30 minutes of the signal.
+
+**2. Entry Rules**
+- Condition A: Bollinger Band width < 2 standard deviations (compression confirmed).
+- Condition B: Volume = 2x average daily volume (within tolerance).
+- Condition C: Signal fires; enter within 30 minutes.
+- Position Size: 50% of intended full long position — but given the stop/TP geometry, this is a SHORT entry. Enter 50% of the target short size.
+- Entry Price: Market order at signal execution.
+
+**3. Exit Rules**
+- Stop-Loss: 20% ABOVE entry price (protects against upward breakout against the short).
+- Take-Profit: 10% BELOW entry price (targets downward mean reversion).
+- This gives a risk:reward of 2:1 against you (risking 20% to make 10%), which is unfavorable — flag for review. Consider inverting to SL 10% / TP 20%, or using tighter stops.
+
+**4. Risk Management**
+- Risk per trade = 20% of position value — extremely high. Standard practice caps risk at 1–2% of account. Reduce position size dramatically or tighten stops.
+- Use 50% sizing as specified, but recognize this only halves an already oversized risk.
+- Volume "exactly 2x" condition will rarely trigger — expect very few trades; verify backtest sample size.
+- Add a maximum holding period (e.g., intraday or 1–3 days) since compression setups resolve quickly.
+- Consider a time-based exit if neither SL nor TP hits within N bars.
+
+**5. Required Indicators**
+- Bollinger Bands (20, 2) — for width compression.
+- Bollinger Band Width (BBW) — to compare current width vs. its 2-standard-deviation threshold.
+- Volume — current vs. 20-day average daily volume.
+- Optional: ATR for dynamic stop sizing, RSI for reversal confirmation.
+
+**Critical Flags**
+- Direction inconsistency: The prompt says "long position" but SL above / TP below entry describes a SHORT. Clarify intent before trading.
+- "Exactly 2x volume" is unrealistic; use a tolerance range.
+- 20% stop is dangerously wide for a 10% target — negative expectancy unless win rate exceeds ~67%.

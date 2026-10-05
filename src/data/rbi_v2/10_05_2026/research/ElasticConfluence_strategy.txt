@@ -1,0 +1,52 @@
+STRATEGY_NAME: ElasticConfluence
+
+STRATEGY_DETAILS:
+This strategy combines moving average divergence, RSI momentum divergence, and volume confirmation to identify high-probability reversal entries. The core premise is that when price stretches too far from its equilibrium (measured by EMA/SMA divergence) while RSI shows exhaustion and volume confirms a shift, a mean-reversion move is likely.
+
+**Core Components:**
+
+1. **Equilibrium Divergence (EMA/SMA Spread)**
+   - Calculate 10-period EMA (fast, reactive) and 50-period SMA (slow, structural).
+   - Compute the spread: `Spread = (EMA10 - SMA50) / SMA50 * 100` (percentage divergence).
+   - Track the spread over a lookback window (e.g., 50–100 bars) to establish a "stretch threshold" (e.g., 2 standard deviations below mean spread for bullish setups).
+   - A bullish setup requires the spread to be deeply negative (price stretched below equilibrium).
+
+2. **RSI Divergence Confirmation**
+   - Use RSI (14-period) on the same timeframe.
+   - Identify **bullish divergence**: price makes a lower low while RSI makes a higher low, specifically occurring in oversold territory (RSI < 30) or coming off oversold.
+   - Only valid when the EMA/SMA spread is simultaneously at an extreme — this filters out weak divergences.
+
+3. **Volume Spike Filter**
+   - Require the current bar's volume to exceed the 20-period average volume by a factor of 1.5x or more.
+   - The volume spike must occur on a bullish candle (close > open) to confirm buyer aggression.
+   - Optionally require rising volume on the divergence-forming bar.
+
+**Entry Rules (Long):**
+- Condition A: EMA10/SMA50 spread is at or below its lower stretch threshold (e.g., -2σ).
+- Condition B: RSI(14) shows bullish divergence (higher RSI low vs. lower price low) in/near oversold.
+- Condition C: Volume > 1.5x 20-period average on a bullish reversal candle.
+- Enter long at the close of the confirmation candle (or next bar open).
+
+**Exit Rules:**
+- **Primary Exit (Equilibrium Return):** Close the position when EMA10 crosses back above SMA50, or when the spread returns to zero/its mean.
+- **Take Profit Alternative:** Exit when RSI reaches 60–70 (overbought zone) or price touches the 50-period SMA from below.
+- **Stop Loss (ATR-based):** Set stop at `Entry Price - (2.0 × ATR(14))`. Trail the stop using 1.5× ATR once the trade moves 1× ATR in profit.
+
+**Risk Management:**
+- Risk no more than 1–2% of account equity per trade.
+- Position size = (Account Risk $) / (Entry − Stop Loss).
+- Avoid trading during major news events or illiquid sessions.
+- Max 1–2 concurrent positions to limit correlated exposure.
+- Skip signals if ATR is abnormally high (e.g., > 2× its 50-period average) — indicates unstable conditions.
+
+**Required Indicators:**
+- 10-period EMA
+- 50-period SMA
+- RSI (14-period)
+- ATR (14-period)
+- Volume + 20-period volume moving average
+- Standard deviation of EMA/SMA spread (for stretch threshold)
+
+**Timeframe:** Best suited for 1H–4H charts for swing entries; can adapt to 15m for intraday with tighter ATR multipliers.
+
+**Edge Rationale:** The triple confluence (structural stretch + momentum divergence + volume surge) filters out false reversals. Equilibrium acts as a natural, objective profit target, while ATR stops adapt to volatility.

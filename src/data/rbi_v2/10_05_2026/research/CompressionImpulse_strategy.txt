@@ -1,0 +1,33 @@
+STRATEGY_NAME: CompressionImpulse
+
+STRATEGY_DETAILS:
+This strategy capitalizes on the explosive directional moves that typically follow periods of low volatility. By identifying "compression" via Bollinger Band width and confirming "impulse" via RSI momentum, it aims to catch the early phase of a new trend.
+
+**1. Key Strategy Components**
+- **Volatility Squeeze Detection:** Uses Bollinger Bands (BB) to identify periods where price action has coiled tightly.
+- **Momentum Confirmation:** Uses RSI to ensure the breakout has directional conviction, filtering out false starts.
+- **Dynamic Profit Target:** Uses ATR to set a profit target that adapts to the current market volatility.
+
+**2. Entry Rules (Long Setup)**
+- **Condition 1 (Squeeze):** Calculate Bollinger Band Width: `(Upper Band - Lower Band) / Middle Band`. The current BB Width must be the lowest value seen in the last 20 periods (20-day low).
+- **Condition 2 (Trigger):** RSI(14) must cross above the 50 level. This indicates momentum shifting to the bullish side.
+- **Execution:** Enter a long position on the close of the candle where both conditions are met (or on the open of the next candle). 
+- *Note for Short Setup:* Reverse the RSI condition (cross below 50) if trading in a bearish regime, though this strategy is primarily optimized for long breakouts from squeezes.
+
+**3. Exit Rules**
+- **Profit Target:** Exit when price moves `2 * ATR(14)` above the entry price. This locks in gains during volatility expansions.
+- **Stop Loss:** Place a stop loss at `1 * ATR(14)` below the entry price to protect against failed breakouts.
+- **Time Stop (Optional):** If the target is not hit within 10-15 bars, exit the position to avoid dead money.
+
+**4. Required Indicators**
+- **Bollinger Bands:** Period 20, Standard Deviation 2.0.
+- **RSI:** Period 14.
+- **ATR:** Period 14.
+
+**5. Risk Management**
+- **Position Sizing:** Risk no more than 1-2% of account equity per trade. Since the stop loss is ATR-based, position size must be calculated as `Risk Amount / (Entry - Stop Loss)`.
+- **Volatility Filter:** Avoid trading this strategy during scheduled high-impact news events, as the initial squeeze can be overwhelmed by erratic spikes.
+- **False Breakout Guard:** If price re-enters the Bollinger Bands immediately after entry, consider tightening the stop loss to break-even.
+
+**6. Logic Summary**
+The strategy waits for the market to "breathe in" (low volatility via BB Width) and then "breathe out" (expansion). The RSI cross above 50 acts as the trigger, ensuring that the expansion is happening in the upward direction. The ATR-based exit ensures that the trader captures a move proportional to the market's current energy.

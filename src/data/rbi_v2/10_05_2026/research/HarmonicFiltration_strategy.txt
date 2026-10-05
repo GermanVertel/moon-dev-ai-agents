@@ -1,0 +1,61 @@
+STRATEGY_NAME: HarmonicFiltration
+
+STRATEGY_DETAILS:
+This strategy identifies and trades false breakouts by combining harmonic pattern recognition (Gartley, Bat, Butterfly, Crab, Shark) with price action confirmation at key support/resistance levels. The core premise is that false breakouts often terminate at harmonic reversal zones (PRZ - Potential Reversal Zones), where Fibonacci-derived ratios align with failed breakout attempts.
+
+KEY STRATEGY COMPONENTS:
+
+1. Harmonic Pattern Detection
+- Scan for valid XABCD structures using Fibonacci ratios:
+  - Gartley: B=0.618, D=0.786 (XA retracement)
+  - Bat: B=0.382-0.50, D=0.886
+  - Butterfly: B=0.786, D=1.27-1.618
+  - Crab: B=0.382-0.618, D=1.618
+  - Shark: B=0.382-0.618, D=0.886-1.13
+- Use zigzag or swing pivot detection (minimum 5-bar pivots) to define X, A, B, C, D points
+- Validate BC projection and AB=CD symmetry before confirming
+
+2. False Breakout Identification
+- Detect when price breaks a recent swing high/low or range boundary
+- Confirm failure when price closes back inside the prior range within 1-3 bars
+- Require the breakout extreme to coincide with a harmonic PRZ (D-point zone ±0.5 ATR)
+- Check for divergence: RSI/MACD divergence at the breakout extreme strengthens the signal
+
+3. Confluence Filters
+- Volume: false breakouts typically show declining volume on the breakout candle
+- Wick analysis: long rejection wicks (>60% of candle range) at the breakout level
+- Higher timeframe alignment: PRZ should sit at a HTF S/R level (daily/weekly)
+
+ENTRY RULES:
+- Aggressive: Enter on the close of the reversal candle back inside the range
+- Conservative: Enter on the break of the reversal candle's high (for shorts, low for longs)
+- Only take entries when harmonic PRZ + false breakout + rejection wick all align
+- Skip trades during major news releases (NFP, FOMC, CPI)
+
+EXIT RULES:
+- Stop Loss: 1.5x ATR beyond the false breakout extreme
+- Take Profit 1: 38.2% retracement of the CD leg
+- Take Profit 2: C-point of the harmonic pattern
+- Take Profit 3: A-point (full pattern completion target)
+- Trail stop to breakeven once TP1 is hit
+
+RISK MANAGEMENT:
+- Risk 0.5-1% per trade (harmonic patterns have ~60-65% win rate historically)
+- Maximum 2 concurrent harmonic positions to avoid correlated risk
+- Move to breakeven after 1R profit
+- Cut position if price closes beyond the X-point (pattern invalidation)
+- Skip setups with PRZ width >1.5 ATR (too imprecise)
+
+REQUIRED INDICATORS:
+- ZigZag or Swing High/Low indicator (for XABCD detection)
+- Fibonacci retracement/extension tool (auto-plot for pattern ratios)
+- ATR (14) for stop sizing and PRZ width validation
+- RSI (14) and MACD (12,26,9) for divergence confirmation
+- Volume profile or OBV for breakout volume analysis
+- Optional: Harmonic pattern scanner (automated XABCD detection)
+
+TIMEFRAMES:
+- Best on 1H, 4H, and Daily charts
+- Multi-timeframe confirmation: 4H pattern + 15M entry trigger
+
+This strategy excels in ranging or corrective markets where false breakouts are frequent, and struggles in strong trending conditions where breakouts tend to hold.

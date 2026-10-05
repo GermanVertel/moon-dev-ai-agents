@@ -1,0 +1,37 @@
+STRATEGY_NAME: AdaptiveVolatility
+
+STRATEGY_DETAILS:
+The AdaptiveVolatility strategy is a dynamic volatility breakout system designed to capture significant price moves following periods of market compression. Unlike static breakout methods, this approach continuously adjusts its entry thresholds based on real-time changes in market volatility, allowing it to adapt to different market regimes (e.g., trending, ranging, or high-volatility environments). The core premise is that periods of low volatility are often followed by explosive price movements, and by measuring volatility expansion, the strategy aims to enter early in the direction of the breakout.
+
+Key Strategy Components:
+1.  **Volatility Measurement:** The strategy uses the Average True Range (ATR) or Standard Deviation of closing prices over a lookback period (e.g., 14 periods) to quantify current market volatility.
+2.  **Dynamic Breakout Levels:** Instead of fixed price levels, the breakout thresholds are calculated as a multiple of the current volatility measure added to or subtracted from a reference price (e.g., a moving average or the prior period's close). For example:
+    - Upper Band = Moving Average + (ATR * Multiplier)
+    - Lower Band = Moving Average - (ATR * Multiplier)
+    The multiplier is a key parameter that can be optimized (commonly between 1.5 and 3.0).
+3.  **Volatility Regime Filter:** The strategy may include a filter to only take breakouts when volatility is expanding (e.g., ATR is rising) or when the market is in a low-volatility consolidation phase (e.g., ATR is below a certain percentile). This helps avoid false breakouts in choppy, high-noise conditions.
+4.  **Trend Confirmation (Optional):** A longer-term moving average (e.g., 200-period SMA) can be used to filter trades in the direction of the dominant trend, improving the win rate.
+
+Entry Rules:
+- **Long Entry:** When the price closes above the Upper Band (Moving Average + ATR * Multiplier) and, if used, the trend filter confirms an uptrend (e.g., price above 200-period SMA). The entry is typically executed at the next bar's open or on a stop order at the breakout level.
+- **Short Entry:** When the price closes below the Lower Band (Moving Average - ATR * Multiplier) and the trend filter confirms a downtrend (e.g., price below 200-period SMA).
+
+Exit Rules:
+- **Profit Target:** A common approach is to use a multiple of the ATR as a profit target (e.g., 2x ATR from entry). Alternatively, a trailing stop based on ATR or a moving average can be used to let profits run.
+- **Stop Loss:** A stop loss is placed at a distance of 1x ATR (or another multiple) from the entry price, on the opposite side of the trade. For a long trade, the stop is below the entry; for a short trade, it is above.
+- **Time-Based Exit:** If the price does not reach the profit target or stop loss within a specified number of bars (e.g., 10 bars), the trade is closed at market to avoid stagnation.
+- **Opposite Signal Exit:** Close the position if an opposite breakout signal occurs.
+
+Risk Management:
+- **Position Sizing:** Risk per trade is fixed as a percentage of account equity (e.g., 1-2%). The position size is calculated based on the distance between entry and stop loss (ATR-based), ensuring that the risk is consistent across trades.
+- **Maximum Drawdown Control:** A daily or weekly loss limit can be implemented to stop trading after a certain drawdown threshold is hit.
+- **Volatility Filter:** Avoid trading during extreme volatility events (e.g., news releases) unless the strategy is specifically designed for them. The ATR multiplier can be increased to reduce false signals in high-volatility environments.
+- **Diversification:** Apply the strategy across multiple uncorrelated instruments to reduce overall portfolio risk.
+
+Required Indicators:
+1.  **Average True Range (ATR):** For measuring volatility and setting dynamic bands and stops.
+2.  **Moving Average (SMA or EMA):** As the reference price for the breakout bands and optionally as a trend filter.
+3.  **Standard Deviation (optional):** As an alternative volatility measure to ATR.
+4.  **Volume (optional):** To confirm breakouts with above-average volume.
+
+The AdaptiveVolatility strategy is best suited for trending markets and can be applied to various timeframes, from intraday to daily charts. It requires careful parameter optimization (lookback period, ATR multiplier, stop/target multiples) to balance sensitivity and reliability. Backtesting and forward testing are essential to validate performance under different market conditions.

@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 CompressionBreakout Strategy Loading... \u2728\ud83c\udf19\n\ud83d\ude80 Data loaded: 1009 bars from 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n\ud83c\udf19\u2728 Starting CompressionBreakout Backtest... \u2728\ud83c\udf19\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/CompressionBreakout_PKG.py\", line 182, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/CompressionBreakout_PKG.py` failed. (See above for error)\n",
+  "execution_time": 2.898845,
+  "timestamp": "2026-10-05T14:25:13.272698"
+}

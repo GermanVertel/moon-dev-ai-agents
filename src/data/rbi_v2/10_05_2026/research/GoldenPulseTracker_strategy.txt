@@ -1,0 +1,48 @@
+STRATEGY_NAME: GoldenPulse Tracker
+
+STRATEGY_DETAILS:
+This is a trend-following breakout strategy that combines a classic EMA crossover signal with momentum confirmation via ADX and volatility-based risk management using ATR. The "Golden" refers to the golden cross (50 EMA over 200 EMA), and "Pulse" reflects the ADX momentum thrust that confirms the breakout is live.
+
+**1. Key Strategy Components**
+
+- **Primary Trend Filter (Golden Cross):** The 50-period EMA crossing above the 200-period EMA signals a shift from bearish/neutral to bullish trend structure. This is the directional bias gate — no long trades are taken without it.
+- **Momentum Confirmation (ADX Pulse):** The ADX (Average Directional Index) rising above 25 confirms that a strong trend is developing, filtering out weak, choppy crossovers. The word "rising" is critical — ADX must be increasing, not just above 25, to avoid entering on a fading trend.
+- **Volatility-Based Exit (ATR Trail):** A trailing stop set at 2x the 14-period ATR adapts the exit to current market volatility, giving the trade room to breathe in volatile conditions while locking in profits as the trend extends.
+
+**2. Entry Rules**
+
+- **Long Entry Conditions (all must be true on the same or consecutive bars):**
+  1. 50 EMA crosses above 200 EMA (golden cross occurs).
+  2. ADX(14) is above 25 AND rising (current ADX > previous ADX).
+  3. Optionally, +DI > -DI to confirm bullish directional strength.
+- **Entry Trigger:** Enter long at the close of the bar where all conditions are met, or on the open of the next bar.
+- **No Short Entries:** This strategy is long-only as described. (A mirror version could short on death cross + ADX > 25 rising.)
+
+**3. Exit Rules**
+
+- **Trailing Stop:** Set an initial stop at 2 × ATR(14) below the entry price.
+- **Trail Mechanic:** As price moves favorably, raise the stop to remain 2 × ATR(14) below the highest close (or highest high) achieved since entry.
+- **Exit Trigger:** Close the position when price hits the trailing stop level.
+- **Optional Trend Exit:** Consider exiting if the 50 EMA crosses back below the 200 EMA (death cross), or if ADX drops below 20, signaling trend exhaustion.
+
+**4. Risk Management**
+
+- **Position Sizing:** Size positions so that the 2 × ATR stop distance equals a fixed percentage of account equity (e.g., 1–2% risk per trade). This standardizes risk regardless of volatility.
+- **Max Drawdown Control:** Avoid taking new entries if ADX is falling or if price is extended far from the 50 EMA (e.g., > 3 × ATR), to prevent chasing.
+- **Volatility Awareness:** In low-ATR regimes, the trailing stop will be tight — expect more whipsaws. In high-ATR regimes, the stop is wide — reduce position size accordingly.
+- **Time Filter:** Consider requiring the golden cross to be recent (within N bars) so you're trading the breakout, not a stale crossover.
+
+**5. Required Indicators**
+
+- **50-period EMA** — fast trend line.
+- **200-period EMA** — slow trend line.
+- **ADX (14)** with +DI and -DI — trend strength and direction.
+- **ATR (14)** — volatility measure for stop placement.
+
+**6. Chart & Timeframe Notes**
+
+- Works best on trending instruments (indices, FX majors, crypto in directional phases) on higher timeframes (1H, 4H, Daily) where EMA crossovers carry more weight.
+- Avoid ranging/consolidating markets — the ADX > 25 rising filter is the primary defense against chop.
+
+**Summary Logic:**
+> Wait for the golden cross. Confirm with a rising ADX above 25. Enter long. Trail the stop at 2 × ATR(14). Let the trend run until the stop is hit or the trend structure breaks.

@@ -1,0 +1,105 @@
+STRATEGY_NAME: CompressedBand Ignition
+
+STRATEGY_DETAILS:
+This strategy is a classic "volatility contraction → expansion" play. It waits for the market to go quiet (low Bollinger Band width + weak trend strength per ADX), then trades the first decisive breakout when volatility returns. Below is a complete specification.
+
+──────────────────────────────
+1. CORE CONCEPT
+──────────────────────────────
+Markets alternate between low-volatility consolidation and high-volatility expansion phases. When Bollinger Band width hits a 20-day low, price is coiled. ADX < 20 confirms there is no dominant trend (i.e., the squeeze isn't just a pause inside an already-strong trend). The exit/entry trigger is the expansion: bands widen AND price closes beyond a band on above-average volume.
+
+──────────────────────────────
+2. REQUIRED INDICATORS
+──────────────────────────────
+- Bollinger Bands (BB): period = 20, std dev multiplier = 2.0
+- Bollinger Band Width (BBW): (Upper − Lower) / Middle, or simply Upper − Lower
+- ADX: period = 14 (with +DI / −DI for directional bias)
+- Volume: 20-period simple moving average (Volume SMA)
+- ATR (optional): period = 14 for stops and position sizing
+
+──────────────────────────────
+3. ENTRY CONDITIONS
+──────────────────────────────
+SETUP (squeeze detection — evaluated each bar):
+- BBW(20) ≤ lowest BBW value of the prior 20 bars (20-day low), AND
+- ADX(14) < 20
+
+TRIGGER (expansion confirmation — must occur AFTER a valid setup, within N bars, e.g., 10):
+- BBW is now expanding (BBW > BBW[1]), AND
+- Close > Upper Band (long) OR Close < Lower Band (short), AND
+- Volume > 1.5 × Volume SMA(20) (above-average volume), AND
+- Directional filter (recommended): +DI > −DI for longs, −DI > +DI for shorts
+
+ACTION:
+- Enter at next bar open (or market close of the trigger bar) in the breakout direction.
+
+──────────────────────────────
+4. EXIT CONDITIONS
+──────────────────────────────
+Primary exits (any one triggers):
+- Price closes back inside the Bollinger Bands (close crosses back through the band that was broken), OR
+- ADX rises above 40 (trend maturity / exhaustion), OR
+- Trailing stop hit.
+
+Trailing stop:
+- Long: stop = Close − (2 × ATR(14)), ratcheted upward only.
+- Short: stop = Close + (2 × ATR(14)), ratcheted downward only.
+
+Time stop:
+- Exit if neither target nor stop is hit within 20 bars (optional, configurable).
+
+Optional profit target:
+- 2R to 3R measured move, or exit when BBW peaks and begins contracting.
+
+──────────────────────────────
+5. RISK MANAGEMENT
+──────────────────────────────
+- Position sizing: risk 0.5%–1% of equity per trade; size = (Equity × Risk%) / (ATR-based stop distance).
+- Initial stop: 2 × ATR(14) from entry.
+- Max concurrent positions: 1 per instrument (avoid stacking correlated squeezes).
+- Avoid trading during known low-liquidity windows (e.g., first/last 15 min of session, major news releases).
+- Filter: skip signals when ADX is rising strongly above 25 before the squeeze (means squeeze is inside an existing trend, not a fresh range).
+- Slippage buffer: assume 1 tick + spread on entries/exits.
+
+──────────────────────────────
+6. PARAMETER SUMMARY
+──────────────────────────────
+- BB period: 20
+- BB std dev: 2.0
+- BBW lookback for low: 20
+- ADX period: 14
+- ADX squeeze threshold: 20
+- ADX exhaustion threshold: 40
+- Volume multiplier: 1.5× SMA(20)
+- Setup validity window: 10 bars
+- ATR period: 14
+- Stop: 2 × ATR
+- Risk per trade: 0.5%–1%
+
+──────────────────────────────
+7. LOGIC FLOW (PSEUDOCODE)
+──────────────────────────────
+```
+if BBW <= min(BBW, 20) and ADX < 20:
+    squeeze_active = True
+    squeeze_bar = current_bar
+
+if squeeze_active and (current_bar - squeeze_bar <= 10):
+    long_trigger  = BBW > BBW[1] and Close > Upper and Volume > 1.5*VolSMA and +DI > -DI
+    short_trigger = BBW > BBW[1] and Close < Lower and Volume > 1.5*VolSMA and -DI > +DI
+
+    if long_trigger:  enter_long()
+    if short_trigger: enter_short()
+
+# Exits
+if long and (Close < Upper or ADX > 40 or stop_hit): exit_long()
+if short and (Close > Lower or ADX > 40 or stop_hit): exit_short()
+```
+
+──────────────────────────────
+8. NOTES / EDGE CASES
+──────────────────────────────
+- The "20-day low" should use strictly prior bars to avoid look-ahead bias.
+- Confirm BBW expansion on the trigger bar itself, not just the setup bar.
+- In choppy regimes, false breakouts are common — the volume filter and DI filter are critical to reduce whipsaws.
+- Backtest across multiple instruments/timeframes; squeeze strategies typically perform best on liquid futures, FX majors, and large-cap equities.

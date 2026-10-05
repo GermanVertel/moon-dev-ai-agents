@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Loaded 1009 bars of BTC-USD 15m data \u2728\n\ud83c\udf19\u2728 ConvergentDivergence indicators initialized! \ud83d\ude80\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/975 [00:00<?, ?bar/s]\n                                                      \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/ConvergentDivergence_BTFinal_v6.py\", line 339, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/ConvergentDivergence_BTFinal_v6.py\", line 294, in next\n    and self._volume_fading(i, mode='high')\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/ConvergentDivergence_BTFinal_v6.py\", line 173, in _volume_fading\n    if len(seg) == 2 * window + 1 and cmp_fn(seg):\nValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/ConvergentDivergence_BTFinal_v6.py` failed. (See above for error)\n",
+  "execution_time": 5.279128,
+  "timestamp": "2026-10-05T12:09:09.139990"
+}

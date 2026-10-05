@@ -1,0 +1,53 @@
+STRATEGY_NAME: VolatilityCrush
+
+STRATEGY_DETAILS:
+This strategy exploits mean reversion in implied volatility (IV) by selling short-dated options after a sharp IV decline, betting that volatility will stay subdued or continue falling rather than spike back up.
+
+CORE LOGIC:
+- Implied volatility tends to mean-revert. A rapid 3% weekly drop in IV often signals that the market has already priced in recent uncertainty and is now complacent. Selling premium into this environment captures theta decay while IV remains low.
+- Short-dated options (≤5 DTE) have the fastest theta decay, maximizing premium capture per day held.
+- The stop-loss at entry price acts as a hard risk cap on the short option position.
+
+KEY STRATEGY COMPONENTS:
+
+1. SIGNAL / ENTRY CONDITION
+   - Track implied volatility index or IV of the underlying (e.g., VIX, IV rank, ATM IV).
+   - Measure the change in IV over a rolling 5-trading-day (1-week) window.
+   - ENTRY TRIGGER: When IV has declined by 3% or more over that weekly window.
+   - Once triggered, sell options with expiry ≤5 days.
+
+2. INSTRUMENT SELECTION
+   - Sell near-the-money (ATM) or slightly out-of-the-money (OTM) options to balance premium vs. assignment risk.
+   - Prefer liquid underlyings with tight bid-ask spreads (index options, large-cap ETFs).
+   - Consider selling both calls and puts (short strangle) or single-leg depending on directional bias.
+
+3. ENTRY RULES
+   - Enter short option position immediately upon the 3% weekly IV decline confirmation.
+   - Record the option's open/premium price at entry — this becomes the stop-loss reference.
+   - Size position based on max loss tolerance (see risk management).
+
+4. EXIT RULES
+   - PROFIT TARGET: Buy back the option when premium decays to a set percentage of credit received (e.g., 50% of premium captured) OR at expiry.
+   - TIME EXIT: Close or let expire at ≤5 DTE window end.
+   - STOP-LOSS: If the option's price rises to the entry (open) price level, close the position immediately. This caps loss at the premium paid to close minus credit received.
+
+5. RISK MANAGEMENT
+   - STOP-LOSS: Hard stop at the same price as entry — if the short option's market price returns to the entry premium, exit. This limits loss to roughly the initial credit (or a defined amount).
+   - POSITION SIZING: Risk no more than 1-2% of capital per trade given the asymmetric risk of short options.
+   - MAX LOSS AWARENESS: Short options have theoretically unlimited (calls) or large (puts) risk, so the entry-price stop is critical.
+   - DIVERSIFICATION: Avoid concentrating multiple short-vol positions in correlated underlyings.
+   - EVENT AVOIDANCE: Do not hold through earnings, FOMC, or major data releases unless intentionally taking event risk.
+
+6. REQUIRED INDICATORS / DATA
+   - Implied Volatility series (e.g., VIX, IV rank, or computed ATM IV) with 5-day rolling change.
+   - Option chain data: strikes, expiries, bid/ask, greeks (theta, delta, vega).
+   - Days-to-expiry (DTE) filter (≤5).
+   - Underlying price and liquidity metrics.
+
+RATIONALE SUMMARY:
+Selling premium after a 3% weekly IV drop targets the "volatility crush" effect — IV mean-reverts lower, theta decay accelerates on short-dated options, and the entry-price stop provides a disciplined, pre-defined exit that limits damage if volatility unexpectedly expands.
+
+CAVEATS:
+- Short options carry tail risk; the entry-price stop may gap through in fast markets.
+- Requires active monitoring since short-dated options move quickly.
+- Best suited to low-volatility, range-bound regimes; avoid in trending/volatile markets.

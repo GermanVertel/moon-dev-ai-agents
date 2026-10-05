@@ -1,0 +1,74 @@
+STRATEGY_NAME: VolatilitySkewArbitrage
+
+STRATEGY_DETAILS:
+This strategy exploits the persistent volatility risk premium embedded in options markets by systematically trading the spread between elevated and depressed implied volatility regimes. The core thesis is that when VIX exceeds 50, call options become systematically overpriced due to panic-driven demand for upside protection and speculative gamma hedging, creating an edge for sellers of that overpricing—but the strategy here instead captures directional asymmetry by buying calls in high-VIX environments (where realized volatility typically follows implied volatility higher) while simultaneously selling puts when VIX drops below 20 (where complacency underprices downside risk and put premium decay favors sellers).
+
+KEY STRATEGY COMPONENTS:
+
+1. VOLATILITY REGIME FILTER (PRIMARY SIGNAL)
+   - VIX > 50: Enter long call positions (buy calls)
+   - VIX < 20: Enter short put positions (sell puts)
+   - VIX between 20-50: No new positions (neutral zone)
+   - Delta-neutral implied volatility measurement: Calculate IV for each option strike, then normalize by delta to isolate the "per-unit-of-directional-risk" volatility premium. This filters out options whose IV is inflated purely by moneyness rather than genuine vol regime.
+
+2. DELTA-NEUTRAL IV CALCULATION
+   - For each candidate option, compute IV_dn = Implied Volatility / |Delta|
+   - This normalizes the volatility signal so that deep OTM and ATM options can be compared on equal footing
+   - Only trade options where IV_dn is in the top decile (for calls during VIX>50) or bottom decile (for puts during VIX<20)
+
+ENTRY RULES:
+
+Long Call Entry (VIX > 50 regime):
+- Confirm VIX closes above 50 for 2 consecutive sessions
+- Select call options with delta between 0.30 and 0.50 (slightly OTM to ATM)
+- Require IV_dn in top 10% of 252-day rolling distribution
+- Enter on a pullback day (price closes below prior day's low) to avoid chasing
+- Position size: 1-2% of portfolio per trade
+
+Short Put Entry (VIX < 20 regime):
+- Confirm VIX closes below 20 for 3 consecutive sessions
+- Select put options with delta between -0.30 and -0.50
+- Require IV_dn in bottom 10% of 252-day rolling distribution
+- Enter on a rally day (price closes above prior day's high) to sell into strength
+- Position size: 1-2% of portfolio per trade
+
+EXIT RULES:
+
+Trailing Stop-Loss at Original Strike (Core Mechanic):
+- For long calls: Set stop at the ORIGINAL STRIKE PRICE of the purchased call. As the underlying rises, trail the stop upward but never below the original strike. This locks in the intrinsic value floor while allowing unlimited upside participation.
+- For short puts: Set stop at the ORIGINAL STRIKE PRICE of the sold put. As the underlying falls, trail the stop downward but never above the original strike. Exit if price breaches this level, capping losses at the strike.
+
+Additional Exits:
+- Profit target: Close at 50-75% of max theoretical gain
+- Time exit: Close 21 days before expiration (avoid gamma pin risk)
+- Regime exit: Close if VIX crosses back through the opposite threshold (50→below 40 for calls, 20→above 30 for puts)
+- Volatility collapse exit: Close if IV_dn reverts to median
+
+RISK MANAGEMENT:
+
+1. Position Sizing: Maximum 2% risk per trade, maximum 10% aggregate exposure to any single volatility regime
+2. Correlation Cap: No more than 3 simultaneous positions in the same underlying sector
+3. Stop-Loss Discipline: The trailing stop at original strike is HARD—no mental stops, must be placed as actual orders
+4. Short Put Margin: Maintain cash reserves equal to 100% of strike × 100 × contracts (cash-secured puts only, no naked margin)
+5. Volatility Regime Hedging: When VIX is between 35-50 (transition zone), reduce position sizes by 50%
+6. Event Risk: Avoid entries within 5 days of FOMC, CPI, or earnings for the underlying
+
+REQUIRED INDICATORS:
+
+1. VIX Index (or VIX futures for forward-looking regime)
+2. Per-option Implied Volatility (from options chain)
+3. Option Delta (from Black-Scholes or broker-provided Greeks)
+4. Delta-Neutral IV = IV / |Delta| (custom calculation)
+5. 252-day rolling distribution of IV_dn for percentile ranking
+6. Underlying price and prior day high/low for entry timing
+7. Original strike price tracking for trailing stop management
+
+EXECUTION NOTES:
+
+- Use limit orders at mid-price minus 10% of spread for entries
+- Roll positions if VIX regime persists beyond 30 days
+- Track slippage carefully—this strategy's edge is thin and execution costs matter
+- Backtest must account for bid-ask spreads, especially in high-VIX environments where spreads widen dramatically
+- The "edge" comes from the behavioral tendency of markets to overpay for upside vol in panic and underpay for downside vol in complacency—this is a systematic harvesting of the volatility risk premium with directional tilt
+
+WARNING: This strategy assumes VIX mean-reversion and that realized vol follows implied vol in extreme regimes. In sustained high-VIX bear markets, long calls will bleed theta rapidly. In sustained low-VIX melt-ups, short puts carry tail risk. The trailing stop at original strike is the critical risk control—without strict discipline on this rule, the strategy can suffer catastrophic losses.

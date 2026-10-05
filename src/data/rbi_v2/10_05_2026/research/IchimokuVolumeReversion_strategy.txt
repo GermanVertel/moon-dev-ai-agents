@@ -1,0 +1,77 @@
+STRATEGY_NAME: Ichimoku Volume Reversion
+
+STRATEGY_DETAILS:
+
+**Overview**
+This is a mean-reversion strategy built on the Ichimoku Kinko Hyo system, using the Chikou Span (lagging line) as the primary trigger. It combines price-vs-average deviation with volume divergence confirmation and volatility-adaptive trailing exits. The strategy is contrarian in nature—it fades extended moves rather than following them.
+
+**Core Components**
+
+1. **Chikou Span (Lagging Span)**
+   - Chikou Span = current close plotted 26 periods back.
+   - Compared against a 50-period Simple Moving Average (SMA) of price.
+   - Cross above the 50-SMA signals a potential bearish reversal setup (price is overextended above its mean when projected backward).
+   - Cross below the 50-SMA signals a potential bullish reversal setup.
+
+2. **Volume Divergence Filter**
+   - A "divergent volume spike" means volume expands sharply at the crossover but price does not confirm with a matching directional move (i.e., spike on a wick or exhaustion candle).
+   - Compare current volume against a rolling average (e.g., 20-period volume SMA). A spike = volume > 1.5x–2x average.
+   - Divergence condition: volume spike occurs while the Chikou/50-SMA cross happens against the prevailing short-term trend.
+   - This filters out genuine breakouts from exhaustion moves.
+
+3. **50-period SMA (Mean Reference)**
+   - Acts as the mean reversion anchor and the Chikou comparison baseline.
+   - Also used as a soft target for the reversion move.
+
+**Entry Rules**
+
+- **Long Entry (bullish reversion):**
+  - Chikou Span crosses below the 50-SMA.
+  - Volume spike (≥1.5x 20-period average) with divergence (price making a lower low but volume not confirming continuation).
+  - Entry on the close of the confirmation candle or on a retest of the 50-SMA from below.
+
+- **Short Entry (bearish reversion):**
+  - Chikou Span crosses above the 50-SMA.
+  - Volume spike with divergence (price making a higher high but momentum/volume fading).
+  - Entry on close or retest of the 50-SMA from above.
+
+**Exit Rules**
+
+1. **Trailing Stop (Volatility-Adjusted)**
+   - Use ATR (Average True Range, 14-period) to set trailing stop distance.
+   - Multiplier: 1.5x–2.5x ATR, dynamically widened when expected volatility swings are high (e.g., during high-ATR regimes or ahead of news).
+   - Trail the stop in the direction of the trade as price reverts toward the 50-SMA.
+
+2. **Mean Target**
+   - Primary profit target = 50-SMA itself (the mean).
+   - Partial exit at 50% of the distance to the mean, remainder trails.
+
+3. **Hold in Opposite Trend Direction**
+   - If the broader trend (e.g., 200-SMA slope or Ichimoku cloud direction) is opposite to the reversion trade, hold the position longer—do not exit at the mean.
+   - This exploits the fact that counter-trend reversions can extend when the dominant trend is exhausted.
+   - In this case, the trailing stop becomes the sole exit mechanism.
+
+**Risk Management**
+
+- **Position sizing:** Risk per trade ≤1% of equity, sized off the ATR-based stop distance.
+- **Stop loss:** Initial hard stop = entry ± 2x ATR (opposite side of trade).
+- **Volatility regime filter:** Avoid entries when ATR is in the bottom 20th percentile (dead market) or top 95th percentile (chaotic).
+- **Max holding period:** Time-stop of N bars (e.g., 30) if neither target nor stop is hit.
+- **Correlation guard:** Limit simultaneous reversion trades in correlated instruments.
+
+**Required Indicators**
+
+| Indicator | Purpose |
+|-----------|---------|
+| Chikou Span (Close shifted -26) | Primary crossover trigger |
+| 50-period SMA | Mean reference / target |
+| 200-period SMA or Ichimoku Cloud | Trend direction filter for hold logic |
+| Volume + 20-period Volume SMA | Divergence spike detection |
+| ATR (14) | Trailing stop and stop-loss sizing |
+| Ichimoku Tenkan/Kijun (optional) | Additional confluence |
+
+**Edge Case Notes**
+
+- Chikou Span is a lagging construct—ensure your platform plots it correctly (close displaced 26 bars back) or compute manually.
+- Volume divergence is subjective; define it numerically (e.g., volume > 1.5x avg AND close change < 0.5x ATR) to avoid discretionary ambiguity.
+- The "hold in opposite trend" rule requires a clear trend definition—use 200-SMA slope or cloud position, not subjective reading.

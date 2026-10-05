@@ -1,0 +1,47 @@
+STRATEGY_NAME: DivergentContrarian
+
+STRATEGY_DETAILS:
+This strategy is a contrarian, momentum-based reversal system that exploits the disagreement between MACD momentum and RSI momentum. Instead of trading each indicator in isolation, it looks for a specific conflict: when MACD momentum diverges from price in one direction while RSI divergence points the opposite way. The widening gap between these two divergences signals weakening trend strength and an impending reversal, prompting a counter-trend entry.
+
+CORE LOGIC
+The premise is that MACD (a trend/momentum oscillator) and RSI (a bounded momentum oscillator) rarely diverge from price in conflicting directions at the same time. When they do, the market is internally inconsistent — trend energy is being distributed unevenly across momentum measures. This inconsistency tends to resolve with a trend-strength collapse, and the strategy positions for that reversal. The "widening" of the divergence gap is treated as increasing conviction rather than a warning against the trade.
+
+KEY COMPONENTS
+1. MACD (standard 12, 26, 9):
+   - Track MACD line, signal line, and histogram.
+   - Detect MACD divergence: price makes a higher high while MACD makes a lower high (bearish divergence), or price makes a lower low while MACD makes a higher low (bullish divergence).
+2. RSI (default 14):
+   - Detect RSI divergence independently: price higher high with RSI lower high (bearish), or price lower low with RSI higher low (bullish).
+3. Divergence Conflict Filter:
+   - Conflict exists when MACD divergence and RSI divergence point in OPPOSITE directions.
+   - Example: MACD shows bullish divergence (momentum improving) while RSI shows bearish divergence (momentum fading) — or vice versa.
+4. Divergence Width Metric:
+   - Quantify the gap between the two divergences (e.g., difference in slope/magnitude of MACD histogram swing vs RSI swing, or the pip distance between the two divergence apexes).
+   - Rising width = strengthening signal for reversal.
+
+ENTRY RULES
+- Long entry: MACD bullish divergence AND RSI bearish divergence (conflict), with divergence width expanding over the last N bars, and price still in a downtrend/oversold context. Enter counter to the prevailing bearish trend.
+- Short entry: MACD bearish divergence AND RSI bullish divergence (conflict), with divergence width expanding, and price in an uptrend/overbought context. Enter counter to the prevailing bullish trend.
+- Confirmation: require a trigger bar — e.g., MACD histogram turning in the trade direction, or RSI crossing back through 50 — to avoid premature entries while divergence is still widening against you.
+
+EXIT RULES
+- Take profit: when MACD and RSI divergences realign (conflict resolves) or when price reaches a measured-move target based on the divergence swing height.
+- Stop loss: placed beyond the most recent swing extreme that created the divergence (structure invalidation).
+- Time exit: if the conflict persists without price response for X bars, close the position.
+- Trailing exit: once in profit, trail behind the MACD signal line or a short EMA.
+
+RISK MANAGEMENT
+- Position size inversely proportional to divergence width (wider = stronger signal but wider stop, so cap risk per trade at a fixed % of equity).
+- Max risk per trade: 1–2% of account.
+- Avoid trading during high-impact news or illiquid sessions where divergence readings are unreliable.
+- Limit concurrent positions and require minimum divergence width threshold to filter noise.
+- Optional: scale in only if conflict widens further while trade is already in profit.
+
+REQUIRED INDICATORS
+- MACD (12, 26, 9) with histogram and signal line.
+- RSI (14).
+- Swing high/low detection (pivot points) to anchor divergences.
+- Optional: ATR for stop sizing and EMA for trend context and trailing exits.
+
+NOTES ON EXECUTION
+The strategy is inherently contrarian and counter-trend, so entries will feel uncomfortable — it fades apparent strength/weakness. The critical edge is the CONFLICT between the two momentum tools plus the WIDENING of that conflict, not either divergence alone. False signals are common when only one indicator diverges, so the dual-conflict filter is mandatory. Backtesting should focus on divergence detection sensitivity (pivot lookback) and the width threshold, as these parameters dominate performance.

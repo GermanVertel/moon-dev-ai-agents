@@ -1,0 +1,93 @@
+STRATEGY_NAME: LiquidityContrarian
+
+STRATEGY_DETAILS:
+This strategy is a contrarian mean-reversion system that fades price moves which break through high-density liquidation zones, using funding rate divergence as a confirmation trigger. It exploits forced liquidations (which tend to overextend price) and crowded positioning (revealed by funding divergence) to enter counter-trend positions at statistically significant reversal points.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. CORE CONCEPT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Liquidation heatmaps reveal price levels where clusters of leveraged positions would be forcibly closed. When price breaches one of these clusters, it triggers a cascade of liquidations that pushes price beyond fair value. Simultaneously, if funding rates diverge sharply across major exchanges (e.g., Binance, Bybit, OKX, Deribit), it signals one-sided, over-leveraged crowding — a classic contrarian setup. The strategy enters AGAINST the breach once exhaustion signals appear.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. REQUIRED DATA & INDICATORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+A. Cumulative Liquidation Heatmap
+   - Source: Coinglass / Hyblock / exchange liquidation APIs
+   - Build a rolling 7–30 day cumulative heatmap of estimated liquidation clusters
+   - Identify "high-density bands" = price levels with top 10% liquidation volume
+   - Dynamic S/R = nearest high-density band above/below current price
+
+B. Funding Rate Divergence
+   - Collect perp funding rates from ≥3 major exchanges
+   - Compute: FundingDivergence = max(FR) − min(FR) across exchanges
+   - Compute: FundingZScore = (current FR − 30-period mean) / std
+   - Trigger requires BOTH:
+       • FundingDivergence > 0.03% per 8h (adjust to asset)
+       • FundingZScore > 2.0 (or < −2.0 for shorts)
+
+C. Confirmation Filters
+   - Volume spike: current bar volume > 2.0× 20-period average
+   - Wick rejection: lower/upper wick > 60% of candle range (exhaustion)
+   - CVD divergence: spot CVD rising while perp price falls (or inverse)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. ENTRY RULES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LONG ENTRY (fade a downside liquidation cascade):
+  1. Price breaches BELOW a high-density liquidation band (support break)
+  2. FundingDivergence > threshold AND FundingZScore < −2.0 (shorts overcrowded)
+  3. Bar closes with long lower wick (>60% of range) OR bullish engulfing
+  4. Volume spike confirms capitulation
+  → Enter long on close of confirmation candle (or limit at 0.3× ATR below)
+
+SHORT ENTRY (fade an upside liquidation cascade):
+  1. Price breaches ABOVE a high-density liquidation band (resistance break)
+  2. FundingDivergence > threshold AND FundingZScore > 2.0 (longs overcrowded)
+  3. Bar closes with long upper wick OR bearish engulfing
+  4. Volume spike confirms exhaustion
+  → Enter short on close of confirmation candle (or limit at 0.3× ATR above)
+
+NO-TRADE FILTERS:
+  - Skip if price is within 1× ATR of a HIGHER-TIME-FRAME (daily/weekly) structural level
+  - Skip during scheduled macro events (CPI, FOMC) ±30 min
+  - Skip if heatmap data is stale (>15 min old)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. EXIT RULES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Take Profit (scale out):
+  - TP1: 50% at the ORIGINAL liquidation band midpoint (reversion target)
+  - TP2: 30% at the next opposing high-density band
+  - TP3: 20% runner trailed by 1.5× ATR
+
+Stop Loss:
+  - Initial SL: 1.2× ATR beyond the breach extreme (the liquidation wick low/high)
+  - Move SL to breakeven once TP1 is hit
+  - Hard time stop: exit if no TP1 within 24 bars
+
+Trailing:
+  - After TP1, trail remaining position using Chandelier Exit (3× ATR from highest high / lowest low)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. RISK MANAGEMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Position size: risk 0.5% of equity per trade (reduce to 0.25% when FundingZScore > 3.5)
+- Max 2 concurrent positions; max 4 trades per day per asset
+- Correlation guard: no more than 2 positions in assets with >0.7 correlation
+- Daily loss limit: −2% equity → halt trading for the day
+- Weekly drawdown limit: −6% → reduce size by 50% for the following week
+- Liquidation cascade environments are volatile → always use ATR-based stops, never fixed %
+- Account for funding cost if holding >8h (prefer exits within 1–2 funding windows)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. EXECUTION NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Timeframes: 5m–15m for entries, 1h for regime context
+- Best assets: BTC, ETH, SOL perps (deep liquidity, reliable funding data)
+- Use post-only limit orders where possible to avoid slippage during cascades
+- Log every trade with: heatmap band level, funding divergence value, Z-score, wick ratio, and outcome — refine thresholds monthly via walk-forward backtest
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. EDGE SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+The edge comes from the convergence of two independent crowd-behavior signals: (1) forced liquidations that mechanically overshoot price, and (2) funding divergence that proves positioning is one-sided and unsustainable. When both align, mean reversion probability is statistically elevated — making this a high-conviction contrarian fade rather than a blind counter-trend bet.

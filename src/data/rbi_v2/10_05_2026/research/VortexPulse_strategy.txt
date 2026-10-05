@@ -1,0 +1,43 @@
+STRATEGY_NAME: VortexPulse
+
+STRATEGY_DETAILS:
+This strategy fuses the Vortex Indicator's directional momentum with volume surge confirmation and EMA pullback entries, targeting Fibonacci extension levels for exits. It is designed for trending markets where momentum shifts are validated by volume spikes.
+
+1. KEY STRATEGY COMPONENTS
+- Vortex Indicator (VI+ and VI-): Measures positive and negative directional movement. A bullish crossover (VI+ crossing above VI-) signals upward momentum; a bearish crossover (VI- crossing above VI+) signals downward momentum.
+- Volume Surge Confirmation: A volume surge is confirmed when current volume exceeds the 20-period average volume by a factor (e.g., 1.5x). This validates the momentum crossover and filters false signals.
+- 20-period EMA: Acts as a dynamic pullback zone. In an uptrend, price pulling back to the 20 EMA offers a low-risk entry; in a downtrend, a rally to the 20 EMA offers a short entry.
+- Fibonacci Extension Levels: Used for profit targets. After a pullback entry, extensions (e.g., 127.2%, 161.8%, 200%) of the prior swing are projected as exit zones.
+
+2. ENTRY RULES
+- Long Entry:
+  - VI+ crosses above VI- (bullish vortex crossover).
+  - Volume on the crossover bar or subsequent pullback bar is at least 1.5x the 20-period average volume.
+  - Price pulls back to within 0.5% of the 20-period EMA (or touches it) while remaining above the EMA.
+  - Enter long on the close of the pullback candle or on the next candle's open if it holds above the EMA.
+- Short Entry:
+  - VI- crosses above VI+ (bearish vortex crossover).
+  - Volume surge confirmation as above.
+  - Price rallies to within 0.5% of the 20-period EMA (or touches it) while remaining below the EMA.
+  - Enter short on the close of the rally candle or on the next candle's open if it holds below the EMA.
+
+3. EXIT RULES
+- Profit Target: Exit at the nearest Fibonacci extension level (127.2%, 161.8%, or 200%) based on the prior swing high/low. Scale out: 50% at 127.2%, 30% at 161.8%, and the remainder at 200%.
+- Stop Loss: Place stop just beyond the recent swing low (for longs) or swing high (for shorts), or at a fixed ATR-based distance (e.g., 1.5x ATR) from entry, whichever is tighter.
+- Trailing Stop: After price reaches the 127.2% extension, move stop to breakeven. After 161.8%, trail stop using the 20 EMA.
+- Momentum Exit: If VI+ crosses back below VI- (for longs) or VI- crosses back above VI+ (for shorts) before target, exit immediately.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk no more than 1% of account equity per trade. Calculate position size based on the distance from entry to stop loss.
+- Maximum Exposure: Limit to 2-3 concurrent positions to avoid overexposure in correlated markets.
+- Volatility Filter: Avoid trading when ATR is below a threshold (e.g., 0.5% of price) to prevent whipsaws in low-volatility ranges.
+- Time Stop: If price does not reach the 127.2% extension within 10 bars, exit at market to avoid stagnation.
+
+5. REQUIRED INDICATORS
+- Vortex Indicator (period 14): VI+ and VI- lines.
+- Volume Moving Average (period 20): To identify volume surges.
+- Exponential Moving Average (period 20): For pullback entries and trailing stops.
+- Fibonacci Extension Tool: To project 127.2%, 161.8%, and 200% levels from the prior swing.
+- ATR (period 14): For stop-loss placement and volatility filtering.
+
+This strategy is best applied on 1-hour to 4-hour charts in trending markets (e.g., forex, crypto, indices). It avoids ranging conditions by requiring both vortex crossover and volume surge, and it uses EMA pullbacks to improve risk-reward.

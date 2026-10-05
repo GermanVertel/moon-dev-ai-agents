@@ -1,0 +1,45 @@
+STRATEGY_NAME: SqueezeSurge
+
+STRATEGY_DETAILS:
+The SqueezeSurge strategy is a volatility-contraction breakout system that capitalizes on the principle that periods of low volatility are often followed by explosive directional moves. By identifying when Bollinger Band width reaches a 20-day low (a "squeeze") and confirming with a volume surge above the 50-day average, the strategy aims to enter trades at the onset of a breakout. A trailing exit based on 2x the 14-period ATR locks in profits while allowing the trade to run.
+
+1. Key Strategy Components:
+   - **Bollinger Band Width (BBW)**: Measures the distance between the upper and lower Bollinger Bands (typically 20-period SMA ± 2 standard deviations). A 20-day low in BBW indicates a volatility contraction, often a precursor to a significant price move.
+   - **Volume Confirmation**: A surge in volume above its 50-day simple moving average (SMA) validates the breakout, suggesting institutional participation and reducing the likelihood of a false breakout.
+   - **ATR Trailing Stop**: The 14-period Average True Range (ATR) is used to set a trailing stop at 2x the ATR from the highest high since entry (for long trades). This dynamic exit adapts to market volatility, preserving gains while giving the trade room to breathe.
+
+2. Entry Rules:
+   - **Long Entry**:
+     - Condition 1: Bollinger Band Width (BBW) reaches its lowest value in the past 20 days. BBW = (Upper Band - Lower Band) / Middle Band (or simply Upper Band - Lower Band).
+     - Condition 2: Current volume > 50-day SMA of volume (i.e., volume surge).
+     - Condition 3: Price closes above the upper Bollinger Band (confirmation of upward breakout) OR price closes above the middle band with a bullish candle (optional, depending on aggressiveness).
+     - Execute a long entry at the close of the signal bar or on the next bar's open.
+
+3. Exit Rules:
+   - **Trailing Stop-Loss**:
+     - After entry, calculate the 14-period ATR.
+     - Set the initial stop-loss at 2x ATR below the entry price.
+     - As price moves in favor, update the stop-loss to trail at 2x ATR below the highest high since entry.
+     - Exit the long position when price closes below the trailing stop level.
+   - **Optional Time-Based Exit**: If the trade does not hit the trailing stop within a predefined period (e.g., 20 bars), consider exiting to avoid stagnation.
+
+4. Risk Management:
+   - **Position Sizing**: Risk a fixed percentage of account equity per trade (e.g., 1-2%). Calculate position size based on the distance between entry price and initial stop-loss (2x ATR). For example, if account equity is $10,000 and risk is 1% ($100), and 2x ATR is $2, then position size = $100 / $2 = 50 shares.
+   - **Maximum Drawdown Control**: Avoid taking multiple correlated trades simultaneously. Limit total exposure to any single sector or asset class.
+   - **Slippage and Commissions**: Account for transaction costs, especially in low-liquidity markets, as volume surges may attract slippage.
+   - **False Breakout Mitigation**: The volume confirmation helps filter false breakouts, but consider adding a price filter (e.g., close above upper band) to strengthen the signal.
+
+5. Required Indicators:
+   - **Bollinger Bands**: 20-period SMA, 2 standard deviations.
+   - **Bollinger Band Width**: Calculated as (Upper Band - Lower Band) or normalized by the middle band.
+   - **Volume SMA**: 50-period simple moving average of volume.
+   - **Average True Range (ATR)**: 14-period ATR for trailing stop.
+   - **Optional**: Moving average (e.g., 50-period SMA) for trend filter to avoid trading against the major trend.
+
+6. Additional Considerations:
+   - **Market Regime**: This strategy works best in trending markets after a consolidation phase. Avoid using it in choppy, range-bound markets where false breakouts are common.
+   - **Timeframe**: Suitable for daily charts, but can be adapted to intraday (e.g., 1-hour) with adjusted parameters.
+   - **Backtesting**: Test on multiple asset classes (stocks, forex, crypto) and timeframes to optimize parameters like BBW lookback (20), volume SMA (50), and ATR multiplier (2).
+   - **Alerts**: Set alerts for when BBW hits a 20-day low and volume exceeds its 50-day SMA to monitor potential setups.
+
+This strategy combines volatility contraction, volume confirmation, and dynamic risk management to capture high-probability breakouts while protecting capital.

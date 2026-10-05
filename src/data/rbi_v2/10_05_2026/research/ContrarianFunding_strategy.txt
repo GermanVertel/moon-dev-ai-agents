@@ -1,0 +1,50 @@
+STRATEGY_NAME: ContrarianFunding
+
+STRATEGY_DETAILS:
+This is a mean-reversion strategy that exploits funding rate extremes as a proxy for crowded positioning, using ADX as a regime filter to avoid fighting strong trends. It is a "fade the crowd" approach: when funding is extreme but the market is NOT trending (ADX < 25), positioning is likely stretched and vulnerable to a squeeze back toward neutral.
+
+CORE LOGIC
+- Funding rate extremes signal crowded long (positive funding) or crowded short (negative funding) positioning.
+- ADX < 25 confirms a non-trending / ranging regime, where mean reversion has an edge and trend continuation is unlikely.
+- The combination = high-probability fade of over-leveraged positioning in a choppy market.
+- ADX > 35 signals a genuine trend has emerged — exit immediately to avoid being run over by trend-followers.
+
+REQUIRED INDICATORS
+1. Funding Rate (perpetual swap funding, typically 8h intervals on most exchanges):
+   - Current funding rate value.
+   - 30-day median funding rate (rolling median of funding observations over ~90 periods at 8h cadence, or adjust to exchange cadence).
+2. ADX (Average Directional Index), standard 14-period on the chosen timeframe (recommend 1H or 4H).
+3. (Optional) ATR (14) for stop sizing and volatility normalization.
+
+ENTRY RULES
+Long Entry (fade crowded shorts):
+- Funding rate is at an extreme LOW (e.g., below the 10th percentile of the trailing 30-day distribution, or a fixed threshold such as < -0.03% per 8h — calibrate per asset).
+- ADX < 25 (non-trending regime).
+- Optional confirmation: funding has begun to tick up from the extreme (early normalization) OR price shows a reversal candlestick at support.
+- Enter long.
+
+Short Entry (fade crowded longs):
+- Funding rate is at an extreme HIGH (e.g., above the 90th percentile of the trailing 30-day distribution, or a fixed threshold such as > +0.05% per 8h — calibrate per asset).
+- ADX < 25.
+- Optional confirmation: funding rolling over from the extreme OR rejection candle at resistance.
+- Enter short.
+
+EXIT RULES (whichever triggers first)
+1. ADX crosses above 35 → trend has formed, exit the mean-reversion trade (regime invalidation).
+2. Funding normalizes to the 30-day median → the crowding that justified the trade has dissipated (thesis complete).
+3. Optional time stop: exit after N bars (e.g., 24–48 bars) if neither condition triggers, to avoid dead capital.
+
+RISK MANAGEMENT
+- Position sizing: risk a fixed % of equity per trade (e.g., 0.5–1%). Size using ATR-based stops.
+- Stop loss: place at 1.5x–2x ATR beyond entry, OR a structural level (recent swing high/low). Because ADX < 25 implies low directional momentum, tight ATR stops are usually sufficient.
+- Take profit: primary exit is funding normalization; a secondary TP at the 30-day median funding equivalent price level can be layered.
+- Max concurrent positions and per-asset exposure caps to avoid correlated funding trades across many pairs (funding extremes often cluster market-wide).
+- Avoid holding through known funding settlements if the position is already near target — funding can gap.
+
+REGIME / FILTER NOTES
+- This strategy underperforms in strong trending markets; the ADX < 25 gate is the critical safeguard.
+- Funding rate distributions differ across assets and exchanges — calibrate percentile thresholds per instrument rather than using a single fixed number.
+- Consider a cooldown after an ADX > 35 exit before re-entering, since the trend regime may persist.
+
+SUMMARY
+ContrarianFunding fades funding-rate extremes only when ADX confirms a range, and exits on either regime shift (ADX > 35) or thesis completion (funding back to median). It is a positioning-based mean-reversion system, not a trend or momentum strategy.

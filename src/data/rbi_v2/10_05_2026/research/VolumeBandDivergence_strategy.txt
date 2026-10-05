@@ -1,0 +1,47 @@
+STRATEGY_NAME: VolumeBandDivergence
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band mean-reversion with On-Balance Volume (OBV) divergence confirmation, filtering out false band touches by requiring volume flow to disagree with price extremes.
+
+1. KEY STRATEGY COMPONENTS
+- Bollinger Bands: 20-period SMA with 2 standard deviations (upper, middle, lower).
+- OBV: Cumulative volume indicator used as a divergence detector against price.
+- Core thesis: Price touching an extreme band is only tradeable when OBV diverges — signaling exhaustion rather than genuine continuation.
+
+2. INDICATORS REQUIRED
+- Bollinger Bands (20, 2) — provides lower, middle (SMA20), and upper bands.
+- OBV — computed from close-to-close direction and volume.
+- Swing lookback (e.g., 5–10 bars) — to detect price lows/highs and compare with OBV at those points.
+
+3. ENTRY RULES
+LONG ENTRY:
+- Price touches or pierces the lower Bollinger Band.
+- Positive OBV divergence: price makes a lower low (or equal low) while OBV makes a higher low over the same lookback window.
+- Enter long on close of the signal bar (or next bar open) once divergence is confirmed.
+
+SHORT ENTRY:
+- Price touches or pierces the upper Bollinger Band.
+- Negative OBV divergence: price makes a higher high while OBV makes a lower high over the same lookback window.
+- Enter short on close of the signal bar (or next bar open).
+
+4. EXIT RULES
+- Long exit: price touches or crosses the middle band (SMA20) — take profit.
+- Short exit: price touches or crosses the middle band (SMA20) — take profit.
+- Optional time stop: exit after N bars if middle band is not reached.
+
+5. RISK MANAGEMENT
+- Stop-loss for longs: below the recent swing low (or a fixed ATR multiple, e.g., 1.5×ATR below entry).
+- Stop-loss for shorts: above the recent swing high (or 1.5×ATR above entry).
+- Position sizing: risk 1–2% of equity per trade based on stop distance.
+- Avoid trading during low-liquidity sessions where OBV signals are noisy.
+- Skip signals if bands are extremely wide (high volatility regime) unless ATR-based stops are widened proportionally.
+
+6. CONFIRMATION & FILTERS
+- Require OBV divergence to span at least 3–5 bars for validity.
+- Optional RSI filter: for longs, RSI < 40; for shorts, RSI > 60 — strengthens mean-reversion bias.
+- Optional trend filter: skip counter-trend longs if price is far below a long-term EMA (e.g., 200 EMA) unless divergence is very strong.
+
+7. LOGIC SUMMARY
+- Band touch alone = noise.
+- Band touch + OBV divergence = exhaustion signal.
+- Target is the statistical mean (middle band), making it a high-probability, tight-target mean-reversion play.

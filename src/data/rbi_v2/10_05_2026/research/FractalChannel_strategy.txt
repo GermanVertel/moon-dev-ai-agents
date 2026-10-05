@@ -1,0 +1,55 @@
+STRATEGY_NAME: FractalChannel
+
+STRATEGY_DETAILS:
+This strategy combines fractal geometry with channel breakout mechanics to capture sustained directional moves while filtering out market noise through multi-timeframe fractal confirmation.
+
+**Core Concept:**
+Fractal channels are dynamic price envelopes constructed from recent swing highs and swing lows identified via Bill Williams-style fractal patterns (5-bar formations). Unlike static channels, these adapt to market structure by re-anchoring to the most recent valid fractals, creating a "staircase" that trails price during trends.
+
+**Key Strategy Components:**
+
+1. **Fractal Identification**
+   - Up-fractal: A bar with a higher high than the 2 bars on each side (5-bar pattern)
+   - Down-fractal: A bar with a lower low than the 2 bars on each side
+   - Only confirmed fractals (after the 2 right-side bars close) are used to avoid repainting
+
+2. **Channel Construction**
+   - Upper channel = most recent confirmed up-fractal high
+   - Lower channel = most recent confirmed down-fractal low
+   - Channel width = distance between the two; used as volatility gauge
+   - Optionally smooth with EMA(3) on fractal points to reduce whipsaw
+
+3. **Entry Rules (Long)**
+   - Price closes above the most recent upper fractal high
+   - Prior structure shows higher-highs/higher-lows (trend filter via 50-EMA slope > 0)
+   - Channel width expanding (confirming momentum, not chop)
+   - Enter on the close of the breakout bar or on a retest of the broken fractal level
+
+4. **Entry Rules (Short)**
+   - Mirror of long: price closes below most recent lower fractal low
+   - 50-EMA slope < 0
+   - Channel width expanding
+
+5. **Exit Rules**
+   - **Trailing stop:** Move stop to the most recent opposite fractal (longs → trail to latest down-fractal low)
+   - **Channel break:** Exit if price closes back inside the channel by more than 0.5×ATR
+   - **Profit target (optional):** 2× channel width projected from entry, or trail with Chandelier Exit
+
+6. **Risk Management**
+   - Initial stop loss = most recent opposite fractal ± 0.25×ATR buffer
+   - Position size = (Account Risk %) / (Entry − Stop) — typically 1–2% risk per trade
+   - Skip trades when channel width < 0.5×ATR(14) (consolidation filter)
+   - Max 2 concurrent positions; no new entries within 3 bars of a stop-out (cooldown)
+
+**Required Indicators:**
+- Fractal indicator (5-bar Bill Williams)
+- ATR(14) for stop buffers and volatility filter
+- EMA(50) for trend bias
+- Optional: ADX(14) > 20 to confirm trending regime
+- Optional: Volume MA(20) to confirm breakout participation
+
+**Timeframes:** Best on 1H–Daily for swing trading; 5M–15M for intraday with tighter ATR multipliers.
+
+**Strengths:** Adaptive to structure, avoids fixed-level lag, excellent risk-reward on trending instruments (FX majors, indices, crypto).
+
+**Weaknesses:** Choppy markets generate false fractals; requires strict trend filter and consolidation skip rules to remain profitable.

@@ -1,0 +1,52 @@
+STRATEGY_NAME: SqueezeIgnition
+
+STRATEGY_DETAILS:
+This strategy captures explosive directional moves that follow periods of unusually low volatility. The core premise is that markets alternate between compression (consolidation) and expansion (trending), and that a Bollinger Band squeeze combined with a volume spike is a high-probability signal of an imminent breakout.
+
+CORE COMPONENTS:
+
+1. VOLATILITY COMPRESSION DETECTION
+- Indicator: Bollinger Bands (20-period SMA, 2 standard deviations).
+- Band Width = (Upper Band − Lower Band) / Middle Band (normalized to avoid bias from absolute price levels).
+- Compression Trigger: Current Band Width is at or below its lowest value over the past 20 days (20-day low of Band Width).
+- This identifies a "squeeze" — a state of coiled energy where price has consolidated tightly.
+
+2. VOLUME CONFIRMATION
+- Indicator: 50-day Simple Moving Average of Volume.
+- Volume Spike Condition: Current bar's volume > 50-day average volume.
+- Purpose: A squeeze alone can produce false breakouts. Volume expansion validates that real participation (institutional flow) is driving the move.
+- Optional refinement: Require volume > 1.5x the 50-day average for a stronger filter.
+
+3. BREAKOUT TRIGGER (ENTRY)
+- Long Entry: Price closes ABOVE the Upper Bollinger Band while the squeeze condition and volume spike are both active (or on the same bar).
+- Short Entry: Price closes BELOW the Lower Bollinger Band under the same conditions.
+- Entry should occur on the close of the breakout bar or on the open of the next bar to avoid intrabar whipsaws.
+- Only one position at a time; do not re-enter on the same squeeze signal.
+
+4. EXIT RULES
+- Primary Exit: Opposite band touch — exit long when price closes below the Middle Band (20-SMA) or reaches a trailing target. Alternatively, exit long when price closes back below the Upper Band (failed breakout).
+- Momentum Exit: Exit when Band Width begins to contract again after expansion, signaling the trend is exhausting.
+- Stop Loss: Place stop at the Middle Band or a fixed ATR-based distance (e.g., 1.5x ATR) below entry for longs, above for shorts.
+- Time Stop: If the trade does not reach a profit target within N bars (e.g., 15), exit to avoid dead capital.
+
+5. RISK MANAGEMENT
+- Position sizing based on volatility: smaller size during wide-band regimes, larger during tight squeezes (using ATR or Band Width for normalization).
+- Maximum risk per trade: 1–2% of account equity.
+- Avoid trading during scheduled high-impact news events (earnings, FOMC) unless the strategy is explicitly news-driven.
+- Filter trades by overall market regime (e.g., only long breakouts when the broad index is above its 200-day MA).
+
+6. REQUIRED INDICATORS
+- Bollinger Bands (20, 2.0)
+- Band Width (derived)
+- 20-day low of Band Width
+- Volume + 50-day Volume SMA
+- ATR (14) for stops and sizing
+- Optional: 200-day SMA for regime filter
+
+7. IMPLEMENTATION NOTES
+- Squeeze detection should use the Band Width value of the PREVIOUS completed bar to avoid lookahead bias.
+- Volume spike should be evaluated on the breakout bar itself.
+- Consider requiring the breakout bar to close in the top/bottom 25% of its range for stronger conviction.
+- Backtest across multiple assets and timeframes; squeezes work best on liquid instruments with clear trend regimes (indices, FX majors, large-cap equities).
+
+This strategy's edge comes from the combination of two independent signals — volatility compression and volume expansion — which together filter out the majority of false breakouts that plague single-indicator systems.

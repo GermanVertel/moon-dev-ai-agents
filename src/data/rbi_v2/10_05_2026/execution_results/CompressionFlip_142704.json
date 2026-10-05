@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Loaded 1009 bars for CompressionFlip backtest \ud83d\ude80\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/CompressionFlip_PKG.py\", line 210, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1325, in run\n    strategy.init()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/CompressionFlip_PKG.py\", line 81, in init\n    self.data.High.values, self.data.Low.values, self.data.Close.values,\nAttributeError: '_Array' object has no attribute 'values'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/CompressionFlip_PKG.py` failed. (See above for error)\n",
+  "execution_time": 3.123311,
+  "timestamp": "2026-10-05T14:27:04.629946"
+}

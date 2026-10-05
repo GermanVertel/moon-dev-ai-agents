@@ -1,0 +1,87 @@
+STRATEGY_NAME: OscillatorBandReversal
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+A counter-trend reversal strategy that hunts for exhausted bullish momentum at the top of the Bollinger Band. The premise is contrarian: when Stochastic Oscillator is overbought AND price is pushing against the upper band with a volume spike, the move is often a trap rather than a breakout. The strategy fades that trap by looking for a bearish reversal confirmation, then rides the mean-reversion move back toward the middle/lower band.
+
+*(Note: The prompt says "enters long when SO is overbought" — this is internally contradictory. Overbought SO typically signals a SHORT setup. Below I detail the logically consistent short-side version, and flag the long-side variant at the end.)*
+
+---
+
+**1. Key Strategy Components**
+
+- **Stochastic Oscillator (SO):** Momentum exhaustion gauge. Overbought zone = %K and %D both > 80. Cross of %K below %D in overbought zone = bearish trigger.
+- **Bollinger Bands (BB):** Volatility envelope. Upper band = dynamic resistance. Price tagging/piercing the upper band signals stretched conditions.
+- **Volume Spike:** Confirmation filter. Current bar volume > 1.5×–2× the 20-period average volume. Distinguishes genuine institutional activity from noise.
+- **Candlestick Pattern:** Reversal trigger. Bearish engulfing, shooting star, or bearish pin bar closing back inside the upper band.
+- **ATR:** Used for both stop placement and profit targets (volatility-normalized exits).
+
+---
+
+**2. Entry Rules (Short Side — the logically correct interpretation)**
+
+All conditions must align on the same bar or within a 1–2 bar window:
+
+1. **SO Overbought:** %K > 80 and %D > 80.
+2. **Band Interaction:** Price high touches or pierces the upper Bollinger Band (2 std dev, 20 period).
+3. **Volume Confirmation:** Volume ≥ 1.5× the 20-period SMA of volume.
+4. **Reversal Candle:** A bearish candle (engulfing / shooting star / pin bar) that CLOSES back BELOW the upper band.
+5. **Trigger:** Enter short on the close of the reversal candle (or on the next bar's open for confirmation).
+
+**Long-Side Variant (if you truly want long entries):**
+Mirror everything: SO *oversold* (< 20), price tags the *lower* band, volume spike, bullish reversal candle closing back above the lower band → enter long. This is the standard mean-reversion long setup.
+
+---
+
+**3. Exit Rules**
+
+- **Primary Target (Resistance / Mean Reversion):** Middle Bollinger Band (20 SMA), or the lower band for shorts. Exit when price reaches the middle band.
+- **Divergence Exit:** If SO prints a bullish divergence (price makes lower low, SO makes higher low) while short, exit early — momentum is turning against the position.
+- **ATR-Based Targets:**
+  - Take Profit 1 = entry − (1.0 × ATR) → scale out 50%.
+  - Take Profit 2 = entry − (2.0 × ATR) → close remainder.
+- **ATR-Based Stop:** Stop loss = entry + (1.5 × ATR). This adapts to volatility so tight ranges don't get stopped out unnecessarily.
+
+---
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk a fixed % of equity (e.g., 1%) per trade. Size = (Account Risk $) ÷ (1.5 × ATR). This normalizes risk across instruments and volatility regimes.
+- **Max Concurrent Positions:** 2–3 to avoid correlated exposure (e.g., multiple FX pairs all shorting USD).
+- **No Averaging Down:** One entry per signal. If stopped, wait for a fresh setup.
+- **Volatility Filter:** Skip trades when ATR is in the bottom 10% of its 100-period range (dead market → band tags are meaningless).
+- **Time Stop:** If trade hasn't hit TP1 or stop within 15 bars, close at market.
+- **Session Filter:** Best on liquid sessions (London/NY overlap for FX, RTH for equities).
+
+---
+
+**5. Required Indicators**
+
+| Indicator | Settings | Purpose |
+|-----------|----------|---------|
+| Stochastic Oscillator | 14, 3, 3 | Overbought/oversold + cross trigger |
+| Bollinger Bands | 20, 2.0 | Dynamic S/R + mean-reversion target |
+| Volume SMA | 20 | Spike detection baseline |
+| ATR | 14 | Stop & target sizing |
+| Candlestick engine | — | Reversal pattern recognition |
+
+---
+
+**6. Trade Logic Summary (Short)**
+
+```
+IF SO_%K > 80 AND SO_%D > 80
+AND High >= UpperBand
+AND Volume >= 1.5 * VolumeSMA(20)
+AND BearishReversalCandle AND Close < UpperBand
+THEN SHORT at close
+  Stop = entry + 1.5*ATR
+  TP1  = entry - 1.0*ATR (50%)
+  TP2  = MiddleBand or entry - 2.0*ATR (50%)
+  Exit early if bullish SO divergence OR 15-bar timeout
+```
+
+---
+
+**⚠️ Critical Note:** The prompt's phrasing ("enters long when SO is overbought") mixes a long entry with a bearish momentum condition. Overbought SO + upper band tag is a classic **short** setup. If your intent was genuinely long, the correct conditions are **oversold SO + lower band tag + bullish candle**, which this strategy supports via the mirrored Long-Side Variant above. Verify which direction you actually want before coding.

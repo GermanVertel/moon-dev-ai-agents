@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev: Data loaded and cleaned! Shape: (1009, 5) \u2728\n\ud83c\udf19\u2728 Moon Dev: Initializing VolatilityConvergence Strategy \u2728\ud83c\udf19\n\ud83c\udf19 Moon Dev: Indicators ready \u2014 ATR, ATR%, ATR-Osc, KST, KST-Signal \ud83d\ude80\n\ud83c\udf19 Moon Dev ENTRY: Price 66710.16 near high 67442.64 | ATR-Osc -0.30 < KST -0.27 | KST>-88.44 \ud83d\ude80\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/865 [00:00<?, ?bar/s]\n                                                      \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolatilityConvergence_PKG.py\", line 166, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolatilityConvergence_PKG.py\", line 149, in next\n    self.trades[-1].atr_entry = atr\nIndexError: tuple index out of range\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolatilityConvergence_PKG.py` failed. (See above for error)\n",
+  "execution_time": 3.532929,
+  "timestamp": "2026-10-05T13:26:45.337796"
+}

@@ -1,0 +1,52 @@
+STRATEGY_NAME: FluxPivot
+
+STRATEGY_DETAILS:
+This strategy identifies momentum reversal events by combining MACD zero-line crossovers with order flow indicators. The core idea is to catch shifts in momentum as they happen, using MACD zero-line crosses as the trigger and order flow as the confirmation filter to avoid false signals.
+
+Key Strategy Components:
+1. MACD Zero-Line Crossover (Trigger):
+   - Use standard MACD settings (12, 26, 9) or a slightly faster variant (8, 21, 5) for more responsive signals.
+   - A bullish reversal signal occurs when the MACD line crosses from below to above the zero line.
+   - A bearish reversal signal occurs when the MACD line crosses from above to below the zero line.
+   - The signal line and histogram are used to confirm the strength of the crossover.
+
+2. Order Flow Confirmation (Filter):
+   - Use cumulative delta (the running total of buy volume minus sell volume) or a similar order flow metric.
+   - For a bullish reversal, cumulative delta should be rising or turning positive, indicating aggressive buying.
+   - For a bearish reversal, cumulative delta should be falling or turning negative, indicating aggressive selling.
+   - Optionally, use bid/ask imbalance or volume profile to confirm that buyers/sellers are stepping in at key levels.
+
+3. Entry Rules:
+   - Long Entry: MACD line crosses above zero AND cumulative delta is positive or rising over the last N bars (e.g., 5-10 bars).
+   - Short Entry: MACD line crosses below zero AND cumulative delta is negative or falling over the last N bars.
+   - Enter at the close of the candle that confirms both conditions, or on the next candle open.
+
+4. Exit Rules:
+   - Take Profit: Use a fixed risk-reward ratio (e.g., 1.5:1 or 2:1) or trail the stop using an ATR-based method.
+   - Stop Loss: Place stop below the recent swing low (for longs) or above the recent swing high (for shorts), or use an ATR multiple (e.g., 1.5x ATR).
+   - Exit Signal: Close the position if MACD crosses back below zero (for longs) or above zero (for shorts), or if cumulative delta reverses against the position.
+
+5. Risk Management:
+   - Risk no more than 1-2% of account equity per trade.
+   - Avoid trading during low-liquidity periods (e.g., late Asian session) to ensure order flow data is reliable.
+   - Use a maximum of 2-3 concurrent positions to manage exposure.
+   - Consider a time-based stop: exit if the trade does not move in favor within X bars (e.g., 10-15 bars).
+
+6. Required Indicators:
+   - MACD (12, 26, 9) with zero line.
+   - Cumulative Delta or Volume Delta (order flow indicator).
+   - ATR (14) for stop-loss and position sizing.
+   - Optional: Volume Profile or Bid/Ask Imbalance for additional confirmation.
+
+7. Timeframes:
+   - Best suited for intraday timeframes (5m, 15m, 1h) where order flow data is most meaningful.
+   - Can be adapted for swing trading on 4h or daily charts, but order flow confirmation may be less reliable.
+
+8. Market Conditions:
+   - Works best in trending or breakout markets where momentum shifts are clear.
+   - Avoid ranging or choppy markets where MACD zero-line crosses are frequent and order flow is noisy.
+
+9. Additional Notes:
+   - Backtest with realistic order flow data (e.g., footprint charts or tick data) to avoid look-ahead bias.
+   - Combine with support/resistance levels to improve signal quality.
+   - Consider using a momentum oscillator (e.g., RSI) as a secondary filter to avoid overbought/oversold traps.

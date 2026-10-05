@@ -1,0 +1,41 @@
+STRATEGY_NAME: FundingSqueeze
+
+STRATEGY_DETAILS:
+This strategy exploits mean-reversion in perpetual futures funding rates by shorting volatility when funding is elevated and price action compresses into a Bollinger Band squeeze, then exiting at liquidity clusters defined by volume-weighted price extremes.
+
+1. KEY STRATEGY COMPONENTS
+- Regime Filter: Only trade when the perpetual funding rate is in a "high" regime (e.g., annualized funding > 30-50%, or funding rate in the top 20th percentile of its rolling 30-day distribution). High positive funding signals crowded longs paying to stay long, which often precedes volatility compression and eventual mean-reversion.
+- Volatility Trigger: Bollinger Band Squeeze — BandWidth (=(Upper-Lower)/Middle) drops to a multi-period low (e.g., lowest 10% of the last 50-100 bars). This signals a coiled market about to expand.
+- Directional Bias: SHORT volatility, not necessarily short price. Implemented via short straddle/strangle, short gamma, or shorting the underlying when squeeze resolves downward.
+- Exit Target: Liquidity clusters = recent volume-weighted price extremes (VWAP-anchored swing highs/lows, high-volume nodes on the volume profile, or volume-weighted pivot levels). Exit as price approaches these clusters.
+
+2. ENTRY RULES
+- Confirm funding regime: funding_rate >= threshold (e.g., 0.03% per 8h ≈ 33% annualized) for N consecutive periods.
+- Confirm squeeze: Bollinger BandWidth at or below its 10th percentile over the lookback (default 100 bars), with band period 20 and 2 std devs.
+- Optional confirmation: ADX < 20 (no trend), or price inside the bands for K bars.
+- Trigger entry when either:
+  a) Price closes back inside the bands after a brief poke outside (squeeze false-break), OR
+  b) BandWidth begins expanding again after the squeeze low (expansion confirmation).
+- Position: Short volatility (short straddle/strangle) OR directional short if squeeze breaks downward with volume.
+
+3. EXIT RULES
+- Primary exit: Price reaches a volume-weighted liquidity cluster (recent swing high/low weighted by volume, or high-volume node on the volume profile).
+- Secondary exit: Funding rate normalizes (drops back into neutral regime).
+- Time stop: Exit if neither target nor stop hit within X bars (e.g., 2x the average squeeze duration).
+- Volatility exit: Close if implied/realized vol expands beyond a threshold (e.g., BandWidth > 90th percentile), signaling the squeeze has fully resolved.
+
+4. RISK MANAGEMENT
+- Position sizing scaled inversely to realized volatility and to the magnitude of the funding extreme.
+- Hard stop: Price breaks beyond the recent volume-weighted extreme by a buffer (e.g., 1.5x ATR) — this invalidates the squeeze thesis.
+- Max loss per trade capped (e.g., 1-2% of equity) because short-vol strategies have asymmetric payoff.
+- Avoid holding through scheduled events (CPI, FOMC, earnings) that can cause gap risk.
+- Cap concurrent short-vol exposure across correlated assets to avoid systemic squeeze risk.
+
+5. REQUIRED INDICATORS / DATA
+- Bollinger Bands (20-period, 2 std dev) + BandWidth percentile rank.
+- Perpetual funding rate feed (8h or 1h granularity) with rolling percentile.
+- Volume Profile / VWAP-anchored swing highs and lows (volume-weighted price extremes).
+- ATR (14) for stop placement and sizing.
+- ADX (14) optional for trend filter.
+- Realized volatility (e.g., 20-period) for regime and sizing.
+- Optional: Open Interest delta to confirm crowded positioning.

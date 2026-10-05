@@ -1,0 +1,54 @@
+STRATEGY_NAME: LiquidityDivergence
+
+STRATEGY_DETAILS:
+
+This strategy combines three distinct edges: volatility-adjusted breakout levels, session-based liquidity timing, and volume-price divergence confirmation. The core thesis is that breakouts occurring during low-liquidity hours are more likely to be genuine (fewer fakeouts from HFT noise) when tick volume fails to confirm the price move — suggesting a real directional imbalance rather than churn.
+
+**1. KEY STRATEGY COMPONENTS**
+
+- **Volatility-Adjusted Donchian Channel**: Unlike a standard Donchian Channel (fixed lookback high/low), the channel width is dynamically scaled by current ATR or realized volatility. This prevents signals during compressed ranges and expands the channel during high-vol regimes to avoid over-trading.
+
+- **Low-Liquidity Hour Filter**: Trades are only taken during designated low-liquidity windows (e.g., Asian session late hours, post-London close, pre-Tokyo open). These windows typically show wider spreads but cleaner directional moves due to reduced market maker activity.
+
+- **Tick Volume vs. Price Divergence**: The confirmation layer. When price breaks the channel but tick volume diverges (e.g., price makes new highs while tick volume makes lower highs, or vice versa), it signals that the move is driven by thin liquidity rather than broad participation — a classic precursor to continuation.
+
+**2. ENTRY RULES**
+
+**Long Entry:**
+- Price closes above the upper volatility-adjusted Donchian band.
+- Current hour falls within the defined low-liquidity window (e.g., 22:00–02:00 UTC).
+- Tick volume on the breakout bar is LOWER than the average tick volume of the prior N bars (divergence condition).
+- Optional: RSI or MACD histogram shows bearish/neutral momentum while price breaks up — reinforcing the divergence.
+
+**Short Entry:**
+- Price closes below the lower volatility-adjusted Donchian band.
+- Same low-liquidity hour filter applies.
+- Tick volume on the breakdown bar is LOWER than average of prior N bars.
+- Optional: momentum oscillator shows bullish/neutral reading against the price breakdown.
+
+**3. EXIT RULES**
+
+- **Take Profit**: Fixed multiple of ATR (e.g., 1.5x–2.5x ATR) OR trailing stop using a shorter Donchian channel (e.g., 10-period).
+- **Stop Loss**: Placed at the opposite side of the volatility-adjusted channel OR a fixed ATR multiple (e.g., 1x ATR) from entry.
+- **Time-Based Exit**: If the trade is still open when the low-liquidity window ends and normal liquidity returns, close the position — the edge decays once liquidity returns.
+- **Divergence Invalidation**: If tick volume suddenly spikes in the direction of the trade (confirming rather than diverging), consider tightening stops.
+
+**4. REQUIRED INDICATORS**
+
+- **Donchian Channel (Volatility-Adjusted)**: Base lookback (e.g., 20 periods) with ATR-based width multiplier.
+- **ATR (Average True Range)**: For both channel adjustment and stop/target sizing.
+- **Tick Volume**: Native to MT4/MT5; on other platforms, use volume bars or a proxy (e.g., number of trades per bar).
+- **Momentum Oscillator (Optional)**: RSI, MACD, or a custom momentum divergence detector.
+- **Session Filter**: Time-based logic for low-liquidity hours (session-dependent; tune per instrument).
+
+**5. RISK MANAGEMENT**
+
+- **Position Sizing**: Risk a fixed % of equity per trade (e.g., 0.5–1%) due to wider spreads during low-liquidity hours.
+- **Spread Awareness**: Require spread to be below a threshold before entry; avoid extreme spread widening events (news, rollover).
+- **Max Concurrent Trades**: Limit to 1–2 positions to avoid correlated exposure during thin sessions.
+- **Avoid News Windows**: Skip entries within 15 minutes of high-impact economic releases even if in the low-liquidity window.
+- **Backtest by Session**: Validate performance separately for each low-liquidity window — edges vary significantly by session.
+
+**6. UNIQUE EDGE SUMMARY**
+
+The strategy exploits a specific market microstructure inefficiency: during low-liquidity hours, breakouts driven by thin order books (evidenced by tick volume divergence) often continue because there is no counterflow to absorb them. Combining volatility-adjusted levels with volume divergence and session timing creates a filtered, high-conviction setup that avoids the noise of peak-liquidity hours.

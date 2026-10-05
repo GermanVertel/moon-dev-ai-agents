@@ -1,0 +1,89 @@
+STRATEGY_NAME: FractalDivergence
+
+STRATEGY_DETAILS:
+This strategy combines three orthogonal signals—momentum divergence, chaos/fractal complexity, and volume decay—to catch high-probability trend continuations after pullbacks. It is a trend-following approach that only fires when price structure becomes "complex" (high fractal dimension) while momentum quietly diverges against the pullback, and participation (volume) is drying up.
+
+1. KEY STRATEGY COMPONENTS
+
+- RSI Divergence (Momentum Signal)
+  - Compute RSI(14) on the chosen timeframe.
+  - Bullish setup (long): Price makes a lower low, but RSI makes a higher low within the recent swing window (lookback 20–50 bars). This indicates weakening selling pressure into the pullback.
+  - Bearish setup (short): Price makes a higher high, but RSI makes a lower high.
+  - Only accept divergence when the price swing is at least 1.0x ATR(14) in magnitude to avoid noise.
+
+- Fractal Dimension of Price Action (Structure Filter)
+  - Use Higuchi Fractal Dimension (HFD) or Katz Fractal Dimension over a rolling window (e.g., 50–100 bars).
+  - Compute FD on the price series (log prices preferred).
+  - Rule: FD must be INCREASING over the last N bars (e.g., FD_now > FD_5bars_ago) and above a threshold (typically 1.5 for HFD on normalized data).
+  - Interpretation: Rising FD = price action is becoming more jagged/complex = pullback is "choppy," often preceding a strong trend resumption.
+  - Do NOT take trades when FD is low (<1.3), which indicates smooth, trending, or ranging consolidation.
+
+- Volume Filter (Confirmation)
+  - Compute a volume moving average (e.g., SMA(20)).
+  - Rule: Current volume and 3-bar average volume must be DECREASING relative to the prior 10-bar average.
+  - Interpretation: Pullback occurs on declining volume = weak counter-trend participation = high probability of trend resumption.
+
+- Trend Context Filter
+  - Use EMA(50) and EMA(200) on the trading timeframe.
+  - Longs only when EMA(50) > EMA(200) and price is above EMA(200).
+  - Shorts only when EMA(50) < EMA(200) and price is below EMA(200).
+  - This ensures the divergence is a pullback within an established trend, not a reversal.
+
+2. ENTRY RULES
+
+Long Entry (all must be true):
+- Trend context: EMA(50) > EMA(200), price > EMA(200).
+- Bullish RSI divergence confirmed within last 5 bars.
+- Fractal Dimension increasing over last 5 bars AND FD > 1.5.
+- Volume declining: SMA(vol,3) < SMA(vol,10) and SMA(vol,10) < SMA(vol,20).
+- Trigger: Enter long on close of the bar that confirms divergence (or on break of prior bar's high for confirmation).
+
+Short Entry (all must be true):
+- Trend context: EMA(50) < EMA(200), price < EMA(200).
+- Bearish RSI divergence confirmed within last 5 bars.
+- Fractal Dimension increasing over last 5 bars AND FD > 1.5.
+- Volume declining: SMA(vol,3) < SMA(vol,10) and SMA(vol,10) < SMA(vol,20).
+- Trigger: Enter short on close of confirming bar (or on break of prior bar's low).
+
+3. EXIT RULES
+
+Primary exits (whichever hits first):
+- ATR-based target: Take profit at 2.5x ATR(14) from entry.
+- ATR-based stop: Stop loss at 1.5x ATR(14) from entry (below swing low for longs, above swing high for shorts).
+- Trailing stop: Once price moves 1.5x ATR in favor, trail stop at 1.0x ATR from the highest high (longs) / lowest low (shorts).
+
+Fibonacci-based exits (optional scale-out):
+- Measure the last impulse leg (the swing that preceded the pullback).
+- Take partial profit (50%) at the 0.382 retracement of the prior impulse extension.
+- Take remaining at the 0.618 extension of the prior impulse (projected target).
+- If price closes beyond the 0.786 retracement against the trade, exit full position (structure invalidated).
+
+Time-based exit:
+- If neither target nor stop is hit within 30 bars, exit at market to avoid stagnation.
+
+4. RISK MANAGEMENT
+
+- Position sizing: Risk 0.5–1.0% of account equity per trade. Size = (Account × Risk%) / (Entry − Stop).
+- Max concurrent positions: 2–3 across uncorrelated markets.
+- Max daily loss: 3% of equity → halt trading for the day.
+- Max drawdown circuit breaker: 10% → pause strategy, review parameters.
+- Correlation filter: Do not hold more than one long in highly correlated instruments.
+- Slippage buffer: Add 0.1x ATR to stop distance in low-liquidity sessions.
+
+5. REQUIRED INDICATORS
+
+- RSI(14) — for divergence detection.
+- Higuchi Fractal Dimension (HFD) or Katz FD — rolling 50–100 bar window.
+- Volume SMA(3), SMA(10), SMA(20) — for volume decay confirmation.
+- EMA(50) and EMA(200) — trend context.
+- ATR(14) — volatility sizing, stops, and targets.
+- Swing high/low detection (fractal pivots, e.g., 5-bar fractals) — for divergence and Fibonacci anchors.
+- Fibonacci retracement/extension tool — for scale-out targets.
+
+6. IMPLEMENTATION NOTES
+
+- Timeframe: Best on 1H–4H for swing trading; 15m–1H for intraday.
+- Markets: Works best on instruments with clear trending regimes (FX majors, index futures, large-cap crypto).
+- Backtest considerations: Use walk-forward optimization for FD threshold and RSI divergence lookback. FD parameters are sensitive—avoid overfitting by keeping thresholds coarse (e.g., 1.5 ± 0.1).
+- Signal quality: The triple filter (divergence + rising FD + declining volume) drastically reduces trade frequency but aims to raise win rate and reward-to-risk ratio. Expect fewer than 2–3 signals per week per instrument.
+- Failure mode: In choppy ranges, FD stays high and volume may decline—trend context filter (EMA 50/200) is essential to avoid false signals.

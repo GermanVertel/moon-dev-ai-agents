@@ -1,0 +1,52 @@
+STRATEGY_NAME: VolatilityYieldInversion
+
+STRATEGY_DETAILS:
+
+**Strategy Overview:**
+This strategy exploits the relationship between equity market volatility expectations (VIX futures curve) and short-term interest rates (3-month Treasury yield). When the VIX futures curve spread relative to the 3-month Treasury yield turns negative, it signals elevated market stress and potential mean-reversion opportunities in equities. Long entries are triggered on this inversion, with exits governed by a 50-period Moving Average crossover back to neutral.
+
+**Key Strategy Components:**
+
+1. **VIX Futures Curve (30-day):**
+   - Use front-month VIX futures (or a 30-day constant maturity VIX futures proxy).
+   - Compute the curve value as the 30-day VIX futures price.
+   - This reflects the market's forward-looking volatility expectation.
+
+2. **3-Month Treasury Yield (IRX / ^IRX):**
+   - Use the 13-week T-bill yield as the risk-free short-rate proxy.
+   - Represents the "yield" side of the spread.
+
+3. **Spread Calculation:**
+   - Spread = VIX_Futures_30D − 3M_Treasury_Yield
+   - When Spread < 0 → volatility expectations are below short-term rates → typically signals a risk-off / stressed regime where equities often bottom and rebound.
+
+**Entry Rules (Long):**
+- Condition: `VIX_Futures_30D − 3M_Treasury_Yield < 0`
+- Enter a long position in the underlying equity instrument (e.g., SPY, ES futures, or broad index ETF).
+- Optional confirmation: require the spread to cross from positive to negative (fresh inversion) rather than remaining persistently negative.
+- Position sizing: scale in based on depth of inversion (more negative = larger allocation), capped at max risk.
+
+**Exit Rules:**
+- Compute a 50-period Moving Average on the price of the traded equity instrument.
+- Exit long when price crosses **below** the 50-period MA (crossover to neutral/bearish).
+- Alternative neutral exit: when the VIX–Treasury spread reverts back above zero AND price closes below the 50-MA.
+- Use the 50-MA crossover as the primary neutral signal to avoid premature exits during volatility spikes.
+
+**Risk Management:**
+- **Stop Loss:** Hard stop at 2× ATR(14) below entry, or a fixed percentage (e.g., 5–7%) to protect against sustained downtrends.
+- **Position Sizing:** Risk no more than 1–2% of capital per trade.
+- **Max Exposure:** Cap total allocation during inversion regime (e.g., 50% of portfolio) since signals can cluster.
+- **Time Stop:** If the spread remains negative but price fails to advance within N bars (e.g., 20), reduce or exit.
+- **Correlation Check:** Avoid stacking multiple correlated long positions if trading multiple indices.
+
+**Required Indicators:**
+- VIX Futures 30-day price (or VIX front-month futures contract)
+- 3-Month Treasury Yield (^IRX or equivalent)
+- 50-period Simple Moving Average (on traded instrument)
+- ATR(14) for volatility-based stops
+- Optional: RSI(14) for overbought confirmation on exits
+
+**Implementation Notes:**
+- Data frequency: Daily bars are sufficient; intraday optional for refined entries.
+- Backtest period should include stress regimes (2008, 2011, 2018, 2020, 2022) to validate inversion signals.
+- Watch for regime shifts: extended negative spreads can persist in low-rate environments, so pair with the 50-MA exit to avoid holding through prolonged drawdowns.

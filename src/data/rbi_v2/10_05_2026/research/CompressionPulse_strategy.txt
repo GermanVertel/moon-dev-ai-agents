@@ -1,0 +1,47 @@
+STRATEGY_NAME: CompressionPulse
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy identifies periods of abnormally low volatility (a "squeeze") and waits for a confirmed volatility expansion via momentum surge and volume confirmation. The edge comes from the statistical tendency of low-volatility regimes to precede directional breakout moves.
+
+**Required Indicators**
+1. **Bollinger Bands (20-period, 2 standard deviations)** — used both for bandwidth calculation and as the exit target (upper band).
+2. **Bollinger Band Width (BBW)** = (Upper Band − Lower Band) / Middle Band, or absolute width. Compare current BBW to its own 20-period simple average.
+3. **Rate of Change (ROC, 3-period)** — momentum trigger on price.
+4. **Volume Median (20-day)** — baseline for detecting volume spikes.
+
+**Entry Conditions (all must be true simultaneously)**
+1. **Squeeze condition:** Current Bollinger Band Width is below its 20-period average (contraction regime — the market is coiling).
+2. **Momentum flip:** 3-period ROC crosses from ≤ 0 to > 0 (fresh upward momentum ignition).
+3. **Volume confirmation:** Current bar volume ≥ 1.5 × 20-day median volume (institutional participation / breakout validity).
+4. **Directional bias (optional filter):** Price is at or above the middle band, confirming the breakout favors the upside.
+
+**Entry Execution**
+- Enter long on the close of the signal bar, or on a stop-entry just above the signal bar's high for confirmation.
+- Only one position at a time; no pyramiding.
+
+**Exit Rules**
+- **Primary exit:** Price touches or closes above the upper Bollinger Band (mean-extension target).
+- **Stop loss:** Placed below the lower Bollinger Band, or below the recent swing low / signal bar low, whichever is tighter (typically 1.5–2× ATR).
+- **Time stop:** Exit if the trade has not reached the upper band within N bars (e.g., 10) and momentum (ROC) rolls back below zero.
+
+**Risk Management**
+- **Position sizing:** Risk a fixed percentage of equity (e.g., 1%) per trade based on distance from entry to stop.
+- **Volatility-adjusted sizing:** Since squeeze regimes have small stops, cap position size to avoid over-leverage when bands are narrow.
+- **Max concurrent exposure:** One open trade; avoid re-entry until a new squeeze forms.
+- **Slippage buffer:** Because breakouts occur on volume spikes, assume wider fills; require the volume filter to be met on the signal bar (not just intraday).
+
+**Rationale / Edge**
+- BBW contraction below its average signals a statistical volatility trough — historically mean-reverting to expansion.
+- ROC crossover confirms the direction of that expansion rather than guessing it.
+- The 50% volume spike filter removes false breakouts that lack participation, improving the win rate of squeeze resolutions.
+- Exiting at the upper band captures the bulk of the expansion move without giving back gains to mean reversion.
+
+**Best Market Regime**
+Trending or breakout-friendly markets (equities, futures, crypto) after consolidation phases. Avoid ranging, low-liquidity instruments where volume medians are unstable.
+
+**Failure Modes to Watch**
+- False squeezes in choppy markets producing whipsaws.
+- Volume spikes from news/earnings that reverse intraday.
+- Bandwidth already expanding before entry (missed the compression window).

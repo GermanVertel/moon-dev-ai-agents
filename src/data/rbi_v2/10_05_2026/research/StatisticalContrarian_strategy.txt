@@ -1,0 +1,48 @@
+STRATEGY_NAME: StatisticalContrarian
+
+STRATEGY_DETAILS:
+This strategy operates on a dual-regime framework that classifies market conditions as either "in-distribution" (normal/expected volatility and returns) or "out-of-distribution" (anomalous/extreme moves). The core premise is that in-distribution breakouts tend to persist (momentum), while out-of-distribution moves tend to revert (mean reversion). This creates a hybrid approach that is simultaneously momentum-seeking and contrarian, depending on the statistical context.
+
+1. Key Strategy Components:
+- Distribution Classification Engine: Uses a rolling window (e.g., 100-200 periods) to compute a statistical distribution of returns, volatility, and/or volume. A z-score or Mahalanobis distance determines whether the current market state is in-distribution (z-score between -1.5 and +1.5) or out-of-distribution (z-score beyond ±2.0).
+- Breakout Detection: Identifies price breakouts beyond recent range highs/lows (e.g., 20-period Donchian channel). If the breakout occurs while the market is in-distribution, it is treated as a valid momentum entry.
+- Mean Reversion Setup: Identifies extreme price deviations from a moving average (e.g., Bollinger Bands or Keltner Channels) that occur when the market is out-of-distribution. These are treated as contrarian reversal opportunities.
+- Regime Filter: A secondary filter (e.g., ADX or ATR percentile) ensures that in-distribution breakouts are not taken during low-volatility chop, and out-of-distribution reversals are not taken during strong trending regimes.
+
+2. Entry Rules:
+- Long Entry (Momentum): 
+  * Price breaks above the upper Donchian channel (e.g., 20-period high).
+  * Current return z-score is between -1.5 and +1.5 (in-distribution).
+  * ATR percentile is above 30% (sufficient volatility).
+  * Enter long on close of breakout candle.
+- Short Entry (Contrarian):
+  * Price closes above the upper Bollinger Band (2 std dev) or below the lower band.
+  * Current return z-score is > +2.0 (out-of-distribution) for shorting overextended rallies, or < -2.0 for shorting overextended selloffs (though strategy specifies shorting out-of-distribution mean reversion, so primarily short overextended rallies).
+  * ADX < 25 (non-trending) to avoid shorting strong uptrends.
+  * Enter short on the first reversal candle (e.g., bearish engulfing) after the extreme close.
+
+3. Exit Rules:
+- Long Exit: 
+  * Trailing stop at 2x ATR from entry.
+  * Exit if z-score moves beyond +2.0 (out-of-distribution), indicating potential exhaustion.
+  * Exit if price closes below the 20-period moving average.
+- Short Exit:
+  * Profit target at the 20-period moving average or middle Bollinger Band.
+  * Stop loss at 1.5x ATR above entry.
+  * Time-based exit after 10 bars if neither target nor stop is hit.
+
+4. Risk Management:
+- Position sizing based on ATR: Risk 1% of equity per trade, with stop distance = 2x ATR for longs and 1.5x ATR for shorts.
+- Maximum 3 concurrent positions, with no more than 2 in the same direction.
+- Daily loss limit: Stop trading if daily drawdown exceeds 3%.
+- Correlation filter: Avoid taking multiple positions in highly correlated assets (e.g., BTC and ETH) to prevent concentrated risk.
+
+5. Required Indicators:
+- Donchian Channels (20-period) for breakout detection.
+- Bollinger Bands (20-period, 2 std dev) for mean reversion extremes.
+- Z-score of returns (rolling 100-period) for distribution classification.
+- ATR (14-period) for volatility measurement and stop sizing.
+- ADX (14-period) for regime filtering.
+- Volume moving average (20-period) to confirm breakouts (optional but recommended).
+
+This strategy uniquely blends momentum and contrarian logic by using statistical distribution analysis as the switch. It avoids the common pitfall of applying mean reversion in trending markets and momentum in choppy markets by dynamically adapting to the prevailing statistical regime.

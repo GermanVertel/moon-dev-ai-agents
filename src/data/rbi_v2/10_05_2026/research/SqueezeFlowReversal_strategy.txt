@@ -1,0 +1,49 @@
+STRATEGY_NAME: SqueezeFlow Reversal
+
+STRATEGY_DETAILS:
+This strategy combines volatility compression detection (Bollinger Bandwidth at 20-day lows) with money flow confirmation (Chaikin Money Flow crossing above zero) to identify high-probability long entries following periods of consolidation. The core thesis is that a volatility squeeze preceded by positive money flow signals institutional accumulation before an explosive breakout.
+
+**Key Strategy Components:**
+
+1. **Volatility Squeeze Detection (Primary Filter)**
+   - Bollinger Bandwidth = (Upper Band − Lower Band) / Middle Band
+   - Calculate Bandwidth using standard Bollinger Bands (20-period SMA, 2 standard deviations)
+   - Entry condition requires current Bandwidth ≤ lowest Bandwidth value of the prior 20 days
+   - This identifies periods of extreme consolidation where a breakout is statistically imminent
+
+2. **Money Flow Confirmation (Trigger)**
+   - Chaikin Money Flow (CMF) over 20 periods
+   - CMF = Σ[(Close − Low) − (High − Close)] / (High − Low) × Volume, summed over 20 periods, divided by 20-period volume sum
+   - Entry trigger: CMF crosses above zero (from negative or flat territory)
+   - Positive CMF during a squeeze indicates buying pressure accumulating despite low volatility
+
+**Entry Rules:**
+- **Long entry** when BOTH conditions are met on the same bar or within a 2–3 bar window:
+  - Bollinger Bandwidth is at or below its 20-day low
+  - CMF crosses above the zero line
+- Enter at next bar open or on close of the signal bar
+- Optional: require CMF to have been negative in the prior 1–3 bars to ensure a genuine "cross"
+
+**Exit Rules:**
+- **Trailing stop:** 5% below the highest close (or highest high) since entry
+- **Volatility expansion exit:** Close the position when Bandwidth exceeds its 10-day simple moving average
+- Whichever exit triggers first — the trailing stop or the Bandwidth expansion — closes the trade
+- Consider a hard time-stop (e.g., 20–30 bars) if neither exit triggers
+
+**Risk Management:**
+- Position sizing based on the 5% trailing stop distance — risk no more than 1–2% of account equity per trade
+- Avoid entries during earnings releases or major scheduled news events
+- Skip signals if Bandwidth is at a 20-day low but the broader market/trend filter (e.g., price below 200-period SMA) is bearish
+- Optional trend filter: only take longs if price is above the 200-period SMA to align with higher-timeframe direction
+
+**Required Indicators:**
+- Bollinger Bands (20, 2) — for Bandwidth calculation
+- Bollinger Bandwidth (derived from above)
+- 20-day lowest Bandwidth value (rolling minimum)
+- 10-day SMA of Bandwidth (for exit)
+- Chaikin Money Flow (20-period)
+- Optional: 200-period SMA (trend filter)
+- Trailing stop tracker (5% from peak)
+
+**Rationale:**
+The squeeze represents equilibrium — buyers and sellers in balance with declining volatility. A CMF cross above zero during this compression reveals that accumulation is quietly occurring. When the squeeze inevitably resolves, this latent demand typically produces a sharp upside breakout. The Bandwidth-expansion exit captures the bulk of the volatility move, while the 5% trailing stop protects against false breakouts that reverse sharply.

@@ -1,0 +1,73 @@
+STRATEGY_NAME: LiquidityReversal
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy capitalizes on stop-hunt reversals by identifying high-liquidation zones where leveraged traders are likely to get liquidated, then entering counter-trend positions when price approaches these zones with confirming VWAP divergence, and exiting when OBV (On-Balance Volume) flips trend direction.
+
+**Key Strategy Components**
+
+1. **Liquidation Zone Mapping**
+   - Aggregate cumulative liquidation levels from order book data (heatmap)
+   - Identify clusters where large concentrations of stop-losses and liquidation orders sit
+   - Mark these as "magnet zones" — areas where price is likely to spike into before reversing
+   - Prioritize zones with the highest cumulative liquidation density (typically above/below recent swing highs/lows)
+
+2. **VWAP Divergence Confirmation**
+   - Calculate VWAP (Volume Weighted Average Price) on intraday basis
+   - Look for divergence between price action and VWAP:
+     - **Bullish setup**: Price makes a lower low into a liquidation zone below, but VWAP holds above prior VWAP low (positive divergence)
+     - **Bearish setup**: Price makes a higher high into a liquidation zone above, but VWAP fails to make a new high (negative divergence)
+   - Divergence signals that the move into the liquidation zone is exhausting
+
+3. **OBV Trend Flip (Exit Signal)**
+   - Track OBV with a short EMA (e.g., 9-period) for trend direction
+   - Exit long when OBV EMA flips bearish
+   - Exit short when OBV EMA flips bullish
+   - This captures the reversal momentum as volume confirms the new direction
+
+**Entry Rules**
+
+*Long Entry (Stop-Hunt Below):*
+- Price enters a high-liquidation zone located BELOW current price
+- Bullish VWAP divergence confirmed (price lower low, VWAP higher low)
+- Wait for a rejection candle (wick/hammer) or bullish engulfing at the zone
+- Enter long on the close of the confirmation candle
+
+*Short Entry (Stop-Hunt Above):*
+- Price enters a high-liquidation zone located ABOVE current price
+- Bearish VWAP divergence confirmed (price higher high, VWAP lower high)
+- Wait for a rejection candle (shooting star) or bearish engulfing at the zone
+- Enter short on the close of the confirmation candle
+
+**Exit Rules**
+
+- **Primary exit**: OBV EMA trend flip (9-period EMA on OBV)
+- **Stop-loss**: Place just beyond the liquidation zone (e.g., 0.5–1 ATR past the zone edge) — if price breaks through, the stop-hunt thesis is invalidated
+- **Take-profit (optional)**: Scale out at the opposite side of the range or at the next liquidation cluster in the reversal direction
+- **Time stop**: Exit if no OBV flip within N bars (e.g., 20 bars) and price stalls
+
+**Risk Management**
+
+- Risk per trade: 1–2% of account equity
+- Position sizing based on distance from entry to invalidation stop
+- Avoid entering during high-impact news events (liquidation zones can be overrun)
+- Require minimum liquidation density threshold (filter out thin zones)
+- Max 2–3 concurrent positions to avoid correlated exposure
+- Trail stop to breakeven once price moves 1R in favor
+
+**Required Indicators & Data**
+
+1. **Liquidation Heatmap Data** — cumulative liquidation levels from order book/derivatives feed (e.g., Coinglass, Hyblock, or exchange liquidation APIs)
+2. **VWAP** — intraday anchored VWAP (session or rolling)
+3. **OBV (On-Balance Volume)** — with 9-period EMA overlay
+4. **ATR** — for stop placement and position sizing
+5. **Volume** — to validate rejection candles
+
+**Best Timeframes**
+- Entry timeframe: 5m–15m (for precision at zones)
+- Context timeframe: 1H–4H (to identify major liquidation clusters)
+- Best suited for crypto perpetuals and highly liquid futures where liquidation data is transparent
+
+**Edge Rationale**
+Market makers and large players often push price into liquidation clusters to trigger cascading stop-outs, then reverse. By waiting for VWAP divergence (exhaustion proof) and entering only after rejection confirmation, the strategy avoids being the liquidity being hunted — instead, it rides the reversal that follows. OBV flip provides an objective momentum-based exit rather than arbitrary targets.

@@ -1,0 +1,59 @@
+STRATEGY_NAME: PolarizedDivergence
+
+STRATEGY_DETAILS:
+This strategy exploits internal momentum conflict between RSI (bearish) and MACD (bullish), confirmed by declining on-bar volume, then exits when price reaches a statistically derived trend reversal zone. ATR risk bands govern position sizing and stop placement.
+
+1. Core Concept
+- The setup is a "polarized" momentum state: RSI signals weakening/bearish momentum while MACD signals bullish momentum. This conflict often precedes a short-term exhaustion or reversal.
+- Decreasing on-bar volume acts as confirmation that the bearish RSI signal is gaining traction (selling pressure without volume support for the bullish MACD).
+- Entry is taken on the divergence confirmation, anticipating a move toward the lower percentile reversal zone.
+
+2. Indicators and Inputs
+- RSI (period 14): Bearish condition = RSI < 50 and sloping down, or RSI making lower highs while price makes higher highs.
+- MACD (12, 26, 9): Bullish condition = MACD line > signal line, or histogram > 0.
+- Volume: On-bar volume decreasing over the last 2–3 bars (current bar volume < prior bar volume < bar before).
+- Percentile Levels: Compute rolling percentile bands (e.g., 20th and 80th percentile of price over lookback N=100). The "trend reversal zone" is the lower percentile band (for short entries) or upper percentile band (for long entries).
+- ATR (period 14): Used for risk bands (stop loss, take profit, and position sizing).
+
+3. Entry Rules (Short Bias Example)
+- RSI bearish: RSI < 50 and RSI[0] < RSI[1].
+- MACD bullish: MACD line > Signal line OR MACD histogram > 0.
+- Volume decreasing: Volume[0] < Volume[1] < Volume[2].
+- Price is above the lower percentile reversal zone (so there is room to fall).
+- Enter short at close of the confirmation bar.
+
+4. Exit Rules
+- Primary exit: Price crosses into the lower percentile reversal zone (e.g., price <= 20th percentile of lookback N). Close the short.
+- Alternative exit: ATR-based stop or target is hit.
+- Time-based exit: If neither condition is met within X bars, close at market.
+
+5. Risk Management (ATR Bands)
+- Stop Loss: Entry price + (1.5 × ATR) for shorts.
+- Take Profit: Entry price − (2.5 × ATR) for shorts, or the percentile zone, whichever is closer.
+- Position Sizing: Risk per trade = 1% of equity. Position size = (Equity × 0.01) / (1.5 × ATR).
+- Trailing Stop: Optional — trail stop by 1 × ATR once price moves 1 × ATR in favor.
+
+6. Long Bias (Mirror Logic)
+- RSI bullish (RSI > 50 and rising) while MACD bearish (MACD line < signal line).
+- Volume decreasing.
+- Enter long, exit when price crosses into the upper percentile reversal zone.
+- ATR bands mirrored: stop = entry − 1.5 × ATR, target = entry + 2.5 × ATR.
+
+7. Confirmation and Filters
+- Avoid entries during major news events or low-liquidity sessions.
+- Require at least 20 bars of history for percentile and ATR calculations.
+- Optional trend filter: Only take shorts if price is below a long-term moving average (e.g., 200 EMA), and longs if above.
+
+8. Pseudocode Summary
+```
+if RSI < 50 and RSI falling and MACD > Signal and Volume decreasing:
+    if price > lower_percentile_zone:
+        enter short
+        stop = entry + 1.5 * ATR
+        target = min(entry - 2.5 * ATR, lower_percentile_zone)
+if price <= lower_percentile_zone:
+    exit short
+```
+Mirror for longs.
+
+This strategy combines momentum divergence, volume confirmation, statistical reversal zones, and volatility-adjusted risk for a robust, adaptive trading approach.

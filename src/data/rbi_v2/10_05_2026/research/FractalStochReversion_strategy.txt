@@ -1,0 +1,55 @@
+STRATEGY_NAME: FractalStochReversion
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy identifies high-probability mean-reversion opportunities by combining three independent confirmation layers: StochRSI divergence (momentum exhaustion), VDMA (Variable Dynamic Moving Average) trend filter (directional bias), and Williams Fractals (structural price action confirmation). The triple-filter design reduces false signals common in pure oscillator-based reversion systems.
+
+**Required Indicators:**
+1. **StochRSI** (default: 14,14,3,3) — primary signal generator
+2. **VDMA** — Variable Dynamic Moving Average (adaptive to volatility; commonly a VWMA or variable-length MA that contracts in low-volatility and expands in high-volatility regimes)
+3. **Williams Fractals** (period 2 or 5) — swing high/low structural markers
+4. **ATR** (14) — for stop placement and position sizing
+
+**Entry Rules:**
+
+*Long Setup (bullish reversion):*
+- **StochRSI Divergence:** Price makes a lower low, but StochRSI makes a higher low (bullish divergence) in oversold territory (<20)
+- **VDMA Filter:** Price is at or below VDMA (mean-reversion context) OR VDMA slope is flat/rising, indicating the reversion aligns with the broader trend
+- **Fractal Confirmation:** A confirmed bullish fractal (down fractal) forms at or near the divergence low; entry triggers on the close of the candle that breaks above the fractal's high
+- **Confirmation candle:** Bullish close with rejection wick preferred
+
+*Short Setup (bearish reversion):*
+- **StochRSI Divergence:** Price makes a higher high, but StochRSI makes a lower high (bearish divergence) in overbought territory (>80)
+- **VDMA Filter:** Price is at or above VDMA OR VDMA slope is flat/falling
+- **Fractal Confirmation:** A confirmed bearish fractal (up fractal) forms at or near the divergence high; entry triggers on the close of the candle that breaks below the fractal's low
+- **Confirmation candle:** Bearish close with rejection wick preferred
+
+**Exit Rules:**
+- **Primary Target:** VDMA midline (mean reversion target) or opposite StochRSI extreme (80 for longs, 20 for shorts)
+- **Secondary Target:** Next opposing Williams Fractal level
+- **Trailing Stop:** Move stop to breakeven once price crosses the VDMA in the trade's direction
+- **Time Stop:** Exit if reversion does not materialize within N bars (e.g., 10–15 bars)
+
+**Risk Management:**
+- **Stop Loss:** Placed beyond the recent fractal swing (long: below the bullish fractal low; short: above the bearish fractal high), with a buffer of 0.5× ATR
+- **Position Sizing:** Risk 0.5–1% of equity per trade; size = (Account × Risk%) / (Entry − Stop)
+- **Max Concurrent Positions:** 2–3 to avoid correlated exposure
+- **Risk-Reward Minimum:** 1.5:1 required; skip setups where the VDMA target is too close
+- **Volatility Filter:** Skip trades when ATR is in the top 5% of its 100-period range (news/panic conditions break reversion logic)
+
+**Trade Management:**
+- Scale out 50% at 1R, trail remainder to VDMA or opposing fractal
+- Invalidate the setup if StochRSI re-enters the opposite extreme before target
+- Avoid trading against strong VDMA slope (e.g., no longs when VDMA is steeply declining)
+
+**Best Market Conditions:**
+- Ranging or mildly trending markets with clear swing structure
+- Timeframes: 15m–4H for intraday/swing; daily for position trading
+- Avoid strong trending breakouts where mean reversion fails repeatedly
+
+**Signal Hierarchy (Priority):**
+1. StochRSI divergence (necessary)
+2. Fractal structural confirmation (necessary)
+3. VDMA alignment (necessary filter — vetoes trades against strong trend)
+4. Confirmation candle (optional quality boost)

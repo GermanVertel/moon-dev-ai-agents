@@ -1,0 +1,83 @@
+STRATEGY_NAME: SqueezeVolumeTrigger
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy captures explosive directional moves that follow periods of low volatility. When Bollinger Band width contracts to a 20-day low, it signals a coiled market (the "squeeze"). A volume spike above the 50-day average acts as the ignition trigger, confirming that a breakout is underway. Direction is determined by price breaking out of the band envelope.
+
+**Key Strategy Components**
+
+1. **Volatility Contraction Detection**
+   - Bollinger Bands: 20-period SMA with 2 standard deviations
+   - BB Width = (Upper Band − Lower Band) / Middle Band
+   - Squeeze condition: Current BB Width ≤ lowest BB Width over the prior 20 days
+
+2. **Volume Confirmation**
+   - Volume MA: 50-period simple moving average of volume
+   - Trigger condition: Current volume > 50-day average volume (ideally >1.5x for stronger signal)
+
+3. **Directional Bias**
+   - Long bias: Price closes above the upper Bollinger Band during the squeeze trigger
+   - Short bias: Price closes below the lower Bollinger Band during the squeeze trigger
+
+**Entry Rules**
+
+*Long Entry:*
+- BB Width hits 20-day low (squeeze present)
+- Current volume > 50-day volume average
+- Close > Upper Bollinger Band
+- Enter at next bar open or on close confirmation
+
+*Short Entry:*
+- BB Width hits 20-day low (squeeze present)
+- Current volume > 50-day volume average
+- Close < Lower Bollinger Band
+- Enter at next bar open or on close confirmation
+
+**Exit Rules**
+
+1. **Primary Exit — Channel Expansion**
+   - Exit when BB Width expands back above its 20-day average OR
+   - Exit when BB Width exceeds a predefined expansion threshold (e.g., 1.5x the squeeze low)
+
+2. **Stop Loss — 2x ATR**
+   - Initial stop: 2 × ATR(14) from entry price
+   - Long stop: Entry − (2 × ATR)
+   - Short stop: Entry + (2 × ATR)
+   - Trailing option: Trail stop at 2 × ATR from highest high (long) or lowest low (short)
+
+3. **Optional Profit Target**
+   - Take partial profits at 1.5R, let remainder run with trailing ATR stop
+
+**Risk Management**
+
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade
+  - Position size = (Account Risk $) / (2 × ATR)
+- **Max Concurrent Positions:** Limit to 2–3 to avoid correlated volatility events
+- **Avoid Choppy Regimes:** Skip signals if BB Width is already above its 50-day average (no true squeeze)
+- **Time Stop:** Exit if no expansion occurs within 5–10 bars (squeeze failed)
+- **Slippage Buffer:** Use limit orders on entry where possible; breakouts can gap
+
+**Required Indicators**
+
+| Indicator | Parameters | Purpose |
+|-----------|-----------|---------|
+| Bollinger Bands | 20-period, 2 SD | Detect squeeze & breakout |
+| BB Width | (Upper−Lower)/Middle | Measure contraction/expansion |
+| Volume MA | 50-period SMA | Confirm breakout participation |
+| ATR | 14-period | Stop placement & sizing |
+| Volume | Raw | Spike detection |
+
+**Trade Logic Flow**
+1. Scan for BB Width at 20-day low → squeeze flag ON
+2. Check volume > 50-day average → confirmation
+3. Check close vs. bands → determine long/short
+4. Enter with 2×ATR stop
+5. Exit on width expansion or stop hit
+6. Re-arm scan after position closes
+
+**Best Market Conditions**
+- Works best on liquid instruments (large-cap equities, index futures, FX majors)
+- Avoid during low-liquidity sessions (overnight, holidays)
+- Strongest performance after prolonged consolidation phases
+- Less effective in strongly trending markets with no contraction phases

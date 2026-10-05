@@ -1,0 +1,57 @@
+STRATEGY_NAME: VolatilityMomentum
+
+STRATEGY_DETAILS:
+This strategy combines a classic trend-following signal (Golden Cross) with oversold momentum confirmation and volume surge detection, creating a high-conviction long entry setup. The unusual pairing of a bullish trend crossover with an oversold RSI suggests the strategy is designed to catch early trend reversals or pullback entries within a newly established uptrend.
+
+**Key Strategy Components:**
+
+1. **Primary Trend Filter (Golden Cross):**
+   - 50-period moving average (MA50) crossing above the 200-period moving average (MA200)
+   - This is a lagging bullish signal indicating a shift from downtrend to uptrend
+   - The crossover event itself is the trigger, not just the state of MA50 > MA200
+
+2. **Momentum Confirmation (RSI Oversold):**
+   - 14-period RSI must be below 30 at the time of entry
+   - This is counterintuitive for a golden cross setup, suggesting the strategy is catching a sharp pullback immediately after the crossover, or the crossover is occurring during a volatile recovery from oversold conditions
+   - RSI < 30 indicates strong selling pressure that may be exhausting
+
+3. **Volume Surge Filter:**
+   - Volume must increase by more than 10% within the last 5 minutes
+   - Confirms that the pullback/oversold condition is being met with aggressive buying interest
+   - Helps filter out low-liquidity false signals
+
+**Entry Rules:**
+- **Trigger:** MA50 crosses above MA200
+- **Condition 1:** RSI(14) < 30 (oversold)
+- **Condition 2:** Volume increase > 10% over the last 5 minutes
+- **Action:** Enter long position when all three conditions are met simultaneously
+
+**Exit Rules:**
+- **Stop-Loss:** 2 x ATR (Average True Range) below entry price
+- **Take-Profit:** Not explicitly defined — likely relies on trailing stops or opposite signals (MA50 crossing below MA200)
+- **Position Management:** Consider scaling out at 1 ATR profit or using a trailing stop based on ATR
+
+**Risk Management:**
+- **Stop-Loss:** 2 ATR below entry (dynamic, volatility-adjusted)
+- **Position Sizing:** Risk no more than 1-2% of account equity per trade
+- **ATR Period:** Standard 14-period ATR
+- **Maximum Drawdown Control:** Avoid entering if price is already extended more than 3 ATR from MA50
+
+**Required Indicators:**
+1. **50-period Simple Moving Average (SMA50)**
+2. **200-period Simple Moving Average (SMA200)**
+3. **14-period Relative Strength Index (RSI)**
+4. **14-period Average True Range (ATR)**
+5. **Volume with 5-minute rolling window comparison**
+
+**Additional Considerations:**
+- **Timeframe:** Works best on 15-minute to 1-hour charts for intraday, or 4-hour to daily for swing trading
+- **Market Conditions:** Best suited for volatile markets with clear trend reversals
+- **False Signal Risk:** The RSI < 30 condition during a golden cross is rare — this strategy may have few signals but potentially high win rate
+- **Backtesting Note:** Test across different asset classes (equities, forex, crypto) as volume dynamics vary significantly
+
+**Potential Enhancements:**
+- Add a confirmation candle (bullish engulfing or hammer) before entry
+- Use VWAP as an additional filter for intraday entries
+- Incorporate a time-based exit if the trade doesn't move in favor within X bars
+- Consider a trailing stop at 1.5 ATR once price moves 2 ATR in favor

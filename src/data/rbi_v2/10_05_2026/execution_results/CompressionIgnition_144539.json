@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 CompressionIgnition backtest initializing... \ud83d\ude80\n\ud83d\udcca Data loaded: 1009 bars from 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n\ud83c\udf19 Indicators initialized: BB, RSI, ATR, BBW, VolMA \u2728\n\ud83d\ude80\ud83c\udf19 LONG ENTRY | price=67913.67 size=3 SL=63930.85 TP=75879.32 RSI=56.48 BBW=0.19635\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/989 [00:00<?, ?bar/s]\n                                                      \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/CompressionIgnition_BTFinal_v2.py\", line 124, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/CompressionIgnition_BTFinal_v2.py\", line 117, in next\n    bars_held = len(self.data) - self.position.entry_bar\nAttributeError: 'Position' object has no attribute 'entry_bar'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/CompressionIgnition_BTFinal_v2.py` failed. (See above for error)\n",
+  "execution_time": 2.385377,
+  "timestamp": "2026-10-05T14:45:39.519852"
+}

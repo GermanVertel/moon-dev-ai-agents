@@ -1,0 +1,54 @@
+STRATEGY_NAME: VolatilityPremiumHarvest
+
+STRATEGY_DETAILS:
+This strategy systematically sells short-dated options to harvest elevated volatility risk premiums when the VIX futures term structure signals overpricing relative to historical norms.
+
+CORE CONCEPT:
+The VIX forward curve (futures contracts) reflects market expectations of future volatility. When front-month VIX futures trade at a premium exceeding their historical average by ≥1 standard deviation, it signals that near-term volatility expectations are unusually elevated. This often precedes volatility mean-reversion, making short option positions (which benefit from volatility decay and time decay) attractive. Selling options expiring in ~2 weeks captures the steepest part of the theta decay curve while limiting tail exposure.
+
+KEY STRATEGY COMPONENTS:
+
+1. SIGNAL GENERATION
+   - Track VIX futures forward prices (front-month and second-month contracts).
+   - Compute the forward price premium: (Front-month VIX future − Spot VIX) or the roll yield.
+   - Calculate a rolling historical average and standard deviation of this premium (e.g., 1-year lookback).
+   - ENTRY TRIGGER: Premium ≥ historical mean + 1 standard deviation.
+
+2. INSTRUMENT SELECTION
+   - Sell options with ~14 days to expiration (DTE).
+   - Preferred: Short strangles or short iron condors on SPX/SPY (or VIX-related instruments) to define risk.
+   - Alternative: Naked short puts/calls only for experienced traders with margin capacity.
+
+3. ENTRY RULES
+   - Enter when the 1-SD premium condition is met AND VIX term structure is in contango (upward sloping).
+   - Sell OTM options at ~15–25 delta strikes to collect premium while maintaining distance from spot.
+   - Stagger entries across multiple expiries to avoid concentration.
+
+4. EXIT RULES
+   - Profit target: Close at 50–75% of max premium collected.
+   - Time-based exit: Close or roll at 3–5 DTE to avoid gamma risk.
+   - Volatility-based exit: Close if VIX premium reverts to mean or drops below average.
+   - Stop-loss: Close if underlying moves beyond short strike by a defined buffer (e.g., 1.5x credit received).
+
+5. RISK MANAGEMENT
+   - Position sizing: Risk no more than 1–2% of portfolio per trade.
+   - Use defined-risk structures (spreads) to cap maximum loss.
+   - Maintain a volatility hedge (e.g., long VIX calls or long OTM SPX puts) during elevated regimes.
+   - Avoid earnings events, FOMC, and CPI releases within the expiry window.
+   - Monitor term structure inversion — flatten or exit if backwardation appears (signals stress).
+
+6. REQUIRED INDICATORS / DATA
+   - VIX spot index.
+   - VIX futures prices (front and second month).
+   - Rolling mean and standard deviation of the forward premium (1-year window).
+   - Term structure slope (contango/backwardation).
+   - Option Greeks: Delta, Theta, Vega, Gamma.
+   - Implied Volatility Rank (IVR) and IV Percentile.
+
+7. MARKET REGIME FILTERS
+   - Favor low-to-moderate VIX regimes (VIX 15–30) where mean reversion is reliable.
+   - Avoid selling into strong directional trends or crisis regimes (VIX > 35 with backwardation).
+   - Confirm liquidity: tight bid-ask spreads on selected strikes.
+
+RATIONALE:
+Elevated VIX forward premiums represent an overpricing of future volatility. Selling 2-week options exploits both the volatility risk premium (IV > RV) and accelerated theta decay in the final weeks of an option's life. The 1-SD threshold ensures entries occur only during statistically significant deviations, improving the probability of mean reversion and reducing exposure to structurally elevated volatility regimes.

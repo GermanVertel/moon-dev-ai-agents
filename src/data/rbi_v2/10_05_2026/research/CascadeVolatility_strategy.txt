@@ -1,0 +1,80 @@
+STRATEGY_NAME: CascadeVolatility
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy capitalizes on post-liquidation volatility expansions by detecting open interest (OI) cliffs (sudden drops indicating forced liquidations), then entering straddle-style positions when historical volatility (HVOL) bands break and funding rates flip polarity. Exits are guided by VIX term structure shifts.
+
+**Key Strategy Components:**
+
+1. **Liquidation Cascade Detection (OI Cliffs):**
+   - Monitor open interest across perpetual futures and options markets.
+   - Identify "OI cliffs" — sharp, rapid declines (e.g., >5% drop within 15-60 min) signaling forced liquidations.
+   - Confirm cascade with elevated volume spikes and wick-heavy candles on lower timeframes.
+   - Track liquidation heatmaps to identify clustered liquidation levels.
+
+2. **Volatility Expansion Confirmation (HVOL Bands):**
+   - Calculate historical volatility (HVOL) using rolling windows (e.g., 20-period ATR-normalized or realized vol).
+   - Define HVOL bands (e.g., ±1.5 to 2 standard deviations from mean HVOL).
+   - Entry trigger: HVOL breaks above upper band post-cascade, signaling volatility regime shift.
+
+3. **Funding Rate Polarity Flip:**
+   - Monitor funding rates on perpetual swaps.
+   - A polarity flip (positive → negative or vice versa) post-cascade confirms directional sentiment exhaustion.
+   - Combine with OI cliff timing: funding flip within 1-3 funding intervals of the cascade strengthens signal.
+
+4. **Straddle Entry Construction:**
+   - Enter a long straddle (buy ATM call + buy ATM put) or synthetic straddle via perps/options.
+   - Strike selection: nearest ATM to spot at cascade low/high.
+   - Expiry: 1-3 days out to capture near-term vol expansion.
+   - Alternative: delta-neutral perp position with dynamic hedging if options unavailable.
+
+5. **VIX Term Structure Exit Logic:**
+   - Track VIX futures term structure (front month vs. second month).
+   - Exit when term structure flips from backwardation (fear) to contango (calm) — signals vol mean reversion.
+   - Secondary exit: HVOL reverts below mid-band, or straddle P&L hits target (e.g., +50-100%).
+   - Hard stop: time-based exit if no vol expansion within 24-48 hours.
+
+**Entry Rules:**
+- **Trigger Sequence (all must align):**
+  1. OI cliff detected (≥5% drop in <1 hour).
+  2. HVOL breaks above upper band.
+  3. Funding rate flips polarity within 3 funding intervals.
+- **Execution:** Enter straddle at market or limit near cascade extreme.
+- **Sizing:** 1-2% risk per trade; reduce size if VIX already elevated (>25).
+
+**Exit Rules:**
+- **Primary:** VIX term structure flips to contango.
+- **Secondary:** HVOL reverts to mean (mid-band).
+- **Profit Target:** +75% on straddle premium.
+- **Stop Loss:** -40% on straddle premium OR 48-hour time stop.
+- **Emergency:** If OI recovers rapidly (>80% of pre-cascade level), exit immediately.
+
+**Risk Management:**
+- **Position Sizing:** Max 2% capital per cascade event; scale in tranches.
+- **Correlation Risk:** Avoid multiple simultaneous straddles in correlated assets.
+- **Liquidity Check:** Ensure options/perps have sufficient depth; avoid illiquid strikes.
+- **Slippage Buffer:** Account for wide spreads during cascades (use limit orders).
+- **Vol Crush Risk:** Exit if implied vol collapses without price movement.
+- **Max Drawdown Guard:** Halt strategy if cumulative drawdown >10%.
+
+**Required Indicators & Data:**
+1. **Open Interest (OI)** — real-time perp/options OI feeds.
+2. **Historical Volatility (HVOL)** — 20-period rolling realized vol with bands.
+3. **Funding Rates** — 8-hour funding data across major exchanges.
+4. **VIX Term Structure** — front and second-month VIX futures.
+5. **Liquidation Heatmaps** — Coinglass/Glassnode-style data.
+6. **Volume Profile** — to confirm cascade exhaustion.
+7. **ATR** — for dynamic strike/stop placement.
+8. **Options Chain** — for straddle construction and IV monitoring.
+
+**Optimal Conditions:**
+- High-leverage markets (crypto perps, index futures).
+- Elevated baseline vol regimes (VIX 15-30).
+- Events: macro releases, exchange outages, whale liquidations.
+
+**Avoid When:**
+- VIX already >35 (late-stage vol).
+- OI cliffs are gradual (not cascades).
+- Funding rates stable (no polarity flip).
+- Low liquidity sessions (weekends, holidays).

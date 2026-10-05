@@ -1,0 +1,35 @@
+STRATEGY_NAME: FiboBand Compression
+
+STRATEGY_DETAILS:
+This strategy combines Fibonacci retracement levels with Bollinger Band positioning to identify high-probability long entries during uptrends, then exits when volatility contracts.
+
+**Core Concept:**
+Enter longs when price pulls back to a key Fibonacci retracement level (38.2%, 50%, or 61.8%) within an established uptrend, but only if price is trading near the Bollinger Band middle line (within 2 bands of the 20-period SMA). Exit when Bollinger Band width contracts, signaling a volatility squeeze and potential trend exhaustion.
+
+**Required Indicators:**
+1. **Fibonacci Retracement Levels** — plotted from the most recent swing low to swing high (38.2%, 50%, 61.8% zones)
+2. **Bollinger Bands (20, 2)** — 20-period SMA middle line with upper/lower bands at 2 standard deviations
+3. **Bollinger Band Width (BBW)** — calculated as (Upper Band − Lower Band) / Middle Band
+4. **Trend Filter** — 50/200 EMA or price above 200 SMA to confirm uptrend
+
+**Entry Rules (Long Only):**
+1. Confirm uptrend: price above 200-period SMA and 50 EMA > 200 EMA
+2. Identify recent swing high and swing low to draw Fibonacci levels
+3. Wait for price to retrace and touch one of the key Fib levels (38.2%, 50%, 61.8%)
+4. Verify price is within 2 Bollinger Bands of the middle line — meaning the distance from price to the 20-SMA is less than 2× the band width (i.e., price is not extended or riding an outer band)
+5. Enter long on the candle close that confirms the touch (bullish rejection wick or engulfing)
+
+**Exit Rules:**
+1. **Primary exit:** Close position when Bollinger Band Width decreases for N consecutive bars (e.g., 3 bars) — indicating volatility contraction and loss of momentum
+2. **Stop loss:** Below the next Fibonacci level down (e.g., if entering at 50%, stop below 61.8%) or below the recent swing low, whichever is tighter
+3. **Take profit (optional):** Prior swing high or 1.618 Fibonacci extension
+
+**Risk Management:**
+- Risk no more than 1–2% of account equity per trade
+- Position size = (Account Risk $) / (Entry − Stop Loss)
+- Avoid entries when BBW is already extremely low (pre-squeeze) — require BBW above a minimum threshold to ensure room for expansion
+- Skip trades during high-impact news events that distort volatility readings
+- Maximum 2 concurrent positions to limit correlated exposure
+
+**Rationale:**
+Fibonacci levels act as support in uptrends, while Bollinger Band proximity to the middle line confirms the pullback is a healthy retracement rather than a breakdown. The BBW contraction exit captures the moment momentum fades before a reversal, locking in profits during the volatility peak-to-trough transition.

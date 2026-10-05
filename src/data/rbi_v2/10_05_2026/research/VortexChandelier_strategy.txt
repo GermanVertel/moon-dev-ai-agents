@@ -1,0 +1,54 @@
+STRATEGY_NAME: VortexChandelier
+
+STRATEGY_DETAILS:
+This strategy combines the Vortex Indicator (VI) crossover with declining volume confirmation to identify trend reversals, while using Chandelier Exit for volatility-adaptive stop-loss placement. The core idea is that a VI crossover alone can produce false signals, but when it coincides with declining volume, it suggests weakening conviction in the prior trend—making a reversal more likely. The Chandelier Exit then protects profits by trailing stops based on ATR.
+
+1. KEY STRATEGY COMPONENTS
+- Vortex Indicator (VI+ and VI-): Measures positive and negative directional movement. A bullish crossover (VI+ crosses above VI-) signals potential uptrend; a bearish crossover (VI- crosses above VI+) signals potential downtrend.
+- Declining Volume Confirmation: Volume must be lower on the crossover bar (or over a short lookback) compared to the prior trend's peak volume. This filters out strong continuation moves and highlights exhaustion.
+- Chandelier Exit: A trailing stop based on the highest high (for longs) or lowest low (for shorts) minus/plus a multiple of ATR. It dynamically adjusts to volatility.
+- Trend Reversal Focus: The strategy is designed to catch reversals, not trend continuations. It works best in ranging or topping/bottoming markets.
+
+2. ENTRY RULES
+- Long Entry:
+  - VI+ crosses above VI- (bullish crossover).
+  - Volume on the crossover bar is lower than the average volume of the prior N bars (e.g., N=10) or lower than the volume at the prior swing high.
+  - Optional: Price is above a longer-term moving average (e.g., 200 EMA) to avoid counter-trend trades in strong downtrends.
+- Short Entry:
+  - VI- crosses above VI+ (bearish crossover).
+  - Volume on the crossover bar is lower than the average volume of the prior N bars or lower than the volume at the prior swing low.
+  - Optional: Price is below a longer-term moving average (e.g., 200 EMA) to avoid counter-trend trades in strong uptrends.
+
+3. EXIT RULES
+- Chandelier Exit for Longs:
+  - Initial stop = Highest High over lookback period (e.g., 22 bars) - (ATR multiplier * ATR). Common multiplier: 3.0.
+  - As price rises, the stop trails upward but never moves down.
+  - Exit when price closes below the Chandelier Exit line.
+- Chandelier Exit for Shorts:
+  - Initial stop = Lowest Low over lookback period (e.g., 22 bars) + (ATR multiplier * ATR). Common multiplier: 3.0.
+  - As price falls, the stop trails downward but never moves up.
+  - Exit when price closes above the Chandelier Exit line.
+- Optional Profit Target: Use a fixed risk-reward ratio (e.g., 2:1) or exit on opposite VI crossover.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk a fixed percentage of account equity per trade (e.g., 1-2%). Calculate position size based on the distance between entry price and initial Chandelier Exit stop.
+- ATR Multiplier: Adjust based on market volatility. Higher multiplier (e.g., 3.5-4.0) for volatile markets, lower (e.g., 2.0-2.5) for calmer markets.
+- Lookback Period: Chandelier Exit lookback (e.g., 22) should be tuned to the timeframe. Shorter for intraday, longer for swing trading.
+- Volume Threshold: Define "declining volume" precisely. Example: Volume < 0.8 * SMA(Volume, 10) on the crossover bar.
+- Avoid Choppy Markets: Use an ADX filter (e.g., ADX < 20) to avoid low-conviction ranging markets where VI crossovers are frequent but unreliable.
+
+5. REQUIRED INDICATORS
+- Vortex Indicator (VI+ and VI-): Period 14 (default). Can be adjusted (e.g., 10-20).
+- Volume: Raw volume or volume SMA for comparison.
+- Average True Range (ATR): Period 14 (default) for Chandelier Exit.
+- Highest High / Lowest Low: Lookback period 22 (default) for Chandelier Exit.
+- Optional: 200 EMA for trend filter, ADX for market condition filter.
+
+6. IMPLEMENTATION NOTES
+- Timeframe: Works on any timeframe, but 1H to Daily is recommended for clearer volume patterns.
+- Backtesting: Test on multiple assets and market conditions. Pay attention to slippage and commissions, especially on lower timeframes.
+- Parameter Optimization: Avoid overfitting. Use walk-forward analysis to validate parameters like VI period, ATR multiplier, and volume threshold.
+- Signal Confirmation: Consider waiting for the close of the crossover bar to avoid intrabar false signals.
+- Chandelier Exit Calculation: Ensure the trailing stop only moves in the favorable direction (up for longs, down for shorts).
+
+This strategy aims to capture reversals by combining momentum shift (VI crossover) with weakening participation (declining volume), while managing risk dynamically through volatility-based stops (Chandelier Exit).

@@ -1,0 +1,46 @@
+STRATEGY_NAME: KineticOscillator
+
+STRATEGY_DETAILS:
+
+This strategy combines the Stochastic Oscillator and Relative Strength Index (RSI) to identify high-frequency breakout opportunities. It focuses on capturing short-term price movements by detecting momentum shifts and overbought/oversold conditions.
+
+**Key Strategy Components:**
+1. **Stochastic Oscillator:** Used to identify overbought (>80) and oversold (<20) conditions, as well as bullish/bearish crossovers.
+2. **Relative Strength Index (RSI):** Used to confirm momentum and identify divergence or breakout signals (RSI >70 overbought, <30 oversold).
+3. **Breakout Confirmation:** A breakout is validated when both indicators align (e.g., Stochastic crosses above 20 while RSI crosses above 30 for a long entry).
+
+**Entry Rules:**
+- **Long Entry:** 
+  - Stochastic %K crosses above %D from below 20 (oversold).
+  - RSI crosses above 30 from below.
+  - Price breaks above a short-term resistance level (e.g., previous 5-period high).
+- **Short Entry:**
+  - Stochastic %K crosses below %D from above 80 (overbought).
+  - RSI crosses below 70 from above.
+  - Price breaks below a short-term support level (e.g., previous 5-period low).
+
+**Exit Rules:**
+- **Long Exit:**
+  - Stochastic %K crosses below %D from above 80.
+  - RSI crosses below 70.
+  - Or a fixed profit target/stop loss is hit.
+- **Short Exit:**
+  - Stochastic %K crosses above %D from below 20.
+  - RSI crosses above 30.
+  - Or a fixed profit target/stop loss is hit.
+
+**Risk Management:**
+- **Stop Loss:** Set at a recent swing low (for longs) or swing high (for shorts), or a fixed percentage (e.g., 0.5-1% for high-frequency trading).
+- **Take Profit:** Use a risk-reward ratio of at least 1:1.5, or exit on indicator reversal.
+- **Position Sizing:** Use small position sizes due to high-frequency nature; risk no more than 1-2% of capital per trade.
+- **Time Filter:** Avoid trading during low-liquidity periods (e.g., major news events).
+
+**Required Indicators:**
+- Stochastic Oscillator (default: 14,3,3).
+- Relative Strength Index (default: 14).
+- Short-term support/resistance levels (e.g., 5-period high/low).
+
+**Additional Notes:**
+- This strategy is best suited for volatile markets with frequent price swings.
+- Backtesting and optimization are recommended to adjust indicator parameters and thresholds.
+- Consider using a trailing stop to lock in profits during strong trends.

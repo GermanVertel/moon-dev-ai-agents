@@ -1,0 +1,52 @@
+STRATEGY_NAME: SqueezeVolatility
+
+STRATEGY_DETAILS:
+This strategy combines the classic Bollinger Band "squeeze" concept with a volume confirmation filter and Keltner Channel trailing exits. It is designed to capture explosive directional moves that follow periods of unusually low volatility.
+
+**Key Strategy Components**
+
+1. **Volatility Contraction (The Squeeze)**
+   - Calculate Bollinger Bands (20-period SMA, 2 standard deviations).
+   - Compute Bollinger Band Width = (Upper Band − Lower Band) / Middle Band.
+   - Track a rolling 6-month (≈126 trading days) window of Band Width values.
+   - Trigger a "squeeze condition" when the current Band Width is at or below the 6-month low (i.e., the narrowest in ~126 sessions).
+
+2. **Volume Confirmation**
+   - Compute a 20-day simple moving average of volume.
+   - Require current volume > 20-day average volume (ideally > 1.5× for stronger confirmation).
+   - Volume spike must occur on the same bar or the bar immediately preceding the breakout.
+
+3. **Breakout Confirmation**
+   - Price must close at least 2% beyond the relevant Bollinger Band.
+   - Long entry: close ≥ Upper Band × 1.02.
+   - Short entry: close ≤ Lower Band × 0.98.
+   - The 2% buffer filters out weak, marginal breakouts and false signals near the bands.
+
+**Entry Rules**
+- **Long Entry:** Squeeze condition is active (Band Width at 6-month low) AND volume > 20-day average AND close ≥ Upper Band × 1.02.
+- **Short Entry:** Squeeze condition is active AND volume > 20-day average AND close ≤ Lower Band × 0.98.
+- Enter on the close of the confirming bar (or next bar open for conservative execution).
+
+**Exit Rules (Trailing Keltner Channels)**
+- Calculate Keltner Channels: 20-period EMA of price ± (2 × ATR(10)) or ATR(20).
+- **Long positions:** Exit when price closes below the lower Keltner Channel. Trail the stop upward as the lower band rises.
+- **Short positions:** Exit when price closes above the upper Keltner Channel. Trail the stop downward as the upper band falls.
+- The Keltner Channel acts as a dynamic trailing stop that rides the trend while giving room for normal pullbacks.
+
+**Risk Management**
+- **Position Sizing:** Risk a fixed percentage of equity per trade (e.g., 1–2%). Size = (Account Risk $) / (Entry Price − Initial Keltner Stop).
+- **Initial Stop:** Place initial stop at the opposite Keltner Channel or at the middle Bollinger Band, whichever is closer, to cap early losses.
+- **Time Stop:** If the trade does not reach a 1R profit within N bars (e.g., 10), consider tightening the stop or exiting.
+- **Max Concurrent Positions:** Limit to avoid correlated exposure (e.g., max 3–5 open trades).
+- **Avoid Choppy Markets:** Skip signals if ATR is already elevated and Band Width is not genuinely compressed.
+
+**Required Indicators**
+- Bollinger Bands (20, 2)
+- Bollinger Band Width (derived)
+- 6-month (126-bar) rolling minimum of Band Width
+- Volume + 20-day Volume SMA
+- Keltner Channels (20 EMA, 2 × ATR(10) or ATR(20))
+- ATR for stop sizing
+
+**Logic Summary**
+The strategy waits patiently for the market to "coil" (6-month low in Bollinger Band Width), then demands a volume surge and a decisive 2% price thrust beyond the bands to confirm a genuine breakout. Once in, it lets winners run using trailing Keltner Channels, which adapt to volatility and lock in profits while avoiding premature exits. This makes it well-suited for trending markets following consolidation phases.

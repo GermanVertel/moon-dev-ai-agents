@@ -1,0 +1,51 @@
+STRATEGY_NAME: VolumetricRupture
+
+STRATEGY_DETAILS:
+The VolumetricRupture strategy is a momentum-based breakout system that combines price action with volume confirmation to identify high-probability trading opportunities. This approach focuses on capturing significant price movements that occur when an asset breaks through established resistance or support levels, validated by abnormal volume activity.
+
+**Core Strategy Components:**
+
+1. **Breakout Identification:**
+   - Monitor price action for breaks above established resistance levels or below support levels
+   - Use recent swing highs/lows or consolidation ranges to define breakout thresholds
+   - Confirm the breakout with a strong close beyond the key level (not just a wick)
+
+2. **Volume Confirmation:**
+   - Require volume to exceed a moving average of volume (e.g., 20-period VMA) by a significant margin (typically 1.5x–2x)
+   - High volume validates institutional participation and reduces false breakout probability
+   - Volume spike should occur on the breakout candle itself
+
+3. **Entry Rules:**
+   - **Long Entry:** Price closes above resistance with volume > 1.5x average volume
+   - **Short Entry:** Price closes below support with volume > 1.5x average volume
+   - Enter on the breakout candle close or on a retest of the broken level
+
+4. **Exit Rules:**
+   - **Take Profit:** Use measured move (range height projected from breakout point) or fixed R:R (e.g., 2:1 or 3:1)
+   - **Stop Loss:** Place below the breakout level (for longs) or above it (for shorts), typically 1 ATR beyond the broken level
+   - **Trailing Stop:** Optional trailing stop using ATR or a moving average (e.g., 20 EMA) to capture extended trends
+
+5. **Risk Management:**
+   - Risk no more than 1–2% of account equity per trade
+   - Position size = (Account Risk $) / (Entry Price − Stop Loss Price)
+   - Avoid trading during low-liquidity sessions or major news events unless anticipated
+   - Skip setups where volume is declining or price is in a choppy range
+
+6. **Required Indicators:**
+   - Volume bars and Volume Moving Average (20-period)
+   - ATR (14-period) for stop placement and volatility filtering
+   - Support/Resistance zones (swing highs/lows or Donchian Channels)
+   - Optional: 20/50 EMA for trend direction filter
+
+7. **Filters for Higher Probability:**
+   - Trade only in the direction of the higher timeframe trend
+   - Avoid breakouts during consolidation with declining volume
+   - Require a minimum range width before breakout (avoid micro-breakouts)
+   - Confirm with RSI or MACD divergence for added edge
+
+**Best Market Conditions:**
+- Trending markets with clear support/resistance structures
+- Post-consolidation phases where energy builds before release
+- High-volume sessions (e.g., market open, London/NY overlap)
+
+This strategy excels at catching explosive moves while filtering out weak, low-volume fakeouts that trap retail traders.

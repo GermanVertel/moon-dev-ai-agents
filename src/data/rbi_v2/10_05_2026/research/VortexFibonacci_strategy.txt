@@ -1,0 +1,49 @@
+STRATEGY_NAME: VortexFibonacci
+
+STRATEGY_DETAILS:
+This strategy combines trend confirmation via the Vortex Indicator (VI), momentum/volume divergence detection using Elder's Force Index (EFI), and precise exit targeting through Fibonacci retracement levels anchored to recent swing points. It is designed for trending markets with clear swing structures and volume participation.
+
+1. KEY STRATEGY COMPONENTS
+- Vortex Indicator (VI): Uses VI+ and VI- lines to confirm trend direction. A bullish trend is confirmed when VI+ crosses above VI- and remains above it; bearish when VI- crosses above VI+.
+- Elder's Force Index (EFI): Measures price change multiplied by volume. Divergence occurs when price makes a new swing high/low but EFI fails to confirm (lower high/higher low), signaling weakening momentum.
+- Volume Filter: Divergence must occur with increasing volume (EFI slope or raw volume rising) to validate the signal, ensuring participation behind the move.
+- Fibonacci Retracement Levels: Anchored to the most recent swing high and swing low (or vice versa) to define exit zones. Common levels: 38.2%, 50%, 61.8%, and 78.6%.
+
+2. ENTRY RULES
+- Long Entry:
+  - Vortex Indicator confirms bullish trend: VI+ > VI- and VI+ rising.
+  - Price makes a higher high, but EFI makes a lower high (bearish divergence on EFI) — wait, for long entries we want bullish divergence: price makes a lower low while EFI makes a higher low, OR price makes a higher low while EFI makes a higher high? Clarify: For a long entry in an uptrend, we look for a pullback where price makes a lower low but EFI makes a higher low (bullish divergence) while VI+ remains above VI-. Alternatively, if price makes a higher high but EFI makes a higher high with increasing volume, that's confirmation, not divergence. The strategy states "Elder's Force Index diverges from price with increasing volume" — typically divergence means price and indicator move opposite. For a long entry in a bullish trend, we want a bullish divergence: price makes a lower low, EFI makes a higher low. But the trend is confirmed bullish by Vortex. So entry occurs when price pulls back (lower low) but EFI shows higher low (divergence) and volume is increasing. Then enter long.
+  - Volume must be increasing during the divergence formation (e.g., EFI rising or volume above average).
+  - Entry trigger: Once divergence is confirmed and Vortex still bullish, enter at market or on break of a minor resistance.
+
+- Short Entry:
+  - Vortex Indicator confirms bearish trend: VI- > VI+ and VI- rising.
+  - Price makes a higher high, but EFI makes a lower high (bearish divergence) with increasing volume.
+  - Enter short.
+
+3. EXIT RULES
+- Exits are at Fibonacci retracement levels anchored to the most recent swing extremes (swing high and swing low that define the current trend leg).
+- For long positions: Set take-profit at Fibonacci retracement levels measured from the swing low to swing high of the impulse leg. Common targets: 38.2%, 50%, 61.8% retracement of the impulse move. Exit at the first level reached, or scale out.
+- For short positions: Fibonacci retracement from swing high to swing low; exit at retracement levels.
+- Stop-loss: Place beyond the swing extreme that invalidates the divergence (e.g., below the recent swing low for longs, above recent swing high for shorts). Alternatively, use ATR-based stop.
+
+4. RISK MANAGEMENT
+- Position sizing based on stop distance and account risk (e.g., 1-2% per trade).
+- Use trailing stops after price reaches the 38.2% Fibonacci level to lock in profits.
+- Avoid trading during low-volume periods or when Vortex lines are intertwined (no clear trend).
+- Confirm divergence with at least two consecutive EFI readings.
+
+5. REQUIRED INDICATORS
+- Vortex Indicator (VI+ and VI-) with standard period 14.
+- Elder's Force Index (EFI) with period 13 (or 2 for shorter-term).
+- Volume (raw or moving average) to confirm increasing volume.
+- Fibonacci retracement tool anchored to recent swing high/low (manually or via swing detection algorithm).
+- Optional: ATR for stop-loss placement.
+
+6. ADDITIONAL NOTES
+- The strategy works best on higher timeframes (1H, 4H, Daily) where trends and swings are clear.
+- Divergence must be confirmed by a close of the candle; avoid intrabar signals.
+- Increasing volume is defined as volume above its 20-period moving average or EFI slope positive during divergence.
+- Fibonacci levels should be recalculated after each new swing extreme.
+
+This strategy aims to catch pullbacks in established trends with momentum divergence and volume confirmation, exiting at logical retracement levels for optimal risk-reward.

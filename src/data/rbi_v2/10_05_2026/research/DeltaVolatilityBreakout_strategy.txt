@@ -1,0 +1,66 @@
+STRATEGY_NAME: DeltaVolatility Breakout
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy combines options spread construction with technical breakout trading. It initiates a 3-legged bullish spread (BTS) when price breaks out from a horizontal support level, but the twist is in instrument selection: instead of trading the ETF or futures directly, it selects the option contract with the highest delta-to-volatility ratio (DV ratio) to maximize directional exposure per unit of volatility risk.
+
+**Strategy Components:**
+
+1. **Horizontal Support Identification**
+   - Identify horizontal support levels via swing lows, prior consolidation zones, or volume profile nodes (high-volume price levels).
+   - Support must be "horizontal" — i.e., tested at least 2–3 times within a tight price band (e.g., ±0.5% for ETFs, ±1% for volatile underlyings).
+   - Mark the breakout trigger as a close above the support level plus a confirmation buffer (e.g., 0.25–0.5 ATR above the level).
+
+2. **Breakout Confirmation**
+   - Require a candle close above the horizontal support (now acting as resistance-turned-support on retest).
+   - Volume confirmation: breakout bar volume > 1.5x 20-period average volume.
+   - Optional filter: RSI > 50 and rising, or MACD histogram turning positive.
+
+3. **3-Legged Spread (BTS) Construction**
+   - Leg 1 (Long): Buy ATM or slightly OTM call on the selected contract.
+   - Leg 2 (Short): Sell OTM call (higher strike, ~1–2 strikes up).
+   - Leg 3 (Short): Sell further OTM call OR buy a protective call (ratio spread variant) depending on risk appetite. Standard BTS = 1 long + 2 short calls (ratio 1:2), creating a net credit or low-debit structure with capped upside.
+   - Alternative BTS: 1 long call + 2 short calls at different strikes = "Christmas tree" / 3-legged ratio spread.
+
+4. **Delta-to-Volatility Ratio Selection (The Twist)**
+   - For each candidate instrument (ETF options, futures options, and futures/ETF themselves), compute:
+     - **DV Ratio = |Delta| / Implied Volatility (IV)**
+   - Prioritize the option contract with the **highest DV ratio** — meaning it delivers the most directional sensitivity per unit of volatility risk.
+   - Rationale: High delta = strong directional exposure; low IV = cheaper premium and less volatility drag. Maximizing delta/IV optimizes capital efficiency on the breakout.
+   - Compare across:
+     - ETF options (e.g., SPY, QQQ)
+     - Futures options (e.g., /ES, /NQ options)
+     - The ETF/futures themselves (delta = 1, IV = realized vol proxy)
+   - Select the instrument with the highest DV ratio for Leg 1 (the long directional leg).
+
+5. **Entry Rules**
+   - Trigger: Breakout close above horizontal support + volume confirmation.
+   - Select instrument via highest DV ratio.
+   - Enter the 3-legged spread within the same session or on the next bar open.
+   - Use limit orders to avoid slippage on multi-leg fills.
+
+6. **Exit Rules**
+   - **Profit target:** 50–75% of max spread profit, or when underlying reaches next resistance zone.
+   - **Stop loss:** Close below the horizontal support level (breakout failure) → exit all legs.
+   - **Time-based exit:** Close position 7–10 days before expiration to avoid theta decay acceleration and pin risk.
+   - **Volatility exit:** If IV spikes > 50% above entry IV, consider closing short legs early to lock gains.
+
+7. **Risk Management**
+   - Position size: Risk no more than 1–2% of account per trade based on max loss of the spread.
+   - Max loss = (width of widest spread × 100 × contracts) − net credit received.
+   - Diversify across uncorrelated underlyings (e.g., index, commodity, sector ETF).
+   - Avoid earnings events or FOMC dates unless intentionally trading the vol event.
+   - Monitor delta drift: re-hedge if net delta falls below 0.5 of initial.
+
+**Required Indicators/Tools:**
+- Horizontal support detection (swing lows, volume profile)
+- ATR (for breakout buffer)
+- Volume moving average (20-period)
+- RSI or MACD (momentum confirmation)
+- Options chain data: Delta, Implied Volatility, Open Interest, Bid/Ask spread
+- DV Ratio calculator (custom)
+- Expiration calendar and IV term structure
+
+**Edge & Rationale:**
+By selecting the highest delta-to-volatility instrument, the trader maximizes directional payoff while minimizing premium cost and volatility risk — a refinement over blindly trading ETF or futures. The 3-legged spread further reduces cost basis and defines risk, making the breakout trade capital-efficient and asymmetric.

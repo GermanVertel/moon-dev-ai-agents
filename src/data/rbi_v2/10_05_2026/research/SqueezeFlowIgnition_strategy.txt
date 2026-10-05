@@ -1,0 +1,50 @@
+STRATEGY_NAME: SqueezeFlow Ignition
+
+STRATEGY_DETAILS:
+This strategy combines a volatility-contraction filter (Bollinger Band squeeze) with a volume-weighted money-flow trigger (Chaikin Money Flow crossing zero) to catch the early expansion phase of a trend. The core idea is that a quiet, compressed market that suddenly sees sustained buying pressure (CMF turning positive) is likely to break out with momentum.
+
+Key Strategy Components:
+1. **Volatility Squeeze Filter (Bollinger Bandwidth)**  
+   - Indicator: Bollinger Bands (typically 20-period SMA with 2 standard deviations).  
+   - Bandwidth = (Upper Band − Lower Band) / Middle Band (or simply Upper − Lower).  
+   - Squeeze condition: Current 20-day bandwidth < 50% of its 100-day median bandwidth.  
+   - Interpretation: The market is in a low-volatility consolidation, often preceding a directional move.
+
+2. **Volume/Flow Trigger (Chaikin Money Flow)**  
+   - Indicator: CMF, typically 20-period.  
+   - CMF > 0 indicates buying pressure (accumulation); CMF < 0 indicates selling pressure (distribution).  
+   - The crossing above zero is the ignition signal.
+
+3. **Entry Rule (Long)**  
+   - Wait for the squeeze condition to be true (bandwidth < 50% of 100-day median).  
+   - Enter long on the bar when CMF crosses above zero (previous CMF ≤ 0 and current CMF > 0).  
+   - Optional: Only take the signal if price is above the middle band or above a longer-term moving average to align with the prevailing trend.
+
+4. **Exit Rules**  
+   - **Primary exit:** CMF reverses below zero (crosses from positive to negative). This signals that buying pressure has faded.  
+   - **Secondary exit:** Price breaches the upper Bollinger Band by 1.5x the band width (i.e., close > Upper Band + 0.5 × (Upper Band − Lower Band) or simply close > Upper Band × 1.5? Clarify: “1.5x upper band breach” likely means price exceeds the upper band by 50% of the band’s width, or price > Upper Band × 1.5. We interpret as: Close > Upper Band + 0.5 × (Upper Band − Lower Band), i.e., a 1.5x band-width extension from the middle. This is an overextension/mean-reversion exit to lock profits.  
+   - Alternatively, use a trailing stop or exit on close below the middle band.
+
+5. **Risk Management**  
+   - Position sizing: Risk a fixed percentage of equity per trade (e.g., 1–2%).  
+   - Initial stop-loss: Place below the lower Bollinger Band or below the recent swing low, or a fixed ATR multiple (e.g., 2× ATR).  
+   - Since the strategy enters on a breakout from a squeeze, stop can be placed at the middle band or the lower band to allow room for volatility expansion.  
+   - Avoid entering if the squeeze is too extreme (bandwidth near zero) or if CMF crossing is weak (e.g., CMF barely above zero).  
+   - Consider time stop: If no upside expansion within N bars (e.g., 10), exit.
+
+6. **Required Indicators**  
+   - Bollinger Bands (20, 2)  
+   - Bandwidth (20-period) and its 100-period median  
+   - Chaikin Money Flow (20-period)  
+   - Optional: ATR for stop sizing, 50/200 SMA for trend filter.
+
+7. **Implementation Notes**  
+   - Calculate bandwidth daily: (Upper − Lower) / Middle.  
+   - Compute 100-day median of bandwidth (rolling median, not mean, to reduce outlier impact).  
+   - Squeeze = bandwidth < 0.5 × median_bandwidth.  
+   - CMF crossing: Use previous bar’s CMF and current bar’s CMF.  
+   - Entry only on the bar where squeeze is active and CMF crosses above zero.  
+   - Exit when CMF < 0 (cross below zero) OR price > Upper Band + 0.5 × (Upper Band − Lower Band).  
+   - Backtest with realistic slippage and commissions, especially on the breakout bar.
+
+This strategy aims to capture the initial thrust of a new trend after a quiet accumulation phase, using money flow as the confirmation trigger and volatility expansion as the profit engine.

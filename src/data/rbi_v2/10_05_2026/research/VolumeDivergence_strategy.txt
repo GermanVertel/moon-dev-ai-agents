@@ -1,0 +1,59 @@
+STRATEGY_NAME: VolumeDivergence
+
+STRATEGY_DETAILS:
+This strategy combines MACD histogram divergence detection with volume-based trend confirmation to identify high-probability entry points during strong market movements. The dual confirmation approach filters out weak divergence signals that lack volume support.
+
+**Core Components:**
+
+1. **MACD Histogram Divergence Detection**
+   - Calculate MACD (12, 26, 9) and extract the histogram (MACD line minus signal line)
+   - Identify bullish divergence: price makes a lower low while MACD histogram makes a higher low
+   - Identify bearish divergence: price makes a higher high while MACD histogram makes a lower high
+   - Require divergence to form over a minimum of 5 bars to filter noise
+
+2. **Volume Ratio Confirmation**
+   - Calculate Volume Ratio = Current Volume / SMA(Volume, 20)
+   - Uptrend confirmation: Volume Ratio > 1.2 on the divergence bar or the confirmation candle
+   - This ensures institutional participation is present during the reversal setup
+   - Optional: require Volume Ratio to be rising over 3 consecutive bars for stronger signal
+
+**Entry Rules (Long):**
+- Bullish MACD histogram divergence detected (price lower low, histogram higher low)
+- Volume Ratio > 1.2 on the confirmation candle
+- Confirmation candle closes above the prior candle's high
+- Price above 200 EMA (trend filter) OR price reclaims 50 EMA (reversal filter)
+- Enter on the close of the confirmation candle or on a break above its high
+
+**Entry Rules (Short):**
+- Bearish MACD histogram divergence detected (price higher high, histogram lower high)
+- Volume Ratio > 1.2 on the confirmation candle
+- Confirmation candle closes below the prior candle's low
+- Price below 200 EMA OR price loses 50 EMA
+- Enter on the close of the confirmation candle or on a break below its low
+
+**Exit Rules:**
+- **Stop Loss:** Entry price minus 1.5 × ATR(14) for longs; plus 1.5 × ATR(14) for shorts
+- **Take Profit 1:** 2.0 × ATR(14) — scale out 50% of position
+- **Take Profit 2:** 3.5 × ATR(14) — close remaining position
+- **Trailing Stop:** After TP1 is hit, trail stop at 1.0 × ATR below the highest close (longs)
+- **Reversal Exit:** Exit immediately if MACD histogram crosses zero in the opposite direction of the trade
+- **Time Stop:** Exit if trade has not reached TP1 within 15 bars
+
+**Risk Management:**
+- Risk no more than 1% of account equity per trade
+- Position size = (Account Risk $) / (Entry Price − Stop Loss Price)
+- Maximum 3 concurrent positions
+- Skip signals if ATR(14) is below 20-period average ATR (low volatility = unreliable divergence)
+- Avoid trading within 30 minutes of major news releases
+
+**Required Indicators:**
+- MACD (12, 26, 9) — histogram focus
+- Volume SMA (20) — for Volume Ratio
+- ATR (14) — for stops and targets
+- EMA 50 and EMA 200 — trend context filter
+- Optional: RSI (14) to avoid entering overbought/oversold extremes
+
+**Best Market Conditions:**
+- Works best in trending markets with pullbacks (not choppy ranges)
+- Higher timeframes (1H, 4H, Daily) produce more reliable divergence signals
+- Volume Ratio filter is most effective in liquid markets (large-cap stocks, major FX pairs, BTC/ETH)

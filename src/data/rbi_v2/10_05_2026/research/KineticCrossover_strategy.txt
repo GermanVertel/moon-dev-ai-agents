@@ -1,0 +1,40 @@
+STRATEGY_NAME: KineticCrossover
+
+STRATEGY_DETAILS:
+This strategy is a hybrid moving-average crossover system that blends a simple moving average (SMA) with an exponential moving average (EMA) to generate long-only entries, then manages exits using a volatility-scaled take-profit and a structural stop-loss.
+
+1. KEY STRATEGY COMPONENTS
+- Entry Trigger: A bullish crossover where the 50-period SMA crosses above the 200-period EMA.
+- Indicator Blend: Uses SMA for the faster signal (smoother, less reactive) and EMA for the slower baseline (more responsive to recent price). This asymmetry creates a unique crossover character compared to the common SMA/SMA or EMA/EMA pairings.
+- Direction: Long only. No short entries are defined.
+- Exit Framework: Dual exit logic — a structural stop-loss at the previous swing high and a volatility-based take-profit at 20% of ATR.
+
+2. ENTRY RULES
+- Compute the 50-period SMA and the 200-period EMA on the chosen timeframe.
+- Enter a long position on the bar where the 50-SMA crosses from below to above the 200-EMA.
+- Confirm the crossover is a true cross (previous bar 50-SMA ≤ 200-EMA, current bar 50-SMA > 200-EMA).
+- Optional filter: require price to be above the 200-EMA at entry to avoid whipsaws in choppy ranges.
+
+3. EXIT RULES
+- Stop-Loss: Set at the "previous high" — i.e., the most recent swing high prior to entry. Note: This is unusual for a long trade, since a previous high is typically above entry price. Interpreted literally, this would place the stop above the entry, which is invalid. The practical interpretation is the most recent swing high that acts as a resistance-turned-support reference, OR the previous bar's high used as a trailing/structural reference. Clarify with the user, but a sensible implementation is: stop = most recent swing low, or the previous bar's high if trading a breakout continuation. Flag this ambiguity.
+- Take-Profit: Entry price + (0.20 × ATR) at the time of entry. This is a very tight target — only 20% of one ATR — meaning trades will exit quickly and frequently. This suggests the strategy is designed for high-frequency, small-gain scalping rather than trend riding.
+- Consider a time-based exit if neither stop nor target is hit within N bars.
+
+4. RISK MANAGEMENT
+- Position sizing should be based on the distance between entry and stop-loss (risk-per-trade model).
+- Because the take-profit is only 20% of ATR while the stop may be much wider (structural high), the risk-to-reward ratio is likely unfavorable unless the stop is also very tight. This is a critical weakness to address.
+- Recommend a maximum risk per trade (e.g., 1% of equity) and a daily/weekly loss limit.
+- Add a spread/slippage buffer, especially since the tight ATR-based target can be eaten by transaction costs.
+
+5. REQUIRED INDICATORS
+- 50-period Simple Moving Average (SMA)
+- 200-period Exponential Moving Average (EMA)
+- Average True Range (ATR) — default 14 periods, used for take-profit sizing
+- Swing high detection (fractal or pivot-based) for stop-loss placement
+- Optional: volume filter, trend filter (e.g., ADX) to avoid ranging markets
+
+6. IMPLEMENTATION NOTES & CAVEATS
+- The stop-loss definition ("previous high") is contradictory for a long trade and must be clarified — likely intended as "previous swing high" acting as a reference level, or possibly a typo for "previous low."
+- The 20% ATR take-profit is extremely tight relative to typical ATR-based targets (usually 1x–2x ATR). This will produce a high win rate but potentially negative expectancy after costs unless the stop is equally tight.
+- Backtest across multiple regimes (trending vs. ranging) to validate the crossover's edge.
+- Consider adding a trailing stop once price moves 1× ATR in favor, to let winners run beyond the fixed target.

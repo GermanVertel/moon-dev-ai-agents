@@ -1,0 +1,40 @@
+STRATEGY_NAME: FibonacciDivergence
+
+STRATEGY_DETAILS:
+This strategy combines MACD divergence weakening, RSI confirmation, and Fibonacci retracement levels to create a trend-following entry system with structured exits. It is designed for traders who want to enter established trends on pullbacks rather than chasing breakouts.
+
+1. KEY STRATEGY COMPONENTS
+- Primary Signal: MACD divergence that is "weakening" — meaning bearish divergence momentum is fading (e.g., histogram shrinking negative bars, or price making lower lows while MACD makes higher lows).
+- Confirmation Signal: RSI producing lower readings (oversold or trending toward oversold) that align with the pullback, confirming the retracement is nearing exhaustion.
+- Trend Filter: Only take longs when the broader trend is up (e.g., price above 200 EMA, or higher highs/higher lows on higher timeframe).
+- Exit Framework: Fibonacci retracement levels (38.2%, 50%, 61.8%, 78.6%) used as profit targets and trailing exit zones.
+
+2. ENTRY RULES (LONG)
+- Confirm uptrend: Price above 200-period EMA (or equivalent HTF trend filter).
+- Identify a pullback: Price retraces into a Fibonacci zone (38.2%–61.8%) of the prior impulse leg.
+- MACD condition: Bearish divergence momentum is weakening — histogram bars are shrinking toward zero, or the MACD line is flattening/turning up while price is still near lows.
+- RSI condition: RSI is at lower readings (below 40, ideally approaching 30) and beginning to curl upward, confirming seller exhaustion.
+- Entry trigger: Enter long on the first bullish candle close (or break of prior candle high) after RSI turns up and MACD histogram improves.
+
+3. EXIT RULES
+- Primary targets: Fibonacci extension/retracement levels of the prior swing — TP1 at 61.8% retracement of the down-leg, TP2 at 100% (prior high), TP3 at 127.2% or 161.8% extension.
+- Partial exits: Scale out 33% at each Fibonacci target.
+- Trailing stop: Move stop to breakeven after TP1, then trail below each new higher low.
+- Invalidation: If price closes below the 78.6% retracement level or the swing low, exit immediately.
+
+4. RISK MANAGEMENT
+- Stop loss: Placed below the most recent swing low or below the 78.6% Fibonacci level, whichever is tighter but still respects volatility (use ATR buffer of 1.0–1.5x).
+- Position sizing: Risk no more than 1–2% of account equity per trade.
+- Risk/Reward: Only take trades offering at least 1:2 R:R to TP2.
+- Max concurrent trades: Limit to 1–2 correlated positions to avoid overexposure.
+- Avoid trading during major news events or low-liquidity sessions.
+
+5. REQUIRED INDICATORS
+- MACD (12, 26, 9) — for divergence and histogram momentum.
+- RSI (14) — for oversold confirmation and momentum turn.
+- 200 EMA — trend filter.
+- Fibonacci retracement tool — for entry zones and exit targets.
+- ATR (14) — for dynamic stop placement and volatility sizing.
+- Optional: Volume profile or OBV to confirm accumulation during pullback.
+
+This strategy works best on trending instruments (indices, FX majors, large-cap stocks) on the 1H–Daily timeframes, where Fibonacci levels and divergence signals are more reliable.

@@ -1,0 +1,51 @@
+STRATEGY_NAME: SequentialReversal
+
+STRATEGY_DETAILS:
+This strategy combines a 3-day RSI high-low reversal pattern with volume confirmation and Fibonacci-based entry/exit levels. It aims to capture short-term mean-reversion moves after a momentum shift.
+
+**Key Components:**
+1. **RSI (14) 3-Day High-Low Reversal Signal:**
+   - Look for three consecutive days where RSI(14) makes a lower high and a lower low (bearish structure) followed by a reversal day where RSI closes above the prior day's high.
+   - Alternatively, the inverse for a bullish setup: three consecutive days of higher highs and higher lows, then a reversal day where RSI closes below the prior day's low.
+   - The signal is confirmed when the 3rd day's RSI high is lower than the 2nd day's high, and the 3rd day's RSI low is lower than the 2nd day's low, and then the 4th day's RSI closes above the 3rd day's high (for long entry).
+
+2. **Volume Confirmation:**
+   - The reversal day must have volume above the 20-period simple moving average of volume.
+   - This filters out weak signals and ensures institutional participation.
+
+3. **Entry:**
+   - After the reversal signal and volume confirmation, wait for a 38% retracement of the reversal day's range (from the low to the high of the reversal day).
+   - Enter long when price retraces 38% from the reversal day's high (i.e., price = high - 0.38 * (high - low)).
+   - Use a limit order at this level.
+
+4. **Exit:**
+   - Exit when price falls below 26% retracement of the reversal day's range from the low (i.e., price = low + 0.26 * (high - low)).
+   - This acts as a trailing stop or a fixed stop-loss based on the reversal day's range.
+   - Alternatively, exit at the close if price closes below this level.
+
+5. **Risk Management:**
+   - Position size: Risk no more than 1-2% of account equity per trade.
+   - Stop-loss: The 26% retracement level serves as the stop-loss.
+   - Take-profit: Not explicitly defined; consider exiting at the prior swing high or using a trailing stop.
+   - Avoid trading during low-volume sessions or major news events.
+
+6. **Required Indicators:**
+   - RSI (14) on daily timeframe.
+   - Volume with 20-period SMA.
+   - Price high/low for retracement calculations.
+
+**Trade Example (Long):**
+- Day 1: RSI high = 70, low = 60
+- Day 2: RSI high = 68, low = 58
+- Day 3: RSI high = 65, low = 55
+- Day 4: RSI closes at 67 (above Day 3 high of 65) → reversal signal.
+- Volume on Day 4 > 20-period average volume.
+- Reversal day range: High = 100, Low = 90.
+- Entry: 100 - 0.38*(100-90) = 96.2.
+- Exit: 90 + 0.26*(100-90) = 92.6.
+- Enter long at 96.2, stop-loss at 92.6.
+
+**Notes:**
+- This strategy works best in ranging or mildly trending markets.
+- Confirm with higher timeframe trend or support/resistance for better accuracy.
+- Backtest across different assets and timeframes to optimize parameters.

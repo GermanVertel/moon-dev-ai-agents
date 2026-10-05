@@ -1,0 +1,74 @@
+STRATEGY_NAME: CompressionTrigger
+
+STRATEGY_DETAILS:
+This strategy is designed to capture explosive directional moves that follow periods of unusually low volatility. It combines Bollinger Band width analysis (to detect squeezes) with a breakout confirmation and an ATR-based trailing stop for exit management.
+
+---
+
+**1. KEY STRATEGY COMPONENTS**
+
+- **Volatility Squeeze Detection:** Uses Bollinger Band Width (BBW) to identify when the bands have contracted to their narrowest point in the last 20 trading days. This signals a coiled market ready for expansion.
+- **Breakout Confirmation:** A long entry is only triggered when price closes *above* the upper Bollinger Band, confirming upward momentum after the squeeze.
+- **Trailing Exit:** Once in a trade, a trailing stop set at 2x the Average True Range (ATR) protects profits and allows the trade to run.
+
+---
+
+**2. INDICATORS REQUIRED**
+
+- **Bollinger Bands (BB):**
+  - Period: 20
+  - Standard Deviations: 2.0
+  - Components: Upper Band, Middle Band (SMA 20), Lower Band
+- **Bollinger Band Width (BBW):**
+  - Formula: (Upper Band − Lower Band) / Middle Band
+  - Lookback for squeeze: 20 periods
+- **Average True Range (ATR):**
+  - Period: 14 (standard)
+  - Multiplier for trailing stop: 2.0
+
+---
+
+**3. ENTRY RULES (LONG ONLY)**
+
+1. Calculate BBW for the current bar.
+2. Determine the minimum BBW value over the last 20 bars (including current).
+3. **Condition A (Squeeze):** Current BBW ≤ minimum BBW of the last 20 bars (i.e., narrowest width in 20 days).
+4. **Condition B (Breakout):** Current close > Upper Bollinger Band.
+5. **Entry:** If both Condition A and Condition B are true on the same bar (or Condition A was true within the last N bars and Condition B triggers), enter a long position at the close of that bar (or next bar open for realism).
+
+*Optional refinement:* Allow a small window (e.g., 3 bars) after the squeeze for the breakout to occur, since price may not break immediately on the squeeze bar.
+
+---
+
+**4. EXIT RULES**
+
+- **Initial Stop:** Set at entry price − (2 × ATR at entry).
+- **Trailing Stop:** After entry, the stop is trailed upward as follows:
+  - New Stop = Highest Close Since Entry − (2 × Current ATR)
+  - The stop only moves up, never down.
+- **Exit Trigger:** Close the position when price closes below the trailing stop level (or if using intrabar stops, when price touches the stop).
+- **Optional Time Stop:** Exit if the trade has not moved favorably within X bars (e.g., 20 bars) to avoid dead trades.
+
+---
+
+**5. RISK MANAGEMENT**
+
+- **Position Sizing:** Risk a fixed percentage of account equity per trade (e.g., 1–2%). Position size = (Account Risk $) / (Entry Price − Initial Stop Price).
+- **ATR-Based Stop:** Ensures the stop adapts to current market volatility — wider in volatile markets, tighter in calm ones.
+- **Max Concurrent Positions:** Limit to 1–3 open trades to control exposure.
+- **Slippage & Commission:** Account for realistic fills, especially on breakout entries.
+- **Avoid Choppy Markets:** The squeeze filter naturally avoids low-volatility chop, but consider a trend filter (e.g., price above 200 SMA) to only take longs in bullish regimes.
+
+---
+
+**6. ADDITIONAL NOTES / EDGE CASES**
+
+- **False Breakouts:** Squeezes can produce fake breakouts. The ATR trailing stop helps mitigate this by exiting quickly if momentum fails.
+- **Parameter Sensitivity:** The 20-day squeeze lookback and 2x ATR multiplier should be backtested and optimized per instrument/timeframe.
+- **Works Best On:** Liquid instruments with clear volatility cycles (e.g., indices, forex majors, large-cap stocks) on daily or 4H charts.
+- **Confirmation Enhancement:** Consider requiring volume expansion on the breakout bar to filter weak signals.
+
+---
+
+**SUMMARY:**  
+CompressionTrigger is a volatility-regime strategy that waits for the market to coil (narrowest BBW in 20 days), then rides the expansion via a breakout above the upper band, using a 2x ATR trailing stop to lock in gains while letting winners run.

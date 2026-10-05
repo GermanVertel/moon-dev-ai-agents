@@ -1,0 +1,45 @@
+STRATEGY_NAME: StochasticCointegration
+
+STRATEGY_DETAILS:
+
+This strategy blends the mean-reverting signal of the Stochastic Oscillator with the statistical rigor of cointegration-based arbitrage. The core idea is to trade a pair of cointegrated assets (or a single asset against its own rolling statistical band) using Stochastic extremes as timing triggers, while the arbitrage framework ensures the spread is statistically stationary and mean-reverting.
+
+**1. Key Strategy Components**
+
+- **Pair Selection via Cointegration:** Identify two assets (e.g., X and Y) whose price series are cointegrated using the Engle-Granger two-step method or Johansen test. Compute the hedge ratio (β) via OLS regression: Spread = Y − β·X. Confirm the spread is stationary (ADF test p-value < 0.05).
+- **Stochastic Oscillator on the Spread:** Apply the Stochastic Oscillator (%K and %D) to the normalized spread series rather than raw price. This captures overbought/oversold conditions within the stationary spread, which is more statistically meaningful than applying it to trending prices.
+- **Z-Score Overlay:** Calculate a rolling z-score of the spread (e.g., 20-60 period lookback). Use z-score thresholds (±2.0) as the primary statistical filter, with Stochastic crossovers as the timing trigger.
+- **Rolling Recalibration:** Re-estimate β and the spread's mean/std on a rolling window (e.g., 60-120 bars) to adapt to changing market dynamics and avoid stale cointegration relationships.
+
+**2. Entry Rules**
+
+- **Long Spread (Long Y, Short β·X):** Enter when z-score < −2.0 AND Stochastic %K crosses above %D from below 20 (oversold confirmation).
+- **Short Spread (Short Y, Long β·X):** Enter when z-score > +2.0 AND Stochastic %K crosses below %D from above 80 (overbought confirmation).
+- **Confirmation Filter:** Require both the Stochastic signal and z-score threshold to align within the same bar or within 2 bars of each other to avoid premature entries.
+
+**3. Exit Rules**
+
+- **Primary Exit:** Close the position when the spread z-score reverts to 0 (mean reversion target) or crosses ±0.5.
+- **Stochastic Exit:** Exit if Stochastic reverses against the position (e.g., %K crosses %D in the opposite direction while beyond the 50 midline).
+- **Time Stop:** Close any position held longer than N bars (e.g., 20-40 bars) if mean reversion has not occurred, as cointegration may be breaking down.
+- **Stop-Loss:** Hard stop at z-score ±3.5 or a fixed percentage loss (e.g., 2% of portfolio) to protect against cointegration breakdown.
+
+**4. Risk Management**
+
+- **Position Sizing:** Size positions inversely to the spread's volatility (e.g., target constant risk per trade using ATR of the spread).
+- **Pair Diversification:** Run multiple cointegrated pairs simultaneously to reduce idiosyncratic risk.
+- **Cointegration Monitoring:** Continuously test the ADF statistic on the spread; if p-value rises above 0.10, reduce exposure or exit the pair entirely.
+- **Max Drawdown Limit:** Halt trading a pair if cumulative drawdown exceeds a predefined threshold (e.g., 5%).
+- **Correlation Regime Check:** Avoid trading during earnings, macro events, or regime shifts that can break the cointegration relationship.
+
+**5. Required Indicators**
+
+- **Stochastic Oscillator:** %K (14,3,3) and %D, applied to the normalized spread series.
+- **Z-Score:** Rolling mean and standard deviation of the spread (lookback 20-60).
+- **Cointegration Metrics:** Hedge ratio β (OLS), ADF test statistic, Engle-Granger residuals.
+- **ATR of Spread:** For dynamic position sizing and stop placement.
+- **Rolling Correlation:** Between the two assets to monitor relationship stability.
+
+**6. Unique Edge**
+
+Traditional Stochastic strategies fail in trending markets because they generate false overbought/oversold signals. By applying the Stochastic to a cointegrated, stationary spread, the oscillator's mean-reverting nature aligns with the statistical properties of the instrument being traded. This dual confirmation—statistical (z-score + cointegration) and momentum-based (Stochastic)—reduces false signals and improves win rate, while the arbitrage structure provides market-neutral exposure.

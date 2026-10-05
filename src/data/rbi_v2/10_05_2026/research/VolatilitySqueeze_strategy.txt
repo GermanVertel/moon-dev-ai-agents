@@ -1,47 +1,59 @@
 STRATEGY_NAME: VolatilitySqueeze
 
 STRATEGY_DETAILS:
-This strategy is a **volatility-contraction breakout system** designed to catch explosive moves that follow periods of unusually low volatility. It is built on the principle that markets alternate between compression (low volatility, tight ranges) and expansion (high volatility, directional trends). By entering only when volatility transitions from compressed to expanded, it avoids choppy, range-bound conditions and targets high-momentum breakouts.
 
-**Core Concept**
-Volatility is mean-reverting. When price consolidates into a narrow range, energy builds up and eventually releases in a sharp directional move. This strategy quantifies "squeeze" conditions and waits for the first strong expansion candle to join the breakout in the direction of the prevailing trend filter.
+This strategy exploits the convergence of volatility compression and volume expansion — a classic precursor to explosive directional moves. It uses ATR as a volatility proxy, Bollinger Bands to define statistically extreme low-volatility zones, and volume as the confirmation trigger.
 
-**Required Indicators**
-1. **Bollinger Bands (20-period, 2 standard deviations)** – measures the outer volatility envelope.
-2. **Keltner Channel (20-period EMA, 1.5× ATR)** – measures inner volatility using true range.
-3. **Squeeze condition:** Bollinger Bands contract *inside* the Keltner Channel. This signals an extreme low-volatility regime.
-4. **ATR (14-period)** – used for position sizing and stop placement.
-5. **200-period EMA** – trend filter to bias breakout direction.
-6. **Momentum histogram (e.g., MACD or a simple linear-regression slope)** – confirms the direction and strength of the release.
+**Core Concept:**
+When market volatility (ATR) contracts below its own lower Bollinger Band, it signals a "squeeze" — the market is coiling. A simultaneous volume surge (200%+ of 10-day average) indicates that the squeeze is about to resolve with force. Direction is inferred from price action relative to the ATR/BB context and candle structure.
 
-**Entry Rules**
-- **Long entry:** Squeeze condition is active (Bollinger Bands inside Keltner Channel), then price closes above the upper Bollinger Band, the momentum histogram flips positive, and price is above the 200 EMA.
-- **Short entry:** Squeeze condition is active, then price closes below the lower Bollinger Band, the momentum histogram flips negative, and price is below the 200 EMA.
-- Enter on the close of the breakout candle, or on a stop order just beyond the breakout candle's high/low for confirmation.
+---
 
-**Exit Rules**
-- **Initial stop-loss:** Placed at 1.5× ATR from entry, or at the opposite Bollinger Band, whichever is tighter.
-- **Profit target 1:** 2× ATR (scale out 50%).
-- **Profit target 2:** Trail the remainder using a 2× ATR trailing stop, or exit when price closes back inside the Bollinger Bands.
-- **Time stop:** If the trade does not reach +1× ATR within 10 bars, exit to avoid dead trades.
+**Required Indicators:**
+1. **ATR (14-period)** — primary volatility measure
+2. **Bollinger Bands (20-period, 2 std dev)** applied to the ATR series itself (not price)
+   - Upper Band, Middle (SMA20 of ATR), Lower Band
+3. **Volume SMA (10-period)** — baseline for surge detection
+4. Optional: Price EMA (20) or prior candle close for directional bias
 
-**Risk Management**
-- Risk a fixed 1% of account equity per trade. Position size = (Account × 1%) ÷ (Entry − Stop distance).
-- Maximum 2 concurrent positions to limit correlated exposure.
-- No new entries during major news events (e.g., FOMC, NFP) to avoid slippage-driven false breakouts.
-- Skip signals if the squeeze has lasted fewer than 5 bars (insufficient compression) or if ATR is already elevated.
+---
 
-**Best Markets and Timeframes**
-- Works best on liquid instruments: index futures (ES, NQ), major FX pairs (EUR/USD, GBP/USD), and large-cap crypto (BTC, ETH).
-- Recommended timeframe: 15-minute to 4-hour charts for intraday/swing balance.
-- Avoid low-liquidity instruments where breakouts frequently fail.
+**Entry Rules:**
 
-**Strengths**
-- Systematically avoids choppy markets by trading only after compression.
-- Clear, objective, rules-based entries and exits.
-- Adapts to changing volatility through ATR-based sizing and stops.
+*Long Entry:*
+- ATR(14) < Lower Bollinger Band of ATR(20, 2σ)
+- Current volume ≥ 200% of 10-day average volume
+- Price closes above the prior candle's high (bullish resolution of squeeze)
+- Optional confirmation: price above 20-period EMA
 
-**Weaknesses**
-- False breakouts can occur; the trend filter and momentum confirmation mitigate but do not eliminate whipsaws.
-- Fewer trade signals during strongly trending, high-volatility markets.
-- Requires discipline to wait for the squeeze condition rather than forcing trades.
+*Short Entry:*
+- ATR(14) < Lower Bollinger Band of ATR(20, 2σ)
+- Current volume ≥ 200% of 10-day average volume
+- Price closes below the prior candle's low (bearish resolution of squeeze)
+- Optional confirmation: price below 20-period EMA
+
+Both conditions (squeeze + volume surge) must be true on the same bar.
+
+---
+
+**Exit Rules:**
+- Close the position when ATR(14) crosses back above its 20-period moving average (the middle Bollinger Band of ATR)
+- This signals volatility has normalized and the expansion phase is ending
+- Exit on the bar close where ATR > SMA20(ATR)
+
+---
+
+**Risk Management:**
+- **Stop Loss:** Place at 1.5× current ATR(14) from entry, or below/above the squeeze range's extreme (whichever is tighter)
+- **Position Sizing:** Risk 1–2% of equity per trade; adjust size inversely to ATR (smaller size when ATR is elevated)
+- **Time Stop:** If ATR fails to breach its 20-day MA within 15 bars, exit at market — the expansion thesis has failed
+- **Max Concurrent Positions:** Limit to avoid correlated volatility trades across instruments
+- **Avoid:** Low-liquidity sessions, news events that distort volume readings (earnings, CPI, FOMC)
+
+---
+
+**Key Edge & Caveats:**
+- The edge comes from the statistical rarity of ATR trading below its lower BB *simultaneously* with a volume spike — this combination filters out most false squeezes
+- Volume surge must be genuine (check for one-off block trades)
+- Works best on liquid instruments with reliable ATR/volume data (futures, large-cap equities, major FX pairs)
+- Backtest across regimes — the strategy will underperform in low-volatility trending markets where squeezes resolve weakly

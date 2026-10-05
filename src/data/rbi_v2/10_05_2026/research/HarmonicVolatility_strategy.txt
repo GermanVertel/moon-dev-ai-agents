@@ -1,0 +1,53 @@
+STRATEGY_NAME: HarmonicVolatility
+
+STRATEGY_DETAILS:
+The HarmonicVolatility strategy is a mean-reversion and breakout-hybrid approach that uses volatility bands constructed from harmonic oscillators rather than simple standard deviation. It identifies trading opportunities when price interacts with dynamically adjusted bands that expand and contract based on cyclical volatility patterns.
+
+1. Key Strategy Components:
+   - Harmonic Volatility Bands: Unlike Bollinger Bands (which use standard deviation), these bands are built using a harmonic mean of true range or ATR over multiple lookback periods. This creates bands that are more responsive to cyclical volatility shifts and less distorted by outlier spikes.
+   - Central Baseline: A smoothed moving average (e.g., Hull or TEMA) serves as the midline, reducing lag compared to SMA.
+   - Band Multiplier: A dynamic multiplier derived from a harmonic oscillator (e.g., a normalized sine-weighted volatility index) adjusts band width in real time.
+   - Cycle Detection: A Fourier or Hilbert Transform component detects dominant volatility cycles (e.g., 20, 40, 80 bars) to weight the harmonic mean appropriately.
+
+2. Entry Rules:
+   - Long Entry: Price closes below the lower Harmonic Volatility Band AND a bullish reversal candle (e.g., hammer, engulfing) forms, OR price crosses back above the lower band after an oversold harmonic oscillator reading (<20).
+   - Short Entry: Price closes above the upper Harmonic Volatility Band AND a bearish reversal candle forms, OR price crosses back below the upper band after an overbought harmonic oscillator reading (>80).
+   - Breakout Confirmation (optional): A close beyond the band with expanding harmonic volatility (rising band width) signals a momentum breakout rather than mean reversion — trade in the direction of the break.
+
+3. Exit Rules:
+   - Mean-Reversion Exit: Take profit at the central baseline (midline) or opposite band, whichever comes first.
+   - Trailing Stop: Use a Chandelier Exit or ATR-based trailing stop once price moves 1x band width in favor.
+   - Time-Based Exit: Close position if no target hit within 2x the dominant detected cycle length.
+   - Stop Loss: For mean reversion, place stop just beyond the band extreme (e.g., 0.5x ATR beyond the band). For breakout, stop at the midline.
+
+4. Risk Management:
+   - Position sizing: Risk no more than 1% of equity per trade; size = (Equity × 0.01) / (Entry − Stop).
+   - Maximum concurrent positions: 2–3 to avoid correlated volatility exposure.
+   - Volatility filter: Avoid trading when harmonic volatility is in the bottom 10th percentile (dead market) or top 5th percentile (extreme event).
+   - Correlation check: Avoid multiple long/short positions in highly correlated instruments simultaneously.
+
+5. Required Indicators:
+   - ATR (Average True Range) — multi-period (e.g., 10, 20, 40)
+   - Hull Moving Average or TEMA — baseline
+   - Harmonic Oscillator (e.g., Sine Wave indicator, Fisher Transform, or Stochastics) — for cycle timing
+   - Hilbert Transform / Fourier analysis — cycle detection
+   - Volume (optional) — confirmation on breakout entries
+   - Chandelier Exit or ATR Trailing Stop — exit management
+
+6. Best Timeframes & Markets:
+   - Timeframes: 15m to 4H for intraday/swing; Daily for position trading.
+   - Markets: Forex majors, index futures, liquid crypto pairs, and large-cap equities with consistent volatility cycles.
+   - Avoid: Illiquid instruments, news-driven single stocks, and assets with erratic volatility regimes.
+
+7. Advantages:
+   - Adapts faster than Bollinger Bands to volatility regime changes.
+   - Reduces false signals from volatility spikes via harmonic smoothing.
+   - Combines mean reversion and breakout logic in one framework.
+   - Cycle-aware, aligning entries with natural volatility rhythms.
+
+8. Limitations:
+   - Requires parameter tuning for cycle detection per instrument.
+   - Harmonic mean can lag in sudden volatility shocks.
+   - May underperform in strongly trending, low-volatility markets.
+
+This strategy is best deployed with backtesting across multiple volatility regimes and walk-forward optimization to validate the harmonic cycle parameters for each instrument.

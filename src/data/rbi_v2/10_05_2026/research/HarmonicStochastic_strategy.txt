@@ -1,0 +1,62 @@
+STRATEGY_NAME: HarmonicStochastic
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy combines harmonic pattern recognition (specifically the Butterfly pattern) with stochastic oscillator confirmation to trade breakout momentum following a completed harmonic reversal structure. The Butterfly is an extension pattern where point D extends beyond point X, signaling a deep retracement before a sharp reversal—making it ideal for catching explosive breakout moves.
+
+**Key Strategy Components**
+
+1. **Butterfly Pattern Detection (Harmonic Structure)**
+   - Five-point structure: X-A-B-C-D
+   - Fibonacci ratios required:
+     - B retracement of XA: 0.786 (or 0.382–0.618 acceptable variants)
+     - C retracement of AB: 0.382–0.886
+     - D extension of XA: 1.27 or 1.618 (defining feature of Butterfly)
+     - D retracement of BC: 1.618–2.618
+   - Point D is the "Potential Reversal Zone" (PRZ) where entry is considered
+
+2. **Stochastic Oscillator Confirmation**
+   - Use Stochastic (14, 3, 3) or (21, 5, 5)
+   - At point D (bullish Butterfly): Stochastic must be in oversold zone (<20) and show a bullish crossover (K crosses above D)
+   - At point D (bearish Butterfly): Stochastic must be in overbought zone (>80) and show a bearish crossover (K crosses below D)
+   - This filters false harmonic completions
+
+3. **Breakout Confirmation**
+   - After harmonic + stochastic alignment, wait for price to break the C-to-D trendline or a defined neckline
+   - Breakout must occur with above-average volume (1.5x 20-period average)
+   - Optional: require a close beyond the breakout level (not just a wick)
+
+**Entry Rules**
+- **Long Entry:** Bullish Butterfly completes at D → Stochastic oversold + bullish cross → price closes above the most recent swing high (or C-point level) with volume surge
+- **Short Entry:** Bearish Butterfly completes at D → Stochastic overbought + bearish cross → price closes below the most recent swing low (or C-point level) with volume surge
+
+**Exit Rules**
+- **Take Profit 1:** 0.382 retracement of the CD leg
+- **Take Profit 2:** 0.618 retracement of the CD leg
+- **Take Profit 3:** Point A or 1.272 extension of CD (for runners)
+- **Stop Loss:** 1 ATR beyond point D (or beyond the 1.618 XA extension if using wider stops)
+- **Time Stop:** Exit if pattern invalidation occurs (price closes back inside PRZ against position)
+
+**Risk Management**
+- Risk per trade: 0.5–1% of account equity
+- Position sizing based on distance from entry to stop (ATR-based)
+- Move stop to breakeven after TP1 is hit
+- Trail stop using 1.5x ATR after TP2 is reached
+- Maximum 2 concurrent Butterfly trades per instrument to avoid correlated exposure
+- Skip trades during high-impact news windows (±15 min)
+
+**Required Indicators**
+1. Fibonacci retracement/extension tool (for XA, AB, BC, CD ratios)
+2. Stochastic Oscillator (14,3,3 default; 21,5,5 for higher timeframes)
+3. Volume Moving Average (20-period) for breakout confirmation
+4. ATR (14) for stop placement and position sizing
+5. Optional: ZigZag indicator to identify swing points X, A, B, C, D automatically
+
+**Recommended Timeframes**
+- Pattern detection: 1H, 4H, or Daily
+- Entry trigger: 15m or 1H for refined precision
+- Best suited for forex majors, indices, and liquid crypto pairs
+
+**Why This Works**
+The Butterfly pattern uniquely signals exhaustion at a deep extension (D beyond X), where trapped traders are forced to cover—fueling the breakout. Stochastic confirms momentum exhaustion at the PRZ, while the breakout confirmation ensures participation only when the reversal is validated by price action and volume. This three-layer filter (harmonic + oscillator + breakout) dramatically reduces false signals common in pure harmonic trading.

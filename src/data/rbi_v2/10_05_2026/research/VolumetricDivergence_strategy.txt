@@ -1,34 +1,50 @@
-STRATEGY_NAME: VolumetricDivergence
+STRATEGY_NAME: Volumetric Divergence
 
 STRATEGY_DETAILS:
-This strategy combines volume analysis with stochastic oscillator divergence to identify high-probability breakout opportunities. The core premise is that divergences between price action and the stochastic oscillator, when confirmed by volume surges, signal genuine breakouts rather than false moves.
+This strategy combines volatility measurement with price-volume divergence analysis to identify high-probability reversal and continuation setups. The core premise is that when price action and volume patterns diverge (i.e., move in opposite directions or at different rates), the "distance" between their divergence points creates a measurable signal strength that can be traded.
 
-**Key Strategy Components:**
-1. **Stochastic Oscillator Divergence Detection** - Identify bullish divergence (price makes lower lows while stochastic makes higher lows) and bearish divergence (price makes higher highs while stochastic makes lower highs) using a 14-period stochastic with 3-period smoothing.
-2. **Volume Confirmation** - A breakout is only valid when accompanied by a volume spike exceeding the 20-period average volume by at least 150%.
-3. **Breakout Level Identification** - Define breakout levels using recent swing highs/lows or consolidation range boundaries confirmed over the last 20-30 bars.
+**1. Key Strategy Components**
 
-**Entry Rules:**
-- **Long Entry:** Bullish stochastic divergence forms near a support/consolidation zone, price breaks above the range high, AND volume exceeds 1.5x the 20-period average. Enter on the close of the breakout candle.
-- **Short Entry:** Bearish stochastic divergence forms near resistance, price breaks below range low, AND volume confirms the move. Enter on the close of the breakdown candle.
+- **Volatility Baseline:** Use ATR (Average True Range) or Bollinger Band width to establish the current volatility regime. Only take trades when volatility is expanding or at a defined threshold, since divergence signals are more reliable in active markets.
+- **Price-Volume Divergence Detection:** 
+  - Calculate a normalized price momentum oscillator (e.g., ROC or RSI).
+  - Calculate a normalized volume momentum oscillator (e.g., volume ROC or OBV slope).
+  - Plot both on a common scale (z-score normalization) to directly compare their movements.
+- **Divergence Distance Metric:** The "distance between divergence points" is quantified as the absolute or signed difference between the price oscillator and volume oscillator at any given bar. A large positive distance (price rising, volume falling) suggests weakening trend; a large negative distance (price falling, volume rising) suggests accumulation.
+- **Intersection Logic:** Trades trigger when the divergence distance crosses a dynamic threshold derived from its own rolling standard deviation (e.g., 1.5x sigma), confirming a statistically significant divergence.
 
-**Exit Rules:**
-- **Take Profit:** Exit at 2x the range height measured from the breakout point (measured move technique).
-- **Stop Loss:** Place stop just below the breakout candle's low (for longs) or above its high (for shorts), typically 1-1.5% risk.
-- **Trailing Exit:** If stochastic crosses back into overbought (>80) for longs or oversold (<20) for shorts while price stalls, tighten stop to breakeven.
-- **Time-Based Exit:** Close position if no follow-through occurs within 5 bars.
+**2. Entry Rules**
 
-**Risk Management:**
+- **Long Entry:** 
+  - Price oscillator is negative or turning up from oversold territory.
+  - Volume oscillator is positive and rising (volume expanding while price is depressed).
+  - Divergence distance crosses above +1.5 standard deviations (volume strength exceeding price weakness).
+  - Volatility filter: ATR is above its 20-period average.
+- **Short Entry:** 
+  - Price oscillator is positive or turning down from overbought territory.
+  - Volume oscillator is negative or falling (volume declining while price is elevated).
+  - Divergence distance crosses below -1.5 standard deviations.
+  - Volatility filter: ATR is above its 20-period average.
+
+**3. Exit Rules**
+
+- **Profit Target:** Exit when the divergence distance reverts to zero (price and volume oscillators realign), indicating the divergence has been resolved.
+- **Stop Loss:** Place stop at 1.5x ATR from entry, or exit if the divergence distance moves further against the position by another 1.0 standard deviation (signal invalidation).
+- **Time Stop:** Exit after N bars (e.g., 10) if neither target nor stop is hit, to avoid dead trades.
+
+**4. Risk Management**
+
 - Risk no more than 1% of account equity per trade.
-- Minimum risk-reward ratio of 1:2.
-- Avoid trades during low-liquidity sessions or major news releases.
-- Skip signals if volume spike occurs on the same bar as a large wick (potential trap).
+- Position size = (Account Risk %) / (Stop Distance in price terms).
+- Avoid trading during low-liquidity sessions or when ATR is below its 20-period average (choppy, non-trending conditions produce false divergences).
+- Cap simultaneous open positions to 2-3 to limit correlated exposure.
 
-**Required Indicators:**
-1. Stochastic Oscillator (14, 3, 3)
-2. Volume Moving Average (20-period)
-3. Volume bars (for spike detection)
-4. Swing high/low markers (20-30 bar lookback)
-5. ATR (14) for dynamic stop sizing (optional)
+**5. Required Indicators**
 
-**Best Timeframes:** 15-minute to 4-hour charts for intraday swing setups; daily charts for position trades.
+- ATR (14-period) for volatility regime and stop placement.
+- Normalized Price Oscillator (e.g., 14-period RSI or 10-period ROC, z-scored over 50 bars).
+- Normalized Volume Oscillator (e.g., 14-period volume ROC or OBV slope, z-scored over 50 bars).
+- Rolling standard deviation of the divergence distance (50-period) for threshold calculation.
+- Optional: Bollinger Band width for secondary volatility confirmation.
+
+**Summary:** Volumetric Divergence exploits the statistical gap between price and volume momentum, using volatility as a regime filter and divergence distance as the primary trade trigger. It is most effective in markets where volume leads price (accumulation/distribution phases) and volatility is expanding.

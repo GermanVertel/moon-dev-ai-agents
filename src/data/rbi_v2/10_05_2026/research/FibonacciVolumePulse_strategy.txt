@@ -1,0 +1,70 @@
+STRATEGY_NAME: Fibonacci VolumePulse
+
+STRATEGY_DETAILS:
+This strategy combines Fibonacci retracement levels with volume spike confirmation to identify high-probability trend continuation entries. It is a trend-following approach that waits for price to pull back to a key Fibonacci level, then uses an abnormal volume surge as the trigger to enter in the direction of the dominant trend.
+
+─────────────────────────────
+1. CORE COMPONENTS
+─────────────────────────────
+- Trend Filter: Establish the prevailing trend direction (e.g., 50/200 EMA relationship, or higher-highs/higher-lows structure).
+- Fibonacci Grid: Identify the most recent significant swing high and swing low, then plot retracement levels at 23.6%, 38.2%, 50%, 61.8%, and 78.6%.
+- Volume Baseline: Compute a rolling average volume (e.g., 20-period SMA of volume) to define "normal" activity.
+- Volume Spike Detection: A spike is confirmed when current bar volume exceeds the average by a configurable multiplier (typically 1.5x–2.0x).
+
+─────────────────────────────
+2. ENTRY RULES
+─────────────────────────────
+LONG Entry:
+1. Trend filter confirms an uptrend (price above 200 EMA and 50 EMA > 200 EMA).
+2. Price retraces DOWN into a Fibonacci zone between 38.2% and 61.8% of the prior up-swing.
+3. A bullish reversal candle (hammer, engulfing, or pin bar) forms within that zone.
+4. Volume on the reversal candle exceeds the 20-period average by at least 1.5x.
+5. Enter long on the close of the confirmation candle (or on a break of its high).
+
+SHORT Entry:
+1. Trend filter confirms a downtrend (price below 200 EMA and 50 EMA < 200 EMA).
+2. Price retraces UP into the 38.2%–61.8% Fibonacci zone of the prior down-swing.
+3. A bearish reversal candle (shooting star, engulfing, or pin bar) forms in the zone.
+4. Volume spike of 1.5x+ on the reversal candle.
+5. Enter short on the close of the confirmation candle (or on a break of its low).
+
+─────────────────────────────
+3. EXIT RULES
+─────────────────────────────
+- Primary Target: Prior swing high (for longs) / prior swing low (for shorts), or the 0% Fibonacci extension.
+- Extended Target: 127.2% or 161.8% Fibonacci extension if momentum persists.
+- Stop Loss: Placed just beyond the next Fibonacci level (e.g., below 78.6% for longs, above 78.6% for shorts), or below the reversal candle's low/high, whichever is tighter.
+- Trailing Exit: Move stop to breakeven once price clears the 23.6% retracement in the trade direction; trail using a 1.5x ATR stop thereafter.
+- Time-Based Exit: Close the position if price stalls at a Fibonacci level for more than N bars without a volume confirmation.
+
+─────────────────────────────
+4. RISK MANAGEMENT
+─────────────────────────────
+- Position Sizing: Risk no more than 1% of account equity per trade. Size = (Account Risk) / (Entry − Stop Distance).
+- Risk/Reward Minimum: Only take trades offering at least 2:1 R:R based on the measured swing.
+- Confluence Requirement: Both the Fibonacci zone AND the volume spike must be present — never trade on Fibonacci alone.
+- Max Concurrent Positions: Limit to 2–3 correlated instruments to avoid overexposure.
+- Volatility Filter: Skip setups during extreme volatility (e.g., ATR above 95th percentile) or during major news releases.
+- Daily Loss Cap: Stop trading after 2 consecutive losses or a 3% daily drawdown.
+
+─────────────────────────────
+5. REQUIRED INDICATORS / TOOLS
+─────────────────────────────
+- Fibonacci Retracement tool (auto-swing detection preferred)
+- Volume histogram with 20-period SMA overlay
+- 50 EMA and 200 EMA (trend filter)
+- ATR (14) for trailing stops and volatility filter
+- Candlestick pattern recognition (engulfing, hammer, pin bar, shooting star)
+- Optional: RSI or MACD to avoid entering overbought/oversold extremes at the Fibonacci zone
+
+─────────────────────────────
+6. BEST TIMEFRAMES & MARKETS
+─────────────────────────────
+- Timeframes: 1H and 4H for swing trading; 15m for intraday with tighter stops.
+- Markets: Liquid instruments with reliable volume data — major FX pairs, index futures (ES, NQ), large-cap stocks, and top-tier crypto (BTC, ETH).
+- Avoid low-liquidity assets where volume spikes can be spoofed or unreliable.
+
+─────────────────────────────
+7. EDGE & LOGIC SUMMARY
+─────────────────────────────
+The strategy exploits a well-documented market behavior: in a trending market, pullbacks to Fibonacci levels attract institutional orders, and the arrival of a volume spike at those levels signals that buyers (or sellers) have stepped in to defend the trend. By requiring BOTH a geometric price level (Fibonacci) AND a participation signal (volume), the strategy filters out weak retracements and only trades when conviction is high — improving win rate over pure Fibonacci or pure volume strategies alone.

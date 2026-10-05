@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Moon Dev is warming up the ImpulseWaveRider engine... \ud83d\ude80\n\ud83c\udf19\u2728 Data loaded: 1009 bars \ud83d\ude80\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/ImpulseWaveRider_PKG.py\", line 206, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/ImpulseWaveRider_PKG.py` failed. (See above for error)\n",
+  "execution_time": 8.088601,
+  "timestamp": "2026-10-05T11:37:51.839976"
+}

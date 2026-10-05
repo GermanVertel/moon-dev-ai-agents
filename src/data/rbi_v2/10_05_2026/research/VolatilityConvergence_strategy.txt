@@ -1,0 +1,37 @@
+STRATEGY_NAME: VolatilityConvergence
+
+STRATEGY_DETAILS:
+This strategy fuses price-structure proximity with a volatility oscillator (ATR) and a Know Sure Thing (KST) momentum oscillator to time long entries during volatility compression near highs, then exits on volatility reversion.
+
+1. KEY STRATEGY COMPONENTS
+- Price proximity filter: Track the recent swing/rolling high (e.g., highest high over N bars, default N=20). A long setup is only considered when price is within a configurable proximity band of that high (e.g., within 1–2% or within X * ATR of the rolling high).
+- Volatility oscillator: Compute ATR (default period 14) and normalize it into an oscillator, e.g., ATR% = ATR / Close, or ATR z-score / percentile rank over a lookback (e.g., 100 bars). This measures whether current volatility is compressed relative to its own history.
+- KST momentum oscillator: Compute the Know Sure Thing (KST) using four smoothed ROC components (standard: ROC 10/15/20/30 smoothed by SMA 10/10/10/15, weighted 1/2/3/4). Optionally signal line = SMA(9) of KST.
+- Convergence condition: The core edge is the divergence between price and volatility. Enter long when price is near a recent high (strength) but ATR-based volatility dips below the corresponding KST value (compression + momentum confirmation). "Corresponding KST value" is interpreted as comparing the normalized ATR oscillator against the KST reading (both scaled to comparable ranges, e.g., z-scored or percentile-ranked) at the same bar.
+
+2. ENTRY RULES (LONG)
+- Condition A: Close >= (RollingHigh(N) - ProximityBand), i.e., price is approaching/at recent high.
+- Condition B: ATR_Oscillator < KST (after normalizing both to the same scale, e.g., z-score or 0–100 percentile), confirming volatility is compressed below momentum.
+- Condition C (confirmation): KST > KST_Signal (or KST > 0) to ensure positive momentum.
+- Enter long on the close of the bar where A, B, and C are all true, or on a break of the prior bar's high for the next bar.
+
+3. EXIT RULES
+- Primary exit: Volatility reversion. Exit when ATR_Oscillator rises back to a target multiple of its compressed baseline, e.g., ATR >= ExitMultiplier * ATR_Entry (default ExitMultiplier = 1.5) or ATR% crosses above its rolling median/upper band.
+- Secondary exit: Trailing stop at k * ATR (default k = 2.0) from the highest close since entry.
+- Momentum exit: Exit if KST crosses below KST_Signal.
+- Time stop: Optional max holding period (e.g., 20 bars) if neither target nor stop is hit.
+
+4. RISK MANAGEMENT
+- Position sizing: Risk a fixed fraction of equity per trade (e.g., 1%), sized as RiskAmount / (EntryPrice - StopPrice).
+- Initial stop: EntryPrice - (StopATRMult * ATR), default StopATRMult = 2.0.
+- Take profit: Volatility-reversion exit acts as the profit target; optionally scale out 50% at 1.5x ATR and trail the rest.
+- Avoid trading during scheduled high-impact news if ATR spikes pre-entry (filter: skip if ATR_Oscillator is already in top decile).
+- Max concurrent positions and per-sector exposure caps to avoid correlated volatility bets.
+
+5. REQUIRED INDICATORS
+- Rolling High (Highest High, N=20)
+- ATR (period 14) and ATR% = ATR / Close
+- ATR oscillator: z-score or percentile rank of ATR% over 100 bars
+- KST (ROC 10/15/20/30; SMA 10/10/10/15; weights 1/2/3/4)
+- KST Signal line (SMA 9)
+- Optional: volume filter and a volatility regime filter (e.g., VIX or ATR percentile)

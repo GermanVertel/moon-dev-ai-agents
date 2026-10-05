@@ -1,0 +1,56 @@
+STRATEGY_NAME: VortexSqueeze
+
+STRATEGY_DETAILS:
+
+**Overview:**
+VortexSqueeze is a hybrid momentum-breakout strategy that fuses three independent market dimensions: directional trend confirmation (Vortex Indicator), participation intensity (volume surge), and volatility compression (Bollinger Band Width). The core thesis is that a genuine trend ignition occurs only when directional momentum aligns with an abnormal volume influx *while* the market is coiled in a low-volatility squeeze — filtering out false breakouts that occur during already-expanded volatility.
+
+**Key Strategy Components:**
+
+1. **Vortex Indicator (VI+ / VI−):**
+   - Period: 14 (standard)
+   - VI+ = Σ|High − Prior Low| / Σ(True Range)
+   - VI− = Σ|Low − Prior High| / Σ(True Range)
+   - Bullish signal: VI+ crosses *above* VI− (note: the prompt's "VI+ crosses VI+" is interpreted as the standard VI+/VI− crossover, since VI+ cannot cross itself meaningfully).
+   - This confirms the *directional* leg of the setup.
+
+2. **Volume Surge Filter:**
+   - Volume SMA: 20-period
+   - Surge threshold: current volume ≥ 1.5× the 20-period volume SMA
+   - Ensures the crossover is backed by real participation, not thin-market noise.
+
+3. **Bollinger Band Width Compression:**
+   - Bollinger Bands: 20-period SMA, 2 standard deviations
+   - BBW = (Upper Band − Lower Band) / Middle Band
+   - Compression condition: current BBW is in the bottom 20th percentile of the last 100 bars (i.e., BBW ≤ 20th percentile of rolling BBW history)
+   - Signals that volatility is coiled and a directional expansion is imminent.
+
+**Entry Rules (Long):**
+- VI+ crosses above VI− on the current bar (previous bar had VI+ ≤ VI−)
+- Current volume ≥ 1.5 × 20-period volume SMA
+- BBW ≤ 20th percentile of the last 100 BBW readings (squeeze active)
+- Optional confirmation: close > 20-period SMA (bias alignment)
+- Enter long at next bar open (or close of signal bar).
+
+**Exit Rules:**
+- Primary exit: price touches the *upper* Bollinger Band (opposing band touch) — take profit.
+- Secondary exit: VI+ crosses back below VI− (trend invalidation).
+- Time stop: exit after N bars (e.g., 20) if neither condition triggers.
+
+**Risk Management:**
+- Initial stop-loss: placed at the *lower* Bollinger Band at entry, or a fixed ATR-based stop (1.5 × ATR(14)), whichever is tighter.
+- Position sizing: risk ≤ 1% of equity per trade; size = (Equity × 0.01) / (Entry − Stop).
+- Trailing stop: once price reaches the middle band, move stop to breakeven; thereafter trail below the middle band.
+- Avoid trades within 30 minutes of major news releases (volume surge may be event-driven, not trend-driven).
+- Skip signals if BBW is already expanding (squeeze already released) to avoid chasing.
+
+**Required Indicators:**
+- Vortex Indicator (14) — VI+ and VI− lines
+- Volume SMA (20)
+- Bollinger Bands (20, 2.0) — Upper, Middle, Lower
+- Bollinger Band Width (derived) — with 100-bar percentile ranking
+- ATR (14) — for stop placement
+- Optional: 20-period SMA for trend bias filter
+
+**Rationale / Edge:**
+Each component alone produces many false signals: Vortex crossovers whipsaw in chop, volume spikes occur in news noise, and squeezes often resolve without follow-through. By requiring all three simultaneously, VortexSqueeze isolates the rare confluence where *direction*, *conviction*, and *potential energy* align — the classic precondition for a sustained directional move. Exiting at the opposing Bollinger Band captures the volatility expansion leg while avoiding the mean-reversion that typically follows a band tag.

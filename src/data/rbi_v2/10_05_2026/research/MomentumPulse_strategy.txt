@@ -1,0 +1,46 @@
+STRATEGY_NAME: MomentumPulse
+
+STRATEGY_DETAILS:
+This strategy combines short-term momentum confirmation with a trend-following exit filter, creating a dual-condition system that captures strong upward thrusts while protecting against fading momentum.
+
+**Core Components:**
+1. **Entry Trigger:** 3-5 day RSI crossing above 70 (overbought momentum confirmation)
+2. **Exit Trigger:** 5-day EMA crossing below 10-day EMA, confirmed by declining volume
+3. **Instrument:** Futures contracts (liquid, trending markets preferred)
+
+**Entry Rules:**
+- Calculate RSI over a 3-5 day lookback period (shorter than standard 14-day for sensitivity)
+- Enter LONG when RSI crosses above 70
+- This signals strong short-term buying pressure — momentum traders are aggressively accumulating
+- Only enter on confirmed close above threshold, not intrabar
+- Optional filter: require price above 20-day EMA to ensure alignment with broader trend
+
+**Exit Rules:**
+- Monitor 5-day EMA vs 10-day EMA relationship
+- Exit LONG when 5-day EMA crosses BELOW 10-day EMA
+- **Critical confirmation:** Volume must be DECREASING on the crossover bar (or over 2-3 bars)
+- Rationale: A bearish EMA cross with declining volume suggests genuine momentum exhaustion rather than a volatile shakeout
+- If EMA cross occurs with rising volume, hold position — could be a false signal or continuation setup
+
+**Risk Management:**
+- Position sizing: Risk 1-2% of capital per trade
+- Hard stop-loss: Place below recent swing low or 2x ATR from entry
+- Trailing stop: Activate after 1.5R profit, trail using 5-day EMA
+- Max hold time: 10-15 trading days if neither exit nor stop triggered (momentum decay)
+- Avoid entering within 2 days of major economic releases (FOMC, NFP)
+
+**Required Indicators:**
+- RSI (period 3-5)
+- EMA (5-period)
+- EMA (10-period)
+- Volume (with simple moving average for comparison)
+- ATR (14-period) for stop placement
+- Optional: 20-day EMA for trend filter
+
+**Market Conditions:**
+- Best suited for trending futures markets (commodities, indices during momentum phases)
+- Avoid choppy/ranging conditions where RSI >70 produces frequent false signals
+- Works well in high-liquidity contracts (ES, NQ, CL, GC)
+
+**Key Insight:**
+The genius of this strategy is the asymmetric exit logic — a standard EMA crossover would exit too early during healthy pullbacks, but requiring declining volume filters out noise and lets winners run through normal consolidation.

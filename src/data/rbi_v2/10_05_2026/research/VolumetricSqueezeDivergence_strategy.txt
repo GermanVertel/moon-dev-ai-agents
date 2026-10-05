@@ -1,0 +1,54 @@
+STRATEGY_NAME: Volumetric SqueezeDivergence
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy fuses two independent edges into a single high-probability setup: (1) Volume-Weighted RSI (VW-RSI) divergence as a momentum/participation filter, and (2) Bollinger Bandwidth contraction (the "squeeze") as a volatility regime filter. Trades are only taken when volatility has compressed AND momentum divergence confirms the direction of the breakout, with volume as the trigger.
+
+**Required Indicators**
+- **Volume-Weighted RSI (VW-RSI):** Standard RSI (14) but each period's gain/loss is weighted by that bar's volume relative to the average volume over the lookback. Formula sketch: `VW-RSI = 100 - 100/(1 + (avgVWgain/avgVWloss))` where gain/loss is multiplied by `volume / SMA(volume, n)`.
+- **Bollinger Bands:** 20-period SMA, 2 standard deviations (upper/lower/middle).
+- **Bollinger Bandwidth (BBW):** `(Upper - Lower) / Middle`. Track its N-period percentile (e.g., 125 bars) to detect contraction.
+- **Volume filter:** `SMA(volume, 20)` and a threshold multiplier (e.g., 1.2x–1.5x average).
+
+**Entry Rules (Long)**
+1. **Squeeze condition:** BBW is in the bottom 20th percentile of its 125-bar range (contraction confirmed).
+2. **Divergence condition:** Price makes a lower low while VW-RSI makes a higher low (bullish divergence) within the last 5–15 bars.
+3. **Trigger:** Price closes ABOVE the upper Bollinger Band on volume ≥ 1.3× the 20-period average volume.
+4. Enter long on the close of the breakout bar (or on the next bar's open for confirmation).
+
+**Entry Rules (Short)** — mirror image:
+1. BBW in bottom 20th percentile.
+2. Price makes a higher high while VW-RSI makes a lower high (bearish divergence).
+3. Price closes BELOW the lower Bollinger Band on volume ≥ 1.3× average.
+4. Enter short on close/next open.
+
+**Exit Rules**
+- **Primary exit (mean reversion):** Close the long when price touches or closes back inside the middle band from above, OR when price reaches the opposite (lower) band — whichever comes first, depending on aggressiveness. Standard rule: exit long at the middle band; exit short at the middle band. Aggressive variant: hold to the opposite band.
+- **VW-RSI exit:** Exit if VW-RSI crosses back through 50 against the position, or shows opposing divergence.
+- **Time stop:** Exit if neither target is hit within 15–20 bars (squeeze plays can stall).
+
+**Risk Management**
+- **Stop loss (long):** Below the lower Bollinger Band or below the swing low that formed the divergence, whichever is tighter. Typical stop distance = 1.0–1.5× ATR(14).
+- **Stop loss (short):** Above the upper band or the divergence swing high.
+- **Position sizing:** Risk 0.5–1% of equity per trade; size = (equity × risk%) / stop distance.
+- **Trailing option:** Once price reaches the middle band, move stop to breakeven.
+- **Max concurrent positions:** 1–2 to avoid correlated squeeze breakouts in the same sector.
+- **Volatility guard:** Skip trades if BBW percentile is rising sharply (expansion already underway) — the edge comes from trading the *release* of a squeeze, not chasing an extended move.
+
+**Trade Management Logic**
+- The squeeze identifies *when* a move is likely (compressed volatility → expansion).
+- VW-RSI divergence identifies *which direction* has hidden momentum and real volume participation.
+- The band break on above-average volume is the *confirmation trigger* that the expansion is real.
+- The opposite band / middle band provides the *mean-reversion exit* — this is a breakout-entry / reversion-exit hybrid, not a pure trend follow.
+
+**Invalidation / No-Trade Conditions**
+- BBW not in contraction (no squeeze).
+- Volume on breakout < average (no conviction).
+- Divergence absent or already "used up" by a prior move.
+- Major news/earnings within the holding window (squeezes can resolve violently and unpredictably).
+
+**Best Markets / Timeframes**
+- Liquid instruments (large-cap equities, index futures, major FX pairs, BTC/ETH).
+- Timeframes: 1H to Daily for swing trades; 5–15m for intraday scalps with tighter stops.
+- Avoid illiquid names where volume weighting of RSI becomes noisy.

@@ -1,0 +1,60 @@
+STRATEGY_NAME: Chikou Oscillator Divergence
+
+STRATEGY_DETAILS:
+This strategy combines three indicators into a single custom oscillator to trade trend continuations and reversals with divergence confirmation.
+
+**Core Components:**
+
+1. **Custom Oscillator Construction:**
+   - Chikou Span component: Compare current close to price N periods ago (typically 26), normalized to a percentage deviation
+   - MACD histogram component: Standard MACD (12, 26, 9) histogram value, normalized by ATR or price
+   - Stochastic component: %K and %D (14, 3, 3), with %K used as the oscillator input
+   - Weighted blend: e.g., 40% Chikou deviation + 30% MACD histogram + 30% Stochastic (adjust based on backtest)
+   - Oscillator ranges roughly -100 to +100 after normalization
+
+2. **Entry Rules (Long):**
+   - Price is in an established uptrend (price above 50 EMA, or Chikou Span above price 26 periods back)
+   - Custom oscillator crosses above zero OR bullish divergence forms (price makes lower low, oscillator makes higher low)
+   - MACD histogram confirms by turning positive or increasing
+   - Stochastic %K crosses above %D below the 30 level
+   - Enter on candle close confirming all three conditions
+
+3. **Entry Rules (Short):**
+   - Price in established downtrend (price below 50 EMA, Chikou below price 26 periods back)
+   - Custom oscillator crosses below zero OR bearish divergence (price higher high, oscillator lower high)
+   - MACD histogram confirms by turning negative or decreasing
+   - Stochastic %K crosses below %D above the 70 level
+   - Enter on candle close confirming all three conditions
+
+4. **Exit Rules:**
+   - **Take-Profit:** 2-3% above entry (long) or below entry (short)
+   - **Stop-Loss:** 2-3% below entry (long) or above entry (short)
+   - **Signal Exit:** Close position when oscillator diverges from price in the opposite direction of the trade (e.g., for longs, price makes higher high but oscillator makes lower high = bearish divergence → exit)
+   - **Confirmation Exit:** Close when MACD histogram flips against position AND Stochastic crosses opposite direction
+
+5. **Risk Management:**
+   - Risk per trade: 1-2% of account equity
+   - Position sizing: (Account Risk $) / (Entry - Stop Distance)
+   - Trailing stop optional: move stop to breakeven once +1.5% profit reached
+   - Max concurrent positions: 2-3 to limit correlated exposure
+   - Avoid trading during major news events (NFP, FOMC) due to oscillator whipsaw
+
+6. **Required Indicators:**
+   - Chikou Span (Ichimoku component, 26-period shift)
+   - MACD (12, 26, 9) histogram
+   - Stochastic Oscillator (14, 3, 3)
+   - 50 EMA for trend filter
+   - ATR (14) for normalization and volatility-based sizing
+
+7. **Timeframe & Markets:**
+   - Best on 1H, 4H, or Daily charts
+   - Works on trending instruments: FX majors, index futures, large-cap crypto
+   - Avoid ranging/choppy markets — use ADX > 20 as an additional filter
+
+8. **Divergence Detection Logic:**
+   - Scan last 20-30 bars for swing highs/lows in price
+   - Compare corresponding oscillator values at those swings
+   - Regular divergence = reversal signal; Hidden divergence = continuation signal
+   - Require at least 2 swing points to confirm divergence validity
+
+**Key Edge:** The triple-confirmation (Chikou trend context + MACD momentum + Stochastic timing) reduces false signals from any single indicator, while the divergence exit captures trend exhaustion before the fixed take-profit is hit.

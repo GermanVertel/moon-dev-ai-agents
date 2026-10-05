@@ -1,0 +1,49 @@
+STRATEGY_NAME: FisherAccelReversal
+
+STRATEGY_DETAILS:
+This strategy fuses the Fisher Transform's ability to pinpoint price extremes with volume acceleration divergence to catch high-probability reversal entries during range-bound or weakly trending markets. It is specifically designed to avoid choppy whipsaws by requiring ADX to confirm low trend strength, and it uses the opposing Fisher signal as a clean mechanical exit.
+
+1. KEY STRATEGY COMPONENTS
+- Fisher Transform: Converts price into a near-Gaussian normal distribution, producing sharp, easy-to-read extreme readings. Values above +2.0 or below -2.0 mark statistically stretched price conditions.
+- Volume Acceleration Divergence: Measures the rate of change of volume (second derivative of volume, i.e., acceleration) and compares it to price movement. A bullish divergence occurs when price makes a lower low but volume acceleration surges upward (buyers stepping in aggressively). A bearish divergence occurs when price makes a higher high but volume acceleration collapses (buying exhaustion).
+- ADX Filter: Ensures entries only occur when trend strength is low (ADX below 20–25), meaning the market is range-bound or consolidating — the ideal environment for mean-reversion reversals. This prevents entering counter-trend during strong trends.
+- Confirmed Reversal: Entry requires the Fisher Transform to hook back from an extreme (crossing back inside the +2.0/-2.0 threshold) AND the volume acceleration divergence to be present on the same or prior bar.
+
+2. ENTRY RULES
+Long Entry (Bullish Reversal):
+- Fisher Transform is below -2.0 (oversold extreme) and then hooks upward, crossing back above -2.0.
+- Bullish volume acceleration divergence: price prints a lower low while volume acceleration rises (positive acceleration) compared to the prior swing low.
+- ADX is below 25 (low trend strength).
+- Enter long on the close of the confirmation candle or on a break of the confirmation candle's high.
+
+Short Entry (Bearish Reversal):
+- Fisher Transform is above +2.0 (overbought extreme) and then hooks downward, crossing back below +2.0.
+- Bearish volume acceleration divergence: price prints a higher high while volume acceleration falls (negative acceleration) compared to the prior swing high.
+- ADX is below 25 (low trend strength).
+- Enter short on the close of the confirmation candle or on a break of the confirmation candle's low.
+
+3. EXIT RULES
+Primary Exit (Signal-Based):
+- Long exit: Close the long position when the Fisher Transform reaches the opposing extreme, i.e., crosses above +2.0 (overbought).
+- Short exit: Close the short position when the Fisher Transform reaches the opposing extreme, i.e., crosses below -2.0 (oversold).
+
+Secondary Exit (Risk-Based):
+- Stop-loss for longs: Place below the most recent swing low or a fixed ATR-based stop (e.g., 1.5 × ATR below entry).
+- Stop-loss for shorts: Place above the most recent swing high or 1.5 × ATR above entry.
+- Optional trailing stop: Trail using the Fisher Transform midline (0 line) — exit if Fisher crosses back through zero against the position.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk no more than 1–2% of account equity per trade. Because ADX confirms low trend strength, reversals can fail quickly; keep size conservative.
+- ADX Guardrail: If ADX rises above 25 while in a trade, consider tightening stops or exiting early, as a strong trend may be forming against the reversal.
+- Divergence Confirmation: Require at least two consecutive bars of volume acceleration divergence to reduce false signals from single-bar noise.
+- Time Stop: If the trade does not reach the opposing Fisher extreme within a set number of bars (e.g., 15–20), exit at market to avoid capital being tied up in a stalled reversal.
+- Correlation Check: Avoid taking multiple simultaneous reversal trades in highly correlated instruments, as this amplifies directional risk.
+
+5. REQUIRED INDICATORS
+- Fisher Transform (period 9 or 10, standard setting) with overbought/oversold thresholds at +2.0 and -2.0.
+- Volume Acceleration: Compute volume rate-of-change twice (or use a momentum-of-momentum on volume) to derive acceleration; plot alongside price for divergence detection.
+- ADX (period 14) with a threshold line at 25 to filter for low trend strength.
+- ATR (period 14) for volatility-based stop placement.
+- Optional: Swing high/low markers to identify divergence pivot points.
+
+This strategy is best suited for ranging or consolidating markets on intraday to swing timeframes (e.g., 15-minute to 4-hour charts) where mean-reversion dynamics dominate and trend-following systems tend to underperform.

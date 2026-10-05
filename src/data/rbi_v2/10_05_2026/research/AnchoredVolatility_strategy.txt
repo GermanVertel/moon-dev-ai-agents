@@ -1,0 +1,70 @@
+STRATEGY_NAME: AnchoredVolatility
+
+STRATEGY_DETAILS:
+The AnchoredVolatility strategy is a regime-filtered breakout system that combines anchored VWAP-based Bollinger Bands, trend strength measurement via ADX, and volume percentile confirmation to trade high-conviction volatility expansions.
+
+1. KEY STRATEGY COMPONENTS
+
+- Anchored VWAP Bollinger Band (AVWAP-BB): Instead of a standard SMA-based Bollinger Band, the middle band is the Anchored VWAP (AVWAP). The anchor point should be reset to a meaningful event — e.g., session open, prior swing high/low, earnings gap, or a major volume spike day. Upper/lower bands = AVWAP ± (k × standard deviation of price from AVWAP). Default k = 2.0.
+
+- ADX Regime Filter: Only take trades when ADX(14) ≥ 25 (adjustable to 20–30 depending on instrument). This ensures the market is in a trending/expansion regime rather than chop, which is critical because Bollinger Band breakouts fail frequently in low-ADX ranges.
+
+- Volume Surge Confirmation: The breakout bar's volume must exceed the 90th percentile of volume over a lookback window (e.g., 100 bars). This filters out low-liquidity fakeouts and confirms institutional participation.
+
+- Directional Bias via DI+/DI-: Use +DI vs -DI crossover alignment to confirm breakout direction (long when +DI > -DI, short when -DI > +DI).
+
+2. ENTRY RULES
+
+Long Entry:
+- Price closes ABOVE the upper AVWAP Bollinger Band.
+- ADX(14) ≥ 25 AND rising (ADX > ADX[1]).
+- +DI > -DI.
+- Volume of the breakout bar > 90th percentile of volume over last 100 bars.
+- Optional: Bollinger Band width is expanding (bandwidth > bandwidth[1]).
+
+Short Entry:
+- Price closes BELOW the lower AVWAP Bollinger Band.
+- ADX(14) ≥ 25 AND rising.
+- -DI > +DI.
+- Volume of the breakout bar > 90th percentile of volume over last 100 bars.
+- Optional: Bandwidth expanding.
+
+Avoid entries in the last 15–30 minutes of the session to reduce close-driven noise.
+
+3. EXIT RULES
+
+- Initial Stop Loss: Place stop at the AVWAP midline (mean reversion invalidation) OR at a fixed ATR multiple (e.g., 1.5 × ATR(14)) from entry, whichever is tighter.
+- Trailing Stop: Trail using the AVWAP midline or a Chandelier Exit (3 × ATR from highest high since entry).
+- Profit Target: 
+  - Target 1: 1.5R — scale out 50%.
+  - Target 2: 2.5R–3R — trail remainder.
+- Time Stop: Exit if trade doesn't reach 1R within N bars (e.g., 10 bars), suggesting momentum failure.
+- Regime Exit: Close position if ADX drops below 20 or +DI/-DI flips against the position.
+
+4. RISK MANAGEMENT
+
+- Position sizing: Risk 0.5%–1% of equity per trade based on distance from entry to stop.
+- Max concurrent positions: 1–2 to avoid correlated breakout risk.
+- Daily loss limit: Stop trading after -2R or -3R daily drawdown.
+- Avoid trading during major news events (FOMC, CPI, earnings) unless the strategy is explicitly designed around them.
+- Slippage buffer: Since breakouts often fill at extremes, add 1–2 ticks of slippage assumption in backtests.
+
+5. REQUIRED INDICATORS
+
+- Anchored VWAP (with user-selectable anchor: session, swing, event)
+- Bollinger Bands computed around AVWAP (k = 2.0, lookback = 20)
+- ADX(14) with +DI and -DI
+- Volume with 90th percentile rolling calculation (100-bar lookback)
+- ATR(14) for stop sizing and trailing
+- Optional: Bollinger Bandwidth for expansion confirmation
+
+6. WHY THIS WORKS
+
+Standard Bollinger Band breakouts suffer from two problems: (a) the SMA midline is lagging and arbitrary, and (b) breakouts in low-volatility regimes are noise. Anchoring the band to VWAP ties the mean to actual traded volume — a more meaningful reference for institutional flow. The ADX regime filter ensures you only trade when trends exist, and the 90th-percentile volume filter ensures the breakout has real participation behind it. Together, these three filters dramatically reduce false breakouts compared to a vanilla BB breakout system.
+
+7. IMPLEMENTATION NOTES
+
+- Backtest across multiple timeframes (5m, 15m, 1H) and instruments (ES, NQ, FX majors, liquid crypto).
+- Parameter sensitivity: test k ∈ {1.5, 2.0, 2.5}, ADX threshold ∈ {20, 25, 30}, volume percentile ∈ {80, 90, 95}.
+- Consider walk-forward optimization to avoid curve-fitting the anchor selection.
+- Log regime at entry (ADX bucket, volume percentile bucket) to analyze which conditions produce best edge.

@@ -1,0 +1,57 @@
+STRATEGY_NAME: VolumeGoldenCross
+
+STRATEGY_DETAILS:
+This strategy combines a classic EMA crossover trend signal with volume confirmation and momentum-based exit management. Below is the complete breakdown.
+
+**1. Core Strategy Components**
+
+- **Primary Trend Signal (Golden Cross):** The 50-period EMA crossing above the 200-period EMA signals a shift from bearish to bullish trend structure. This is a lagging but reliable trend confirmation.
+- **Volume Confirmation:** The crossover must occur during a "high-volume spike" — defined as the current bar's volume exceeding a threshold (e.g., 1.5x–2x the 20-period average volume). This filters out weak, low-conviction crossovers that often fail.
+- **Momentum Exit Trigger:** The RSI (14-period) crossing below 70 signals that bullish momentum is fading after potentially being overbought, prompting an exit.
+
+**2. Entry Rules (Long Only)**
+
+All conditions must be satisfied on the same bar (or within a tight window):
+1. 50-EMA crosses above 200-EMA (crossover bar).
+2. Volume on the crossover bar ≥ 1.5x the 20-period simple moving average of volume.
+3. (Optional filter) Price is above the 200-EMA to confirm the broader uptrend.
+4. Enter long at the close of the confirmation bar (or on the next bar's open).
+
+**3. Exit Rules**
+
+- **Primary Exit:** Close the long position when RSI(14) crosses below 70 from above. This locks in gains as momentum cools.
+- **Stop Loss (Risk Management):** Place stop loss below the most recent swing low or at a fixed percentage/ATR-based distance (e.g., 1.5x ATR below entry).
+- **Take Profit Target:** Set target at 2:1 risk-reward relative to the stop distance. For example, if stop is 100 points away, target is 200 points above entry.
+- **Whichever comes first:** Exit on RSI cross below 70, stop loss hit, or take-profit hit.
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade. Position size = (Account Risk $) / (Entry − Stop Loss).
+- **2:1 R:R Enforcement:** Always calculate stop and target before entry. If the RSI exit is likely to trigger before the 2:1 target, consider tightening the stop or skipping the trade.
+- **Volume Spike Requirement:** Never enter without confirmed volume — this is the strategy's edge against false crossovers.
+- **Avoid Choppy Markets:** The 50/200 EMA crossover is prone to whipsaws in ranging markets; use an ADX filter (>20 or >25) to confirm trending conditions.
+
+**5. Required Indicators**
+
+| Indicator | Purpose | Settings |
+|-----------|---------|----------|
+| EMA 50 | Fast trend | 50-period |
+| EMA 200 | Slow trend | 200-period |
+| Volume SMA | Spike confirmation | 20-period |
+| RSI | Momentum exit | 14-period, level 70 |
+| ATR (optional) | Stop sizing | 14-period |
+| ADX (optional) | Trend filter | 14-period, >20 |
+
+**6. Trade Logic Summary**
+
+- **Setup:** Wait for 50-EMA to cross above 200-EMA with a volume spike.
+- **Entry:** Long on confirmation.
+- **Stop:** Below swing low or 1.5x ATR.
+- **Target:** 2x the stop distance.
+- **Exit:** RSI drops below 70, stop hit, or target hit.
+
+**7. Notes & Caveats**
+
+- The 50/200 EMA crossover is slow — expect fewer signals but potentially higher-quality trends.
+- The RSI-below-70 exit may conflict with the 2:1 R:R target; backtest which exit dominates in your market/timeframe.
+- Works best on trending instruments (indices, large-cap stocks, crypto majors) on daily or 4H timeframes.

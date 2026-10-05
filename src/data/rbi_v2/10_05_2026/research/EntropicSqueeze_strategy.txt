@@ -1,0 +1,64 @@
+STRATEGY_NAME: EntropicSqueeze
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy identifies volatility regime shifts by requiring simultaneous confirmation from three orthogonal signals: price compression (Keltner squeeze), volume disorder (entropy), and overnight repricing (gap). The confluence of all three extreme readings signals an imminent volatility expansion, which the strategy trades directionally based on gap sign.
+
+**Component 1: Normalized Keltner Channel Squeeze**
+- Compute Keltner Channels using EMA(20) ± 2 × ATR(10).
+- Compute Bollinger Bands using SMA(20) ± 2 × StdDev(20).
+- Squeeze condition: BB bands fully inside KC bands (compression state).
+- Normalized squeeze metric: `SQZ = (KC_width - BB_width) / KC_width`, range 0–1.
+- Higher SQZ = tighter compression = more stored energy.
+- Track rolling 252-day percentile rank of SQZ.
+
+**Component 2: 3-Day Volume Entropy**
+- Take the last 3 daily volume values, convert to a probability distribution: `p_i = vol_i / sum(vol_1..3)`.
+- Compute Shannon entropy: `H = -Σ p_i · log(p_i)`.
+- Normalize by log(3) so range is 0–1.
+- Low entropy = volume concentrated in one day = anomalous accumulation/distribution.
+- Track rolling 252-day percentile rank; trigger when entropy is in the BOTTOM percentile (concentration).
+
+**Component 3: Overnight Gap Percentage**
+- `Gap% = (Open_today - Close_yesterday) / Close_yesterday`.
+- Track rolling 252-day percentile rank of |Gap%|.
+- Trigger when |Gap%| is in the TOP percentile (unusual repricing).
+
+**Composite Trigger**
+Enter only when ALL three conditions hold simultaneously:
+- SQZ percentile ≥ 80th
+- Entropy percentile ≤ 20th
+- |Gap%| percentile ≥ 80th
+
+This "triple squeeze" is rare and marks genuine regime transitions rather than noise.
+
+**Entry Rules**
+- **Long**: All three triggers fire AND Gap% > 0.
+- **Short**: All three triggers fire AND Gap% < 0.
+- Enter at next bar's open (avoid lookahead bias).
+- Optional filter: skip if price is within 1 ATR of a major swing high/low against the trade direction.
+
+**Exit Rules**
+- **Profit target**: 2.5 × ATR(14) from entry.
+- **Stop loss**: 1.0 × ATR(14) from entry (tight, since regime shift should move fast).
+- **Time stop**: Exit after 5 trading days if neither target nor stop hit (regime failed to materialize).
+- **Trailing exit**: Once +1.5 ATR in profit, trail stop at 1.0 ATR.
+
+**Position Sizing & Risk Management**
+- Risk per trade: 0.5–1.0% of equity (regime trades can whipsaw).
+- Max 2 concurrent positions (correlated names count as one).
+- Volatility-adjusted sizing: `size = (risk_$ / (1.0 × ATR))`.
+- Daily loss circuit breaker: halt new entries after -2% day.
+- Skip entries within 2 days of scheduled earnings/FOMC for the instrument.
+
+**Required Indicators**
+1. Keltner Channel (EMA 20, ATR 10, mult 2.0)
+2. Bollinger Bands (SMA 20, StdDev 20, mult 2.0)
+3. ATR (10 and 14 periods)
+4. Rolling 252-day percentile ranks (SQZ, entropy, |Gap%|)
+5. Shannon entropy over 3-day volume window
+6. Volume SMA for sanity filtering (avoid illiquid days)
+
+**Why It Works**
+Each signal alone produces false positives: squeezes resolve sideways, entropy spikes from news, gaps fill immediately. Requiring all three simultaneously isolates moments where price compression, order-flow anomaly, and overnight repricing align — historically the signature of a genuine volatility regime change. The gap sign provides directional bias, while ATR-based stops keep risk bounded during the expansion.

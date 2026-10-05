@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Moon Dev VolatilityAccumulation Backtest Starting! \ud83d\ude80\n\ud83c\udf19 Data loaded: 1009 bars from 2024-01-01 00:00:00 to 2026-10-05 00:00:00 \u2728\n\ud83c\udf19 Initializing indicators... \u2728\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolatilityAccumulation_PKG.py\", line 188, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1325, in run\n    strategy.init()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolatilityAccumulation_PKG.py\", line 75, in init\n    self.obv = self.I(talib.OBV, close.values, self.data.Volume.values, name=\"OBV\")\nAttributeError: '_Array' object has no attribute 'values'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolatilityAccumulation_PKG.py` failed. (See above for error)\n",
+  "execution_time": 7.567861,
+  "timestamp": "2026-10-05T16:49:40.365188"
+}

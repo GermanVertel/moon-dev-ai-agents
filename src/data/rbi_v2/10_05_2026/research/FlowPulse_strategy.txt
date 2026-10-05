@@ -1,0 +1,46 @@
+STRATEGY_NAME: FlowPulse
+
+STRATEGY_DETAILS:
+This strategy captures short-term momentum continuation by entering long positions 3-5 days after a significant surge in order flow, betting that institutional accumulation pressure persists beyond the initial spike.
+
+**Core Concept:**
+Strong upticks in order flow (aggressive buy-side volume, large block trades, or positive delta imbalances) often signal institutional accumulation. Rather than chasing the initial move, this strategy waits for a 3-5 day consolidation/cooldown period, allowing the initial spike participants to settle, then enters as the sustained flow resumes.
+
+**Key Strategy Components:**
+
+1. **Order Flow Detection**
+   - Measure buy-side vs. sell-side volume imbalance (order flow delta)
+   - Identify "strong uptick" as a reading exceeding a rolling threshold (e.g., 2+ standard deviations above 20-day average of net buy volume)
+   - Confirm with rising cumulative delta and/or uptick in large-lot trades
+
+2. **Timing Window (3-5 Day Delay)**
+   - After the spike day, monitor for 3-5 subsequent trading sessions
+   - Do NOT enter immediately — the delay filters out false breakouts and lets weak hands exit
+   - Entry triggers on day 3, 4, or 5 if price holds above the spike-day low and order flow remains net positive
+
+3. **Entry Rules**
+   - Long entry when: (a) order flow spike occurred 3-5 days ago, (b) price is holding above spike-day midpoint or VWAP, (c) cumulative delta still trending positive
+   - Optional confirmation: price above 20 EMA, rising on above-average volume
+
+4. **Exit Rules**
+   - **Profit target:** 2-4% gain or trailing stop below recent swing lows
+   - **Time stop:** Exit if momentum fades within 5-7 days post-entry (order flow turns net negative)
+   - **Stop loss:** Below spike-day low or 1.5x ATR from entry
+
+5. **Risk Management**
+   - Position size based on ATR volatility (smaller size in high-vol regimes)
+   - Max 1-2% account risk per trade
+   - Avoid entering during low-liquidity sessions or around major news/earnings
+   - Skip setups if broader market trend is strongly bearish
+
+**Required Indicators/Tools:**
+- Order flow delta (buy volume − sell volume)
+- Cumulative volume delta (CVD)
+- Volume profile / large-lot trade data
+- VWAP (session and anchored to spike day)
+- 20-period EMA
+- ATR (14) for stops and sizing
+- Rolling standard deviation of order flow (for spike detection)
+
+**Edge Rationale:**
+Institutional order flow rarely completes in a single session. The 3-5 day delay exploits the "second wave" of accumulation that follows initial sweeps, while the order flow filter keeps the strategy aligned with smart money rather than chasing retail-driven spikes.

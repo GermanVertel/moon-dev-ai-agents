@@ -1,0 +1,58 @@
+STRATEGY_NAME: ExpiredVolatilityTrigger
+
+STRATEGY_DETAILS:
+This strategy targets futures contracts that have already passed their expiration date by at least 5 days, exploiting a specific volatility expansion signal to enter a long position. It combines calendar-based contract selection with an intraday range-vs-ATR filter to identify moments of abnormal price movement.
+
+1. KEY STRATEGY COMPONENTS
+
+- Contract Universe: Futures contracts that are 5 or more days past their expiration date. (Note: in most markets these would be settled/rolled, so this assumes a market or instrument where expired contracts remain tradable — e.g., certain crypto perpetuals/dated futures, or a synthetic/backtested scenario. The trader should verify tradability.)
+- Position Sizing: Fixed 20% of portfolio equity allocated to long exposure per qualifying signal.
+- Direction: Long only.
+- Volatility Signal: Compare the current daily High-Low range against the Average True Range (ATR), then compare that spread to a fraction of the contract's daily volatility.
+
+2. ENTRY RULE
+
+Trigger a long entry when BOTH conditions are met:
+  a) Contract age condition: days_since_expiration >= 5
+  b) Volatility expansion condition:
+     (Daily High - Daily Low) - ATR  >=  Daily_Volatility * 0.25
+
+Where:
+- Daily High / Daily Low = current session's high and low price.
+- ATR = Average True Range over a chosen lookback (commonly 14 periods).
+- Daily_Volatility = a measure of the contract's typical daily volatility (e.g., standard deviation of daily returns, or ATR/price, or an implied-vol-based figure). The trader must define this consistently.
+
+Interpretation: The range must exceed ATR by at least 25% of the contract's normal daily volatility, signaling an unusually large directional/intraday move that may continue.
+
+3. EXIT RULES (to be defined/parameterized)
+
+- Take-profit: fixed % gain or ATR-multiple target (e.g., 2x ATR).
+- Stop-loss: fixed % loss or 1x ATR below entry.
+- Time-based exit: close after N days or when the volatility condition no longer holds.
+- Trailing stop: optional ATR-based trailing stop to lock in gains during continued expansion.
+
+4. RISK MANAGEMENT
+
+- Max allocation per trade: 20% of equity (as specified).
+- Cap total concurrent long exposure (e.g., no more than 40–60%) to avoid over-concentration.
+- Use ATR-based stops so risk scales with volatility.
+- Avoid entries during illiquid sessions; expired contracts often have thin liquidity and wide spreads — slippage must be modeled.
+- Consider hard stop on days_since_expiration exceeding a max threshold (e.g., 30 days) to avoid dead contracts.
+
+5. REQUIRED INDICATORS / DATA
+
+- Daily High and Low prices.
+- ATR (14-period default).
+- Daily Volatility metric (std dev of returns, ATR/price, or implied vol).
+- Days-since-expiration counter per contract.
+- Portfolio equity tracker for 20% sizing.
+- Liquidity/spread data to filter tradable contracts.
+
+6. IMPLEMENTATION NOTES
+
+- The core edge: volatility expansion on stale/expired contracts may reflect forced unwinds, settlement anomalies, or renewed speculative interest — a long bias assumes upside continuation.
+- Backtest carefully: expired-contract data is often messy; verify data quality and contract survivorship.
+- Add a liquidity filter (minimum volume/open interest) since post-expiration contracts can be extremely thin.
+- Consider whether "daily volatility" should be realized or implied; the choice materially changes signal frequency.
+
+Summary: A volatility-expansion long strategy on past-expiration futures, gated by a range-vs-ATR spread test scaled by the contract's daily volatility, sized at 20% exposure with ATR-based risk controls.

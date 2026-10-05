@@ -1,0 +1,88 @@
+STRATEGY_NAME: VortexVolumeSync
+
+STRATEGY_DETAILS:
+
+**Overview**
+VortexVolumeSync is a multi-confirmation trend-following strategy that layers three independent filters—directional trend strength (Vortex Indicator), momentum with volume weighting (Volume-Weighted MACD), and volatility regime (Keltner Channel width)—to enter trades only when all three align. The core thesis is that high-probability trend entries occur when directional conviction, volume-backed momentum, and low-volatility compression coincide.
+
+---
+
+**1. Key Strategy Components**
+
+- **Vortex Indicator (VI)** — Trend confirmation via directional pressure
+  - VI+ = |High_t − Low_{t−1}|
+  - VI− = |Low_t − High_{t−1}|
+  - VI+ = Σ(VI+_n) / Σ(TR_n), VI− = Σ(VI−_n) / Σ(TR_n)
+  - Standard period: 14
+
+- **Volume-Weighted MACD (VW-MACD)** — Momentum with volume participation
+  - Compute MACD line (12, 26 EMA of price) and Signal line (9 EMA of MACD)
+  - Multiply MACD histogram by normalized volume factor: `VolFactor = Volume / SMA(Volume, 20)`
+  - VW-Histogram = (MACD − Signal) × VolFactor
+  - Optional: Use VWMA (volume-weighted MA) instead of EMA for MACD construction
+
+- **Keltner Channel Volatility Filter**
+  - KC Upper = EMA(20) + (2 × ATR(20))
+  - KC Lower = EMA(20) − (2 × ATR(20))
+  - KC Width = Upper − Lower
+  - Baseline = SMA(KC Width, 20)
+  - Volatility is "compressed" when current KC Width < its 20-day SMA
+
+---
+
+**2. Entry Rules**
+
+**Long Entry (all must be true simultaneously):**
+1. VI+ > VI− (bullish directional bias)
+2. VW-MACD line crosses above Signal line (bullish crossover) AND VW-Histogram > 0
+3. KC Width < SMA(KC Width, 20) — volatility below 20-day average
+4. Volume factor > 1.0 (confirming above-average participation on the crossover bar)
+
+**Short Entry (all must be true simultaneously):**
+1. VI− > VI+ (bearish directional bias)
+2. VW-MACD line crosses below Signal line AND VW-Histogram < 0
+3. KC Width < SMA(KC Width, 20)
+4. Volume factor > 1.0
+
+---
+
+**3. Exit Rules**
+
+- **Primary exit:** Opposite VW-MACD crossover (MACD crosses Signal in reverse direction)
+- **Trend invalidation:** Vortex lines flip (VI+ crosses below VI− for longs, vice versa for shorts)
+- **Volatility exit:** KC Width expands > 1.5× its 20-day average (regime shift / breakout exhaustion)
+- **Profit target (optional):** 2× ATR from entry
+- **Time stop:** Exit if no favorable move within 15 bars
+
+---
+
+**4. Risk Management**
+
+- **Stop-loss:** 1.5 × ATR(20) below entry (longs) or above entry (shorts)
+- **Position sizing:** Risk 1% of equity per trade; position size = (0.01 × Equity) / (1.5 × ATR)
+- **Max concurrent positions:** 3 to avoid correlated trend exposure
+- **Trailing stop:** Once profit reaches 1× ATR, trail stop at 1× ATR
+- **Avoid trading:** First 15 minutes after market open and last 15 minutes before close (volume/volatility noise)
+
+---
+
+**5. Required Indicators**
+
+| Indicator | Parameters | Purpose |
+|-----------|-----------|---------|
+| Vortex Indicator | Period 14 | Trend direction confirmation |
+| MACD | 12, 26, 9 | Momentum base |
+| Volume SMA | 20 | Volume normalization |
+| Keltner Channels | EMA 20, ATR 20, mult 2.0 | Volatility regime filter |
+| ATR | 20 | Stops, targets, position sizing |
+
+---
+
+**6. Rationale & Edge**
+
+- **Vortex** ensures directional conviction before committing capital.
+- **Volume-weighted MACD** filters out low-conviction crossovers that lack participation.
+- **Keltner compression** avoids entering during volatility spikes where whipsaws dominate, and positions the trader for breakout expansion.
+- The triple-confirmation design reduces trade frequency but materially improves win-rate and expectancy on trending instruments (futures, FX majors, liquid equities).
+
+**Best suited for:** Intraday to swing timeframes (15m–4H) on liquid, trending markets.

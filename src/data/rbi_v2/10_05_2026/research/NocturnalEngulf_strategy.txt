@@ -1,0 +1,44 @@
+STRATEGY_NAME: NocturnalEngulf
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy exploits a specific two-candle overnight pattern — two consecutive "hanging candles" (small-bodied candles with long lower wicks, indicating buyers defending a level) — where the second candle is at least 10% larger than the first. The pattern is treated as a bullish accumulation signal, but ONLY when the broader market is in a range-bound consolidation phase. Despite the "Dark Cloud" label in the source, the trade direction here is LONG, so the pattern is interpreted as a wick-based absorption/defense signal rather than a bearish reversal.
+
+**Key Strategy Components**
+1. **Session Filter (Overnight Only):** Pattern must form during overnight/off-hours candles (e.g., futures overnight session, crypto low-liquidity hours, or pre-market). Day-session candles are ignored for signal generation.
+2. **Hanging Candle Definition:** A candle with a small real body (upper + lower body ≤ 30% of total range) and a lower wick ≥ 2× the body, with the close in the upper half of the candle's range.
+3. **Consecutive Sequence:** Two such hanging candles must appear back-to-back with no intervening candle.
+4. **Size Expansion Rule:** Candle #2's total range must be ≥ 110% of Candle #1's total range (the "10% larger" condition).
+5. **Consolidation Regime Filter:** Market must be range-bound — measured by ADX < 20 (or similar low-trend metric) AND price contained within a horizontal range where the range width is ≤ 1.5× ATR over the lookback window.
+
+**Entry Rules**
+- Wait for the close of the second (larger) hanging candle during the overnight session.
+- Confirm the consolidation filter is active (ADX < 20, price inside range).
+- Enter LONG at the open of the next candle (or on a break above the second candle's high for confirmation).
+- Optional confirmation: the second candle's high must exceed the first candle's high.
+
+**Exit Rules**
+- **Profit Target:** Prior range high, or a fixed multiple (e.g., 1.5–2× ATR).
+- **Stop Loss:** Below the lower wick of the second candle (the defended level), or 1× ATR below entry.
+- **Time Stop:** Exit if the trade has not reached target by the end of the following session, since the edge is tied to overnight dynamics.
+- **Regime Exit:** Close if ADX rises above 25 (range breaks into trend) against the position.
+
+**Risk Management**
+- Risk no more than 1% of equity per trade.
+- Position size = (Account Risk %) / (Entry − Stop distance).
+- Avoid entries during major scheduled news (overnight illiquidity can cause slippage).
+- Limit to one trade per consolidation range to avoid over-trading false repeats.
+- Require minimum range width so the reward:risk is at least 1.5:1.
+
+**Required Indicators**
+- Candle anatomy calculator (body %, wick ratios, total range).
+- ATR (for sizing and stop placement).
+- ADX (for consolidation/range regime detection).
+- Rolling range high/low (for targets and range-width filter).
+- Session/time filter (to restrict signals to overnight candles).
+
+**Notes / Caveats**
+- The "hanging candle" pattern is classically bearish at highs, so this long-only interpretation depends heavily on the consolidation context and wick defense — backtest carefully.
+- The 10% size expansion is a relative filter; ensure candle ranges are normalized for volatility so it isn't triggered by noise.
+- Liquidity during overnight sessions is thin — use limit orders where possible and validate fills on your specific market.

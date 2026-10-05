@@ -1,0 +1,59 @@
+STRATEGY_NAME: ContrarianDeviance
+
+STRATEGY_DETAILS:
+
+This strategy combines the Deviance Index (DI) with RSI analysis to identify high-probability contrarian entries in futures markets, specifically designed for 2x leveraged positions over a 3-6 month holding period.
+
+## Core Strategy Components
+
+**1. Deviance Index (DI) Signal**
+- The DI measures the divergence between a futures contract's price movement and its volatility behavior
+- A "contrarian" trend alignment occurs when price and volatility move in opposite directions relative to their historical relationship
+- Specifically: when price declines but volatility is compressing (or price rises while volatility expands), the DI flags a contrarian setup
+- This divergence often precedes mean-reversion moves as the market "corrects" the misalignment
+
+**2. RSI Probability Filter**
+- During "expanse periods" (periods of volatility expansion or range broadening), the strategy looks for a high statistical probability of low RSI readings (typically below 30-35)
+- This is not a simple RSI oversold signal — instead, it's a probabilistic assessment that RSI is likely to reach or remain in low territory given current market conditions
+- Low RSI + contrarian DI alignment = high-conviction long entry signal
+
+**3. Position Sizing**
+- Enter with 2x leveraged futures contracts (e.g., 2 micro or mini contracts, or 2x notional exposure)
+- Leverage amplifies returns but also risk — strict stop management is essential
+
+## Entry Rules
+
+1. DI must signal contrarian trend alignment (price/volatility divergence confirmed)
+2. Market must be in an "expanse period" (volatility expansion or range broadening detected)
+3. RSI probability model must indicate high likelihood of low RSI values (below 35)
+4. Actual RSI reading should confirm — enter long when RSI is in the low zone
+5. All three conditions must align within a 5-10 day window for a valid setup
+
+## Exit Rules
+
+- **Primary exit:** DI reverts to neutral or confirms trend alignment (divergence resolved)
+- **Secondary exit:** RSI reaches overbought territory (above 70) signaling exhaustion
+- **Time-based exit:** Close position within 3-6 months regardless of P&L to avoid holding through regime changes
+- **Profit target:** 15-25% gain on the underlying (30-50% on 2x leverage)
+- **Stop loss:** 8-10% adverse move on underlying (16-20% on 2x leverage)
+
+## Risk Management
+
+- Maximum 2x leverage — never exceed this given the contrarian nature of entries
+- Hard stop loss at 8-10% underlying move (tight given leverage)
+- Position size: no more than 5-10% of total portfolio per trade
+- Only take trades where all three signals (DI, expanse period, RSI probability) align — no partial setups
+- Avoid holding through major economic events (FOMC, CPI, earnings for equity futures)
+- Scale out: take 50% profit at first target, let remainder run with trailing stop
+
+## Required Indicators
+
+1. **Deviance Index (DI):** Custom indicator measuring price-volatility divergence
+2. **RSI (14-period):** Standard Relative Strength Index
+3. **Volatility measure:** ATR or realized volatility to detect expanse periods
+4. **RSI probability model:** Statistical model (e.g., Monte Carlo or historical frequency) estimating likelihood of low RSI during current expanse conditions
+5. **Trend alignment filter:** Moving averages or ADX to confirm the contrarian context
+
+## Key Insight
+
+The strategy's edge comes from the *convergence* of three independent signals: structural divergence (DI), volatility regime (expanse), and momentum probability (RSI). Each alone is weak, but together they identify high-probability contrarian reversals where the market is statistically likely to correct its price-volatility misalignment. The 3-6 month horizon allows mean-reversion to play out while avoiding long-term regime risk.

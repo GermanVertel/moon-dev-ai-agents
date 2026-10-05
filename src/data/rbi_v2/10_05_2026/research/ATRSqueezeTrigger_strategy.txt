@@ -1,0 +1,73 @@
+STRATEGY_NAME: ATRSqueezeTrigger
+
+STRATEGY_DETAILS:
+This is a volatility compression breakout system that combines Bollinger Band width analysis with ATR-based filtering to identify high-probability expansion moves. The core premise is that periods of low volatility (squeeze) precede explosive directional moves, and using ATR as a normalized threshold makes the squeeze detection adaptive across different instruments and market regimes.
+
+CORE COMPONENTS
+
+1. Volatility Squeeze Detection
+- Bollinger Bands: 20-period SMA with 2 standard deviations (standard settings).
+- Band Width = (Upper Band - Lower Band) / Middle Band, or simply (Upper - Lower) in absolute terms.
+- Squeeze Condition: Band Width must fall below 20% of the 20-day ATR (i.e., BB_Width < 0.20 * ATR(20)). This normalizes the squeeze threshold to current volatility, avoiding false signals in inherently quiet markets.
+- Optional refinement: Require the squeeze to persist for at least 2-3 consecutive bars to filter noise.
+
+2. ATR Threshold
+- ATR Period: 20 days (matches Bollinger lookback for consistency).
+- The ATR serves dual purposes: (a) defining the squeeze threshold, and (b) sizing the trailing stop relative to the breakout candle.
+
+ENTRY RULES
+
+Long Entry:
+- Prior bar(s) satisfied the squeeze condition (BB_Width < 0.20 * ATR(20)).
+- Current bar closes ABOVE the Upper Bollinger Band.
+- Confirmation: Close must be in the upper 50% of the breakout candle's range (close > (high + low)/2) to avoid weak breakouts.
+- Optional volume filter: Current volume > 1.5x 20-period average volume.
+
+Short Entry:
+- Prior bar(s) satisfied the squeeze condition.
+- Current bar closes BELOW the Lower Bollinger Band.
+- Confirmation: Close must be in the lower 50% of the breakout candle's range.
+- Optional volume filter as above.
+
+EXIT RULES
+
+Trailing Stop Based on Breakout Candle Range:
+- At entry, record the breakout candle's range: R = High - Low.
+- Initial Stop Loss: Entry price ∓ (Trailing_Pct * R), where Trailing_Pct is a tunable parameter (default 0.50 = 50% of candle range).
+  - For longs: Stop = Entry - (0.50 * R).
+  - For shorts: Stop = Entry + (0.50 * R).
+- Trailing Mechanism: As price advances in the favorable direction, the stop trails by the same percentage of the ORIGINAL breakout candle range, OR by a percentage of the current bar's range if a dynamic version is preferred.
+  - Recommended: Trail by (Trailing_Pct * R) from the highest high since entry (for longs) or lowest low since entry (for shorts).
+- Alternative exit: Close position if price re-enters the Bollinger Bands (closes back inside), signaling failed breakout.
+
+RISK MANAGEMENT
+
+- Position Sizing: Risk per trade should be capped at 1-2% of account equity. Position size = (Account_Risk) / (Entry - Stop_Loss).
+- Stop Loss: Defined by the trailing mechanism above; never widen the stop.
+- Take Profit: Optional — use a 2R or 3R target (2x or 3x the initial risk) if partial profit-taking is desired, but the primary exit is the trailing stop to capture extended trends.
+- Max Concurrent Positions: Limit to avoid overexposure during choppy markets.
+- Time Stop: If the trade does not move favorably within 10 bars, consider exiting to free capital (optional).
+
+REQUIRED INDICATORS
+
+1. Bollinger Bands (20, 2.0) — Upper, Middle, Lower.
+2. ATR (20) — for squeeze threshold and range normalization.
+3. Volume SMA (20) — optional confirmation filter.
+4. Bar range calculation — High - Low of the breakout candle, stored at entry.
+5. Trailing stop tracker — maintains highest high / lowest low since entry.
+
+PARAMETERS TO OPTIMIZE
+
+- BB Period (default 20) and StdDev multiplier (default 2.0).
+- ATR Period (default 20).
+- Squeeze Threshold Multiplier (default 0.20 of ATR) — lower values = stricter squeeze.
+- Trailing Percentage of Candle Range (default 0.50) — higher = looser stop, lower = tighter.
+- Squeeze Persistence Bars (default 2-3).
+- Volume Multiplier (default 1.5x).
+
+MARKET CONDITIONS & NOTES
+
+- Best suited for instruments with clear volatility cycles (equities, FX majors, crypto).
+- Avoid in low-liquidity sessions or during scheduled news events that distort ATR.
+- Works best when combined with a higher-timeframe trend filter (e.g., only take longs above 200-period SMA) to avoid counter-trend whipsaws.
+- Backtest on multiple instruments to validate the ATR-normalized squeeze threshold generalizes across asset classes.

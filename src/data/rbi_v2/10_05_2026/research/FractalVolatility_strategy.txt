@@ -1,0 +1,35 @@
+STRATEGY_NAME: FractalVolatility
+
+STRATEGY_DETAILS:
+This strategy combines fractal geometry with volatility regime analysis to identify high-probability reversal setups. It operates on the premise that self-similar price patterns (fractals) that form during periods of elevated volatility are more likely to resolve into meaningful trend reversals than those formed in low-volatility conditions. The strategy enters counter to the prevailing trend upon fractal completion and exits either when the reversal is confirmed or when volatility subsides, signaling the setup has lost its edge.
+
+1. KEY STRATEGY COMPONENTS
+- Fractal Pattern Detection: Uses Bill Williams-style 5-bar fractals (a bar with a higher high than the two bars on each side = up fractal; lower low than the two bars on each side = down fractal) to mark local swing points. These serve as the geometric anchors of the pattern.
+- Geometric Pattern Alignment: Requires a sequence of fractals forming a recognizable structure — e.g., a converging wedge, expanding triangle, or three-drive pattern — rather than a single isolated fractal.
+- Volatility Regime Filter: Only trades when volatility is elevated relative to its recent baseline (e.g., ATR above its 20-period average, or Bollinger Band width expanding). This ensures patterns form under stress, where reversals carry more energy.
+- Reversal Expectation: Positions are taken against the dominant short-term trend, betting that the fractal pattern marks exhaustion.
+
+2. ENTRY RULES
+- Long Entry: A completed down fractal (swing low) forms at the apex of a geometric pattern (e.g., falling wedge or triple bottom), AND volatility is in an elevated regime, AND price closes back above the fractal high with a confirmation bar.
+- Short Entry: A completed up fractal (swing high) forms at the apex of a geometric pattern (e.g., rising wedge or triple top), AND volatility is elevated, AND price closes back below the fractal low with a confirmation bar.
+- Confirmation: Entry only after the confirming candle closes, never on the fractal bar itself, to avoid premature entries.
+
+3. EXIT RULES
+- Pattern Confirmation Exit: Close the position once price breaks the pattern's opposite boundary or reaches a measured-move target derived from the pattern's height.
+- Volatility Decay Exit: Close the position if volatility contracts back to or below its baseline (e.g., ATR drops below its 20-period average, or Bollinger Band width narrows), indicating the reversal thesis is no longer supported.
+- Time Stop: Exit if neither pattern confirmation nor volatility expansion occurs within a defined number of bars (e.g., 15–20 bars), to avoid dead trades.
+- Protective Stop: Place a stop just beyond the most recent fractal extreme (below the entry fractal low for longs, above the fractal high for shorts).
+
+4. RISK MANAGEMENT
+- Position Sizing: Size positions inversely to volatility (e.g., risk a fixed % of equity divided by the ATR-based stop distance) so that high-volatility setups do not carry oversized risk.
+- Stop Placement: Always anchor stops to structural fractal levels, not arbitrary percentages, since those levels define pattern invalidation.
+- Risk-Reward: Target a minimum 2:1 reward-to-risk based on the measured move versus the fractal stop distance; skip setups that fail this threshold.
+- Correlation Control: Limit simultaneous positions in correlated instruments, as volatility spikes often affect whole sectors.
+
+5. REQUIRED INDICATORS
+- Fractal indicator (5-bar swing high/low detection).
+- ATR (Average True Range) for volatility regime classification and stop sizing.
+- ATR moving average (e.g., 20-period) as the volatility baseline.
+- Bollinger Bands (optional) for volatility width confirmation.
+- Trend filter (e.g., 50-period EMA) to define the prevailing trend being faded.
+- Volume (optional) to confirm participation at fractal extremes.

@@ -1,0 +1,57 @@
+STRATEGY_NAME: VolumePulseMACD
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy combines MACD crossover signals with volume confirmation to filter out low-conviction signals. The premise is that genuine momentum shifts (MACD crossovers) are validated by elevated volume, while weak crossovers on thin volume are ignored. Exits are governed by MACD divergence rather than fixed stops, allowing trends to run until momentum genuinely deteriorates.
+
+**Required Indicators**
+- MACD (standard 12, 26, 9): MACD line, Signal line, Histogram
+- Volume Moving Average (typically 20-period SMA of volume)
+- Volume ratio = Current Volume / Volume MA
+- Price action for divergence detection (swing highs/lows)
+
+**Entry Rules — Long**
+1. MACD line crosses above Signal line (bullish crossover)
+2. Volume ratio > 0.5 (volume exceeds 50% of its average) — confirmation threshold
+3. Ideally, MACD crossover occurs above the zero line for trend alignment (optional filter)
+4. Enter long on the close of the crossover candle or next bar open
+
+**Entry Rules — Short**
+1. MACD line crosses below Signal line (bearish crossover)
+2. Volume ratio > 0.5 (elevated volume confirms selling pressure)
+3. Downtrend condition must be present — price below a longer-term MA (e.g., 200 EMA) or MACD below zero line
+4. Enter short on close of crossover candle or next bar open
+
+**Exit Rules — Divergence-Based**
+- **Long Exit:** Detect bearish divergence — price makes a higher high while MACD makes a lower high. Exit when divergence is confirmed by a MACD bearish crossover or histogram contraction.
+- **Short Exit:** Detect bullish divergence — price makes a lower low while MACD makes a higher low. Exit when divergence confirmed by MACD bullish crossover or histogram contraction.
+- Optional: Exit also on opposite MACD crossover if no divergence forms within a defined bar window (e.g., 20 bars).
+
+**Risk Management**
+- Position sizing based on ATR (e.g., 1.5× ATR stop distance) or fixed % of equity
+- Hard stop-loss: place stop beyond recent swing low (longs) or swing high (shorts), typically 1.5–2× ATR
+- Volume filter acts as a quality gate — skip signals where volume ratio < 0.5
+- Avoid trading during low-liquidity sessions where volume MA is unreliable
+- Maximum risk per trade: 1–2% of account equity
+- Consider trailing stop once divergence-based exit is not yet triggered
+
+**Key Filters / Enhancements**
+- Trend filter: only take longs above 200 EMA, shorts below 200 EMA
+- Zero-line filter: longs preferred when MACD > 0, shorts when MACD < 0
+- Volume spike threshold can be tuned (50% is minimum; 100%+ for stronger confirmation)
+- Divergence must be validated across at least two swing points to reduce false signals
+
+**Timeframe & Markets**
+- Best suited for 1H to Daily timeframes on liquid instruments (FX majors, large-cap equities, crypto majors)
+- Avoid ranging/choppy markets where MACD crossovers whipsaw frequently
+
+**Strengths**
+- Volume confirmation reduces false MACD signals significantly
+- Divergence-based exits capture larger trend moves
+- Dual confirmation (momentum + volume) aligns with institutional participation logic
+
+**Weaknesses**
+- Divergence exits can be subjective and lagging
+- Volume spikes can precede rather than accompany real moves (fakeouts)
+- Requires disciplined divergence identification, ideally automated

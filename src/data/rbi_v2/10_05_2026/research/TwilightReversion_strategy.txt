@@ -1,0 +1,52 @@
+STRATEGY_NAME: TwilightReversion
+
+STRATEGY_DETAILS:
+
+**Overview:**
+TwilightReversion is a mean-reversion strategy that capitalizes on end-of-day overextensions. It targets breaches of the Bollinger Band Upper Band during the late-day session (typically the final 1-2 hours of regular trading), betting that prices stretched too far above their statistical mean will revert downward before or shortly after the close.
+
+**Key Strategy Components:**
+
+1. **Bollinger Bands Setup:**
+   - Period: 20 (standard)
+   - Standard Deviation multiplier: 2.0
+   - Applied to a chosen timeframe (intraday, e.g., 5-min or 15-min bars)
+   - Bands recalculate on each bar close
+
+2. **Late-Day Session Filter:**
+   - Only evaluate signals during a defined late-day window (e.g., 2:00 PM – 4:00 PM ET for US equities)
+   - This exploits documented late-session liquidity and volatility patterns where overextensions are more prone to reversal
+
+3. **Entry Logic (Short / Mean-Reversion):**
+   - Price closes ABOVE the Upper Bollinger Band during the late-day window
+   - Enter short (or exit longs) on the next bar open
+   - Optional confirmation: RSI > 70 or volume spike to filter weak breaches
+
+4. **Exit Logic:**
+   - Primary exit: Price closes BELOW the Upper Bollinger Band (reversion to band)
+   - Secondary exit: Price closes BELOW the Lower Bollinger Band (strong downside continuation) — treated as an aggressive take-profit or stop signal
+   - Time-based exit: Flatten position at or before market close
+
+**Entry/Exit Rules Summary:**
+- **Short Entry:** Late-day bar closes above Upper Band → short next bar
+- **Take Profit / Exit:** Bar closes below Upper Band → close short
+- **Stop / Hard Exit:** Bar closes below Lower Band → exit (protect against trend continuation), or fixed % stop
+- **EOD Flatten:** All positions closed by session end
+
+**Risk Management:**
+- Position sizing based on ATR or fixed fractional risk per trade (e.g., 1% of equity)
+- Hard stop-loss placed above the breach bar's high (or a fixed % / ATR multiple)
+- Maximum one signal per instrument per session to avoid overtrading
+- Avoid entries in the final minutes where fills may be poor
+- Consider avoiding earnings days or high-impact news events
+
+**Required Indicators:**
+- Bollinger Bands (20-period, 2σ) — Upper and Lower
+- Optional: RSI (14) for overbought confirmation
+- Optional: Volume moving average for breach validation
+- Session/time filter (late-day window)
+
+**Best Suited For:**
+- Liquid instruments (large-cap equities, index ETFs, futures) with reliable intraday mean reversion
+- Ranging or mildly trending markets where band breaches fade rather than extend
+- Traders who can monitor the final trading hours and close positions before session end

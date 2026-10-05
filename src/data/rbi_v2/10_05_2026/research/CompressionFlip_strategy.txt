@@ -1,0 +1,42 @@
+STRATEGY_NAME: CompressionFlip
+
+STRATEGY_DETAILS:
+The CompressionFlip strategy is a volatility-based mean-reversion/reversal system that exploits periods of extreme market compression (low volatility) to capture explosive directional moves when a trend filter confirms a flip. It combines Bollinger Band width percentile analysis with the Supertrend indicator for precise entry and exit timing.
+
+1. KEY STRATEGY COMPONENTS
+- Volatility Compression Detection: Bollinger Band Width (BBW) below its historical 10th percentile signals a "squeeze" — a low-volatility regime that often precedes a strong breakout/reversal.
+- Directional Confirmation: Supertrend flip acts as the trigger, ensuring entry only when momentum aligns with the breakout direction.
+- Dual Exit Framework: Opposing Supertrend crossover (trend-based exit) OR a 2x ATR trailing stop (volatility-based exit), whichever triggers first.
+
+2. INDICATORS REQUIRED
+- Bollinger Bands: Period = 20, Multiplier = 2 (standard). Compute BBW = (Upper Band − Lower Band) / Middle Band.
+- BBW Percentile: Lookback window = 100–252 bars. Compute the 10th percentile of BBW over the lookback. Condition: current BBW < 10th percentile.
+- Supertrend: Period = 10, Multiplier = 3 (default). Provides trend direction and flip signals.
+- ATR: Period = 14. Used for the 2x ATR trailing stop.
+
+3. ENTRY RULES
+Long Entry:
+- Condition A: BBW is below the 10th percentile of its historical lookback (squeeze active).
+- Condition B: Supertrend flips from bearish to bullish (close crosses above Supertrend line).
+- Both conditions must be true within the same or adjacent bars (allow a 1–3 bar window for the squeeze to still be "active").
+Short Entry:
+- Condition A: BBW is below the 10th percentile (squeeze active).
+- Condition B: Supertrend flips from bullish to bearish (close crosses below Supertrend line).
+
+4. EXIT RULES
+- Primary Exit (Trend): Exit long when Supertrend flips bearish; exit short when Supertrend flips bullish.
+- Secondary Exit (Volatility): Apply a 2x ATR trailing stop from the highest high (long) or lowest low (short) since entry. Exit when price retraces by 2 × ATR.
+- Whichever exit triggers first is executed. This protects against whipsaws during sudden volatility expansions.
+
+5. RISK MANAGEMENT
+- Position Sizing: Risk 0.5–1% of equity per trade. Size = (Account Risk) / (Entry Price − Initial Stop).
+- Initial Stop: Place at the 2x ATR trailing stop level from entry.
+- Max Concurrent Positions: 1–2 to avoid overexposure during correlated squeezes.
+- Squeeze Timeout: If no Supertrend flip occurs within 20 bars of the squeeze being detected, invalidate the setup.
+- Volatility Filter: Avoid entries within 15 minutes of major news events (earnings, FOMC, CPI), as squeezes can resolve violently and unpredictably.
+
+6. EXECUTION NOTES
+- Best Timeframes: 1H, 4H, and Daily for cleaner Supertrend signals; 15m for intraday scalping with tighter ATR stops.
+- Best Markets: Liquid instruments (major FX pairs, index futures, large-cap equities, BTC/ETH) where BBW percentiles are statistically meaningful.
+- Confirmation Bias: Consider requiring RSI divergence or volume expansion on the breakout bar to filter false flips.
+- Backtest Caution: The 10th percentile threshold should be walk-forward optimized; a fixed 10% may overfit to specific regimes.

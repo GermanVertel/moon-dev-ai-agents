@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19 Moon Dev VolumetricBandBreaker initializing... \u2728\n\ud83d\ude80 Data loaded: 1009 bars\n\ud83c\udf19 Indicators initialized: VWAP, Bands, Vol SMA, ATR \u2728\n\ud83d\ude80 SHORT BREAKOUT @ 53991.46 | Lower=56478.86 | VolSurge=108991085584>54728145949 | Size=2 \ud83c\udf19\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/818 [00:00<?, ?bar/s]\n                                                      \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/VolumetricBandBreaker_BTFinal_v1.py\", line 195, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/VolumetricBandBreaker_BTFinal_v1.py\", line 144, in next\n    bars_held = len(self.data) - self.position.entry_bar\nAttributeError: 'Position' object has no attribute 'entry_bar'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/VolumetricBandBreaker_BTFinal_v1.py` failed. (See above for error)\n",
+  "execution_time": 2.457013,
+  "timestamp": "2026-10-05T16:01:08.804319"
+}

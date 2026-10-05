@@ -1,0 +1,37 @@
+STRATEGY_NAME: CompressionVolatility
+
+STRATEGY_DETAILS:
+This strategy, named CompressionVolatility, is designed to capture explosive price moves that follow periods of low volatility. It operates on the principle that markets alternate between phases of contraction (consolidation) and expansion (breakout). The core of the strategy is to identify when Bollinger Bands have contracted to an unusually tight range, signaling a potential energy buildup, and then to enter in the direction of the subsequent breakout.
+
+**Key Strategy Components:**
+
+1.  **Volatility Squeeze Detection:**
+    *   **Bollinger Bands (BB):** Use standard settings of a 20-period Simple Moving Average (SMA) and 2 standard deviations.
+    *   **Bandwidth Calculation:** Calculate the Bollinger Bandwidth as `(Upper Band - Lower Band) / Middle Band`.
+    *   **Historical Volatility Threshold:** Compute a 20-day historical volatility (e.g., standard deviation of daily returns) and define a threshold (e.g., the 20th percentile of the past 20 days). A squeeze is confirmed when the Bollinger Bandwidth falls below this threshold, indicating a statistically significant contraction.
+
+2.  **Entry Rules:**
+    *   **Long Entry:** When a squeeze is active, enter long if the price closes above the Upper Bollinger Band. This breakout candle should have a range (High - Low) that is larger than the average range of the previous few candles, confirming expansion.
+    *   **Short Entry:** When a squeeze is active, enter short if the price closes below the Lower Bollinger Band, again with an expanded range.
+
+3.  **Exit Rules (Trailing Percentage of Breakout Candle's Range):**
+    *   **Initial Stop-Loss:** Place the initial stop-loss at a distance equal to a percentage (e.g., 50%) of the breakout candle's range, measured from the entry price. For a long entry, the stop is `Entry Price - (0.5 * Breakout Candle Range)`. For a short, it's `Entry Price + (0.5 * Breakout Candle Range)`.
+    *   **Trailing Stop:** As the trade moves in favor, trail the stop-loss by the same percentage of the breakout candle's range. For example, if the price moves up by 1x the breakout range, move the stop to breakeven. If it moves up by 2x, trail it to lock in 1x the range, etc. This dynamic exit adapts to the volatility of the initial move.
+    *   **Time-Based Exit (Optional):** If the trade does not reach the trailing stop within a certain number of bars (e.g., 10), consider exiting at market to avoid stagnation.
+
+4.  **Risk Management:**
+    *   **Position Sizing:** Calculate position size so that the initial stop-loss (50% of breakout range) represents no more than 1-2% of the total account equity. This ensures that the inherent volatility of the breakout does not lead to excessive drawdowns.
+    *   **False Breakout Filter:** To reduce whipsaws, require that the breakout candle closes beyond the Bollinger Band and that the next candle confirms the move by not immediately reversing back inside the bands. Alternatively, use a volume filter: the breakout candle should have above-average volume.
+    *   **Maximum Drawdown Control:** Implement a daily or weekly loss limit. If the strategy hits a predetermined drawdown (e.g., 5% of equity), pause trading for the remainder of the period.
+
+**Required Indicators:**
+- Bollinger Bands (20, 2)
+- Bollinger Bandwidth
+- 20-day Historical Volatility (or Standard Deviation of Returns)
+- Average True Range (ATR) or simple candle range for breakout confirmation
+- Volume (optional, for false breakout filter)
+
+**Implementation Notes:**
+- This strategy works best on liquid markets with clear volatility cycles (e.g., forex majors, index futures, large-cap stocks).
+- Backtesting should focus on optimizing the volatility threshold percentile and the trailing stop percentage (e.g., 30%, 50%, 70%) to suit the specific instrument and timeframe.
+- The strategy is inherently trend-following after a breakout, so it performs well in markets that exhibit strong directional moves after consolidation.

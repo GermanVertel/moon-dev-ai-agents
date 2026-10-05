@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "",
+  "stderr": "  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/FractalDivergence_BTFinal_v5.py\", line 367\n    print(f\"   Stop={stop:.2f} | Target={target:.2f} |\n          ^\nSyntaxError: unterminated string literal (detected at line 367)\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/FractalDivergence_BTFinal_v5.py` failed. (See above for error)\n",
+  "execution_time": 5.207287,
+  "timestamp": "2026-10-05T12:05:55.023914"
+}

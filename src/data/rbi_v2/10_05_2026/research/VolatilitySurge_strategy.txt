@@ -1,0 +1,55 @@
+STRATEGY_NAME: VolatilitySurge
+
+STRATEGY_DETAILS:
+This strategy combines volatility expansion (ATR bands) with trend strength confirmation (ADX) to capture high-momentum breakouts while filtering out choppy, low-conviction moves. The dual-condition entry gate—price breakout AND ADX threshold cross—reduces false signals common in pure volatility breakout systems.
+
+**Key Strategy Components:**
+
+1. **Volatility Measurement (ATR Bands)**
+   - Calculate 2-day ATR (short-term volatility proxy) to define dynamic breakout bands
+   - Upper band = prior close + (2 × ATR)
+   - Lower band = prior close − (2 × ATR)
+   - Bands expand/contract with recent volatility, making breakouts adaptive to market conditions
+
+2. **Trend Strength Filter (ADX)**
+   - 14-period ADX measures directional trend strength (not direction)
+   - Entry requires ADX crossing ABOVE 30 (not just being above 30)
+   - The cross confirms a fresh surge in trend momentum, avoiding late entries in exhausted trends
+
+**Entry Rules:**
+
+- **Long Entry:** 
+  - Price closes above the upper 2-day ATR band, AND
+  - 14-period ADX crosses above 30 (from below)
+  - Both conditions should ideally trigger on the same bar or within 1–2 bars of each other
+
+- **Short Entry:**
+  - Price closes below the lower 2-day ATR band, AND
+  - 14-period ADX crosses above 30 (from below)
+  - Mirrors the long logic for downside breakouts
+
+**Exit Rules:**
+
+- **Trailing Stop:** 1.5 × ATR trailing stop from the highest high (longs) or lowest low (shorts) since entry
+- Stop ratchets in the favorable direction only—never loosens
+- Optional: exit on ADX cross back below 25 (trend weakening) as a secondary signal
+
+**Risk Management:**
+
+- Position size = (Account Risk %) ÷ (1.5 × ATR distance to stop)
+- Typical risk per trade: 0.5%–1% of equity
+- Skip trades if ATR is unusually low (compressed volatility) relative to its 20-period average—breakouts in dead markets tend to fail
+- Max 1–2 concurrent positions to avoid correlated exposure during broad volatility spikes
+- Avoid entries within 30 minutes of major news releases (FOMC, NFP) where ATR spikes are unreliable
+
+**Required Indicators:**
+
+1. ATR (2-period) — for band construction and trailing stop
+2. ADX (14-period) — for trend strength confirmation
+3. Price/Close — for band breakout detection
+4. Optional: ATR 20-period SMA — for volatility regime filtering
+
+**Best Market Conditions:**
+- Works best in trending, expanding-volatility regimes (post-consolidation breakouts)
+- Performs poorly in range-bound, low-ADX markets—the ADX > 30 filter naturally suppresses trades here
+- Suited for liquid instruments: index futures, major FX pairs, large-cap equities

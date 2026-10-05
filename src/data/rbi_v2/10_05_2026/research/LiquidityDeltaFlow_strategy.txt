@@ -1,0 +1,59 @@
+STRATEGY_NAME: LiquidityDeltaFlow
+
+STRATEGY_DETAILS:
+This strategy combines order flow microstructure analysis with momentum signals, using bid-ask spread dynamics as a proxy for liquidity conditions and cumulative net delta as a position-sizing mechanism. It is a short-to-medium horizon strategy suited for liquid equities with reliable Level 2 / order book data.
+
+1. KEY STRATEGY COMPONENTS
+
+- Bid-Ask Spread Momentum: The core signal is the *direction of change* in the bid-ask spread, not its absolute level. A decreasing spread suggests improving liquidity, tightening market-making, and often precedes or accompanies informed buying pressure. An increasing spread suggests deteriorating liquidity, wider dealer risk, and often precedes selling pressure.
+- Cumulative Net Delta: A running sum of signed trade volume (buy-initiated trades minus sell-initiated trades, using the Lee-Ready or tick-rule classification). This measures the net aggressor imbalance over a lookback window and drives position sizing.
+- Order Flow Imbalance (OFI): Optional confirmation layer using changes in best bid/ask sizes to validate that spread tightening is accompanied by genuine demand pressure rather than passive liquidity withdrawal.
+- Cross-sectional ranking: At each rebalance, rank the universe by spread-change momentum (most negative = strongest buy candidates, most positive = strongest sell/short candidates).
+
+2. ENTRY RULES
+
+Long Entry:
+- Spread change over lookback N (e.g., 5–20 bars) is negative and exceeds a threshold (e.g., spread contracting by ≥ X% relative to its rolling median).
+- Cumulative net delta over the same window is positive and rising.
+- Price is above a short-term trend filter (e.g., VWAP or EMA-20) to avoid catching falling knives.
+- Optional: OFI confirms net buying pressure.
+
+Short Entry:
+- Spread change over lookback N is positive and exceeds threshold (spread widening ≥ X%).
+- Cumulative net delta is negative and falling.
+- Price is below the short-term trend filter.
+
+Exit Rules:
+- Long exit: spread stops contracting (change turns non-negative) OR cumulative net delta flips negative OR profit target / stop hit.
+- Short exit: spread stops widening OR cumulative net delta flips positive OR stop/target hit.
+- Time-based exit if signal decays within max holding period (e.g., 1–5 days intraday, or a few bars for HFT variants).
+
+3. POSITION SIZING
+
+- Scale position size proportionally to |cumulative net delta| over the lookback window, normalized by a rolling volatility or ADV measure to control risk.
+- Example: size = base_size × (|CND| / rolling_median_|CND|), capped at a maximum multiple (e.g., 3×) to prevent over-concentration.
+- Optionally apply a liquidity cap: never take a position exceeding a small % of average daily volume or displayed depth.
+- Reduce size when spread is historically wide (poor execution environment), even if the signal is strong.
+
+4. RISK MANAGEMENT
+
+- Stop-loss: ATR-based or fixed % stop, tightened when spreads are widening against the position.
+- Liquidity risk filter: skip entries when absolute spread is above a percentile threshold (e.g., top decile) — these are untradeable conditions.
+- Correlation cap: limit aggregate exposure to correlated names since liquidity shocks are often sector-wide.
+- Slippage modeling: assume execution at mid ± half-spread; strategies exploiting spread dynamics are highly sensitive to transaction costs, so backtest with realistic fills.
+- Max holding period to avoid regime drift.
+
+5. REQUIRED INDICATORS / DATA
+
+- Level 1 (best bid/ask) and ideally Level 2 order book data.
+- Bid-ask spread time series and its rolling change/median.
+- Trade-level data with aggressor classification (to compute cumulative net delta).
+- Order Flow Imbalance (OFI) from bid/ask size changes (optional but recommended).
+- VWAP or EMA for trend filter.
+- ATR or realized volatility for sizing/stops.
+- ADV and displayed depth for liquidity caps.
+
+CAVEATS:
+- This is a microstructure strategy; it requires high-quality tick data and low-latency execution to be viable.
+- Spread dynamics can be driven by scheduled news, earnings, or macro events — filter these out or treat as regime breaks.
+- Backtests must account for the fact that "decreasing spreads" often coincide with periods when execution is cheap, so realized edge can be smaller than gross signal.

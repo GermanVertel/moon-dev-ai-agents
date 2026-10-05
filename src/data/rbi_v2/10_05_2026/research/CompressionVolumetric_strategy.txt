@@ -1,0 +1,50 @@
+STRATEGY_NAME: CompressionVolumetric
+
+STRATEGY_DETAILS:
+The CompressionVolumetric strategy is a volatility-expansion trading system that identifies periods of extreme market consolidation (compression) and positions for the subsequent directional breakout, using volume as a confirmation filter. It is designed to avoid false breakouts by requiring both a price break of the Bollinger Bands and a volume surge.
+
+KEY STRATEGY COMPONENTS:
+1. Volatility Compression Detection: Bollinger Band width is monitored to find the narrowest reading in a 30-day lookback window.
+2. Volatility Expansion Trigger: A close outside the upper or lower Bollinger Band signals a potential breakout.
+3. Volume Confirmation: The breakout bar's volume must exceed the 20-day average volume by a meaningful margin (e.g., 1.5x) to validate the move.
+4. Directional Bias: Trading in the direction of the band break (long on upper break, short on lower break).
+
+ENTRY RULES:
+- Long Entry:
+  - Bollinger Band Width (BBW) reaches its lowest value in the past 30 bars (compression condition).
+  - Price closes above the Upper Bollinger Band.
+  - Volume on the breakout bar > 1.5 × 20-period simple moving average of volume.
+  - Enter long at the close of the confirmation bar (or next bar open).
+- Short Entry:
+  - BBW reaches its lowest value in the past 30 bars.
+  - Price closes below the Lower Bollinger Band.
+  - Volume on the breakout bar > 1.5 × 20-period SMA of volume.
+  - Enter short at the close of the confirmation bar (or next bar open).
+
+EXIT RULES:
+- Profit Target: Optional; can use a fixed multiple of the Bollinger Band width (e.g., 2× the width at entry) or a trailing stop.
+- Stop Loss: Place stop at the opposite Bollinger Band or at the middle band (20-period SMA) depending on risk tolerance.
+- Time Stop: Exit if the trade does not reach a target within a specified number of bars (e.g., 10 bars) to avoid stagnation.
+- Trailing Exit: Use a trailing stop based on ATR (e.g., 2× ATR) to lock in profits during sustained moves.
+- Volume Fade: Consider exiting if volume drops below the 20-day average after a breakout, indicating weakening momentum.
+
+RISK MANAGEMENT:
+- Position Sizing: Risk a fixed percentage of account equity per trade (e.g., 1-2%).
+- Stop Loss Placement: Initial stop at the opposite band or middle band; adjust to breakeven after 1× BBW profit.
+- Maximum Drawdown Control: Reduce position size or pause trading after consecutive losses (e.g., 3 losses in a row).
+- Correlation Filter: Avoid taking multiple correlated positions simultaneously to limit portfolio risk.
+- Slippage & Commission: Account for transaction costs, especially on lower timeframes.
+
+REQUIRED INDICATORS:
+- Bollinger Bands: 20-period SMA, 2 standard deviations (upper, middle, lower).
+- Bollinger Band Width (BBW): (Upper Band - Lower Band) / Middle Band, or simply (Upper - Lower).
+- 30-period lookback for minimum BBW.
+- Volume: 20-period simple moving average.
+- Optional: ATR (14-period) for trailing stops.
+- Optional: RSI or MACD to filter overbought/oversold conditions (though not required by core strategy).
+
+ADDITIONAL NOTES:
+- Best suited for markets that alternate between consolidation and expansion phases (e.g., forex, indices, liquid stocks).
+- Works on multiple timeframes (intraday to daily), but higher timeframes tend to produce more reliable signals.
+- Avoid trading during major news events or low-liquidity sessions unless volume confirmation is exceptionally strong.
+- Backtest to optimize the volume multiplier (1.5x is a starting point) and BBW lookback period (30 days suggested).

@@ -1,0 +1,116 @@
+STRATEGY_NAME: ReversalConfirmation
+
+STRATEGY_DETAILS:
+
+This strategy combines a classic bullish reversal chart pattern (Inverse Head and Shoulders) with momentum confirmation (RSI) and volatility-adjusted risk management (ATR). Below is a detailed breakdown of its components, entry/exit logic, risk controls, and required indicators.
+
+---
+
+**1. Key Strategy Components**
+
+- **Primary Pattern:** Inverse Head and Shoulders (IHS) on the 4-hour chart — a bullish reversal formation signaling a shift from downtrend to uptrend.
+- **Timeframe:** 4-hour (H4) chart for pattern identification and trade execution.
+- **Direction:** Long only (directional trader).
+- **Entry Trigger:** Breakout above the neckline of the IHS pattern.
+- **Confirmation Filter:** RSI reversal signal (e.g., RSI crossing above 50 or exiting oversold territory) to validate breakout strength.
+- **Risk Placement:** Stop-loss below the neckline, scaled to 2× ATR (Average True Range) to account for volatility.
+- **Exit Rule:** Position is closed upon a confirmed breakout above the neckline accompanied by an RSI reversal signal — meaning the trade may be exited at the same event that confirms entry, or the strategy may be structured to hold until this dual condition is met after entry.
+
+> Note: The description contains a potential ambiguity — entry is stated at the "high of an Inverse Head and Shoulders pattern," while exit is described as a "breakout above the neckline with confirmed RSI reversal." In practice, this likely means: enter on the breakout above the neckline (the "high" of the pattern), and exit when a subsequent RSI reversal signal confirms a potential trend exhaustion or when the trade target is reached. The strategy below interprets it as a breakout-entry with RSI-confirmed exit.
+
+---
+
+**2. Entry Rules**
+
+- **Pattern Identification:**
+  - Identify a completed Inverse Head and Shoulders pattern on the 4-hour chart:
+    - Left shoulder, lower head, right shoulder, with a horizontal neckline connecting the two intervening peaks.
+  - Confirm the pattern is valid: symmetric shoulders, head clearly lower than shoulders, volume ideally declining into the head and rising into the right shoulder.
+
+- **Entry Trigger:**
+  - Wait for a 4-hour candle to close above the neckline (breakout confirmation).
+  - The entry is taken at the high of the breakout candle or at the close of the breakout candle (conservative).
+
+- **RSI Confirmation (for entry or exit):**
+  - RSI (14-period) must show a reversal signal:
+    - RSI crossing above 50 from below, or
+    - RSI exiting oversold (<30) and turning upward, or
+    - Bullish divergence between price and RSI at the breakout point.
+  - Only enter if RSI confirms the bullish momentum shift.
+
+---
+
+**3. Exit Rules**
+
+- **Primary Exit Condition:**
+  - Exit when price breaks above the neckline **and** RSI produces a confirmed reversal signal (e.g., RSI crosses below 70 from overbought, or bearish divergence appears).
+  - This suggests the strategy may hold the position until a subsequent RSI reversal signals weakening momentum, even after the initial breakout.
+
+- **Alternative Exit (if entry already occurred at breakout):**
+  - Exit when RSI forms a bearish reversal (e.g., crosses below 50 or shows bearish divergence) while price is above the neckline.
+  - Or exit at a predefined target (e.g., measured move = distance from head to neckline projected upward from breakout point).
+
+- **Stop-Loss Exit:**
+  - If price falls below the stop-loss level (see risk management), exit immediately.
+
+---
+
+**4. Risk Management**
+
+- **Stop-Loss Placement:**
+  - Place stop-loss below the neckline of the IHS pattern.
+  - Distance from entry = 2 × ATR (14-period) on the 4-hour chart.
+  - This volatility-adjusted stop prevents premature stops during normal market noise.
+
+- **Position Sizing:**
+  - Risk per trade should be fixed (e.g., 1–2% of account equity).
+  - Position size = (Account Risk Amount) / (Entry Price – Stop-Loss Price).
+
+- **Risk-Reward Ratio:**
+  - Target at least 1:2 or 1:3 risk-reward.
+  - Measured move target: Project the distance from the head to the neckline upward from the breakout point.
+
+- **Trailing Stop (Optional):**
+  - Once price moves 1× ATR in favor, move stop to breakeven.
+  - Trail stop using 2× ATR below the highest high since entry.
+
+---
+
+**5. Required Indicators**
+
+- **Inverse Head and Shoulders Pattern Recognition:** Manual or automated chart pattern detection on the 4-hour timeframe.
+- **RSI (Relative Strength Index):** 14-period, used for reversal confirmation (crossing 50, exiting oversold/overbought, or divergence).
+- **ATR (Average True Range):** 14-period, used to calculate stop-loss distance (2× ATR) and for trailing stops.
+- **Volume (Optional but Recommended):** To confirm breakout validity (rising volume on breakout).
+- **Neckline:** Horizontal line connecting the peaks between the shoulders and head.
+
+---
+
+**6. Trade Management Summary**
+
+| Element | Specification |
+|--------|---------------|
+| Timeframe | 4-hour |
+| Pattern | Inverse Head and Shoulders |
+| Direction | Long |
+| Entry | Breakout above neckline + RSI reversal confirmation |
+| Stop-Loss | Below neckline, 2× ATR (14) from entry |
+| Exit | RSI reversal signal after breakout (bearish divergence or cross below 50/70) |
+| Target | Measured move (head-to-neckline distance projected upward) |
+| Risk per Trade | 1–2% of account |
+| Confirmation | RSI (14) reversal, volume increase |
+
+---
+
+**7. Example Scenario**
+
+1. On the 4-hour chart, an Inverse Head and Shoulders forms with neckline at 1.2500.
+2. Price breaks above 1.2500 with a strong bullish candle; RSI crosses above 50.
+3. Enter long at 1.2510 (breakout close).
+4. ATR(14) = 0.0050; stop-loss = 1.2510 – (2 × 0.0050) = 1.2410 (below neckline).
+5. Measured move target: Head low at 1.2300, neckline at 1.2500 → distance = 0.0200 → target = 1.2500 + 0.0200 = 1.2700.
+6. Exit when RSI shows bearish reversal (e.g., crosses below 70 or forms bearish divergence) near target, or at stop-loss if price falls.
+
+---
+
+This strategy leverages the reliability of the Inverse Head and Shoulders pattern, filters entries with RSI momentum, and manages risk dynamically with ATR, making it suitable for a long-term directional trader on the 4-hour chart.

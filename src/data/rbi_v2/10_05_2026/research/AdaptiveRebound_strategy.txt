@@ -1,0 +1,40 @@
+STRATEGY_NAME: AdaptiveRebound
+
+STRATEGY_DETAILS:
+This strategy is a mean-reversion approach that uses historical price extremes as dynamic entry/exit triggers, with Bollinger Band width acting as a volatility filter for position sizing and stop adjustments.
+
+1. Key Strategy Components:
+   - Historical High Tracking: Maintain a rolling lookback window (e.g., 252 trading days / 1 year) to compute the "historical high" (HH). This is the anchor for all threshold calculations.
+   - Entry Threshold: 75% of HH (0.75 × HH). When price touches or falls below this level, a long entry signal is triggered, assuming the asset is oversold relative to its recent peak.
+   - Profit Target: 125% of HH (1.25 × HH). When price reaches or exceeds this level, exit the long position to lock in gains.
+   - Stop-Loss: 50% of the entry price (0.50 × Entry). This is a hard catastrophic stop, though it should rarely be hit if Bollinger Band adjustments are applied.
+   - Bollinger Band Width (BBW) Adjustment: BBW = (Upper Band − Lower Band) / Middle Band. High BBW (volatile regime) → widen stops and reduce position size. Low BBW (quiet regime) → tighten stops and allow larger size.
+
+2. Entry Rules:
+   - Compute HH over the lookback window.
+   - Compute the 75% threshold: EntryLevel = 0.75 × HH.
+   - Trigger a long entry when: Close ≤ EntryLevel AND price shows a bullish confirmation (e.g., a close above the prior bar's high, or RSI < 30 turning upward).
+   - Confirm BBW is within a normal range (avoid entering during extreme volatility spikes unless size is reduced proportionally).
+
+3. Exit Rules:
+   - Take-Profit Exit: Close ≥ 1.25 × HH → close the long position.
+   - Stop-Loss Exit: Price ≤ 0.50 × EntryPrice → close the long position immediately (hard stop).
+   - Optional Trailing Exit: If price stalls between 1.0× and 1.25× HH for N bars without new highs, consider scaling out.
+
+4. Risk Management:
+   - Position Sizing: Base size inversely proportional to BBW. Formula: Size = BaseSize × (TargetBBW / CurrentBBW), capped at a maximum.
+   - Stop Adjustment: EffectiveStop = max(0.50 × Entry, Entry − k × BBW × Price), where k is a multiplier (e.g., 1.5). This ensures stops widen in volatile markets and tighten in calm ones.
+   - Maximum Risk per Trade: Limit to 1–2% of portfolio equity. Since the 50% stop is very wide, position size must be small to respect this limit.
+   - Time Stop: If the position hasn't reached the profit target within a defined number of bars (e.g., 60), reassess and potentially exit to avoid dead capital.
+
+5. Required Indicators:
+   - Rolling Maximum (Highest High over lookback window)
+   - Bollinger Bands (20-period SMA, 2 standard deviations) → for BBW calculation
+   - RSI (14-period) → optional confirmation for oversold conditions
+   - ATR (14-period) → optional alternative for stop volatility adjustment
+
+6. Notes & Caveats:
+   - This strategy assumes mean reversion within a range defined by historical extremes. In strong downtrends, price may continue falling well past the 50% stop.
+   - The 125% exit assumes the asset can reclaim and exceed its prior high — best suited for range-bound or oscillating markets.
+   - Backtest across different lookback windows (60, 120, 252 days) to find the optimal HH period.
+   - Combine with a regime filter (e.g., ADX < 25) to avoid applying mean reversion in trending markets.

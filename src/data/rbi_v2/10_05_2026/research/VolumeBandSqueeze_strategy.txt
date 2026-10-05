@@ -1,0 +1,93 @@
+STRATEGY_NAME: VolumeBand Squeeze
+
+STRATEGY_DETAILS:
+
+**Overview:**
+This strategy combines the Chaikin Oscillator (a volume-weighted momentum indicator) with Bollinger Bands (a volatility-based envelope) to identify high-probability intraday breakout opportunities. The Chaikin Oscillator confirms whether a Bollinger Band breakout is backed by genuine volume-driven momentum, filtering out low-conviction false breakouts that plague pure price-based band strategies.
+
+---
+
+**1. Key Strategy Components**
+
+- **Bollinger Bands (BB):** 20-period SMA with 2 standard deviations. The width of the bands (BandWidth) is used to detect volatility contraction ("the squeeze").
+- **Chaikin Oscillator (CO):** 3-period EMA minus 10-period EMA of the Accumulation/Distribution Line. Measures volume-weighted momentum and direction.
+- **Squeeze Detection:** Bollinger BandWidth at multi-period lows signals an impending volatility expansion — the setup for a breakout.
+- **Volume Confirmation:** Chaikin Oscillator crossing zero or accelerating in the breakout direction confirms institutional participation.
+
+---
+
+**2. Entry Rules**
+
+**Long Entry (Breakout Up):**
+- BandWidth is in the bottom 20% of its range over the last 50 bars (squeeze condition).
+- Price closes above the upper Bollinger Band.
+- Chaikin Oscillator is positive AND rising, OR has just crossed above zero within the last 2 bars.
+- Volume on the breakout bar exceeds the 20-period average volume by at least 1.5x.
+
+**Short Entry (Breakout Down):**
+- BandWidth squeeze condition met (bottom 20% over 50 bars).
+- Price closes below the lower Bollinger Band.
+- Chaikin Oscillator is negative AND falling, OR has just crossed below zero within the last 2 bars.
+- Volume on the breakdown bar exceeds the 20-period average volume by at least 1.5x.
+
+**Avoid Trading:**
+- If Chaikin Oscillator diverges from price direction (e.g., price breaks up but CO is falling) — this signals a likely false breakout.
+- During the first 15 minutes after market open (avoid opening noise).
+- Within 15 minutes of major scheduled news/economic releases.
+
+---
+
+**3. Exit Rules**
+
+**Profit Target:**
+- Primary target: 2x the BandWidth measured at the squeeze point, projected from the breakout level.
+- Alternatively, trail using the middle Bollinger Band (20 SMA) as a dynamic stop.
+
+**Stop Loss:**
+- Initial stop: The opposite Bollinger Band, OR a fixed ATR-based stop (1.5x ATR(14)) from entry, whichever is tighter.
+- Re-entry stop: If price closes back inside the Bollinger Band within 2 bars, exit immediately — this invalidates the breakout.
+
+**Momentum Exit:**
+- Exit if Chaikin Oscillator crosses back through zero against your position direction.
+- Exit if CO shows divergence from price (price makes new high but CO makes lower high).
+
+**Time-Based Exit:**
+- Close all intraday positions 15 minutes before market close unless the position is deeply in profit and being trailed.
+
+---
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk no more than 1% of account equity per trade. Calculate size based on distance from entry to stop loss.
+- **Maximum Trades:** Limit to 3-5 breakout trades per day to avoid overtrading in choppy conditions.
+- **Correlation Filter:** Do not take simultaneous breakout trades in highly correlated instruments (e.g., ES and SPY).
+- **Volatility Filter:** Skip setups when BandWidth is already at the top 20% of its 50-bar range (already expanded — breakout likely exhausted).
+- **Regime Filter:** Best performance in trending/expansion regimes; reduce size or stand aside in low-volume, range-bound markets.
+- **R:R Minimum:** Only take trades where the projected reward is at least 1.5x the risk.
+
+---
+
+**5. Required Indicators & Settings**
+
+| Indicator | Parameters | Purpose |
+|-----------|-----------|---------|
+| Bollinger Bands | 20 SMA, 2 StdDev | Volatility envelope & squeeze detection |
+| BandWidth | (Upper − Lower) / Middle | Squeeze identification |
+| Chaikin Oscillator | EMA(3) − EMA(10) of ADL | Volume-momentum confirmation |
+| Accumulation/Distribution Line | Standard | Underlying CO input |
+| ATR | 14-period | Stop-loss sizing |
+| Volume MA | 20-period | Breakout volume confirmation |
+
+---
+
+**6. Timeframe & Instruments**
+
+- **Timeframe:** 5-minute or 15-minute charts for intraday execution.
+- **Instruments:** Liquid instruments only — index futures (ES, NQ), major FX pairs (EUR/USD, GBP/USD), or high-volume large-cap stocks/ETFs (SPY, QQQ, AAPL).
+- **Session:** Best during the first 3 hours of the US session (9:30–12:30 ET) when volume and volatility are highest.
+
+---
+
+**7. Strategy Logic Summary**
+
+The core edge is the combination of **volatility compression** (Bollinger squeeze) with **volume-weighted momentum confirmation** (Chaikin Oscillator). Bollinger Bands alone generate many false breakouts in low-volume conditions; the Chaikin Oscillator acts as a gatekeeper, ensuring that only breakouts backed by genuine accumulation or distribution are traded. This dual-filter approach significantly improves signal quality and win rate for intraday breakout trading.

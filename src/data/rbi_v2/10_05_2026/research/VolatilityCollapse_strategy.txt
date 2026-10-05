@@ -1,0 +1,46 @@
+STRATEGY_NAME: VolatilityCollapse
+
+STRATEGY_DETAILS:
+This strategy identifies market downturns by measuring the relationship between price and volatility, specifically through the ratio of closing price to Average True Range (ATR). The core premise is that when this ratio falls below a defined threshold, it signals a volatility expansion relative to price — often a hallmark of panic selling, trend exhaustion, or the onset of a bearish regime.
+
+**Key Strategy Components:**
+
+1. **Price-to-ATR Ratio (PAR):**
+   - Formula: `PAR = Close / ATR(n)`
+   - ATR is typically calculated over 14 periods (Wilder's smoothing) but can be tuned (e.g., 10 or 20).
+   - A *falling* PAR means ATR is rising faster than price (or price is dropping while volatility spikes) — a warning sign.
+   - A *rising* PAR means volatility is compressing relative to price — often a calm/uptrend environment.
+
+2. **Threshold Logic (the "below 0" premise):**
+   - Since raw Close/ATR is always positive, the "below 0" condition is interpreted as the **rate of change (ROC) of PAR falling below zero**, i.e., PAR is declining.
+   - Alternative interpretation: use the **z-score of PAR** and trigger when it drops below 0 (below its rolling mean), signaling relative volatility stress.
+   - A stricter variant: trigger when `ROC(PAR) < 0` AND `PAR < lower_band` (e.g., 20-period percentile).
+
+**Entry Rules (Short / Risk-Off):**
+- Compute ATR(14) and PAR = Close / ATR.
+- Compute PAR_ROC = PAR - PAR[1] (or % change over N bars).
+- **Short entry** when:
+  - PAR_ROC < 0 (ratio is collapsing), AND
+  - PAR crosses below its 20-period moving average, AND
+  - Price closes below a short-term EMA (e.g., EMA(20)).
+- Optional confirmation: rising ATR and declining volume-weighted price.
+
+**Exit Rules:**
+- **Take profit:** when PAR_ROC turns positive and PAR reclaims its 20-period MA.
+- **Stop loss:** fixed ATR-based stop (e.g., 2× ATR above entry) or when price closes back above EMA(20).
+- **Time stop:** exit after N bars if neither condition triggers.
+
+**Risk Management:**
+- Position size inversely proportional to ATR (volatility targeting): `Size = RiskCapital / (ATR × Multiplier)`.
+- Max risk per trade: 0.5–1% of equity.
+- Cap concurrent exposure during high-ATR regimes to avoid correlated drawdowns.
+- Avoid trading during scheduled news events where ATR spikes are artificial.
+
+**Required Indicators:**
+- Average True Range (ATR), period 14 (Wilder).
+- Simple or Exponential Moving Average of the PAR ratio (20-period).
+- ROC or delta of PAR (1–N bars).
+- Optional: EMA(20) on price for trend confirmation, volume for divergence checks.
+
+**Why It Works:**
+Markets rarely top with a single signal — they top when volatility expands while price stalls or slips. The Price-to-ATR ratio captures this asymmetry elegantly: normal uptrends see PAR stable or rising, but downturns force ATR up and price down, collapsing the ratio. By tracking the *direction* and *level* of PAR, the strategy flags regime shifts before traditional trend indicators react.

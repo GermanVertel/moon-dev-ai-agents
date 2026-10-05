@@ -1,0 +1,36 @@
+STRATEGY_NAME: VolatilityCascade
+
+STRATEGY_DETAILS:
+This strategy identifies and fades extreme liquidation clusters during periods of suppressed volatility. The core premise is that when volatility is unusually low (ATR ratio below 0.5), liquidation cascades tend to be overextended and prone to sharp mean-reversion. By entering against the liquidation direction on a 4H close, the strategy aims to capture the snap-back move as forced selling/buying exhausts itself.
+
+1. KEY STRATEGY COMPONENTS
+- Liquidation Cluster Detection: Identify zones where large clusters of long or short liquidations have occurred (e.g., via exchange liquidation heatmaps, funding rate spikes, or sharp wick formations on high volume).
+- Volatility Filter: Compute the 1D volatility ratio = current ATR(1D) / ATR(20D). Only take trades when this ratio is below 0.5 (i.e., volatility is compressed relative to its recent norm).
+- Timeframe: Signal confirmation on the 4H timeframe via a close against the liquidation direction.
+- Directional Bias: If the cluster is long liquidations (price dumped), look to go LONG. If short liquidations (price squeezed up), look to go SHORT.
+
+2. ENTRY RULES
+- Wait for a confirmed liquidation cluster (e.g., a sharp 4H wick with elevated volume, funding rate extreme, or heatmap concentration).
+- Confirm 1D ATR ratio < 0.5 at time of signal.
+- Enter on the 4H close that reverses against the liquidation direction:
+  - Long entry: 4H candle closes bullish after a long-liquidation dump.
+  - Short entry: 4H candle closes bearish after a short-liquidation squeeze.
+- Avoid entries if price is still making new extremes on the 4H close (i.e., no reversal confirmation).
+
+3. EXIT RULES
+- Stop Loss: Place at the recent swing low (for longs) or recent swing high (for shorts) formed during the liquidation event. Add a small buffer (e.g., 0.25–0.5 × ATR) to avoid wick stops.
+- Take Profit: Target the nearest untested liquidity zone, prior consolidation range, or a fixed R-multiple (e.g., 2R–3R). Optionally scale out at 1R and trail the remainder.
+- Time Stop: Exit if the trade does not reach 1R within a set number of 4H bars (e.g., 6–8 bars), as the mean-reversion thesis decays.
+
+4. RISK MANAGEMENT
+- Position sizing based on stop distance (fixed fractional risk, e.g., 0.5–1% per trade).
+- Max concurrent exposure limited to 1–2 positions given correlated liquidation events.
+- Skip trades during macro events (CPI, FOMC) where volatility regime may flip abruptly.
+- Re-evaluate the ATR ratio at entry; if it rises above 0.7 mid-trade, consider tightening stops or exiting early.
+
+5. REQUIRED INDICATORS
+- ATR (1D) and ATR (20D) for the volatility ratio.
+- Volume profile or liquidation heatmap data (exchange-provided or third-party).
+- Funding rate and open interest for cluster confirmation.
+- Swing high/low detection (e.g., fractal-based or pivot points) on 4H.
+- Optional: RSI or CVD for divergence confirmation at the reversal candle.

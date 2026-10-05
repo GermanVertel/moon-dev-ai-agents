@@ -1,0 +1,17 @@
+{
+  "strategy_name": "TestSMA",
+  "unique_id": "test1234",
+  "style_tag": "Trend-Following",
+  "status": "CERTIFIED_WINNER",
+  "total_score": 8.5,
+  "is_return_pct": 25.5,
+  "is_sharpe": 1.45,
+  "is_max_dd_pct": -12.0,
+  "is_trades": 120,
+  "multi_pass_count": "3/3",
+  "oos_return_pct": 10.2,
+  "oos_sharpe": 1.1,
+  "oos_trades": 45,
+  "rejection_reason": "None - Certified Winner",
+  "timestamp": "2026-10-05T12:00:00"
+}

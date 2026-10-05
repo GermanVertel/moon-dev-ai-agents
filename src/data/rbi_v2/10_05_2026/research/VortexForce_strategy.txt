@@ -1,0 +1,74 @@
+STRATEGY_NAME: VortexForce
+
+STRATEGY_DETAILS:
+The VortexForce strategy is a multi-indicator breakout system that combines trend-shift detection, volume momentum confirmation, and oscillator-based exit timing. It is designed to capture momentum-driven breakouts while avoiding false signals through layered confirmation.
+
+---
+
+**1. KEY STRATEGY COMPONENTS**
+
+- **Vortex Indicator (VI+ / VI−):** Primary trend-shift detector. A bullish shift occurs when VI+ crosses above VI−, and a bearish shift when VI− crosses above VI+.
+- **Elder's Volume Force (EVF):** Volume-weighted momentum confirmation. Calculated as: `EVF = (Close − Close[1]) × Volume`, then typically smoothed with an EMA (e.g., 13-period) to filter noise.
+- **KST Momentum Oscillator (3-day EMA):** Exit timing tool. The 3-day EMA of the KST (Know Sure Thing) oscillator serves as a fast reversal trigger.
+
+---
+
+**2. ENTRY RULES**
+
+**Long Entry (Breakout Buy):**
+- Vortex Indicator produces a bullish crossover: VI+ crosses above VI−.
+- Elder's Volume Force (smoothed) is positive AND rising, confirming genuine volume-backed momentum.
+- Price breaks above a recent swing high or consolidation range (breakout confirmation).
+- Optional filter: Price above 20-period EMA to align with broader trend.
+
+**Short Entry (Breakout Sell):**
+- Vortex Indicator produces a bearish crossover: VI− crosses above VI+.
+- Elder's Volume Force (smoothed) is negative AND falling, confirming selling pressure.
+- Price breaks below a recent swing low or consolidation range.
+- Optional filter: Price below 20-period EMA.
+
+---
+
+**3. EXIT RULES**
+
+**Long Exit:**
+- The 3-day EMA of the KST oscillator reverses downward (bearish cross of its signal or slope flip).
+- Alternatively, exit on a Vortex bearish crossover as a hard stop.
+
+**Short Exit:**
+- The 3-day EMA of the KST oscillator reverses upward (bullish cross of its signal or slope flip).
+- Alternatively, exit on a Vortex bullish crossover as a hard stop.
+
+---
+
+**4. RISK MANAGEMENT**
+
+- **Stop Loss:** Place stop below the breakout candle's low (long) or above the breakout candle's high (short), or use an ATR-based stop (e.g., 1.5× ATR).
+- **Position Sizing:** Risk no more than 1–2% of account equity per trade.
+- **Trailing Stop:** Trail using the 3-day KST EMA or a chandelier exit once the trade is in profit.
+- **Time Stop:** If no favorable move occurs within N bars (e.g., 5–10), exit to avoid dead trades.
+- **Avoid Choppy Markets:** Skip signals when Vortex lines are tightly intertwined or when EVF is near zero.
+
+---
+
+**5. REQUIRED INDICATORS**
+
+| Indicator | Purpose | Typical Settings |
+|---|---|---|
+| Vortex Indicator | Trend-shift detection | 14-period |
+| Elder's Volume Force | Volume momentum confirmation | 13-period EMA smoothing |
+| KST Momentum Oscillator | Exit trigger | 3-day EMA of KST |
+| ATR (optional) | Stop-loss sizing | 14-period |
+| EMA (optional) | Trend filter | 20-period |
+
+---
+
+**6. LOGIC SUMMARY**
+
+1. Wait for Vortex crossover (trend shift).
+2. Confirm with rising/falling Elder's Volume Force (volume-backed momentum).
+3. Enter on breakout of recent range.
+4. Manage risk with ATR stop and position sizing.
+5. Exit when the 3-day EMA of KST reverses direction.
+
+This layered approach reduces whipsaws by requiring trend, volume, and momentum to align before entry, while using the fast KST EMA to lock in profits before full reversals occur.

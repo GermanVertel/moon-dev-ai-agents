@@ -1,0 +1,48 @@
+STRATEGY_NAME: OscillatorVWAP
+
+STRATEGY_DETAILS:
+This strategy combines a non-standard Stochastic Oscillator reading (oversold below -20, implying a shifted/scaled oscillator) with price divergence and VWAP confirmation to time long entries, then uses RSI to exit near a momentum-neutral zone.
+
+1. KEY STRATEGY COMPONENTS
+- Stochastic Oscillator (SO): Used as the primary oversold signal. Note the threshold is below -20, which is unusual for the standard 0–100 SO. This implies either:
+  - A centered/zero-based Stochastic (e.g., %K - 50, or a normalized/detrended version), OR
+  - A custom indicator where negative values represent extreme weakness.
+  - Confirm the exact formula before implementation; the logic assumes values can go negative.
+- Divergence: Price makes a lower low while SO makes a higher low (bullish divergence) in the oversold zone. This is the core edge — it signals weakening downside momentum.
+- VWAP confirmation: VWAP must move in confirmation of the long bias. Two valid interpretations:
+  - Price reclaims and holds above VWAP, OR
+  - VWAP slope turns upward / price crosses above VWAP.
+  - Confirmation filters false divergences.
+- RSI exit: Close the long when RSI approaches 30 from below (i.e., recovers toward 30). This is a momentum-recovery exit, not a traditional overbought exit.
+
+2. ENTRY RULES (LONG)
+All conditions must align:
+- SO < -20 (oversold zone).
+- Bullish divergence: price lower low + SO higher low over the lookback window.
+- VWAP confirmation: price above VWAP and/or VWAP rising.
+- Optional timing trigger: enter on the candle where divergence is confirmed and price closes back above VWAP.
+
+3. EXIT RULES
+- Primary exit: RSI approaches 30 (e.g., crosses above 28–30 from below). Close the long.
+- Protective exit: stop-loss below the divergence swing low (or a fixed ATR-based stop).
+- Optional time stop: exit if neither target nor stop hits within N bars.
+
+4. RISK MANAGEMENT
+- Position sizing: risk a fixed % of equity per trade (e.g., 1–2%).
+- Stop-loss: place below the most recent swing low that formed the divergence.
+- Take-profit: RSI-30 exit acts as the target; optionally scale out.
+- Avoid trading during low-liquidity periods where VWAP is unreliable (e.g., first/last minutes of session).
+- Max concurrent positions and daily loss limits.
+
+5. REQUIRED INDICATORS
+- Stochastic Oscillator (custom/zero-based, capable of values < -20).
+- VWAP (session or anchored).
+- RSI (14-period default).
+- Optional: ATR for stop sizing, volume for divergence validation.
+
+6. IMPLEMENTATION NOTES / CAUTIONS
+- The SO < -20 threshold is non-standard; verify the indicator's scale. If using standard SO (0–100), reinterpret as SO < 20.
+- Divergence detection needs a defined lookback (e.g., 10–20 bars) and pivot logic.
+- RSI "approaches 30" is ambiguous — define precisely (cross above 30, or within 28–30 band).
+- Backtest across trending vs. ranging regimes; VWAP confirmation may underperform in strong downtrends.
+- Consider adding a volume filter to strengthen divergence validity.

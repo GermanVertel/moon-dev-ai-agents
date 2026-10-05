@@ -1,0 +1,51 @@
+STRATEGY_NAME: VolatilityStochastic
+
+STRATEGY_DETAILS:
+This strategy combines long-term volatility regime analysis with stochastic oscillator timing to capture mean-reversion moves after extended volatility expansions. The core premise: when volatility reaches extreme long-term levels (either very high or very low), price tends to revert, and the stochastic oscillator provides precise entry/exit timing within that reversal.
+
+1. KEY STRATEGY COMPONENTS
+- Long-Term Volatility Filter: Use a long lookback (e.g., 100–200 periods) on ATR or standard deviation of returns to identify when volatility is at historical extremes (top/bottom 10–20 percentile of its range).
+- Regime Detection: 
+  - High-Volatility Regime: volatility above upper threshold → expect sharp reversals after exhaustion.
+  - Low-Volatility Regime: volatility below lower threshold → expect breakout/reversion after compression.
+- Stochastic Oscillator (14,3,3 or 21,5,5 for longer-term bias): Used to confirm overbought/oversold conditions aligned with the volatility extreme.
+- Confirmation: Only act when stochastic crosses out of extreme zones (below 20 for longs, above 80 for shorts) AND volatility is at an extreme.
+
+2. ENTRY RULES
+Long Entry:
+- Long-term volatility (ATR/StdDev over 100–200 bars) is in the bottom or top decile of its historical range.
+- Stochastic %K crosses above %D from below 20 (oversold reversal).
+- Price is above a long-term moving average (e.g., 200 SMA) OR has shown a clear capitulation wick.
+- Enter on close of the confirmation candle.
+
+Short Entry:
+- Long-term volatility at an extreme (high or low).
+- Stochastic %K crosses below %D from above 80 (overbought reversal).
+- Price is below the 200 SMA OR shows a blow-off top wick.
+- Enter on close of the confirmation candle.
+
+3. EXIT RULES
+- Take Profit: Fixed R-multiple (1.5R–2R) or when stochastic reaches the opposite extreme (80 for longs, 20 for shorts).
+- Stop Loss: Placed beyond the recent swing high/low or at 1× ATR from entry (volatility-adjusted).
+- Trailing Exit: Optional — trail using the stochastic %D line; exit when %K crosses %D against the position.
+- Time Stop: Exit if no reversal materializes within N bars (e.g., 20) as volatility may be trending, not reverting.
+
+4. RISK MANAGEMENT
+- Position sizing inversely proportional to current ATR (volatility parity): smaller size in high-vol regimes, larger in low-vol regimes.
+- Max risk per trade: 0.5–1% of equity.
+- Avoid trading during known news events or earnings that could invalidate volatility assumptions.
+- Cap concurrent positions and correlate exposure across instruments.
+- Use hard stops — never widen them; volatility reversals can fail violently.
+
+5. REQUIRED INDICATORS
+- ATR (100–200 period) or rolling standard deviation of returns for long-term volatility.
+- Percentile ranking of current volatility vs. historical range.
+- Stochastic Oscillator (14,3,3 or 21,5,5) with %K and %D.
+- 200-period SMA (or EMA) for trend bias.
+- Optional: Bollinger Band Width (long period) as an alternate volatility compression/expansion gauge.
+
+6. NOTES / EDGE CASES
+- Best suited for ranging or post-impulse markets, not strong trends.
+- Works across timeframes; longer timeframes (daily/weekly) give stronger signals.
+- Backtest volatility percentile thresholds — 10/90 vs 20/80 materially changes trade frequency.
+- Combine with volume confirmation (climax volume at extremes) for higher win rate.

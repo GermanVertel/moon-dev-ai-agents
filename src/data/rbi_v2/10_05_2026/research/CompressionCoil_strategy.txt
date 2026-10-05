@@ -1,0 +1,59 @@
+STRATEGY_NAME: CompressionCoil
+
+STRATEGY_DETAILS:
+
+**Overview**
+CompressionCoil is a volatility-expansion strategy that identifies periods of extreme market consolidation (price coiling) and positions for the explosive directional move that typically follows. It combines Bollinger Band width analysis with RSI to bias entries toward oversold conditions before a breakout.
+
+**Core Components**
+
+1. **Bollinger Bands (20-period SMA, 2 standard deviations)**
+   - Primary function: Measure volatility compression
+   - Band Width = (Upper Band − Lower Band) / Middle Band
+   - Track rolling 30-day minimum of Band Width
+   - Squeeze condition: Current Band Width ≤ 30-day low Band Width
+
+2. **RSI (14-period)**
+   - Confirms the directional bias for entry
+   - Entry filter: RSI < 40 (mild oversold / weak momentum zone)
+
+3. **ATR (14-period)**
+   - Used exclusively for dynamic stop-loss placement
+   - Stop distance = 1.5 × ATR below entry
+
+**Entry Rules (All must be true)**
+- Bollinger Band Width is at its narrowest point over the trailing 30 periods (squeeze confirmed)
+- RSI(14) is below 40
+- Enter long on the next bar (or intrabar) once both conditions align
+- Optional: require a bullish candle close to avoid catching a falling knife
+
+**Exit Rules**
+- **Profit target / momentum exit:** Close position when price closes above the upper Bollinger Band (volatility expansion confirmed)
+- **Stop-loss:** Exit if price falls to Entry Price − (1.5 × ATR(14))
+- Optional trailing variant: trail the stop at 1.5× ATR from the highest close since entry
+
+**Risk Management**
+- Position sizing based on ATR stop distance (risk 1–2% of equity per trade)
+- Shares = (Account Risk $) / (1.5 × ATR)
+- Avoid trading during major news events that can cause false squeezes
+- Consider a maximum holding period (e.g., 15–20 bars) to avoid dead squeezes
+
+**Required Indicators**
+- Bollinger Bands (20, 2)
+- RSI (14)
+- ATR (14)
+- Rolling minimum function for Band Width (30-period lookback)
+
+**Strengths**
+- Captures high reward-to-risk expansion moves after tight consolidation
+- Oversold RSI filter improves entry timing on the long side
+- ATR-based stop adapts to current volatility
+
+**Weaknesses / Considerations**
+- Squeezes can persist or resolve downward (false breakouts)
+- Low win rate is common; relies on favorable risk-reward
+- Works best on liquid instruments with clean volatility cycles (indices, FX majors, large-cap equities)
+
+**Suggested Timeframes**
+- Intraday: 15m–1h
+- Swing: 4h–Daily

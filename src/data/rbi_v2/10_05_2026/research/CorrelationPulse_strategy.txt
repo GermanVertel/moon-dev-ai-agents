@@ -1,0 +1,75 @@
+STRATEGY_NAME: CorrelationPulse
+
+STRATEGY_DETAILS:
+This strategy combines two classic momentum oscillators (MACD and RSI) into a single confirmation signal by measuring their rolling correlation. Rather than relying on either indicator alone, it uses the statistical relationship between them to validate momentum strength, then scales position size on consecutive wins.
+
+1. KEY STRATEGY COMPONENTS
+
+- Core Signal: Rolling Pearson correlation between MACD line (or MACD histogram) and RSI values over a lookback window (e.g., 14–20 bars).
+- Entry Trigger: Correlation crosses ABOVE +0.7, signaling that MACD and RSI are moving in strong agreement — a confirmation of aligned momentum.
+- Exit Trigger: Correlation crosses BELOW +0.7 (the next cross below the threshold), signaling momentum agreement has broken down.
+- Position Sizing: Base position size starts at 1 unit (or X% of equity). After each profitable (successful) trade, the next position size increases by 20% (compounding or additive — specify which).
+- Direction: Long-only per the description.
+
+2. ENTRY / EXIT RULES
+
+ENTRY (Long):
+- Compute MACD (12, 26, 9) and RSI (14) on each bar.
+- Compute rolling correlation between MACD values and RSI values over N bars (default N = 14).
+- Enter long on the bar where correlation crosses from ≤ 0.7 to > 0.7.
+- Confirm with a filter: only take entry if MACD histogram > 0 OR RSI > 50 (to avoid entering on correlated bearish momentum). Optional but recommended.
+
+EXIT:
+- Exit the long position on the first subsequent bar where correlation crosses from ≥ 0.7 to < 0.7.
+- Optional stop-loss: ATR-based (e.g., 2× ATR) or fixed % stop as a safety net.
+- Optional take-profit: Not required, but a trailing stop can lock gains if correlation remains elevated for long stretches.
+
+3. RISK MANAGEMENT
+
+- Position sizing rule: Each successful (profitable) trade increases the next position size by 20%. Define whether this is:
+  - Compounding: size = previous_size × 1.20
+  - Additive: size = previous_size + 0.20 × base_size
+  Recommend a CAP (e.g., max 3× base size) to prevent runaway risk.
+- Reset rule: On any losing trade, reset position size back to base (1 unit). This is critical — otherwise a losing streak with escalating size can be catastrophic.
+- Max drawdown guard: Halt trading if account drawdown exceeds a threshold (e.g., 15–20%).
+- Correlation trap warning: Correlation can spike during low-volatility chop, producing false signals. Add a minimum ATR filter to ensure the market is actually moving.
+
+4. REQUIRED INDICATORS
+
+- MACD (12, 26, 9) — use MACD line and/or histogram.
+- RSI (14) — standard Wilder's RSI.
+- Rolling Correlation — Pearson correlation of MACD and RSI over a configurable window (default 14).
+- ATR (14) — for volatility filter and optional stop-loss.
+- Optional: Volume filter, trend filter (e.g., 200 EMA) to only take longs in uptrends.
+
+5. IMPLEMENTATION NOTES / PSEUDOCODE
+
+For each bar:
+  macd = MACD(close, 12, 26, 9)
+  rsi  = RSI(close, 14)
+  corr = rolling_corr(macd, rsi, window=14)
+
+  if flat and corr crosses above 0.7 and macd_hist > 0:
+      size = current_size
+      enter_long(size)
+
+  if long and corr crosses below 0.7:
+      exit_long()
+      if trade_pnl > 0:
+          current_size = min(current_size * 1.20, MAX_SIZE)
+      else:
+          current_size = BASE_SIZE
+
+6. STRENGTHS & WEAKNESSES
+
+Strengths:
+- Dual-indicator confirmation reduces false momentum signals.
+- Correlation threshold gives a clean, quantifiable entry/exit rule.
+- Escalating size captures momentum of a winning streak.
+
+Weaknesses:
+- Correlation is a lagging statistic — entries may occur after much of the move.
+- 0.7 threshold may be too high in some regimes (few signals) or too low in others (noise).
+- Escalating position sizing is risky without a hard reset on losses and a size cap.
+
+Recommended tuning: Backtest correlation window (10–30), threshold (0.5–0.8), and size increment (10–30%) across multiple assets and timeframes before live deployment.

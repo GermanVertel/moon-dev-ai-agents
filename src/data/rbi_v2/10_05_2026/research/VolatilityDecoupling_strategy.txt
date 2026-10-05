@@ -1,0 +1,50 @@
+STRATEGY_NAME: VolatilityDecoupling
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy exploits a three-way divergence between VIX futures, S&P 500 price action, and 3-month T-Bill yields. The edge comes from identifying moments when the "fear gauge" (VIX futures) decouples from equity price action while simultaneously showing strengthening inverse correlation with short-term rates—a regime that historically precedes sharp momentum bursts in equities.
+
+**Key Strategy Components:**
+
+1. **VIX Futures Divergence Detection**
+   - Compare front-month VIX futures price change vs. S&P 500 (ES or SPY) price change over a rolling 5-15 minute window.
+   - Divergence signal = VIX futures falling (or flat) while S&P 500 is rising, OR VIX futures rising while S&P is flat/falling — indicating a lag or disconnect.
+   - Use Z-score of the spread between normalized VIX futures returns and inverse S&P returns; trigger when |Z| > 1.5.
+
+2. **Inverse Correlation with 3-Month T-Bill Yields**
+   - Track rolling correlation (e.g., 20-period) between VIX futures returns and 3M T-Bill yield changes (using IRX or ZT futures).
+   - Require correlation to be **increasingly negative** (moving toward -1) over the last N bars.
+   - This confirms a "risk-off bid" environment where falling yields coincide with rising volatility expectations — a setup that often resolves with a sharp directional move.
+
+3. **Momentum Confirmation**
+   - Enter long only when S&P 500 momentum (e.g., 5-period ROC or RSI > 55) confirms upward pressure.
+   - Optionally require VIX futures term structure to be in contango (front < back) as a bullish tailwind.
+
+**Entry Rules (Long):**
+- VIX futures divergence Z-score > 1.5 (VIX lagging S&P upside).
+- Rolling VIX/T-Bill correlation is negative and its slope is decreasing (getting more negative).
+- S&P 500 5-period ROC > 0 and RSI(14) > 55.
+- Enter at market or on a micro pullback to VWAP.
+
+**Exit Rules:**
+- **Profit Target:** +0.3% to +0.5% on S&P 500 (scalp-sized).
+- **Stop Loss:** -0.2% on S&P 500, or when divergence Z-score reverts to 0.
+- **Time Stop:** Exit after 10-20 minutes if neither target nor stop is hit.
+- **Signal Invalidation:** Exit immediately if VIX/T-Bill correlation flips positive or if VIX futures spike >1% intraday.
+
+**Risk Management:**
+- Position size based on ATR(14) of S&P 500; risk no more than 0.25-0.5% of account per trade.
+- Max 2-3 concurrent scalps; avoid holding through major economic releases (CPI, FOMC, NFP).
+- Hard daily loss limit: -1.5% of account.
+- Avoid trading during first 5 minutes and last 10 minutes of session (wide spreads, erratic VIX prints).
+
+**Required Indicators/Data:**
+- VIX front-month futures (VX1) — real-time or 1-min bars.
+- S&P 500 (ES futures or SPY) — 1-min bars.
+- 3-Month T-Bill yield (IRX index or ZT futures) — 1-min or 5-min bars.
+- VWAP, ATR(14), RSI(14), 5-period ROC.
+- Rolling correlation and Z-score calculation engine.
+
+**Edge Rationale:**
+When VIX futures fail to track equity upside while simultaneously strengthening their inverse tie to short-term rates, it signals that volatility sellers are dominating even as rate markets price in risk. This fragile equilibrium typically resolves via a momentum continuation in equities — ideal for a scalp-long entry with tight risk.

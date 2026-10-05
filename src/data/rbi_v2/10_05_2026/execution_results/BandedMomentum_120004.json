@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728\ud83d\ude80 Moon Dev Backtest AI initializing... BandedMomentum strategy loading! \ud83d\ude80\u2728\ud83c\udf19\n\ud83c\udf19 Loading data from: /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi/BTC-USD-15m.csv\n\ud83c\udf19 Data loaded successfully! Shape: (1009, 5)\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/BandedMomentum_PKG.py\", line 118, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/BandedMomentum_PKG.py` failed. (See above for error)\n",
+  "execution_time": 6.074357,
+  "timestamp": "2026-10-05T12:00:04.036329"
+}

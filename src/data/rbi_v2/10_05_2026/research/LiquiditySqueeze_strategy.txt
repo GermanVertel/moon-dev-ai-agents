@@ -1,0 +1,53 @@
+STRATEGY_NAME: LiquiditySqueeze
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy exploits the market's tendency to hunt clustered stop-loss and liquidation zones. When price approaches dense clusters of pending liquidations (visible as liquidity walls in the order book), a breakout is likely as those positions get forced to close, creating a cascade. The strategy uses ATR contraction to time precise entries (low volatility = coiled spring) and ATR expansion to time exits (volatility spike = move exhausted).
+
+**Key Strategy Components:**
+
+1. **Liquidation Cluster Mapping**
+   - Pull order book depth data (Level 2/3) at regular intervals
+   - Identify price levels where large resting orders + estimated leverage clusters sit
+   - Mark "liquidity zones" as price bands (e.g., ±0.3% around a dense level)
+   - Rank zones by total notional liquidity (higher = stronger magnet)
+   - Refresh zones every 5–15 minutes as book shifts
+
+2. **ATR Regime Detection**
+   - Calculate ATR(14) on the entry timeframe (e.g., 5m or 15m)
+   - **Contraction phase:** Current ATR < 0.7 × 20-period ATR average → market is coiling
+   - **Expansion phase:** Current ATR > 1.3 × 20-period ATR average → breakout is underway
+   - Only take entries during contraction; only exit during expansion
+
+3. **Entry Logic (Long example)**
+   - Price trades within 0.5% of a high-liquidity zone below current price (short liquidation cluster)
+   - ATR is in contraction regime
+   - Price breaks and closes above the upper edge of the liquidity zone on the entry timeframe
+   - Volume confirms (>1.5× 20-period average) — signals forced liquidations triggering
+   - Enter long with stop just below the zone's lower edge
+
+4. **Exit Logic**
+   - **Primary:** ATR expands past 1.3× average AND price stalls (bearish rejection candle or momentum divergence) → take profit
+   - **Secondary:** Price reaches the next opposing liquidity zone (take-profit magnet)
+   - **Hard stop:** Close below zone's lower edge (liquidation cascade failed / fakeout)
+   - Optional trailing stop using 1.5 × current ATR once in profit
+
+**Risk Management:**
+- Position size = (Account Risk %) ÷ (Entry − Stop distance)
+- Max 1–2% risk per trade
+- Skip trades if liquidity zone is within 0.3% of a major news event (CPI, FOMC, earnings)
+- Maximum 2 concurrent positions to avoid correlated liquidation cascades
+- If ATR never expands within N bars (e.g., 20), exit at breakeven — thesis invalidated
+- Avoid zones that are too far from current price (>2% away) — low probability of being reached
+
+**Required Indicators & Data:**
+- **Order book depth feed** (L2/L3) — for liquidity cluster identification
+- **Estimated liquidation data** (from exchange APIs or third-party aggregators like Coinglass)
+- **ATR(14)** plus a 20-period ATR moving average for regime classification
+- **Volume** (20-period average for confirmation)
+- **Timeframe:** 5m or 15m for entries; 1H for higher-timeframe zone context
+- Candlestick pattern recognition for exit confirmation (rejection wicks, engulfing)
+
+**Edge & Rationale:**
+Liquidation clusters act as self-fulfilling magnets because market makers and large players know where forced selling/buying will occur. ATR contraction signals that the market has absorbed prior volatility and is primed for a directional move — pairing this with a nearby liquidation cluster dramatically increases the probability that the breakout becomes a cascade rather than a fakeout. ATR expansion on exit ensures you leave before the move mean-reverts.

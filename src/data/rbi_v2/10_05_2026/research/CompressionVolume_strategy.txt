@@ -1,0 +1,50 @@
+STRATEGY_NAME: CompressionVolume
+
+STRATEGY_DETAILS:
+The CompressionVolume strategy is a volatility breakout system that identifies periods of extreme market consolidation (the "squeeze") and trades the subsequent expansion, using volume as a confirmation filter to avoid false breakouts.
+
+**Core Concept:**
+Markets alternate between periods of low volatility (consolidation) and high volatility (expansion). Bollinger Band width reaches its narrowest point during consolidation. When price breaks out of this compressed range with a volume spike, it signals a high-probability directional move.
+
+**Required Indicators:**
+1. **Bollinger Bands** (20-period SMA, 2 standard deviations)
+2. **Band Width** = (Upper Band − Lower Band) / Middle Band (normalized to compare across time)
+3. **30-day Band Width Minimum** — track the lowest band width over the trailing 30 periods
+4. **Volume** with a 20-period Simple Moving Average (Volume SMA)
+
+**Entry Rules:**
+
+*Long Entry:*
+- Band Width is at or near its 30-day minimum (squeeze condition confirmed — e.g., current width ≤ lowest width of last 30 bars, or within a small tolerance)
+- Price closes ABOVE the Upper Bollinger Band
+- Current volume > 20-day average volume (volume spike confirmation)
+- Enter long on the close of the breakout candle (or next bar open)
+
+*Short Entry:*
+- Band Width is at or near its 30-day minimum (squeeze condition confirmed)
+- Price closes BELOW the Lower Bollinger Band
+- Current volume > 20-day average volume (volume spike confirmation)
+- Enter short on the close of the breakout candle (or next bar open)
+
+**Exit Rules:**
+- **Primary exit:** Price crosses back through the Middle Band (20-period SMA) — signals the move is losing momentum
+- **Alternative exit:** Price re-enters the bands after the breakout (closes back inside the Bollinger Bands)
+- **Time-based exit:** Close the position after N bars (e.g., 10–15) if neither target is hit
+- **Profit target option:** Exit at a fixed multiple of the band width (e.g., 2× the pre-breakout band width) to capture the typical expansion move
+
+**Risk Management:**
+1. **Stop Loss:** Place stop at the opposite band or at the Middle Band at time of entry. For a long, stop below the Lower Band or the recent swing low; for a short, stop above the Upper Band or recent swing high.
+2. **Position Sizing:** Since squeeze breakouts can fail, risk no more than 1–2% of account equity per trade.
+3. **Volume Confirmation Filter:** Skip any breakout that occurs without the volume spike — this dramatically reduces whipsaws.
+4. **Avoid Trading in Choppy Conditions:** If the squeeze is followed by a breakout that immediately re-enters the bands, exit quickly and wait for the next setup.
+5. **Correlation Check:** Avoid taking multiple simultaneous breakout trades in highly correlated instruments to prevent concentrated risk.
+
+**Key Parameters to Tune:**
+- Bollinger Band period (default 20) and standard deviation multiplier (default 2.0)
+- Lookback for minimum band width (default 30 days)
+- Volume MA period (default 20)
+- Volume spike threshold (e.g., 1.2× to 1.5× average)
+- Exit method and time-stop length
+
+**Best Conditions:**
+Works best on liquid instruments (large-cap stocks, major FX pairs, index futures) with reliable volume data. Performs poorly in low-volume instruments where volume spikes are unreliable. Most effective on intraday-to-swing timeframes (15m, 1H, 4H, Daily).

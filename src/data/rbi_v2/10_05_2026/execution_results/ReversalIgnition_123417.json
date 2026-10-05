@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Moon Dev Data Loaded! Shape: (1009, 5)\n                    Open          High  ...         Close        Volume\ndatetime                                ...                            \n2024-01-01  42280.234375  44175.437500  ...  44167.332031  1.842698e+10\n2024-01-02  44187.140625  45899.707031  ...  44957.968750  3.933527e+10\n2024-01-03  44961.601562  45503.242188  ...  42848.175781  4.634232e+10\n2024-01-04  42855.816406  44770.023438  ...  44179.921875  3.044809e+10\n2024-01-05  44192.980469  44353.285156  ...  44162.691406  3.233603e+10\n\n[5 rows x 5 columns]\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/ReversalIgnition_BTFinal_v6.py\", line 130, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1325, in run\n    strategy.init()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/ReversalIgnition_BTFinal_v6.py\", line 43, in init\n    close = self.data.Close.astype(float).values\nAttributeError: '_Array' object has no attribute 'values'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_final/ReversalIgnition_BTFinal_v6.py` failed. (See above for error)\n",
+  "execution_time": 5.477396,
+  "timestamp": "2026-10-05T12:34:17.811959"
+}

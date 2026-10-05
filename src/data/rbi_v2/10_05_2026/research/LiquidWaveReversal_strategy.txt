@@ -1,0 +1,59 @@
+STRATEGY_NAME: LiquidWave Reversal
+
+STRATEGY_DETAILS:
+This strategy identifies liquidity-driven reversal points by combining wave-pattern structure with volume dynamics. The core premise is that sharp liquidity sweeps (stop hunts, wick spikes, or false breakouts) often mark exhaustion of a move and precede a reversal. By mapping these events onto Elliott-style wave counts and confirming with volume, the strategy aims to enter reversals at high-probability zones.
+
+1. KEY STRATEGY COMPONENTS
+- Liquidity Sweep Detection: Identify candles that pierce a prior swing high/low (or equal highs/lows) and then close back inside the range, leaving a wick. These represent liquidity grabs.
+- Wave Pattern Context: Track impulse and corrective wave structures (1-2-3-4-5, A-B-C). Reversals are favored at the end of wave 5, end of wave C, or after a wave 3 extension when momentum diverges.
+- Volume Dynamics: Look for volume spikes on the sweep candle (absorption) followed by declining volume on the retest, or a volume climax at the reversal point with a divergence against price.
+- Confluence Zones: Combine the sweep with Fibonacci retracement levels (0.618–0.786), prior support/resistance, or order blocks.
+
+2. ENTRY RULES
+- Long Entry:
+  a. Price sweeps a prior swing low (liquidity grab) and closes back above it.
+  b. Wave structure suggests a completed corrective wave (C) or end of an impulse down.
+  c. Volume shows a spike on the sweep and a bullish divergence (price lower low, volume/oscillator higher low).
+  d. Enter on the close of the reversal candle or on a break above the sweep candle's high.
+- Short Entry:
+  a. Price sweeps a prior swing high and closes back below it.
+  b. Wave structure suggests completed wave 5 or wave C to the upside.
+  c. Volume spike on the sweep with bearish divergence.
+  d. Enter on close of reversal candle or break below sweep candle's low.
+
+3. EXIT RULES
+- Take Profit:
+  - First target: prior swing high/low or 1.272–1.618 Fibonacci extension of the reversal leg.
+  - Second target: next major wave structure level (e.g., wave 3 or wave 5 projection).
+  - Scale out at 50% at first target, trail the rest.
+- Stop Loss:
+  - Place just beyond the sweep wick (below the low for longs, above the high for shorts).
+  - If price closes back beyond the sweep extreme, exit immediately (invalidation).
+
+4. RISK MANAGEMENT
+- Risk per trade: 0.5–1% of account equity.
+- Position sizing based on distance from entry to stop (ATR-based or fixed pip/point risk).
+- Maximum 2–3 concurrent positions to avoid correlated exposure.
+- Avoid trading during major news events unless the setup is fully formed.
+- Require a minimum reward-to-risk ratio of 2:1.
+
+5. REQUIRED INDICATORS
+- Volume (with moving average, e.g., 20-period) to spot spikes and divergences.
+- RSI or MACD for divergence confirmation.
+- Fibonacci retracement/extension tool for confluence.
+- ATR for volatility-based stop sizing.
+- Optional: Order block or liquidity heatmap indicator to mark key sweep zones.
+
+6. TIMEFRAMES & MARKETS
+- Best on 15m, 1H, and 4H charts for intraday to swing trading.
+- Works across forex, crypto, and indices where liquidity sweeps are common.
+- Higher timeframe (4H/Daily) wave context improves accuracy.
+
+7. EXECUTION CHECKLIST
+- [ ] Identify prior swing high/low or equal highs/lows (liquidity pool).
+- [ ] Confirm sweep candle with wick and close back inside range.
+- [ ] Check wave count for exhaustion (end of 5 or C).
+- [ ] Verify volume spike + divergence.
+- [ ] Confirm confluence (Fib, S/R, order block).
+- [ ] Set entry, stop beyond wick, targets at extensions.
+- [ ] Ensure R:R ≥ 2:1 before executing.

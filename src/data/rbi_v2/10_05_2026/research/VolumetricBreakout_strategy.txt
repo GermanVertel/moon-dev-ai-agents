@@ -1,0 +1,53 @@
+STRATEGY_NAME: VolumetricBreakout
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band breakouts with volume confirmation and momentum-based exits, creating a filtered approach that avoids low-conviction breakouts.
+
+**Core Components:**
+
+1. **Bollinger Bands (20-period, 2 std dev)**
+   - Upper Band = SMA(20) + 2 × StdDev(20)
+   - Middle Band = SMA(20)
+   - Lower Band = SMA(20) - 2 × StdDev(20)
+   - The upper band acts as the dynamic breakout threshold
+
+2. **Volume Filter (20-day average)**
+   - Volume Spike Condition: Current Volume > 2 × SMA(Volume, 20)
+   - Acts as confirmation that the breakout has genuine participation
+
+3. **RSI (14-period)**
+   - Used exclusively for exit signals
+   - Exit trigger when RSI crosses below 70 (momentum cooling off)
+
+**Entry Rules (Long Only):**
+- **Primary Trigger:** Price closes ABOVE the upper Bollinger Band
+- **Confirmation:** Same-bar volume exceeds 2× the 20-day average volume
+- Both conditions must occur on the SAME closing bar
+- Enter at next bar's open (or market close of signal bar)
+- Position size: standard risk unit (e.g., 1-2% of equity)
+
+**Exit Rules:**
+- **Momentum Exit:** Close long when RSI(14) crosses below 70
+- This captures the transition from overbought/strong momentum to weakening momentum
+- Exit at next bar's open after the RSI cross signal
+
+**Risk Management:**
+- **Initial Stop-Loss:** Place stop at the middle Bollinger Band (SMA 20) OR 1× ATR(14) below entry, whichever is tighter
+- **Trailing Stop Option:** Trail stop along the middle band to lock in profits as trend extends
+- **Max Position Risk:** 1-2% of account equity per trade
+- **Time Stop:** If neither exit nor stop triggers within N bars (e.g., 20), consider closing to free capital
+- **Avoid Chasing:** Skip signals where price is already >3% above the upper band (extended breakout)
+
+**Required Indicators:**
+- Bollinger Bands (20, 2)
+- Volume SMA (20)
+- RSI (14)
+- ATR (14) — for stop sizing
+
+**Key Assumptions & Notes:**
+- Works best in trending or momentum-driven markets (equities, crypto, futures)
+- The volume filter is critical — it eliminates "fake" breakouts on low liquidity
+- RSI exit at 70 (not 80) is aggressive; it exits earlier but may cut winners short in strong trends
+- Consider a hybrid exit: RSI < 70 OR price closes back below upper band for a tighter trailing mechanism
+- Backtest across multiple timeframes (daily, 4H) to validate robustness
+- Watch for whipsaws in ranging markets — consider adding an ADX > 20 filter to confirm trending regime

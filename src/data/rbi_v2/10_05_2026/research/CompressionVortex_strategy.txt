@@ -1,0 +1,47 @@
+STRATEGY_NAME: CompressionVortex
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+CompressionVortex identifies periods of extreme volatility compression (the "coil") and enters on the explosive expansion that follows (the "vortex"). It combines a rare statistical volatility event (6-month BBW percentile contraction) with a momentum confirmation filter (VW-MACD histogram surge) to time entries, then exits dynamically based on whichever comes first: a Bollinger Band breakout or an ATR-based stop.
+
+**Key Strategy Components:**
+
+1. **Volatility Compression Detector (The Coil)**
+   - Indicator: Bollinger Band Width (BBW) = (Upper Band − Lower Band) / Middle Band
+   - Standard settings: 20-period SMA, 2 standard deviations
+   - Filter: Current BBW must be below the 6-month (≈126 trading day) rolling percentile threshold (e.g., 20th percentile or lower)
+   - Purpose: Ensures we only trade after sustained, statistically significant contraction — not random low-volatility days.
+
+2. **Momentum Surge Confirmation (The Trigger)**
+   - Indicator: Volume-Weighted MACD (VW-MACD)
+     - Compute MACD (12, 26, 9) but weight each price input by normalized volume, or apply volume weighting to the histogram itself
+   - Signal: Histogram must surge — defined as a sharp increase in absolute histogram value (e.g., histogram flips sign OR grows by >X% over N bars) coinciding with the compression window
+   - Purpose: Confirms that institutional/volume-backed momentum is building inside the squeeze, filtering out dead-coil false setups.
+
+**Entry Rules:**
+- **Long Entry:** BBW < 6-month percentile threshold AND VW-MACD histogram surges positively (crosses above zero or accelerates upward) AND price closes above the middle Bollinger Band.
+- **Short Entry:** BBW < 6-month percentile threshold AND VW-MACD histogram surges negatively AND price closes below the middle Bollinger Band.
+- Optional: Require volume expansion on the trigger bar (e.g., volume > 1.5× 20-day average).
+
+**Exit Rules:**
+- **Primary Exit (Bollinger Breakout):** Close position when price closes outside the outer Bollinger Band in the direction of the trade (upper band for longs, lower for shorts) — this captures the volatility expansion.
+- **Secondary Exit (ATR Threshold):** Close position if the 14-day ATR rises above a predefined threshold (e.g., 1.5× its 20-day average) — signals the expansion phase is overheating or exhausting.
+- **Stop Loss:** Place stop at the opposite Bollinger Band or at 1.5× ATR from entry, whichever is tighter.
+- **Time Stop:** If neither exit triggers within N bars (e.g., 10–15), exit to avoid capital being tied up in a failed squeeze.
+
+**Risk Management:**
+- Position sizing based on ATR: risk a fixed % of equity per trade, sized inversely to the 14-day ATR.
+- Max 1–2 concurrent positions to avoid correlated volatility bets.
+- Avoid trading during scheduled high-impact news events that could produce gap-driven false breakouts.
+- Trail stop once price moves 1× ATR in favor, using the middle Bollinger Band as a dynamic trail.
+
+**Required Indicators:**
+1. Bollinger Bands (20, 2) — for BBW and breakout levels
+2. Bollinger Band Width — with 6-month rolling percentile rank
+3. VW-MACD (12, 26, 9) — volume-weighted histogram
+4. ATR (14) — for exit threshold and stop placement
+5. Volume (20-day average) — for surge confirmation
+
+**Unique Edge:**
+Most squeeze strategies rely on Bollinger Band contraction alone or on MACD crossovers. CompressionVortex layers three independent filters — statistical (6-month BBW percentile), momentum (VW-MACD surge), and volume weighting — to isolate only the highest-probability volatility expansions, then uses a dual exit (BB breakout OR ATR breach) to adapt to both trending and stalling expansions.

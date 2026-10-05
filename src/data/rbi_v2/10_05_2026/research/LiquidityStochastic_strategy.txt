@@ -1,0 +1,53 @@
+STRATEGY_NAME: LiquidityStochastic
+
+STRATEGY_DETAILS:
+This strategy combines the Stochastic Oscillator's momentum-based reversal signals with Chaikin Money Flow's (CMF) volume-weighted accumulation/distribution bias to filter out low-conviction signals. The core idea: only act on Stochastic crossovers when institutional money flow confirms the move, reducing whipsaws in choppy markets.
+
+1. KEY STRATEGY COMPONENTS
+- Stochastic Oscillator (%K, %D): Measures where price closes relative to its high-low range over a lookback period. Signals overbought (>80) / oversold (<20) and momentum shifts via %K/%D crossovers.
+- Chaikin Money Flow (CMF): Volume-weighted indicator measuring buying/selling pressure over a period. Uses Money Flow Multiplier [(Close - Low) - (High - Close)] / (High - Low) × Volume, summed and divided by total volume. Positive CMF = accumulation, negative = distribution.
+- Dual Confirmation Logic: Stochastic provides timing (entry trigger), CMF provides conviction (trend/filter). Both must align.
+
+2. INDICATOR SETTINGS (defaults)
+- Stochastic: %K period = 14, %D period = 3, smoothing = 3
+- CMF: period = 20
+- Timeframe: 1H or 4H for swing; 15m for intraday (adjust CMF period proportionally)
+
+3. ENTRY RULES
+LONG Entry:
+- Stochastic %K crosses ABOVE %D while both are below 20 (oversold zone), OR %K crosses above %D below 50 in an uptrend.
+- CMF > 0 (positive money flow) and ideally rising over the last 2-3 bars.
+- Confirmation: CMF should have been positive or turning positive at the moment of the Stochastic bullish cross.
+
+SHORT Entry:
+- Stochastic %K crosses BELOW %D while both are above 80 (overbought zone), OR %K crosses below %D above 50 in a downtrend.
+- CMF < 0 (negative money flow) and ideally falling over the last 2-3 bars.
+
+4. EXIT RULES
+Long Exit:
+- Stochastic %K crosses below %D in overbought zone (>80), OR
+- CMF flips negative (money flow turning bearish), OR
+- Price hits predefined target/stop.
+Short Exit:
+- Stochastic %K crosses above %D in oversold zone (<20), OR
+- CMF flips positive, OR
+- Target/stop hit.
+
+5. RISK MANAGEMENT
+- Stop Loss: Place below recent swing low (long) / above recent swing high (short), or use ATR-based stop (1.5× ATR(14)).
+- Take Profit: 1.5R to 2R minimum; trail using Stochastic exits or CMF flip.
+- Position Sizing: Risk max 1-2% of equity per trade.
+- Avoid trading when CMF is near zero (|CMF| < 0.05) — indicates indecision/no clear flow.
+- Avoid counter-trend trades: in strong uptrends, skip short signals unless CMF is strongly negative.
+
+6. REQUIRED INDICATORS
+- Stochastic Oscillator (14, 3, 3)
+- Chaikin Money Flow (20)
+- ATR (14) for stop sizing
+- Optional: 50/200 EMA for trend context
+
+7. BEST PRACTICES / NOTES
+- Strongest signals occur when CMF and Stochastic agree at extremes (Stochastic <20 with rising positive CMF = high-probability long).
+- Divergences: If price makes a lower low but CMF makes a higher low, it strengthens bullish Stochastic signals.
+- CMF is volume-dependent — requires reliable volume data; avoid illiquid instruments.
+- Backtest across trending and ranging regimes; this combo excels in ranging-to-mild-trend markets but can lag in strong parabolic moves.

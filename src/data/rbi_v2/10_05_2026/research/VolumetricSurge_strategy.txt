@@ -1,0 +1,46 @@
+STRATEGY_NAME: VolumetricSurge
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band breakouts with volume confirmation to capture high-momentum upside moves, using RSI as a trailing exit signal.
+
+**Core Concept:**
+A close above the upper Bollinger Band signals price expansion beyond normal statistical range. However, breakouts without volume confirmation often fail. This strategy requires a simultaneous volume spike (2x the 20-day average) to validate genuine institutional participation before entering long.
+
+**Indicators Required:**
+1. Bollinger Bands (20-period SMA, 2 standard deviations) — upper band, middle band, lower band
+2. Volume with 20-day Simple Moving Average (SMA) of volume
+3. RSI (14-period, standard setting)
+
+**Entry Rules (Long Only):**
+- Price closes ABOVE the upper Bollinger Band (not just wicks — use closing price)
+- Current bar's volume ≥ 2.0 × 20-day average volume
+- Both conditions must occur on the SAME bar (simultaneous confirmation)
+- Optional filter: RSI < 70 at entry to avoid buying into already-overbought conditions
+
+**Exit Rules:**
+- Primary exit: RSI (14) crosses BELOW 70 (from above), signaling momentum exhaustion
+- Alternative/backup exit: Price closes back below the middle Bollinger Band (20-SMA) — use this if RSI never reaches 70
+- Hard stop-loss: Close below entry bar's low, or 2× ATR(14) below entry price
+
+**Risk Management:**
+- Position size: Risk no more than 1–2% of equity per trade
+- Stop-loss placement: Below the breakout candle's low OR 2× ATR(14), whichever is tighter
+- Trailing stop: Once RSI exceeds 80, trail stop at middle Bollinger Band
+- Max holding period: 10–15 bars to avoid stagnation trades
+- Avoid entries within 30 minutes of market open/close (for intraday) to reduce false volume spikes
+
+**Trade Management Notes:**
+- Volume spikes on breakouts often precede continuation runs but can also mark climax tops — the RSI exit protects against the latter
+- If volume spike is >4x average, consider partial profit-taking (50%) at +2× ATR to lock gains
+- Skip trades during low-liquidity sessions (holidays, pre-market) where volume averages are distorted
+- Filter out earnings-gap days unless the strategy is intentionally event-driven
+
+**Best Market Conditions:**
+- Trending or momentum-driven markets (works poorly in choppy ranges)
+- Liquid large-cap stocks, ETFs, or index futures where volume data is reliable
+- Avoid during low-volatility consolidation regimes where Bollinger Bands are compressed
+
+**Edge Case Handling:**
+- If price gaps above upper band at open with no volume confirmation, wait for a subsequent bar to confirm
+- If RSI is already below 70 at entry (rare), use middle-band close as primary exit instead
+- Re-entry allowed only after RSI resets below 50 and a new breakout setup forms

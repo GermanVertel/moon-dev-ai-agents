@@ -1,0 +1,76 @@
+STRATEGY_NAME: WaveletFractal
+
+STRATEGY_DETAILS:
+
+## Strategy Overview
+This strategy uses Wavelet Transform decomposition to distinguish genuine breakouts from false breakouts (fakeouts) by analyzing price action across multiple frequency scales simultaneously. The core insight is that true breakouts exhibit sustained energy across medium-to-low frequency components, while false breakouts show transient, high-frequency noise spikes that quickly dissipate.
+
+## Key Strategy Components
+
+### 1. Wavelet Decomposition
+- Apply a Discrete Wavelet Transform (DWT) to the price series using a Daubechies wavelet (db4 or db6 recommended)
+- Decompose into 4-5 levels:
+  - **Level 1-2 (Detail coefficients):** High-frequency noise — captures intrabar noise and micro-whipsaws
+  - **Level 3 (Detail coefficients):** Medium-frequency — captures the actual breakout impulse
+  - **Level 4-5 (Approximation coefficients):** Low-frequency trend — captures macro direction
+- Use a rolling window (e.g., 128 or 256 bars) for continuous decomposition
+
+### 2. Breakout Detection
+- Identify a breakout when price closes beyond a recent consolidation range (Donchian channel of N=20–50 bars)
+- Compute wavelet energy at the breakout bar:
+  - `E_detail3 = sum(d3_coeffs²)` over the last K bars
+  - `E_approx = sum(a4_coeffs²)` over the last K bars
+- **True breakout signal:** E_detail3 rises significantly AND E_approx shows aligned directional momentum
+- **False breakout signal:** E_detail3 spikes but E_approx remains flat or reverses
+
+### 3. Confirmation Filters
+- **Energy Ratio:** `ER = E_detail3 / E_detail1` — must exceed threshold (e.g., 1.5) to confirm sustained breakout energy vs. noise
+- **Trend Alignment:** Approximation coefficient slope must match breakout direction
+- **Volume Confirmation:** Breakout bar volume > 1.5× rolling average
+
+## Entry Rules
+**Long Entry:**
+- Price closes above Donchian upper band
+- ER > 1.5 (sustained energy confirmed)
+- Approximation slope > 0 (macro trend aligned)
+- Volume confirmation satisfied
+- Enter on next bar open (or on close if aggressive)
+
+**Short Entry:**
+- Mirror conditions: close below Donchian lower band, ER > 1.5, approximation slope < 0, volume confirmed
+
+## Exit Rules
+- **Profit target:** 2× ATR from entry
+- **Stop loss:** 1× ATR below entry (or below the breakout bar low for longs)
+- **Trailing stop:** Activate after 1× ATR profit; trail using the Level 3 detail coefficient reversal signal
+- **Time stop:** Exit if no favorable movement within 10 bars
+- **Fakeout invalidation:** If price re-enters the Donchian range within 3 bars, exit immediately
+
+## Risk Management
+- **Position sizing:** Risk 1% of equity per trade (fixed fractional)
+- **Max concurrent positions:** 3 uncorrelated instruments
+- **Daily loss limit:** 3% of equity — halt trading for the day
+- **Correlation filter:** Avoid taking simultaneous positions in highly correlated markets (>0.7)
+- **Regime filter:** Disable strategy during extreme volatility (ATR > 3× 20-period average)
+
+## Required Indicators/Calculations
+1. **Donchian Channels** (period 20–50) — breakout levels
+2. **Discrete Wavelet Transform** (db4, 4–5 levels) — core signal engine
+3. **ATR** (period 14) — volatility-based stops and targets
+4. **Volume MA** (period 20) — confirmation filter
+5. **Wavelet Energy Ratio** — custom metric (E_detail3 / E_detail1)
+6. **Approximation Coefficient Slope** — directional bias from low-frequency components
+
+## Backtesting Methodology
+- **Data:** Minimum 3 years of 1-hour or daily OHLCV data across multiple asset classes (FX, equities, crypto)
+- **Walk-forward analysis:** 70% in-sample / 30% out-of-sample with rolling windows
+- **Metrics to evaluate:**
+  - Win rate, profit factor, Sharpe ratio, max drawdown
+  - False breakout filter effectiveness: compare against raw Donchian breakout baseline
+  - Signal-to-noise improvement ratio
+- **Sensitivity testing:** Vary wavelet type (db2–db8), decomposition levels (3–6), and energy thresholds
+- **Transaction costs:** Include realistic slippage and commissions (0.05–0.1% per side)
+- **Statistical validation:** Monte Carlo permutation test to confirm wavelet signal adds alpha beyond random
+
+## Unique Edge
+By decomposing price into frequency bands, the strategy separates genuine trend-impulse energy (medium frequency) from market noise (high frequency) and macro context (low frequency). This three-layer confirmation dramatically reduces false breakout entries compared to traditional single-timeframe breakout systems, while preserving the asymmetric payoff profile of trend-following breakouts.

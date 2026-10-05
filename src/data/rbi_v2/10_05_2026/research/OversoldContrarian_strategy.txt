@@ -1,0 +1,52 @@
+STRATEGY_NAME: OversoldContrarian
+
+STRATEGY_DETAILS:
+This strategy combines momentum exhaustion signals with options trading to capture downside moves after oversold conditions. The approach uses RSI as a trigger indicator to identify when a stock has experienced significant selling pressure, then uses put options to profit from potential continued weakness or volatility.
+
+**Key Strategy Components:**
+
+1. **Primary Signal - RSI Oversold Condition:**
+   - Monitor RSI (Relative Strength Index) using a standard 14-period setting
+   - Trigger condition: RSI drops below 30 at any point within the past 7 calendar days
+   - This indicates the underlying asset has been in oversold territory recently
+
+2. **Options Instrument Selection:**
+   - Once RSI condition is met, purchase a put option
+   - Strike price: 10% below the current market price at time of entry
+   - This creates an out-of-the-money put position
+   - Choose expiration date with sufficient time for the thesis to play out (recommend 30-45 days minimum)
+
+3. **Entry Rules:**
+   - Entry is triggered when both conditions align:
+     - RSI has fallen below 30 within the trailing 7-day window
+     - Current price is established for strike calculation
+   - Calculate strike: Current Price × 0.90 (10% below current)
+   - Enter put option position at market
+
+4. **Profit Target:**
+   - Target profit = Strike Price − New Low Price
+   - Monitor for new lows in the underlying asset
+   - As price makes new lows below the strike, the put gains intrinsic value
+   - Exit when the difference between strike and new low reaches the target
+
+5. **Risk Management:**
+   - Maximum loss limited to premium paid for the put option
+   - Consider position sizing based on premium cost (recommend 1-3% of portfolio per trade)
+   - Set a mental stop if RSI recovers above 50 without price making new lows
+   - Time decay (theta) works against the position - monitor expiration
+   - Consider exiting if the underlying rallies above the entry price
+
+6. **Required Indicators:**
+   - RSI (14-period) - primary trigger
+   - Price action monitoring for new lows
+   - Options chain data for strike selection and premium pricing
+   - Implied volatility consideration (avoid buying when IV is extremely elevated)
+
+7. **Execution Notes:**
+   - The 7-day lookback for RSI creates a window where the signal remains valid
+   - Strike selection at 10% OTM balances cost vs. probability
+   - Target profit is dynamic based on how far price falls below strike
+   - Consider scaling out at multiple targets if price continues lower
+
+**Strategy Logic Rationale:**
+The strategy assumes that oversold RSI conditions may precede continued weakness rather than immediate reversal. By using puts with a 10% OTM strike, the trader gains leveraged exposure to downside moves while limiting risk to the premium paid. The profit target dynamically adjusts to market action, allowing for maximum capture if price makes significant new lows.

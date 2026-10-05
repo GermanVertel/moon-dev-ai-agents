@@ -1,0 +1,51 @@
+STRATEGY_NAME: KineticVolatility
+
+STRATEGY_DETAILS:
+The KineticVolatility strategy is a volatility-expansion breakout system that uses a volatility oscillator (e.g., ATR-normalized rate-of-change, or a Chaikin-style oscillator) to detect compression phases and trade the explosive expansion that follows. It is designed for instruments that alternate between low-volatility consolidation and high-volatility directional moves (FX majors, index futures, crypto).
+
+1. KEY STRATEGY COMPONENTS
+- Volatility Oscillator: A normalized measure of current volatility vs. its own recent average. Common construction: (ATR(14) / SMA(ATR(14), 50)) - 1, or the Chaikin Volatility Oscillator = ROC of the High-Low range over N periods.
+- Compression Detection: Oscillator reading below a low threshold (e.g., < 0.0 or below the 20th percentile of its 100-period range) signals a squeeze/consolidation.
+- Expansion Trigger: Oscillator crossing above a high threshold (e.g., > 0.5 or above the 80th percentile) confirms volatility expansion.
+- Directional Filter: A breakout level (Donchian channel, prior swing high/low, or opening range) provides the trade direction once expansion is confirmed.
+- Trend Bias (optional): 200-period EMA on price to only take breakouts in the direction of the dominant trend.
+
+2. ENTRY RULES
+Long Entry:
+- Volatility oscillator was in compression (< low threshold) within the last K bars (e.g., 10).
+- Oscillator now crosses above the expansion threshold.
+- Price closes above the upper Donchian band (e.g., 20-period high) or breaks the prior swing high.
+- Optional: price above 200 EMA for trend alignment.
+Short Entry:
+- Same compression condition met.
+- Oscillator crosses above expansion threshold.
+- Price closes below the lower Donchian band (20-period low) or prior swing low.
+- Optional: price below 200 EMA.
+
+3. EXIT RULES
+- Stop Loss: Placed at the opposite side of the breakout range, or at a fixed ATR multiple (e.g., 1.5 x ATR(14)) from entry.
+- Take Profit: 
+  - Option A: Fixed R multiple (e.g., 2R or 3R).
+  - Option B: Trailing stop using ATR (e.g., 2 x ATR) to ride the expansion.
+  - Option C: Exit when the volatility oscillator rolls back below its midline (volatility contraction returns).
+- Time Stop: Exit if the trade has not reached 1R within X bars (e.g., 15) — failed breakouts often revert.
+
+4. RISK MANAGEMENT
+- Position sizing: Risk a fixed % of equity per trade (e.g., 0.5–1%), sized off the ATR-based stop distance.
+- Max concurrent positions: 1–2 per instrument to avoid correlated exposure during market-wide volatility spikes.
+- Avoid trading during scheduled high-impact news (FOMC, NFP, CPI) unless the strategy is explicitly event-driven.
+- Filter out low-liquidity sessions; volatility breakouts work best in London/NY overlap for FX, or RTH for equities.
+- Daily loss limit: halt trading after 2–3 consecutive losing breakouts (false-break clusters).
+
+5. REQUIRED INDICATORS
+- ATR (period 14) — volatility base
+- Volatility Oscillator: (ATR / SMA(ATR, 50)) - 1, or Chaikin Volatility (ROC of High-Low range)
+- Donchian Channel (period 20) or swing high/low detection
+- EMA (period 200) — optional trend filter
+- Bar timer / session filter for time-stop logic
+
+6. IMPLEMENTATION NOTES
+- Best timeframes: 1H and 4H for swing trading; 5m–15m for intraday scalping of expansion.
+- Backtest across regimes: the strategy underperforms in choppy, mean-reverting markets — a regime filter (e.g., ADX > 20) improves robustness.
+- Combine with volume confirmation (volume spike on breakout bar) to reduce false signals.
+- Walk-forward optimize the compression and expansion thresholds per instrument rather than using fixed values.

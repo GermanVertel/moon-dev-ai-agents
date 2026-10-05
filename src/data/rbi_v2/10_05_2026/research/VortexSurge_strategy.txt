@@ -1,0 +1,47 @@
+STRATEGY_NAME: VortexSurge
+
+STRATEGY_DETAILS:
+This strategy combines three complementary technical tools to trade momentum-driven breakouts with dynamic risk management. The core idea is to enter only when a trend reversal/continuation signal (Vortex) is confirmed by strong momentum (CMO) and then protect profits using volatility-adaptive trailing stops (Keltner).
+
+1. KEY STRATEGY COMPONENTS
+- Vortex Indicator (VI): Uses VI+ and VI- lines to identify directional trend shifts. A bullish crossover (VI+ crossing above VI-) signals potential upward momentum; a bearish crossover (VI- crossing above VI+) signals downward momentum.
+- Chande Momentum Oscillator (CMO): Measures momentum on a scale of -100 to +100. Readings above +60 indicate strong bullish momentum; below -60 indicate strong bearish momentum.
+- Keltner Channels: Consist of an EMA (typically 20-period) with upper/lower bands set at ATR multiples (e.g., 2x ATR). The width (upper band − lower band) reflects volatility. Expanding width signals increasing volatility, which is used to adjust the trailing stop distance.
+
+2. ENTRY RULES
+- Long Entry:
+  - Vortex Indicator: VI+ crosses above VI- (bullish crossover).
+  - CMO: Current CMO value > 60 (surge in bullish momentum).
+  - Both conditions must occur on the same bar or within a small window (e.g., 1–2 bars) to avoid lag.
+- Short Entry (optional, for symmetric strategy):
+  - Vortex Indicator: VI- crosses above VI+ (bearish crossover).
+  - CMO: Current CMO value < -60 (surge in bearish momentum).
+
+3. EXIT RULES
+- Trailing Stop-Loss (Long):
+  - Initial stop: Place at the lower Keltner Channel band at entry, or at a fixed multiple of ATR (e.g., 2x ATR) below entry.
+  - Trailing logic: As price moves in favor, trail the stop using the Keltner Channel width. Specifically, calculate the current Keltner width (Upper − Lower). If width is expanding (current width > previous width), widen the trailing stop distance (e.g., stop = highest high since entry − 1.5 × current width). If width is contracting, tighten the stop (e.g., stop = highest high since entry − 0.8 × current width). This adapts to volatility: wider stops in volatile markets, tighter stops in calm markets.
+  - Exit when price closes below the trailing stop.
+- Trailing Stop-Loss (Short):
+  - Mirror the long logic: stop = lowest low since entry + (1.5 × width) when expanding, or + (0.8 × width) when contracting.
+- Additional Exit: If CMO crosses back below 60 (for longs) or above -60 (for shorts), consider a partial or full exit to lock in profits, especially if Vortex also shows a reversal.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk no more than 1–2% of account equity per trade. Calculate position size based on the distance between entry price and initial stop-loss.
+- Maximum Drawdown Control: If the strategy experiences a drawdown exceeding a predefined threshold (e.g., 10%), reduce position size or pause trading until conditions stabilize.
+- Volatility Filter: Avoid trading during extremely low volatility (Keltner width near historical lows) or extremely high volatility (width spiking without clear trend) to reduce whipsaws.
+- Time Stop: If the trade does not move in favor within a certain number of bars (e.g., 20), consider exiting to free up capital.
+
+5. REQUIRED INDICATORS
+- Vortex Indicator: Period 14 (default), with VI+ and VI- lines.
+- Chande Momentum Oscillator: Period 14 or 20 (default 14), with threshold at +60/-60.
+- Keltner Channels: EMA period 20, ATR period 10, multiplier 2.0 (adjustable). Track width (Upper − Lower) and its rate of change.
+- Optional: ATR for initial stop placement and position sizing.
+
+6. IMPLEMENTATION NOTES
+- Use closing prices for crossover and threshold signals to avoid intrabar noise.
+- Backtest across different timeframes (e.g., 15m, 1h, 4h) and asset classes (equities, forex, crypto) to find optimal parameters.
+- Consider adding a volume filter: breakout entries are more reliable when accompanied by above-average volume.
+- The Keltner width expansion trailing stop is the unique edge—it dynamically adjusts to market volatility, allowing trades to breathe during strong trends while protecting profits during consolidation.
+
+This strategy, named VortexSurge, captures momentum breakouts with a volatility-adaptive trailing stop, aiming to ride trends while managing risk dynamically.

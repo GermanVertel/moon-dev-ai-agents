@@ -1,0 +1,56 @@
+STRATEGY_NAME: SqueezeChannel
+
+STRATEGY_DETAILS:
+
+**Strategy Overview**
+SqueezeChannel is a volatility-expansion breakout strategy that exploits the transition from low-volatility consolidation to directional movement. It combines Bollinger Band width contraction (the "squeeze") with Donchian Channel breakouts to time long entries, and uses RSI to manage exits before momentum exhaustion.
+
+**Core Components**
+
+1. **Bollinger Band Width (BBW) - Squeeze Detector**
+   - Calculate BBW = (Upper Band − Lower Band) / Middle Band
+   - Standard settings: 20-period SMA, 2 standard deviations
+   - Track BBW over a 6-month lookback (~126 trading days)
+   - Squeeze condition: Current BBW ≤ the lowest BBW value in the past 126 trading days
+   - This identifies periods of historically compressed volatility where an expansion is statistically likely
+
+2. **Donchian Channel - Breakout Trigger**
+   - Standard settings: 20-period high/low (adjustable based on timeframe)
+   - Long entry trigger: Price closes ABOVE the upper Donchian Channel band
+   - The breakout confirms that volatility expansion is resolving to the upside
+
+3. **RSI - Exit Manager**
+   - Standard settings: 14-period RSI
+   - Exit trigger: RSI crosses BELOW 70 (from above)
+   - This signals that overbought momentum is fading after the breakout run
+
+**Entry Rules (Long Only)**
+- Condition A: BBW is at a 6-month low (squeeze in effect)
+- Condition B: Price closes above the upper Donchian Channel
+- Both conditions should be evaluated on the same bar or with BBW squeeze occurring within a short window (e.g., last 3–5 bars) prior to the Donchian breakout
+- Enter long at next bar open (or on close if using aggressive execution)
+
+**Exit Rules**
+- Primary exit: RSI crosses below 70 after having been above 70
+- Optional stop-loss: Close below the Donchian Channel midline or below the entry bar's low
+- Optional time stop: Exit if no RSI cross occurs within N bars (e.g., 20 bars)
+
+**Risk Management**
+- Position sizing: Risk 1–2% of equity per trade
+- Initial stop: Place below the Donchian Channel midline or recent swing low (ATR-based alternative: 2× ATR below entry)
+- Trailing stop: Consider trailing at the Donchian midline to lock in profits once RSI exceeds 70
+- Avoid entering if overall market regime is strongly bearish (optional filter: price above 200-period SMA)
+
+**Required Indicators**
+- Bollinger Bands (20, 2) — for width calculation
+- Donchian Channel (20) — for breakout trigger
+- RSI (14) — for exit signal
+- Optional: ATR (14) for stop placement, 200 SMA for regime filter
+
+**Timeframe & Market Suitability**
+- Best suited for daily or 4-hour charts where 6-month squeezes are meaningful
+- Works well on liquid instruments: index ETFs, large-cap equities, major FX pairs, and crypto majors
+- Less effective in choppy, range-bound regimes without clear volatility cycles
+
+**Logic Rationale**
+Volatility is mean-reverting. When Bollinger Band width hits a 6-month low, the market is coiling for a move. A Donchian breakout confirms the direction of expansion, and RSI ensures the trade is exited when momentum peaks rather than waiting for a full reversal, capturing the meat of the volatility expansion phase.

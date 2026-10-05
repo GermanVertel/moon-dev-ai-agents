@@ -1,0 +1,51 @@
+STRATEGY_NAME: MomentumConvergence
+
+STRATEGY_DETAILS:
+This strategy combines RSI and MACD to identify high-probability breakout trades by requiring momentum confirmation from both indicators before entering. The core premise is that breakouts supported by converging momentum signals (RSI strength + MACD histogram expansion) have a higher success rate than those signaled by either indicator alone.
+
+**Key Strategy Components:**
+
+1. **Dual Momentum Confirmation** — RSI measures the speed and magnitude of price changes (overbought/oversold), while MACD measures the relationship between two moving averages (trend direction and momentum). When both align, the breakout signal is validated.
+
+2. **Breakout Detection** — Price must break above a recent resistance level (for longs) or below a recent support level (for shorts), typically defined by the highest high or lowest low over the past N periods (e.g., 20 bars).
+
+3. **Convergence Filter** — The breakout is only valid when:
+   - RSI crosses above 55 (bullish) or below 45 (bearish) with rising momentum
+   - MACD line crosses above the signal line (bullish) or below (bearish)
+   - MACD histogram is expanding (increasing bar height), confirming accelerating momentum
+
+**Entry Rules (Long):**
+- Price closes above the 20-period high (breakout)
+- RSI > 55 and rising over the last 3 bars
+- MACD line > Signal line and MACD histogram > 0 and increasing
+- Optional volume confirmation: current volume > 1.5x 20-period average volume
+
+**Entry Rules (Short):**
+- Price closes below the 20-period low
+- RSI < 45 and falling over the last 3 bars
+- MACD line < Signal line and MACD histogram < 0 and decreasing
+- Volume confirmation as above
+
+**Exit Rules:**
+- **Take Profit:** 2x the ATR (Average True Range) from entry, or trail using the 10-period EMA
+- **Stop Loss:** 1x ATR below entry (long) or above entry (short), or below the breakout level
+- **Momentum Exit:** Close position if RSI crosses back below 50 (long) or above 50 (short), or if MACD histogram flips sign
+- **Time-Based Exit:** Exit if no favorable move within 10 bars
+
+**Risk Management:**
+- Risk no more than 1-2% of account equity per trade
+- Position size = (Account Risk %) / (Entry - Stop Loss)
+- Avoid trading during low-liquidity periods (e.g., first/last 30 minutes of session)
+- Skip signals when RSI is already > 75 (long) or < 25 (short) — overextended moves often reverse
+- Require a minimum ATR to avoid choppy ranging markets
+
+**Required Indicators:**
+- RSI (period 14)
+- MACD (12, 26, 9)
+- ATR (period 14) for stop/target sizing
+- 20-period highest high / lowest low for breakout levels
+- Volume moving average (20-period) for confirmation
+- Optional: 10-period EMA for trailing stops
+
+**Optimal Conditions:**
+This strategy performs best in trending or breakout-prone markets (e.g., after consolidation phases). It underperforms in choppy, range-bound conditions — the convergence filter helps reduce false signals but cannot eliminate them entirely. Backtest across multiple timeframes (1H, 4H, Daily) to find the best fit for your instrument.

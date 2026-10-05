@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "",
+  "stderr": "  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/FibBandReversal_PKG.py\", line 379\n    print(\"\ud83c\udf19\u2728 Moon Dev Backtest Complete!\n          ^\nSyntaxError: unterminated string literal (detected at line 379)\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/FibBandReversal_PKG.py` failed. (See above for error)\n",
+  "execution_time": 2.446997,
+  "timestamp": "2026-10-05T12:48:42.404201"
+}

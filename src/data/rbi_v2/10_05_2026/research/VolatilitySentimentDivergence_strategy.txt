@@ -1,0 +1,94 @@
+STRATEGY_NAME: VolatilitySentiment Divergence
+
+STRATEGY_DETAILS:
+
+## Core Concept
+This strategy combines two powerful, non-correlated signals: **VIX-based market stress extremes** (to identify overbought/oversold conditions in S&P 500 futures) and **COT (Commitment of Traders) positioning divergence** (to confirm smart-money vs. crowd behavior). The edge comes from entering when volatility extremes and positioning imbalances align — a rare but high-conviction setup.
+
+---
+
+## Key Strategy Components
+
+### 1. VIX Overbought/Oversold Detection
+The VIX is inversely correlated with S&P 500 price action. Use it as a **fear/greed gauge**:
+
+- **Oversold S&P signal (potential long):** VIX spikes above its upper Bollinger Band (e.g., 2 standard deviations over 20 days) OR VIX > 30 (panic threshold). This typically coincides with capitulation lows.
+- **Overbought S&P signal (potential short):** VIX drops below its lower Bollinger Band OR VIX < 12–13 (complacency threshold). This often marks euphoric tops.
+
+**Indicators required:**
+- VIX spot index (or VIX futures front month)
+- 20-period SMA and Standard Deviation on VIX
+- Bollinger Bands (20, 2) on VIX
+- Optional: VIX/VXV ratio or VIX term structure (contango/backwardation)
+
+### 2. COT Positioning Divergence
+Pull weekly CFTC COT data for **E-mini S&P 500 futures (code: ES)**. Focus on:
+- **Non-Commercial (speculative/fund) net positioning** — the "crowd"
+- **Commercial (hedger) net positioning** — the "smart money"
+
+**Divergence rules:**
+- **Bullish divergence:** Price makes a lower low, but Commercial net longs increase (or Commercial net shorts decrease), while Non-Commercials are heavily net short. Crowd is wrong → fade them → go long.
+- **Bearish divergence:** Price makes a higher high, but Commercial net shorts increase (or Commercial net longs decrease), while Non-Commercials are heavily net long. Crowd is wrong → fade them → go short.
+
+**Indicators required:**
+- CFTC COT report (weekly, released Fridays 3:30 PM ET, data as of Tuesday)
+- Commercial net position (long – short)
+- Non-Commercial net position (long – short)
+- 3-year percentile rank of each net position for context
+
+---
+
+## Entry Rules
+
+### Long Entry (all conditions must align)
+1. VIX is in oversold territory (above upper BB or > 30).
+2. COT shows **bullish divergence**: Commercials accumulating longs OR Non-Commercials at extreme net-short percentile (>90th percentile short).
+3. Price action confirmation: S&P 500 futures form a bullish reversal candle (hammer, bullish engulfing) OR reclaim a key level (e.g., prior swing low, 20-EMA).
+
+### Short Entry (all conditions must align)
+1. VIX is in overbought territory (below lower BB or < 12–13).
+2. COT shows **bearish divergence**: Commercials accumulating shorts OR Non-Commercials at extreme net-long percentile (>90th percentile long).
+3. Price action confirmation: Bearish reversal candle (shooting star, bearish engulfing) OR rejection at a key resistance (e.g., prior swing high, 20-EMA).
+
+---
+
+## Exit Rules
+
+- **Profit target:** 1.5R to 2R, or exit when VIX reverts to its 20-period mean.
+- **Stop loss:** 
+  - Longs: Below the recent swing low or 1× ATR(14) below entry.
+  - Shorts: Above the recent swing high or 1× ATR(14) above entry.
+- **Time-based exit:** If neither target nor stop is hit within 10–15 trading days, close the position (COT data is stale after ~2 weeks).
+- **Signal invalidation:** If COT positioning flips against your thesis on the next release, exit immediately.
+
+---
+
+## Risk Management
+
+1. **Position sizing:** Risk no more than 0.5–1% of equity per trade due to the contrarian nature and VIX-driven volatility.
+2. **COT lag awareness:** COT data is reported with a 3-day delay and only weekly. Do not front-run — wait for confirmation candles.
+3. **Event risk filter:** Avoid entering within 48 hours of FOMC, CPI, or NFP releases unless the setup is exceptionally strong.
+4. **Correlation check:** Ensure no overlapping long/short exposure to correlated indices (NDX, Russell).
+5. **Max concurrent positions:** 1 S&P 500 futures position at a time to avoid doubling risk during volatility spikes.
+6. **Volatility-adjusted stops:** Use ATR-based stops rather than fixed points — VIX regimes change quickly.
+
+---
+
+## Required Indicators (Summary Table)
+
+| Indicator | Purpose | Timeframe |
+|---|---|---|
+| VIX Index | Overbought/oversold gauge | Daily |
+| VIX Bollinger Bands (20,2) | Extreme detection | Daily |
+| VIX 20-SMA | Mean reversion target | Daily |
+| COT Commercial Net | Smart money bias | Weekly |
+| COT Non-Commercial Net | Crowd positioning | Weekly |
+| COT Percentile Rank (3yr) | Extreme detection | Weekly |
+| ATR(14) on ES | Stop sizing | Daily |
+| 20-EMA on ES | Trend/reclaim filter | Daily |
+| Candlestick patterns | Entry confirmation | Daily |
+
+---
+
+## Why This Works
+The VIX identifies **when** the market is emotionally stretched. COT identifies **who** is on the wrong side of the trade. When both align — retail panic/greed at a VIX extreme while commercials position opposite the crowd — you get a high-probability contrarian entry with a defined risk profile. This combination filters out false VIX signals (which alone can stay extreme for weeks) and false COT signals (which alone lack timing).

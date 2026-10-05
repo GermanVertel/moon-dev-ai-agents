@@ -1,0 +1,64 @@
+STRATEGY_NAME: LiquidityVolatility
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy capitalizes on the explosive price action that occurs when price approaches dense liquidation clusters visible on order book liquidity heatmaps. When leveraged positions get liquidated en masse, they trigger forced market orders that accelerate price movement — creating high-probability breakout opportunities. The volatility spike serves as the confirmation trigger, filtering out false breakouts and low-conviction moves.
+
+**Key Strategy Components:**
+
+1. **Liquidation Cluster Mapping (Liquidity Heatmap)**
+   - Aggregate order book depth data across multiple exchanges (Binance, Bybit, OKX) to build a composite heatmap.
+   - Identify price zones where large concentrations of leveraged long/short positions are likely to be liquidated (based on funding rates, open interest distribution, and estimated liquidation levels).
+   - Mark these clusters as "magnet zones" — price tends to gravitate toward them due to liquidity-seeking behavior.
+   - Rank clusters by density (USD value of estimated liquidations) and distance from current price.
+
+2. **Proximity Detection**
+   - Define a proximity threshold (e.g., price within 0.3–0.8% of a major liquidation cluster).
+   - Monitor real-time price action as it approaches the cluster boundary.
+   - Flag the setup as "armed" when price enters the proximity zone.
+
+3. **Volatility Spike Confirmation (1-Minute Timeframe)**
+   - Calculate 1-minute realized volatility (e.g., ATR(1m) or standard deviation of returns over the last 5–10 candles).
+   - Compare current reading against a rolling baseline (e.g., 20-period average volatility).
+   - Trigger condition: current 1m volatility > 2.0x–3.0x the baseline average (sudden spike).
+   - This spike typically indicates the first wave of liquidations is firing.
+
+**Entry Rules:**
+- **Long Entry:** Price approaches a dense *short* liquidation cluster from below (shorts will be squeezed upward) AND a 1-minute volatility spike confirms upward momentum. Enter on breakout above cluster midpoint or on retest of broken level.
+- **Short Entry:** Price approaches a dense *long* liquidation cluster from above (longs will be flushed downward) AND a 1-minute volatility spike confirms downward momentum. Enter on breakdown below cluster midpoint or on retest.
+- Require volume confirmation: 1m volume > 1.5x rolling average at the moment of entry.
+
+**Exit Rules:**
+- **Take Profit (TP1):** 50% position closed at 1.0–1.5% move in breakout direction (first liquidation cascade exhaustion).
+- **Take Profit (TP2):** Remaining 50% closed at next major liquidity cluster or at 2.5–4.0% move.
+- **Trailing Stop:** Once TP1 hit, trail stop using 1m ATR (e.g., 1.5x ATR trailing).
+- **Time Stop:** Exit if no follow-through within 5–10 minutes (liquidation cascades are fast — if it stalls, thesis is invalid).
+- **Volatility Decay Exit:** Close position if 1m volatility drops back below 1.2x baseline (cascade complete).
+
+**Risk Management:**
+- **Position Size:** Risk 0.5–1.0% of account equity per trade (liquidation cascades are volatile and can whipsaw).
+- **Hard Stop Loss:** Place stop 0.4–0.7% beyond the cluster boundary in the opposite direction of the trade (invalidation point).
+- **Max Concurrent Trades:** 1–2 (avoid overexposure during chaotic market conditions).
+- **Slippage Buffer:** Account for 0.1–0.2% slippage on entries/exits during cascade events.
+- **Avoid News Events:** Do not trade within 2 minutes of major scheduled news (CPI, FOMC, etc.) — volatility spikes can be news-driven, not liquidation-driven.
+- **Cooldown Period:** After a losing trade, wait 15 minutes before re-entering to avoid revenge trading during choppy conditions.
+
+**Required Indicators & Data:**
+1. **Order Book Liquidity Heatmap** — aggregated depth + estimated liquidation levels (from Coinglass, Hyblock, or custom).
+2. **Open Interest (OI) Delta** — rising OI near cluster = more fuel; falling OI = cascade already underway.
+3. **Funding Rate** — extreme funding indicates crowded positioning (higher liquidation risk).
+4. **1-Minute ATR / Realized Volatility** — for spike confirmation.
+5. **1-Minute Volume** — for confirmation filter.
+6. **CVD (Cumulative Volume Delta)** — optional but powerful for confirming aggressive market orders (buy/sell pressure).
+7. **VWAP (1m)** — for entry precision and mean-reversion reference.
+
+**Best Market Conditions:**
+- High-leverage environments (perpetual futures with 20x–100x available).
+- Ranging or mildly trending markets where liquidity clusters build up.
+- Avoid during extreme trending markets with no clear liquidation zones.
+
+**Edge Case Handling:**
+- If price blows through cluster without volatility spike → no trade (fake proximity).
+- If volatility spikes but price is far from any cluster → no trade (news-driven noise).
+- If multiple clusters stack → prioritize the densest and closest cluster.

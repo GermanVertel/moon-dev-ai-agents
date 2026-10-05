@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "",
+  "stderr": "  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/FractalDivergence_PKG.py\", line 3\n    \u2705 No `backtesting.lib` imports found\n    ^\nSyntaxError: invalid character '\u2705' (U+2705)\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/FractalDivergence_PKG.py` failed. (See above for error)\n",
+  "execution_time": 4.34535,
+  "timestamp": "2026-10-05T12:04:37.636307"
+}

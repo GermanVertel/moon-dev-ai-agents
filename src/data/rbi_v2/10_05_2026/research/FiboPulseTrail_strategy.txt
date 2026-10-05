@@ -1,0 +1,53 @@
+STRATEGY_NAME: FiboPulseTrail
+
+STRATEGY_DETAILS:
+
+This strategy combines Fibonacci retracement levels with a trend-following oscillator to enter trades in the direction of the dominant trend while timing entries at high-probability pullback zones.
+
+**Core Concept:**
+Price in a strong trend tends to pull back to key Fibonacci levels (38.2%, 50%, 61.8%) before resuming. The oscillator confirms whether the pullback is a healthy retracement (continuation) or a reversal (trend exhaustion).
+
+**Required Indicators:**
+1. **Fibonacci Retracement Tool** — anchored to the most recent significant swing high and swing low (lookback of 50–100 bars).
+2. **Trend-Following Oscillator** — options include:
+   - MACD (12, 26, 9) for momentum confirmation
+   - Stochastic RSI (14, 14, 3, 3) for overbought/oversold in trend context
+   - ADX (14) with +DI/-DI to confirm trend strength (>25)
+3. **Moving Average Filter** — 50 EMA and 200 EMA to define trend direction.
+4. **ATR (14)** — for volatility-based stop placement.
+
+**Entry Rules (Long):**
+1. Price is above the 200 EMA and 50 EMA is rising (uptrend confirmed).
+2. ADX > 25 confirming trend strength.
+3. Price pulls back and touches the 38.2%, 50%, or 61.8% Fibonacci retracement level.
+4. Oscillator shows bullish divergence or crosses above its signal line (e.g., MACD histogram turning positive, or Stoch RSI crossing up from below 30).
+5. Enter long on the candle close that confirms the oscillator signal at/near the Fibonacci level.
+
+**Entry Rules (Short):**
+- Mirror the above: price below 200 EMA, 50 EMA falling, ADX > 25.
+- Price rallies to 38.2%, 50%, or 61.8% Fibonacci level.
+- Oscillator shows bearish divergence or crosses below signal line.
+- Enter short on confirming candle close.
+
+**Exit Rules:**
+- **Take Profit:** Target the previous swing high (for longs) or swing low (for shorts). Alternatively, scale out at 50% and 100% of measured move.
+- **Stop Loss:** Place below the 61.8% Fibonacci level (for longs) or above it (for shorts), with a buffer of 0.5× ATR.
+- **Trailing Stop:** Once price moves 1× ATR in profit, trail using the 50 EMA or a 2× ATR chandelier stop.
+- **Oscillator Exit:** Close the trade if the oscillator shows opposite divergence or crosses its signal line against the position.
+
+**Risk Management:**
+- Risk no more than 1–2% of account equity per trade.
+- Position size = (Account Risk $) / (Entry − Stop Loss distance).
+- Avoid trading when ADX < 20 (ranging market) — Fibonacci levels lose reliability.
+- Skip trades if price is consolidating between the 38.2% and 61.8% levels for more than 10 bars without oscillator confirmation.
+- Maximum 2 concurrent trades to limit correlated exposure.
+
+**Confluence Checklist (must have at least 3 of 4):**
+1. Trend alignment (EMA + ADX)
+2. Fibonacci level touch
+3. Oscillator signal/divergence
+4. Candle confirmation (engulfing, pin bar, or momentum close)
+
+**Timeframes:** Works best on 1H, 4H, and Daily charts. Avoid lower timeframes due to noise.
+
+**Market Conditions:** Best in trending markets (forex majors, indices, crypto in directional phases). Poor performance in choppy/ranging markets — filter out with ADX.

@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 CompressionPulse Backtest Initializing... \ud83d\ude80\n============================================================\n\ud83c\udf19 Data loaded: 1009 bars\n\ud83d\ude80 Date range: 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n============================================================\n\ud83c\udf19 Setting up backtest... \u2728\n\ud83d\ude80 Running CompressionPulse backtest... \ud83c\udf19\n\ud83c\udf19 Initializing indicators... \u2728\n\ud83c\udf19 Indicators ready! \ud83d\ude80\n\ud83c\udf19\ud83d\udd3b SHORT SIGNAL | Squeeze BBW=0.1572 <= Low=0.1572 | RSI 56.22->47.28 | Price: 65446.97 | Size: 1\n",
+  "stderr": "\nBacktest.run:   0%|          | 0/945 [00:00<?, ?bar/s]\n                                                      \nTraceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/CompressionPulse_PKG.py\", line 213, in <module>\n    stats = bt.run()\n  File \"/opt/miniconda3/envs/tflow/lib/python3.10/site-packages/backtesting/backtesting.py\", line 1354, in run\n    strategy.next()\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/CompressionPulse_PKG.py\", line 126, in next\n    entry_price = self.position.entry_price\nAttributeError: 'Position' object has no attribute 'entry_price'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/CompressionPulse_PKG.py` failed. (See above for error)\n",
+  "execution_time": 3.746037,
+  "timestamp": "2026-10-05T14:13:25.217515"
+}

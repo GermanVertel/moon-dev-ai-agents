@@ -1,0 +1,43 @@
+STRATEGY_NAME: VolumetricSqueeze
+
+STRATEGY_DETAILS:
+This strategy is a volume-confirmed volatility breakout system that combines Chaikin Money Flow (CMF) as a momentum/accumulation filter with a Bollinger Band squeeze as a volatility compression detector. The core thesis is that a period of low volatility (squeeze) followed by a shift in money flow (CMF crossing above zero) signals an impending upward expansion, providing a high-probability long entry.
+
+KEY STRATEGY COMPONENTS:
+1. **Chaikin Money Flow (CMF)** — Measures buying/selling pressure over a lookback period by weighting price position within the high-low range by volume. A cross above zero indicates net accumulation (buyers in control).
+2. **Bollinger Band Squeeze** — A condition where the Bollinger Bands narrow significantly, indicating reduced volatility and a potential energy buildup for a breakout. Detected via BandWidth (upper band − lower band) falling below a threshold or a historical percentile.
+3. **Alignment Condition** — Both signals must occur simultaneously (or within a small window) to trigger entry, filtering out false CMF signals during choppy, high-volatility regimes.
+
+ENTRY RULES (LONG):
+- Condition A: CMF crosses above zero (previous CMF ≤ 0, current CMF > 0).
+- Condition B: Bollinger Band squeeze is active — BandWidth is at or below a defined threshold (e.g., lowest 20% of BandWidth over the past N bars, or BandWidth < X% of price).
+- Both conditions must be true on the same bar (or within a configurable confirmation window, e.g., CMF cross within 1–3 bars of squeeze detection).
+- Enter long at the close of the signal bar or on the next bar's open.
+
+EXIT RULES:
+- Exit long when CMF crosses below zero (previous CMF ≥ 0, current CMF < 0), signaling a shift to distribution.
+- OR exit long when price touches or closes above the upper Bollinger Band, capturing the volatility expansion and taking profit at the band extreme.
+- Optional: use whichever exit triggers first (whichever comes first logic).
+
+RISK MANAGEMENT:
+- **Stop-Loss**: Place a stop below the lower Bollinger Band, below the recent swing low, or at a fixed ATR-based distance (e.g., 1.5× ATR below entry). This protects against false breakouts from the squeeze.
+- **Position Sizing**: Risk a fixed percentage of equity per trade (e.g., 1–2%), sized by the distance between entry and stop.
+- **Take-Profit**: The upper Bollinger Band touch serves as a dynamic take-profit; alternatively, trail the stop as price rides the band.
+- **Time Stop**: Optionally exit if neither target nor stop is hit within a set number of bars, avoiding capital lockup in stalled trades.
+- **Avoid Chasing**: Only enter on the squeeze + CMF alignment; do not enter after price has already extended beyond the upper band.
+
+REQUIRED INDICATORS:
+1. Chaikin Money Flow (CMF) — default period 20 (configurable 14–21).
+2. Bollinger Bands — default period 20, standard deviation 2.0.
+3. Bollinger BandWidth — derived as (Upper Band − Lower Band) / Middle Band, used to detect the squeeze.
+4. Optional: ATR (for stop-loss sizing), volume (already embedded in CMF).
+
+PARAMETER SUGGESTIONS:
+- CMF Period: 20
+- Bollinger Period: 20, StdDev: 2.0
+- Squeeze Threshold: BandWidth in lowest 20th percentile over last 100–125 bars
+- Confirmation Window: 1–3 bars for CMF cross vs. squeeze
+- ATR Stop Multiplier: 1.5×
+
+RATIONALE:
+The squeeze identifies periods where the market is coiling, and CMF confirms that smart money is accumulating before the breakout. Requiring both conditions reduces whipsaws that plague standalone Bollinger squeeze systems. Exiting on CMF reversal or upper-band touch locks in gains during the volatility expansion phase, aligning entry with accumulation and exit with distribution or overextension.

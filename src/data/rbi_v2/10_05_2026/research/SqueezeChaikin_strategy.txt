@@ -1,0 +1,84 @@
+STRATEGY_NAME: SqueezeChaikin
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy exploits the classic "squeeze" setup — Bollinger Band width contraction signaling low volatility and an impending expansion — but adds a critical confirmation layer through Chaikin Oscillator divergence. The Chaikin Oscillator (CMF-smoothed accumulation/distribution) reveals whether smart money is quietly accumulating (bullish divergence) or distributing (bearish divergence) during the quiet squeeze phase. A breakout is only traded when price breaches a band AND volume confirms AND the Chaikin divergence aligns with the breakout direction. This filters out false breakouts that plague naive BB-width strategies.
+
+---
+
+**Required Indicators:**
+
+1. **Bollinger Bands** (20-period SMA, 2 standard deviations)
+   - `UpperBand`, `MiddleBand` (SMA), `LowerBand`
+   - `BandWidth = (UpperBand - LowerBand) / MiddleBand`
+
+2. **Bollinger Band Width Percentile / Threshold**
+   - Track BandWidth over a lookback (e.g., 125 bars)
+   - Squeeze condition: current BandWidth < 20th percentile of lookback (or below a fixed threshold like 0.04–0.06 depending on instrument/tf)
+
+3. **Chaikin Oscillator** (standard: 3-period EMA of ADL minus 10-period EMA of ADL)
+   - ADL = Accumulation/Distribution Line (uses Money Flow Multiplier × Volume)
+   - Watch for divergence: price making lower lows while Chaikin Oscillator makes higher lows (bullish) or vice versa (bearish)
+
+4. **Volume** (raw or Volume SMA for confirmation)
+   - Volume confirmation: breakout bar volume > 1.5× 20-period Volume SMA
+
+---
+
+**Entry Rules:**
+
+**Long Entry (Bullish Squeeze Breakout):**
+1. Squeeze active: BandWidth in bottom 20th percentile of last 125 bars
+2. Bullish Chaikin divergence detected during squeeze: price prints a lower low (or equal low) while Chaikin Oscillator prints a higher low within the squeeze window
+3. Price closes **above the Upper Band**
+4. Confirmation bar volume > 1.5× 20-period Volume SMA
+5. Optional filter: Chaikin Oscillator crosses above zero on the breakout bar
+→ Enter long at close of confirmation bar (or next bar open)
+
+**Short Entry (Bearish Squeeze Breakout):**
+1. Squeeze active (same BandWidth condition)
+2. Bearish Chaikin divergence: price prints a higher high while Chaikin Oscillator prints a lower high within the squeeze window
+3. Price closes **below the Lower Band**
+4. Volume confirmation > 1.5× 20-period Volume SMA
+5. Optional filter: Chaikin Oscillator crosses below zero
+→ Enter short at close of confirmation bar
+
+---
+
+**Exit Rules:**
+
+- **Primary Exit:** Close position when price reverts past the **Middle Band (20 SMA)** against the trade direction.
+  - Long exit: close < MiddleBand
+  - Short exit: close > MiddleBand
+- **Stop Loss (risk control):** Place stop at the opposite band at entry time, OR at a fixed ATR-based distance (e.g., 1.5× ATR(14)) from entry — whichever is tighter.
+- **Time Stop (optional):** If neither band breach nor midline reversion occurs within N bars (e.g., 30), exit to avoid chop.
+- **Trailing Option:** Once price moves 1× the initial risk in favor, trail stop to the Middle Band.
+
+---
+
+**Risk Management:**
+
+- **Position Sizing:** Risk 0.5–1% of equity per trade. Size = (Account Risk $) / (Entry − Stop).
+- **Max Concurrent Positions:** 1 per instrument to avoid correlated squeeze clusters.
+- **Avoid Event Risk:** Skip entries within 1 bar of major scheduled news (earnings, FOMC, CPI) — squeezes often resolve violently on news and slippage is high.
+- **False Breakout Guard:** If price breaches band but closes back inside within 2 bars (failed breakout), exit immediately and wait for a fresh squeeze re-arm.
+- **Correlation Cap:** Limit total exposure to instruments in the same sector/asset class to 2 positions.
+
+---
+
+**Trade Logic Summary Table:**
+
+| Component | Long Setup | Short Setup |
+|---|---|---|
+| Squeeze | BandWidth < 20th pct (125 bars) | Same |
+| Divergence | Price LL, Chaikin HL | Price HH, Chaikin LH |
+| Trigger | Close > Upper Band | Close < Lower Band |
+| Volume | > 1.5× Vol SMA(20) | Same |
+| Exit | Close < Middle Band | Close > Middle Band |
+| Stop | Lower Band or 1.5× ATR | Upper Band or 1.5× ATR |
+
+---
+
+**Why This Works:**
+BB width contraction alone generates many false breakouts because it says nothing about *intent*. The Chaikin Oscillator is volume-weighted and measures whether money is flowing into (accumulation) or out of (distribution) an asset. When a squeeze coincides with hidden accumulation (bullish divergence) and then price breaks up on a volume surge, the probability of a sustained move rises sharply. The midline exit captures the bulk of the expansion move while letting the trade run only as long as the breakout has conviction.

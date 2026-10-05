@@ -1,0 +1,58 @@
+STRATEGY_NAME: ConfluencePairMomentum
+
+STRATEGY_DETAILS:
+This strategy is a market-neutral pair trading system that uses the Confluence Index (CI) to measure whether price action is trending (conforming) or mean-reverting (deviating) across two correlated instruments. It exploits divergence between the two legs to enter long/short positions, and exits when the legs re-harmonize.
+
+1. CORE CONCEPT — CONFLUENCE INDEX (CI)
+- The CI is a normalized oscillator (0–100) that quantifies the probability that current price action aligns with an established trend.
+- High CI (e.g., >70): price is trending/conforming — trend-following behavior is favored.
+- Low CI (e.g., <30): price is deviating — mean-reversion behavior is favored.
+- Compute CI for both legs of the pair (Asset A and Asset B) using a rolling window (e.g., 50–100 bars) that blends:
+  - Trend strength (ADX or slope of an EMA)
+  - Directional consistency (ratio of up-bars vs down-bars, or R² of a linear regression on price)
+  - Volatility-adjusted momentum (z-scored returns)
+- CI = weighted blend of these components, then smoothed with an EMA (e.g., 5-period) to reduce noise.
+
+2. PAIR SELECTION
+- Choose two highly correlated instruments (e.g., ES/NQ, BTC/ETH, XLE/USO) with a rolling correlation > 0.7 over a 60-day lookback.
+- Compute the spread or ratio: Spread = log(A) − β·log(B), where β is the hedge ratio from a rolling OLS regression (e.g., 60-bar window).
+- Z-score the spread over a 20–40 bar window.
+
+3. ENTRY RULES (DIVERGENCE)
+- Long A / Short B when:
+  - CI_A is HIGH (conforming/uptrend) AND CI_B is LOW (deviating/downtrend), AND
+  - Spread z-score < −1.5 (spread is stretched to the downside).
+- Short A / Long B when:
+  - CI_A is LOW AND CI_B is HIGH, AND
+  - Spread z-score > +1.5.
+- Require a minimum CI gap (e.g., |CI_A − CI_B| > 25) to confirm genuine divergence between legs.
+- Optional confirmation: CI crossover (fast CI crosses slow CI on one leg) in the direction of the trade.
+
+4. EXIT RULES (HARMONY)
+- Exit when the two legs "harmonize":
+  - |CI_A − CI_B| < 10 (both legs return to similar confluence regime), OR
+  - Spread z-score reverts to ±0.5 (mean reversion complete), OR
+  - CI of the trending leg drops below 50 (trend exhaustion).
+- Hard stop: exit if spread z-score extends beyond ±3.0 (divergence failure).
+- Time stop: exit after N bars (e.g., 20) if neither harmony nor stop is triggered.
+
+5. RISK MANAGEMENT
+- Position sizing: risk 0.5–1% of equity per pair trade, sized by ATR of the spread.
+- Beta-neutral sizing: hedge ratio β ensures dollar-neutrality between legs.
+- Max concurrent pairs: 3–5 to limit correlation risk.
+- Daily correlation check: if rolling correlation drops below 0.5, close the pair and re-select.
+- Drawdown circuit breaker: pause trading if strategy drawdown exceeds 8%.
+
+6. REQUIRED INDICATORS
+- Confluence Index (custom): ADX, EMA slope, R² of linear regression, z-scored returns.
+- Rolling OLS hedge ratio (β).
+- Spread z-score (mean and standard deviation of spread).
+- ATR of the spread for sizing.
+- Rolling correlation coefficient.
+- Optional: fast/slow CI EMAs for crossover confirmation.
+
+7. EXECUTION NOTES
+- Rebalance hedge ratio weekly or when β drifts >20%.
+- Trade during liquid sessions to minimize slippage on both legs.
+- Use limit orders on the spread; avoid entering on wide bid-ask spreads.
+- Backtest across regimes (trending, choppy, high-vol) to validate CI thresholds.

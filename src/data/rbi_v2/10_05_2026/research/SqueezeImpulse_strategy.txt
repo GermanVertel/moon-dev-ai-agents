@@ -1,0 +1,58 @@
+STRATEGY_NAME: SqueezeImpulse
+
+STRATEGY_DETAILS:
+This strategy combines volatility compression detection with trend-strength confirmation to trade high-probability breakouts. The core premise is that a Bollinger Band squeeze (low volatility) followed by an ADX surge above 30 signals a genuine trend ignition rather than a false breakout. The 161.8% Fibonacci extension provides a mathematically derived profit target based on the contraction range.
+
+1. KEY STRATEGY COMPONENTS
+- Volatility Compression Filter: Bollinger Band Width (BBW) must contract below 2% of current price, indicating a squeeze.
+- Trend Strength Confirmation: ADX must cross above 30, confirming a strong directional move is developing.
+- Directional Bias: Determined by price position relative to the middle Bollinger Band (20-period SMA) and/or DI+ vs DI- crossover.
+- Momentum Trigger: Breakout above upper band (long) or below lower band (short) after squeeze release.
+- Fibonacci Target: 161.8% extension of the contraction range measured from the breakout point.
+
+2. ENTRY RULES
+Long Entry:
+- BBW < 2% of price (squeeze condition met).
+- ADX crosses above 30 (from below).
+- DI+ > DI- (bullish directional bias).
+- Price closes above the upper Bollinger Band.
+- Enter at next candle open or on breakout candle close.
+
+Short Entry:
+- BBW < 2% of price (squeeze condition met).
+- ADX crosses above 30 (from below).
+- DI- > DI+ (bearish directional bias).
+- Price closes below the lower Bollinger Band.
+- Enter at next candle open or on breakout candle close.
+
+3. EXIT RULES
+- Primary Target: 161.8% Fibonacci extension of the contraction range.
+  - Range = (Squeeze High - Squeeze Low) during the BBW < 2% period.
+  - Long target = Breakout Price + (Range × 1.618).
+  - Short target = Breakout Price - (Range × 1.618).
+- Trailing Stop: Use the middle Bollinger Band (20 SMA) as a trailing stop once price moves 1× the range in favor.
+- Time Stop: Exit if ADX falls back below 25 or BBW expands beyond 6% of price without hitting target.
+- Hard Stop: Opposite Bollinger Band or 1× ATR(14) from entry, whichever is tighter.
+
+4. RISK MANAGEMENT
+- Position Sizing: Risk no more than 1-2% of account equity per trade.
+- Stop Loss: Place initial stop at the opposite Bollinger Band or 1.5× ATR(14), whichever is closer to entry.
+- Risk-Reward: Minimum 1:2 R:R required before entry; skip trades where the 161.8% target is less than 2× the stop distance.
+- Max Concurrent Trades: Limit to 2-3 open positions to avoid correlated exposure.
+- Avoid trading during major news events (FOMC, NFP, CPI) where slippage risk is elevated.
+- Trail stops to breakeven once price reaches 1× the contraction range in profit.
+
+5. REQUIRED INDICATORS
+- Bollinger Bands (20-period, 2 standard deviations) — for squeeze detection and band breakouts.
+- Bollinger Band Width (BBW) — (Upper Band - Lower Band) / Middle Band × 100, must be < 2.
+- ADX (14-period) with DI+ and DI- lines — trend strength and directional bias.
+- ATR (14-period) — for stop-loss placement and volatility normalization.
+- Fibonacci Extension Tool — for calculating 161.8% target from the contraction range.
+- Optional: Volume indicator to confirm breakout strength (volume > 1.5× 20-period average).
+
+6. TIMEFRAME & MARKET CONDITIONS
+- Best suited for 15-minute to 4-hour charts on liquid instruments (FX majors, index futures, large-cap equities).
+- Works optimally in trending markets; avoid ranging/choppy conditions where ADX oscillates around 20-25.
+- Squeeze duration should be at least 10-15 candles for a meaningful contraction range.
+
+This squeeze-then-impulse approach filters out low-conviction breakouts by requiring both volatility compression and trend-strength confirmation, while the Fibonacci extension provides a disciplined, objective profit target.

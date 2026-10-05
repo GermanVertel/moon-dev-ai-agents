@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Moon Dev's VolumetricSurge Backtest Initializing... \ud83d\ude80\n\ud83c\udf19 Data loaded: 1009 bars from 2024-01-01 00:00:00 to 2026-10-05 00:00:00 \u2728\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolumetricSurge_PKG.py\", line 174, in <module>\n    bt = Backtest(data, VolumetricSurge, cash=1_000_000, commission=0.001, exclusive=False)\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolumetricSurge_PKG.py` failed. (See above for error)\n",
+  "execution_time": 2.753308,
+  "timestamp": "2026-10-05T14:36:03.073820"
+}

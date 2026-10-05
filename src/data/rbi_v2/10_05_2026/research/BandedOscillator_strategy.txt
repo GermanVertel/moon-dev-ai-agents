@@ -1,0 +1,31 @@
+STRATEGY_NAME: BandedOscillator
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Bands with the MACD oscillator to identify long entries during pullbacks within an ongoing bullish momentum regime. The core premise is that when MACD is above zero (indicating bullish momentum), a dip toward the lower Bollinger Band represents a temporary oversold condition within an uptrend — a favorable mean-reversion entry point.
+
+Key Strategy Components:
+1. Bollinger Bands — Used to define dynamic support zones. The lower band acts as the trigger level for entries. Standard settings: 20-period SMA with 2 standard deviations.
+2. MACD Oscillator — Used as a trend/momentum filter. Only take long signals when the MACD line is above the zero line, confirming that the broader momentum is bullish.
+3. Price Action — Entry requires price to be "near" the lower Bollinger Band (touch, pierce, or within a small tolerance band of it).
+
+Entry Rules (Long):
+- Condition A: MACD line (or histogram) is above zero.
+- Condition B: Price is at or near the lower Bollinger Band (e.g., within 0.1–0.5% of the band, or closing below it).
+- When both conditions are true, enter a long position.
+
+Exit Rules:
+- Primary exit: Close the position if price drops below the lower Bollinger Band level (i.e., the band fails to hold as support). This is a stop-loss / invalidation exit.
+- Optional profit exit: Consider closing when price reaches the middle band (SMA) or upper Bollinger Band, or when MACD crosses back below zero.
+
+Risk Management:
+- Stop-loss: Exit if price closes below the lower Bollinger Band (as specified in the rule). This treats the band as a dynamic support line.
+- Position sizing: Risk a fixed percentage of equity per trade (e.g., 1–2%).
+- Trend filter: MACD above zero helps avoid shorting into downtrends and avoids buying weak bounces.
+- Avoid trading during low-liquidity or high-volatility news events where bands expand erratically.
+
+Required Indicators:
+1. Bollinger Bands (20, 2) — lower band for entry/exit triggers, middle and upper for optional targets.
+2. MACD (12, 26, 9) — zero-line filter for momentum confirmation.
+
+Notes on the Rule Wording:
+The phrase "closing short if the price drops below that level" is interpreted as an exit/stop rule — i.e., if price breaks below the lower band after entry, the trade thesis is invalidated and the position is closed. This strategy is inherently a "buy the dip in an uptrend" setup, not a short-selling strategy, despite the mention of "short." If a short component is intended, it would require an inverted setup (price near upper band with MACD below zero), but as written, the primary logic is long-biased dip-buying with a band-based stop.

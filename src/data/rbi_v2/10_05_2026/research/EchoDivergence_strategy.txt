@@ -1,0 +1,58 @@
+STRATEGY_NAME: EchoDivergence
+
+STRATEGY_DETAILS:
+
+**Overview**
+EchoDivergence is a bearish trend-following short strategy that combines MACD bearish divergence, Bollinger Band breakdown, and volume confirmation to time entries, with RSI divergence and ATR-based breakeven as exit triggers. The strategy "echoes" momentum weakness across multiple indicators before committing to a short.
+
+**Core Components**
+
+1. **MACD Bearish Divergence**
+   - Price makes a higher high while MACD line (or histogram) makes a lower high.
+   - Identifies weakening bullish momentum despite rising price — a leading reversal signal.
+   - Confirm divergence on the most recent two swing highs within a defined lookback (e.g., 20–50 bars).
+
+2. **Bollinger Band Breakdown**
+   - Price must close below the lower Bollinger Band (typically 20-period SMA, 2 standard deviations).
+   - Signals a volatility-driven downside expansion and confirms the divergence is being acted upon.
+
+3. **Decreasing Volume**
+   - Volume on the breakdown bar(s) must be lower than the prior rally's volume.
+   - Falling volume on the upside rally (or on the breakdown) confirms exhaustion of buyers and lack of conviction behind the prior move.
+
+4. **RSI Divergence Confirmation (Exit)**
+   - Close the short when RSI shows bullish divergence (price makes lower low, RSI makes higher low), signaling downside momentum is fading.
+
+5. **ATR Breakeven Stop**
+   - Once the trade moves favorably by a defined ATR multiple (e.g., 1× ATR), move the stop to breakeven to protect capital.
+
+**Entry Rules (Short)**
+- MACD bearish divergence detected on recent swing highs.
+- Price closes below the lower Bollinger Band.
+- Volume on the breakdown is decreasing versus the prior up-leg.
+- Optional filter: RSI < 50 or trending down to avoid counter-trend whipsaws.
+- Enter short at the close of the confirmation bar (or on a retest of the lower band).
+
+**Exit Rules**
+- **Primary:** Bullish RSI divergence appears → close short.
+- **Protective:** Stop-loss placed above the most recent swing high or at an ATR-based distance (e.g., 1.5× ATR).
+- **Breakeven:** When profit reaches 1× ATR, move stop to entry price.
+- **Optional target:** Lower Bollinger Band extension or a fixed risk-reward (e.g., 2R).
+
+**Risk Management**
+- Position size based on ATR: risk no more than 1–2% of equity per trade.
+- Initial stop = entry + (1.5 × ATR).
+- Trail stop at breakeven once 1× ATR profit is reached.
+- Avoid trading during low-liquidity sessions or major news events that distort volume.
+
+**Required Indicators**
+- MACD (12, 26, 9) — for divergence detection.
+- Bollinger Bands (20, 2) — for breakdown confirmation.
+- Volume — for decreasing-volume filter.
+- RSI (14) — for exit divergence.
+- ATR (14) — for stop placement and breakeven logic.
+
+**Best Conditions**
+- Works best in ranging-to-topping markets where momentum fades after an extended rally.
+- Avoid strong trending bull markets where Bollinger breakdowns are quickly bought back.
+- Ideal on liquid instruments (major FX pairs, large-cap equities, index futures) with reliable volume data.

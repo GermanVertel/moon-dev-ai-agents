@@ -1,0 +1,73 @@
+STRATEGY_NAME: ConvergentDivergence
+
+STRATEGY_DETAILS:
+This strategy is a precision mean-reversion system that waits for three independent technical conditions to align before entering a counter-trend trade. The core thesis is that when momentum (MACD) diverges from price, volume dries up, and volatility compresses (Bollinger Bands narrowing), the market is coiling for a reversal back toward the mean.
+
+**1. Key Strategy Components**
+
+- **MACD Divergence (Signal Trigger):**
+  - *Bullish divergence:* Price makes a lower low, but MACD line (and/or MACD histogram) makes a higher low. Signals weakening downside momentum.
+  - *Bearish divergence:* Price makes a higher high, but MACD makes a lower high. Signals weakening upside momentum.
+  - Use standard MACD (12, 26, 9) on the chosen timeframe.
+  - Divergence must be confirmed across at least two consecutive swing points to filter noise.
+
+- **Decreasing Volume (Confirmation Filter):**
+  - Volume on the most recent swing leg must be lower than the volume on the prior swing leg.
+  - This confirms that the current price extreme is being made on fading participation — a classic exhaustion signature.
+  - Optionally use a 20-period volume moving average: current volume should be below its average during the divergence window.
+
+- **Bollinger Bands Narrowing (Volatility Compression):**
+  - Bollinger Bands (20-period SMA, 2 standard deviations).
+  - Band Width = (Upper Band − Lower Band) / Middle Band.
+  - The current Band Width must be in the lowest 20–25% of its recent range (e.g., 100-period lookback), or the bands must be visibly contracting over the last 5–10 bars.
+  - Compression signals an impending expansion, and combined with divergence + fading volume, it biases the expansion toward the mean.
+
+**2. Entry Rules**
+
+- **Long Entry (Bullish Setup):**
+  1. Bullish MACD divergence confirmed on the last two swing lows.
+  2. Volume on the latest swing low < volume on the previous swing low.
+  3. Bollinger Band Width is in the bottom quartile of its lookback range (compression active).
+  4. Price is at or below the lower Bollinger Band (or within 0.5% of it).
+  5. Enter long on the close of the confirmation candle (a bullish reversal candle such as hammer, engulfing, or a close back inside the lower band).
+
+- **Short Entry (Bearish Setup):**
+  1. Bearish MACD divergence confirmed on the last two swing highs.
+  2. Volume on the latest swing high < volume on the previous swing high.
+  3. Bollinger Band Width in the bottom quartile (compression active).
+  4. Price is at or above the upper Bollinger Band (or within 0.5% of it).
+  5. Enter short on the close of the confirmation candle (bearish reversal candle or close back inside the upper band).
+
+**3. Exit Rules**
+
+- **Take Profit:**
+  - Primary target: the Bollinger Band middle band (20-period SMA) — the statistical mean.
+  - Secondary target (optional runner): the opposite Bollinger Band if momentum strongly reverses.
+  - Scale out 50% at the middle band, trail the remainder.
+
+- **Stop Loss:**
+  - Place stop beyond the most recent swing extreme that formed the divergence.
+  - For longs: below the recent swing low, plus a small buffer (e.g., 0.25 × ATR).
+  - For shorts: above the recent swing high, plus the same ATR buffer.
+  - Alternative: stop at 1.5 × ATR from entry if swing structure is unclear.
+
+- **Time-Based Exit:**
+  - If the trade has not reached the middle band within N bars (e.g., 20), exit at market — the mean-reversion thesis has failed.
+
+**4. Risk Management**
+
+- **Position Sizing:** Risk no more than 0.5–1% of account equity per trade. Because divergence setups can fail during strong trends, keep size conservative.
+- **Risk/Reward:** Aim for a minimum 1.5:1 R:R. If the distance to the middle band is less than 1.5× the stop distance, skip the trade.
+- **Trade Filter:** Avoid taking counter-trend entries against a dominant higher-timeframe trend (e.g., don't short a strong daily uptrend) unless the higher timeframe also shows compression.
+- **Max Concurrent Trades:** Limit to 1–2 correlated positions to avoid overexposure during a broad market move.
+- **Volatility Guard:** Skip trades during major news events (earnings, FOMC) where volume and volatility become erratic and invalidate the compression premise.
+
+**5. Required Indicators**
+
+- MACD (12, 26, 9) — for divergence detection.
+- Volume (raw) + 20-period Volume SMA — for fading-volume confirmation.
+- Bollinger Bands (20, 2) — for mean target and Band Width compression.
+- ATR (14) — for stop placement and position sizing.
+- Optional: Swing high/low detection logic (e.g., 5-bar fractal) to programmatically identify divergence pivots.
+
+**Summary:** ConvergentDivergence only fires when momentum fades (MACD divergence), participation dries up (decreasing volume), and volatility coils (narrowing Bollinger Bands). The convergence of these three conditions produces a high-probability snap back to the mean, with the middle Bollinger Band as the natural profit target and swing structure defining risk.

@@ -1,0 +1,56 @@
+STRATEGY_NAME: LiquidationReversal
+
+STRATEGY_DETAILS:
+This strategy combines liquidation clustering analysis with Bollinger Band extremes and RSI divergence to capture short-term mean reversion moves. The core thesis is that when forced liquidations cluster near Bollinger Band extremes, it signals capitulation or exhaustion, and a 5-minute RSI divergence confirms the reversal is imminent. Exits target the opposite Bollinger Band.
+
+**1. Key Strategy Components**
+
+- **Liquidation Cluster Detection**: Identify clusters of liquidation events (from exchange liquidation feeds or estimated via large wick/volume spikes) occurring within a tight price zone near the upper or lower Bollinger Band. A "cluster" is defined as multiple liquidation events within a short time window (e.g., 3–5 minutes) and within a narrow price band (e.g., 0.3–0.5% range).
+- **Bollinger Band Extremes**: Price must be trading at or beyond the 2-standard-deviation Bollinger Band (20-period SMA, 2σ). This acts as the "extreme" filter for where liquidations are most likely to occur.
+- **5-Minute RSI Divergence**: On the 5-minute chart, look for divergence between price and RSI(14):
+  - *Bullish divergence*: Price makes a lower low (at/near lower band) while RSI makes a higher low.
+  - *Bearish divergence*: Price makes a higher high (at/near upper band) while RSI makes a lower high.
+- **Confirmation Timing**: Divergence must form within 1–3 candles after the liquidation cluster is detected.
+
+**2. Entry Rules**
+
+*Long Entry (Bullish Reversal):*
+- Price touches or pierces the lower Bollinger Band (2σ).
+- A liquidation cluster (long liquidations / forced sells) is detected within that zone.
+- A bullish RSI divergence forms on the 5-minute chart.
+- Entry on the close of the candle that confirms the divergence (RSI higher low confirmed).
+
+*Short Entry (Bearish Reversal):*
+- Price touches or pierces the upper Bollinger Band (2σ).
+- A liquidation cluster (short liquidations / forced buys) is detected within that zone.
+- A bearish RSI divergence forms on the 5-minute chart.
+- Entry on the close of the candle that confirms the divergence.
+
+**3. Exit Rules**
+
+- **Primary Exit (Target)**: Opposite Bollinger Band (lower band for shorts, upper band for longs).
+- **Partial Exit**: Optional — scale out 50% at the middle band (20-period SMA) to lock in gains.
+- **Time Stop**: If the trade does not reach the target within a predefined window (e.g., 30–60 minutes), exit at market.
+- **Stop Loss**: Beyond the extreme wick / liquidation cluster low (for longs) or high (for shorts), with a small buffer (e.g., 0.2–0.3%). A common rule: stop at 1.5× the cluster's price range beyond the entry extreme.
+
+**4. Risk Management**
+
+- **Position Sizing**: Risk no more than 0.5–1% of account equity per trade due to the high volatility of liquidation-driven moves.
+- **Max Concurrent Trades**: 1–2 to avoid correlated exposure during broad market liquidation cascades.
+- **Volatility Filter**: Skip trades during extreme volatility spikes (e.g., ATR > 3× its 20-period average) unless the divergence is exceptionally clean.
+- **News Filter**: Avoid entries during major scheduled news events (CPI, FOMC) where liquidations can cascade without reverting.
+- **Stop Loss Discipline**: Hard stop always placed; never widen after entry.
+
+**5. Required Indicators & Data**
+
+- **Bollinger Bands**: 20-period SMA, 2 standard deviations (5-minute chart).
+- **RSI**: 14-period on the 5-minute chart.
+- **Liquidation Data**: Exchange liquidation feed (e.g., Binance/Bybit liquidations API) or estimated via large wick + volume spike detection if raw data is unavailable.
+- **Volume**: To confirm liquidation clusters (spike in volume accompanying the wick).
+- **ATR (optional)**: For volatility filtering and dynamic stop sizing.
+
+**6. Practical Notes**
+
+- Best suited for liquid instruments (BTC, ETH, major altcoins) with active derivatives markets.
+- Works best in ranging or choppy markets; in strong trending markets, liquidation clusters can continue cascading — the RSI divergence acts as the critical filter to avoid "catching a falling knife."
+- Backtest with tick-level liquidation data if possible, since candle-level data may miss the precise cluster location.

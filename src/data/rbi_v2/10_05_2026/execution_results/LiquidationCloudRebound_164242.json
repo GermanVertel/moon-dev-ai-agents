@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 Loading Moon Dev data from the lunar vault...\n\ud83c\udf19 Data loaded: 1009 rows of lunar price action \ud83d\ude80\n\ud83c\udf19\u2728 Launching Moon Dev LiquidationCloudRebound Backtest \ud83d\ude80\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/LiquidationCloudRebound_PKG.py\", line 187, in <module>\n    bt = Backtest(\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/LiquidationCloudRebound_PKG.py` failed. (See above for error)\n",
+  "execution_time": 3.988804,
+  "timestamp": "2026-10-05T16:42:42.856319"
+}

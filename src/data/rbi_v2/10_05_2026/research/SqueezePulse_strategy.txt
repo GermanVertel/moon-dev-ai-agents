@@ -1,0 +1,70 @@
+STRATEGY_NAME: SqueezePulse
+
+STRATEGY_DETAILS:
+SqueezePulse is a breakout strategy that combines trend confirmation, volatility compression, and volume expansion into a single high-conviction signal. It waits for the market to "coil" inside a Bollinger Band squeeze, then fires when a golden/death cross aligns with an explosive volume spike — filtering out the low-quality breakouts that plague naive squeeze systems.
+
+---
+
+**1. KEY STRATEGY COMPONENTS**
+
+- **Trend Filter (EMA Cross):** 50-period EMA crossing above the 200-period EMA = bullish regime (Golden Cross). Crossing below = bearish regime (Death Cross). This is the directional bias that the breakout must agree with.
+- **Volatility Compression (Bollinger Squeeze):** Bollinger Bands (20-period SMA, 2 standard deviations) narrow to an unusually tight range, signaling energy buildup. Measured by comparing current Band Width to its recent history (e.g., Band Width in the lowest 20–25% of the last 100–125 bars).
+- **Volume Confirmation (Volume Spike):** Current bar volume must exceed the 20-day average volume by at least 2x. This validates that the breakout has real participation behind it.
+- **Breakout Trigger:** Price closes outside the Bollinger Band in the direction of the EMA cross.
+
+---
+
+**2. ENTRY RULES**
+
+**Long Entry (all must be true):**
+1. 50-EMA has crossed above 200-EMA (Golden Cross) — recent cross preferred (within last N bars, e.g., 10–20) OR still in bullish alignment.
+2. Bollinger Band Width is in a squeeze condition (Band Width ≤ 20th percentile of last 100 bars, or Band Width < a fixed threshold like 0.5× ATR-based measure).
+3. Current bar volume ≥ 2.0 × 20-day average volume.
+4. Price closes ABOVE the upper Bollinger Band.
+5. Optional: bar range > average bar range (expansion confirmation).
+
+**Short Entry (all must be true):**
+1. 50-EMA crossed below 200-EMA (Death Cross), recent or aligned.
+2. Same Bollinger squeeze condition.
+3. Volume ≥ 2.0 × 20-day average.
+4. Price closes BELOW the lower Bollinger Band.
+
+---
+
+**3. EXIT RULES**
+
+- **Stop Loss:** Place at the opposite Bollinger Band, or at the middle band (20-SMA), whichever is tighter. Alternative: 1.5× ATR below entry (long) / above entry (short).
+- **Take Profit Options:**
+  - Fixed R multiple (e.g., 2R or 3R).
+  - Trailing stop using the 50-EMA as a dynamic trail.
+  - Exit on close back inside the Bollinger Bands (mean reversion signal).
+- **Time Stop:** Exit if no favorable move within X bars (e.g., 10–15), since squeeze breakouts should move quickly.
+- **Invalidation:** If the 50/200 EMA cross reverses, close the position.
+
+---
+
+**4. REQUIRED INDICATORS**
+
+| Indicator | Setting | Purpose |
+|---|---|---|
+| EMA Fast | 50-period | Trend direction |
+| EMA Slow | 200-period | Trend regime / cross signal |
+| Bollinger Bands | 20-period, 2σ | Squeeze detection + breakout trigger |
+| Band Width | (Upper−Lower)/Middle | Quantify squeeze |
+| Volume | 20-day SMA | Volume spike confirmation (2×) |
+| ATR (optional) | 14-period | Stop sizing / volatility filter |
+
+---
+
+**5. RISK MANAGEMENT**
+
+- **Position Sizing:** Risk ≤ 1–2% of equity per trade, sized off the ATR or band-distance stop.
+- **Avoid Chop:** Require the squeeze to have lasted ≥ 5 bars before breakout to avoid false triggers.
+- **Volume Filter is Mandatory:** No trade without the 2× volume spike — this is the core edge.
+- **Regime Awareness:** Best on liquid instruments (index futures, large-cap equities, major FX). Avoid low-liquidity names where volume spikes are noise.
+- **Correlation Cap:** Limit simultaneous positions in correlated instruments to avoid stacking the same directional bet.
+- **Backtest Note:** Test across trending and ranging regimes; the EMA cross may lag in fast reversals, so pair with the time stop.
+
+---
+
+**Edge Summary:** SqueezePulse's edge comes from requiring three independent conditions to align — trend (EMA cross), compression (BB squeeze), and participation (volume spike). This triple filter dramatically reduces whipsaws compared to trading any single signal alone, capturing the high-momentum expansion phase that follows volatility compression.

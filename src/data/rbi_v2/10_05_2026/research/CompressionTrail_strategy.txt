@@ -1,0 +1,44 @@
+STRATEGY_NAME: CompressionTrail
+
+STRATEGY_DETAILS:
+This is a volatility squeeze breakout strategy that capitalizes on the expansion of price action following periods of extreme contraction. The core premise is that low-volatility consolidation phases precede significant directional moves, and the Bollinger Band width serves as the primary gauge for identifying these compressed states.
+
+**Key Strategy Components:**
+
+1. **Volatility Squeeze Detection:**
+   - Calculate Bollinger Bands using a 20-period Simple Moving Average with a standard deviation multiplier of 2.0.
+   - Compute the Bollinger Band Width (BBW) as: (Upper Band - Lower Band) / Middle Band.
+   - Track the rolling 30-day minimum of BBW. A squeeze condition is triggered when the current BBW equals or falls within a small tolerance (e.g., 1-2%) of this 30-day minimum.
+   - This identifies the narrowest band contraction in the last 30 trading days, signaling maximum compression.
+
+2. **Entry Rules (Long Only):**
+   - Wait for the squeeze condition to be active (BBW at/near 30-day low).
+   - Enter long when price closes ABOVE the upper Bollinger Band on the same or subsequent bar.
+   - The breakout candle is defined as the bar where the close exceeds the upper band.
+   - Optionally require the breakout candle to have above-average volume for confirmation.
+
+3. **Exit Rules (Trailing Percentage of Breakout Candle Range):**
+   - Define the breakout candle's range as: Range = High - Low of the breakout bar.
+   - Set a trailing stop at a fixed percentage (e.g., 50-100%) of this range, measured from the highest high achieved since entry.
+   - Trailing Stop = Highest High Since Entry - (Trail Percentage × Breakout Candle Range).
+   - Exit when price closes below or touches the trailing stop level.
+   - This dynamic stop adapts to the volatility of the initial breakout, allowing winners to run while protecting profits.
+
+4. **Risk Management:**
+   - Position sizing based on the trailing stop distance to maintain consistent risk per trade (e.g., risk no more than 1-2% of account equity).
+   - Optional initial hard stop below the breakout candle's low or the lower Bollinger Band.
+   - Avoid entries during low-liquidity sessions; filter by time of day or volume.
+   - Consider a maximum holding period to avoid stagnant positions if momentum fades.
+
+**Required Indicators:**
+- Bollinger Bands (20-period SMA, 2.0 standard deviations).
+- Bollinger Band Width (derived from bands).
+- 30-period rolling minimum of BBW.
+- Volume (optional confirmation).
+- ATR or candle range calculation for the trailing stop.
+
+**Entry/Exit Summary:**
+- Entry: BBW at 30-day minimum AND close > Upper Bollinger Band.
+- Exit: Price falls below (Highest High Since Entry − Trail% × Breakout Candle Range).
+
+This strategy excels in markets transitioning from consolidation to trending phases, using the squeeze as a timing filter and the breakout candle's range as a volatility-adaptive trailing mechanism.

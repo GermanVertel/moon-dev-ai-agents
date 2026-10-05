@@ -1,0 +1,38 @@
+STRATEGY_NAME: VolatilityFade
+
+STRATEGY_DETAILS:
+
+**Core Concept**
+This strategy exploits mean-reversion after liquidity gaps by fading overextended volatility expansions. When Bollinger Bandwidth (BBW) spikes beyond 2 standard deviations during a 200% volume surge, it signals a liquidity gap / exhaustion move — the strategy takes the opposite side (short) betting on volatility contraction and price retracement.
+
+**Required Indicators**
+1. **Bollinger Bands** (20-period, 2σ default) — used to compute Bandwidth: `BBW = (Upper Band − Lower Band) / Middle Band`
+2. **BBW Standard Deviation** — rolling σ of BBW over a lookback (e.g., 20 periods) to define the 2σ threshold
+3. **Volume** with a rolling average (e.g., 20-period SMA) to detect the 200% surge
+4. **ATR or fixed %** for retracement measurement
+
+**Entry Rules (Short)**
+- Condition A: `BBW > (BBW_mean + 2 × BBW_std)` — bandwidth expansion beyond 2σ
+- Condition B: `Current Volume ≥ 2.0 × Volume_SMA(20)` — 200% volume surge
+- Condition C: Price is in the upper half of the bands (closing near/above upper band) — confirms the gap-up exhaustion
+- All three must trigger on the same or consecutive bars → **Enter Short**
+
+**Exit Rules**
+Exit on whichever occurs first:
+1. **Volatility contraction:** `BBW < (BBW_mean + 1 × BBW_std)` — bandwidth falls back below 1σ
+2. **Price retracement:** Price moves 5% in favor of the short (i.e., drops 5% from entry)
+3. Optional time-stop: exit after N bars if neither condition met
+
+**Risk Management**
+- **Stop Loss:** Place above the recent swing high / upper Bollinger Band + buffer (e.g., 1× ATR) to cap loss if the gap continues
+- **Position Sizing:** Risk fixed % of equity per trade (e.g., 1–2%), sized by stop distance
+- **Max Concurrent Positions:** Limit to avoid correlated liquidity-gap exposure
+- **Volatility Guard:** Skip trades during known news events if volume spike is event-driven and likely to persist
+
+**Edge & Rationale**
+Liquidity gaps driven by volume surges often overshoot fair value. Volatility is mean-reverting, so a 2σ bandwidth expansion is statistically likely to contract. Fading the move captures the reversion as liquidity refills and price retraces.
+
+**Failure Modes to Watch**
+- Trend regimes where high volume confirms continuation (not exhaustion) — the short gets run over
+- Low-liquidity sessions producing false volume spikes
+- Earnings/news catalysts that sustain the gap

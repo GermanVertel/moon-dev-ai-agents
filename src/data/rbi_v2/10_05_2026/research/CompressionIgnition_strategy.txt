@@ -1,0 +1,39 @@
+STRATEGY_NAME: CompressionIgnition
+
+STRATEGY_DETAILS:
+CompressionIgnition is a volatility expansion strategy that capitalizes on the classic "squeeze" pattern — periods of abnormally low volatility that precede explosive directional moves. It combines Bollinger Band width contraction with a volume confirmation filter to avoid false breakouts.
+
+**Core Concept:**
+Markets alternate between compression (low volatility, consolidation) and expansion (high volatility, trending). When Bollinger Bands narrow to a 30-day extreme, energy is coiling. The volume spike acts as the ignition trigger confirming institutional participation behind the breakout.
+
+**Required Indicators:**
+1. Bollinger Bands (20-period SMA, 2 standard deviations)
+2. Bollinger Band Width (BBW) = (Upper Band − Lower Band) / Middle Band
+3. 30-day rolling minimum of BBW (squeeze detector)
+4. 20-day volume SMA (volume baseline)
+5. Optional: ATR(14) for position sizing
+
+**Entry Rules:**
+1. **Squeeze Condition:** Current BBW ≤ the lowest BBW value over the prior 30 bars. This identifies the tightest consolidation in the lookback window.
+2. **Armed State:** Once squeeze is detected, set the strategy to "armed" — do NOT enter yet. Wait for the breakout.
+3. **Breakout Trigger:** Price closes above the upper Bollinger Band (long) OR below the lower Bollinger Band (short).
+4. **Volume Confirmation:** The breakout bar's volume must be ≥ 2× the 20-day average volume. Without this, ignore the signal — it's likely a fakeout.
+5. **Entry Execution:** Enter at the close of the confirmed breakout bar, or on the next bar's open to avoid look-ahead bias.
+
+**Exit Rules:**
+1. **Primary Exit (Mean Reversion Failure):** Exit when price closes back inside the Bollinger Bands (crosses back below upper band for longs, above lower band for shorts) — signals the breakout has failed.
+2. **Trailing Stop:** Trail a stop at the middle Bollinger Band (20-SMA). If price closes beyond the middle band against the position, exit.
+3. **Profit Target (Optional):** Take partial profits at 2× the initial band width measured from the breakout point.
+4. **Time Stop:** If neither target nor stop is hit within 15 bars, exit at market — the move has stalled.
+
+**Risk Management:**
+- **Position Sizing:** Risk no more than 1% of equity per trade. Use distance from entry to the opposite Bollinger Band (or middle band) as the stop distance for sizing.
+- **Stop Loss:** Hard stop at the opposite band (upper band for shorts, lower band for longs) OR at 1.5× ATR(14) from entry, whichever is tighter.
+- **Max Concurrent Positions:** Limit to 1–2 to avoid correlated squeeze breakouts during broad market compression.
+- **Regime Filter:** Avoid trading squeezes during major news events (FOMC, CPI, earnings) unless the volume spike confirms genuine directional conviction — news can whipsaw both directions.
+
+**Key Nuances:**
+- The squeeze alone is NOT a signal — it's a setup. The volume-confirmed breakout is the trigger. This two-stage design dramatically reduces false signals.
+- Volume threshold of 2× average is deliberately strict; consider testing 1.5×–2.5× to tune for the instrument.
+- Works best on liquid instruments (large-cap equities, index futures, major FX pairs) where volume data is meaningful.
+- Squeezes can persist for weeks — patience is required. The narrowest-in-30-days filter ensures you're trading the most extreme compression, not just any contraction.

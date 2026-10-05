@@ -1,0 +1,82 @@
+STRATEGY_NAME: HybridOscillator
+
+STRATEGY_DETAILS:
+
+This strategy combines multiple technical indicators in unconventional ways to identify high-probability trading opportunities. The approach focuses on cross-validation between different indicator families rather than relying on single-indicator signals.
+
+**Core Strategy Components:**
+
+1. **Momentum-Reversion Hybrid**
+   - Uses RSI divergence combined with Bollinger Band squeeze patterns
+   - Entry signals occur when RSI shows oversold/overbought while price remains within bands
+   - Requires confirmation from volume-weighted average price (VWAP) position
+
+2. **Multi-Timeframe Confluence**
+   - Analyzes 3 timeframes simultaneously (15min, 1H, 4H)
+   - Requires alignment between short-term momentum and longer-term trend structure
+   - Uses EMA ribbons on higher timeframes for trend bias
+
+**Entry Rules:**
+
+*Long Entry:*
+- RSI(14) < 30 on 15min chart
+- Price touches lower Bollinger Band (20, 2)
+- VWAP position: price above VWAP on 1H timeframe
+- MACD histogram showing bullish divergence
+- Volume spike > 1.5x 20-period average
+
+*Short Entry:*
+- RSI(14) > 70 on 15min chart
+- Price touches upper Bollinger Band (20, 2)
+- VWAP position: price below VWAP on 1H timeframe
+- MACD histogram showing bearish divergence
+- Volume spike > 1.5x 20-period average
+
+**Exit Rules:**
+
+- Take Profit: 1.5x ATR from entry
+- Stop Loss: 0.75x ATR from entry
+- Trailing stop activates after 1x ATR profit
+- Exit if RSI crosses 50 level against position
+- Time-based exit: 24 hours maximum hold
+
+**Risk Management:**
+
+- Position sizing: 1-2% risk per trade
+- Maximum 3 concurrent positions
+- Daily loss limit: 3% of account
+- Avoid trading during major news events (30min buffer)
+- Correlation filter: No more than 2 positions in correlated assets
+
+**Required Indicators:**
+
+1. RSI (14-period)
+2. Bollinger Bands (20-period, 2 std dev)
+3. VWAP (session-based)
+4. MACD (12, 26, 9)
+5. ATR (14-period)
+6. Volume MA (20-period)
+7. EMA ribbons (8, 21, 55)
+
+**Unusual Combinations:**
+
+- **RSI + Bollinger Bands**: Instead of using RSI alone for overbought/oversold, combines with band touches for stronger signals
+- **VWAP as trend filter**: Uses VWAP not just for execution but as multi-timeframe bias indicator
+- **MACD divergence + Volume**: Requires volume confirmation for divergence signals
+- **ATR-based dynamic exits**: Adapts profit targets to current volatility regime
+
+**Optimization Parameters:**
+
+- RSI periods: 10-20 range
+- Bollinger Band width: 1.5-2.5 std dev
+- ATR multipliers: 0.5-2.0 range
+- Volume threshold: 1.2-2.0x average
+
+**Market Conditions:**
+
+- Best performance in ranging-to-mildly-trending markets
+- Avoid strong trending markets (ADX > 40)
+- Optimal during high-liquidity sessions
+- Works across forex, crypto, and liquid equities
+
+This hybrid approach reduces false signals by requiring multiple indicator agreement while maintaining sensitivity to market reversals through the momentum-reversion combination.

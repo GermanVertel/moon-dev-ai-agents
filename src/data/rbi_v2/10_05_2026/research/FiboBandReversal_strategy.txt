@@ -1,0 +1,47 @@
+STRATEGY_NAME: FiboBand Reversal
+
+STRATEGY_DETAILS:
+This strategy combines Bollinger Band mean-reversion signals with Fibonacci retracement confirmation to identify short entries, and uses a reversal logic for long exits when price structure breaks below the lower band.
+
+1. Key Strategy Components
+- Bollinger Bands (BB): Used as the primary mean-reversion envelope. Upper band signals overbought/overextended conditions; lower band signals oversold/breakdown conditions.
+- Fibonacci Retracement: Used to confirm a "retracement high" — a swing high formed after price touches the upper band. This high becomes the key reference level for the short trade and the subsequent exit trigger.
+- Price Structure: The strategy relies on swing highs/lows rather than raw indicator crossovers, making it structure-aware.
+
+2. Entry Rules (Short)
+- Condition A: Price touches or pierces the upper Bollinger Band.
+- Condition B: After the touch, price pulls back and then forms a Fibonacci retracement high. This means a swing high is established that aligns with a Fibonacci level (commonly 0.618, 0.786, or 1.0 of the prior swing) relative to the recent leg.
+- Entry Trigger: Enter short when price touches the upper BB and the Fibonacci retracement high is confirmed (e.g., a bearish rejection candle or a close back below the Fib level).
+- Confirmation Filters (optional but recommended):
+  - RSI > 70 or overbought reading at the upper band touch.
+  - Bearish divergence between price and RSI/MACD at the retracement high.
+  - Volume spike on the rejection candle.
+
+3. Exit Rules (Long Exit / Trade Closure)
+- The phrase "exit long if the price breaks that high below the lower Bollinger Band" is interpreted as: exit the short position (i.e., close it as if going long) when price breaks below the lower Bollinger Band after failing to hold above the Fibonacci high.
+- Practical interpretation:
+  - Maintain the short while price stays below the Fibonacci retracement high.
+  - If price breaks below the lower Bollinger Band (a downside breakdown), this is treated as a momentum continuation signal — but since the strategy is structured as a reversal/mean-reversion play, the "exit long" here means closing the short and potentially flipping to a long only if the breakdown is confirmed by a close below the lower band.
+- Alternative strict reading: Exit the short (cover) when price breaks the Fibonacci high to the upside, and go long when price subsequently breaks below the lower Bollinger Band (a failed breakout / bear trap reversal).
+- Recommended exit logic:
+  - Stop-loss: Close above the Fibonacci retracement high.
+  - Take-profit: Lower Bollinger Band touch or a close below it.
+  - Trailing exit: If price rides the lower band, trail using the mid-band (SMA 20) as a dynamic exit.
+
+4. Risk Management
+- Position sizing: Risk 1–2% of equity per trade.
+- Stop-loss: Hard stop just above the Fibonacci retracement high (e.g., +0.5 ATR buffer).
+- Take-profit: Lower Bollinger Band or fixed R multiple (1.5R–2R).
+- Max holding period: 5–15 bars to avoid drift in range-bound conditions.
+- Avoid trading during low-liquidity sessions or major news events.
+
+5. Required Indicators
+- Bollinger Bands (20-period SMA, 2 standard deviations) — upper, middle, lower.
+- Fibonacci Retracement tool (auto or manual swing detection).
+- Optional: RSI (14), MACD, ATR (14) for confirmation and stop sizing.
+- Swing high/low detector for structure-based entries.
+
+6. Market Conditions & Notes
+- Best suited for ranging or mean-reverting markets (low ADX).
+- Poor performance in strong trends where price rides the upper band — use ADX filter to avoid trending regimes.
+- The dual-band logic (upper for entry, lower for exit) makes this a band-to-band reversal system with Fibonacci as the structural anchor.

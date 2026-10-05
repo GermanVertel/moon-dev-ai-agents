@@ -1,0 +1,42 @@
+STRATEGY_NAME: VolatilityPinnacle
+
+STRATEGY_DETAILS:
+This strategy exploits the mean-reverting nature of volatility by shorting assets during compressed price action that coincides with VIX extremes. The core thesis is that when the VIX spikes to historically elevated levels while asset prices refuse to make decisive directional moves (narrow range consolidation), the market is likely to resolve downward — either through a volatility crush that pressures risk assets or through a delayed breakdown. The strategy enters bearish positions at these "volatility pinnacles" and exits when Bollinger Bands are touched, signaling a return to normal volatility and price expansion.
+
+1. KEY STRATEGY COMPONENTS
+- VIX Relative-High Detection: Use a rolling lookback (e.g., 252 trading days) to identify when the VIX is within the top decile (≥90th percentile) of its historical range. A peak is confirmed when VIX shows a local maximum (e.g., 3-bar pivot high) and begins to roll over or stalls at the extreme.
+- Narrow Range Confirmation: The underlying asset must be in a contraction phase. Measure this via:
+  - Bollinger Band Width (BBW) in the bottom quartile of its own recent range, OR
+  - ATR(14) below its 50-period moving average, OR
+  - Consecutive inside bars / a defined consolidation box.
+- Divergence Between Fear and Price: The VIX is elevated but the asset is NOT selling off aggressively — this disconnect signals latent downside pressure and fragile positioning.
+
+2. ENTRY RULES (Bearish / Short)
+- VIX Condition: VIX ≥ 90th percentile of 252-day range AND forms a confirmed local peak (lower high on the most recent bar vs. prior bar).
+- Price Condition: Asset price is range-bound — Bollinger Band Width at a 20-period low, or price contained within a narrow band (e.g., within 1.5× ATR over the last 5 bars).
+- Trigger: Enter short on the first close below the consolidation low OR on a bearish reversal candle (engulfing / pin bar) at the upper Bollinger Band.
+- Confirmation Filter (optional): RSI(14) < 50 and declining, or MACD histogram rolling negative.
+
+3. EXIT RULES
+- Primary Exit: Close the short when price touches the LOWER Bollinger Band (20, 2). This captures the volatility expansion move.
+- Secondary Exit: Close when price touches the MIDDLE band (20-period SMA) if the move is weak or if VIX has collapsed below its 50th percentile.
+- Time Stop: Exit after N bars (e.g., 10) if neither band is touched, to avoid drift.
+- Stop-Loss: Hard stop above the consolidation high or the upper Bollinger Band, whichever is tighter.
+
+4. RISK MANAGEMENT
+- Position Sizing: Scale size inversely with VIX level — higher VIX means wider expected swings, so reduce size to keep dollar risk constant. Use ATR-based sizing (risk 0.5–1% of equity per trade).
+- Volatility-Adjusted Stop: Place stop at entry + (1.5 × ATR) to accommodate elevated volatility.
+- Correlation Guard: Avoid stacking multiple correlated shorts when VIX is extreme; cap total portfolio short exposure.
+- Regime Filter: Only take signals when VIX term structure is in backwardation (near-term fear > longer-term), confirming genuine stress rather than a slow grind.
+- No-Trade Conditions: Skip if VIX is falling sharply (volatility crush already underway) or if price has already broken the consolidation range.
+
+5. REQUIRED INDICATORS
+- VIX Index (or VIX futures / VIXY proxy)
+- VIX percentile rank over 252-day lookback
+- Bollinger Bands (20-period, 2 standard deviations) — for both contraction detection (Band Width) and exit triggers (band touches)
+- Bollinger Band Width (BBW) and its rolling percentile
+- ATR(14) for stop placement and range measurement
+- RSI(14) or MACD for directional confirmation (optional)
+- Pivot-high detection for VIX peaks (3-bar or 5-bar)
+
+SUMMARY: VolatilityPinnacle shorts assets during narrow-range consolidations that occur while the VIX is at historical extremes — a setup where fear is priced high but price action has not yet capitulated. Exits are mechanical: take profit when Bollinger Bands are touched, indicating volatility has normalized and the move has matured.

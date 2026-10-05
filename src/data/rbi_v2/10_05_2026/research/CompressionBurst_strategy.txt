@@ -1,0 +1,57 @@
+STRATEGY_NAME: CompressionBurst
+
+STRATEGY_DETAILS:
+This strategy captures explosive directional moves that follow periods of unusually low volatility. It combines Bollinger Band width analysis with ATR-based squeeze detection, then uses a dynamic trailing stop derived from the breakout candle's own range to let winners run while locking in gains.
+
+1. KEY STRATEGY COMPONENTS
+- Volatility Squeeze Detection: Bollinger Bands (20-period SMA, 2 standard deviations) are monitored for contraction. A squeeze is confirmed when the BandWidth (upper band − lower band) falls below a 20-period ATR threshold (e.g., BandWidth < 1.0 × ATR(20), or a configurable multiplier).
+- Breakout Trigger: Once the squeeze condition is active, a long entry is taken when price closes above the upper Bollinger Band on the same or subsequent bar.
+- Dynamic Trailing Exit: The stop is anchored to the breakout candle's range (High − Low of the trigger candle). The trailing stop trails price by a fixed percentage of that range (e.g., 50–75%), moving up only and never down.
+
+2. ENTRY RULES (LONG ONLY)
+- Condition A (Squeeze): Bollinger BandWidth < ATR(20) × squeeze_multiplier (default 1.0), evaluated on the prior bar or current bar.
+- Condition B (Breakout): Close > Upper Bollinger Band.
+- Condition C (Optional filter): Volume above its 20-period average, or price above a higher-timeframe trend filter (e.g., 50/200 EMA) to avoid false breakouts.
+- Entry: Enter long at the close of the breakout candle (or next bar open).
+- Record the breakout candle's range: R = High − Low.
+
+3. EXIT RULES
+- Initial Stop: Entry price − (R × trail_pct), where trail_pct defaults to 0.5–0.75.
+- Trailing Logic: Each subsequent bar, recompute the stop as (Highest High since entry) − (R × trail_pct). The stop only ratchets upward.
+- Hard Exit: Close position when price touches the trailing stop.
+- Optional Profit Target: Exit if price reaches entry + (R × target_multiple), e.g., 2×R, for a fixed R-multiple take-profit.
+- Time Stop (optional): Exit after N bars if neither stop nor target is hit, to avoid dead trades.
+
+4. RISK MANAGEMENT
+- Position sizing: Risk a fixed % of equity per trade (e.g., 1%). Size = (Equity × Risk%) / (Entry − Initial Stop).
+- Since the initial stop is range-based, position size auto-adjusts to the breakout candle's volatility.
+- Max concurrent positions and max daily loss limits recommended.
+- Avoid entries near major news events or illiquid sessions.
+
+5. REQUIRED INDICATORS
+- Bollinger Bands: 20-period SMA, 2.0 standard deviations (upper, middle, lower).
+- ATR: 20-period Average True Range.
+- BandWidth: (Upper − Lower) / Middle, or raw (Upper − Lower).
+- Optional: Volume SMA(20), EMA(50/200) trend filter.
+
+6. PSEUDOCODE
+```
+bb_upper, bb_mid, bb_lower = BollingerBands(close, 20, 2)
+atr = ATR(high, low, close, 20)
+bandwidth = bb_upper - bb_lower
+squeeze = bandwidth < atr * squeeze_multiplier
+
+if flat and squeeze and close > bb_upper:
+    entry = close
+    R = high - low
+    stop = entry - R * trail_pct
+    trail_high = high
+
+if long:
+    trail_high = max(trail_high, high)
+    stop = max(stop, trail_high - R * trail_pct)
+    if low <= stop:
+        exit at stop
+```
+
+This CompressionBurst approach is distinct because it gates entries on a quantified volatility contraction (ATR-referenced BandWidth) and manages exits using the breakout candle's intrinsic range rather than fixed points or ATR multiples alone — making it adaptive to the specific energy released at the moment of breakout.

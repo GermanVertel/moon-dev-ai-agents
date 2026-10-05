@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "return_code": 1,
+  "stdout": "\ud83c\udf19\u2728 MOON DEV BACKTEST INITIALIZING: VolatilityPulse \u2728\ud83c\udf19\n\ud83d\ude80 Data loaded: 1009 bars\n\ud83c\udf19 Date range: 2024-01-01 00:00:00 to 2026-10-05 00:00:00\n\ud83c\udf19 Running VolatilityPulse backtest... \ud83d\ude80\u2728\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolatilityPulse_PKG.py\", line 290, in <module>\n    bt = Backtest(data, VolatilityPulse, cash=1_000_000, commission=0.0005, exclusive=False)\nTypeError: Backtest.__init__() got an unexpected keyword argument 'exclusive'\nERROR conda.cli.main_run:execute(148): `conda run python /Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi_v2/10_05_2026/backtests_package/VolatilityPulse_PKG.py` failed. (See above for error)\n",
+  "execution_time": 3.559668,
+  "timestamp": "2026-10-05T13:10:39.676307"
+}

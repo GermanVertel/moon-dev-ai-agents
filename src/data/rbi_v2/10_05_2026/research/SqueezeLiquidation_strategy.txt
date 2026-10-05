@@ -1,0 +1,72 @@
+STRATEGY_NAME: SqueezeLiquidation
+
+STRATEGY_DETAILS:
+This strategy targets explosive breakout moves that occur when price consolidates tightly (Bollinger Band squeeze) and is then catalyzed by forced liquidations in the futures market, with spot-futures basis divergence acting as a directional confirmation filter.
+
+CORE LOGIC:
+- Consolidation is identified when Bollinger Bands narrow (low volatility / squeeze), signaling stored energy.
+- A breakout is only considered valid when a surge in futures liquidations occurs, indicating forced positioning unwind that fuels momentum.
+- Spot-futures basis divergence confirms whether the move is driven by genuine spot demand (healthy) versus leveraged futures speculation (fragile), filtering out false breakouts.
+
+COMPONENTS & INDICATORS:
+1. Bollinger Bands (20-period, 2 std dev)
+   - Bandwidth = (Upper - Lower) / Middle
+   - Squeeze condition: Bandwidth in lowest percentile (e.g., below 20th percentile of last 100 bars) or Bandwidth < threshold.
+2. Futures Liquidation Data
+   - Track long liquidations and short liquidations (aggregated across major exchanges).
+   - Liquidation surge = liquidation volume > N times its rolling average (e.g., 3x the 50-bar average) within a short window.
+   - Direction: Long liquidation surge = downward pressure; short liquidation surge = upward pressure.
+3. Spot-Futures Basis
+   - Basis = (Futures Price - Spot Price) / Spot Price
+   - Basis divergence: Basis moves opposite to price direction, or basis spikes abnormally.
+   - Confirmation: For a long breakout, basis should be positive and expanding (futures leading with healthy premium), OR basis divergence resolves in favor of breakout direction. For a short breakout, basis should be negative or compressing.
+
+ENTRY RULES:
+LONG ENTRY:
+- Bollinger Band squeeze detected (bandwidth in low percentile).
+- Price closes above the upper Bollinger Band (breakout).
+- Short liquidation surge detected (shorts being squeezed).
+- Spot-futures basis confirms: basis is positive and widening, or basis divergence shows futures premium expanding.
+- Volume confirmation: breakout candle volume > 1.5x average.
+
+SHORT ENTRY:
+- Bollinger Band squeeze detected.
+- Price closes below the lower Bollinger Band.
+- Long liquidation surge detected (longs being liquidated).
+- Spot-futures basis confirms: basis is negative and widening (futures discount deepening), or basis divergence shows futures discount expanding.
+- Volume confirmation: breakout candle volume > 1.5x average.
+
+EXIT RULES:
+- Take Profit: 
+  - Long: Exit at 2x the Bollinger Band width beyond entry, or when RSI > 75 and momentum stalls.
+  - Short: Exit at 2x the Bollinger Band width beyond entry, or when RSI < 25 and momentum stalls.
+- Stop Loss:
+  - Long: Below the middle Bollinger Band or the breakout candle low, whichever is tighter.
+  - Short: Above the middle Bollinger Band or the breakout candle high, whichever is tighter.
+- Trailing Stop: Use ATR-based trailing stop (e.g., 1.5x ATR) once price moves 1x ATR in favor.
+- Time Stop: Exit if breakout fails to extend within 3–5 bars (price re-enters Bollinger Bands).
+
+RISK MANAGEMENT:
+- Position sizing: Risk no more than 1–2% of equity per trade.
+- Leverage: Use moderate leverage (2–3x) given futures liquidation volatility.
+- Avoid trading during low-liquidity hours or major news events unless liquidation surge is exceptionally strong.
+- Confirm liquidation data is not stale (use real-time or near real-time feeds).
+- Maximum 2–3 concurrent positions to avoid correlated exposure.
+- If basis divergence contradicts breakout direction, skip the trade (no confirmation = no entry).
+
+REQUIRED DATA & TOOLS:
+- OHLCV price data (1m, 5m, or 15m timeframe).
+- Bollinger Bands indicator (20, 2).
+- Futures liquidation feed (aggregated long/short liquidations).
+- Spot and futures price feeds for basis calculation.
+- Volume moving average.
+- ATR for trailing stops.
+- RSI for overbought/oversold exit confirmation.
+
+MARKET CONDITIONS:
+- Best suited for ranging-to-breakout transitions in liquid markets (BTC, ETH, major altcoins).
+- Avoid choppy, low-volume conditions where squeezes produce false breakouts.
+- Works well during high-leverage periods when liquidation cascades are likely.
+
+SUMMARY:
+SqueezeLiquidation combines volatility compression (Bollinger squeeze) with market microstructure shocks (liquidation surges) and derivatives sentiment (spot-futures basis divergence) to trade high-probability breakouts. The triple confirmation reduces false signals and aligns entries with forced positioning unwinds that often precede sustained moves.

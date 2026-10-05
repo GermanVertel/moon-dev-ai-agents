@@ -1,0 +1,53 @@
+STRATEGY_NAME: VolumetricBandBreaker
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy combines a volatility-adjusted VWAP (Volume Weighted Average Price) with volume confirmation to identify high-probability breakout entries. It fades back to the mean (VWAP) for exits, creating an asymmetric risk/reward profile.
+
+**Key Strategy Components:**
+
+1. **Volatility-Adjusted VWAP Bands**
+   - Calculate standard VWAP (typically anchored to session or rolling N-period)
+   - Compute rolling standard deviation of price deviation from VWAP
+   - Upper Band = VWAP + (k × σ_deviation)
+   - Lower Band = VWAP − (k × σ_deviation)
+   - `k` is the volatility multiplier (commonly 1.5–2.5, tunable per asset)
+
+2. **Volume Surge Filter**
+   - Compare current bar volume to a rolling average (e.g., 20-period SMA of volume)
+   - Volume Surge = Current Volume ≥ (Volume_Multiplier × Avg Volume), typically 1.5×–2×
+   - Surge must occur on the breakout bar to confirm conviction
+
+3. **Entry Rules**
+   - **Long Entry:** Price closes above the Upper Band AND volume surge is present
+   - **Short Entry:** Price closes below the Lower Band AND volume surge is present
+   - Optional: Require VWAP slope agreement (rising VWAP for longs, falling for shorts)
+
+4. **Exit Rules**
+   - **Primary Exit:** Price reverts back to VWAP (touch or cross)
+   - **Stop Loss:** Fixed % or ATR-based stop beyond the breakout bar's extreme
+   - **Time Stop:** Exit if neither target nor stop hit within N bars (avoids dead trades)
+   - **Trailing Option:** Trail stop along the band as price extends
+
+**Risk Management:**
+- Position size based on distance from entry to stop (ATR-normalized)
+- Max risk per trade: 0.5%–1% of equity
+- Avoid entries during low-liquidity sessions (thin volume distorts VWAP)
+- Cap concurrent positions to prevent correlated exposure
+- Skip trades when bands are unusually wide (high volatility regime) or extremely narrow (chop)
+
+**Required Indicators:**
+1. VWAP (anchored or rolling)
+2. Standard deviation of price-to-VWAP deviation (rolling)
+3. Volume SMA (20-period recommended)
+4. ATR (for stop placement and position sizing)
+5. Optional: VWAP slope / EMA of VWAP for trend filter
+
+**Best Use Cases:**
+- Intraday trading on liquid instruments (ES, NQ, SPY, BTC)
+- Trending or expansion days where volume confirms directional moves
+- Avoid ranging/low-volume sessions where false breakouts dominate
+
+**Edge Rationale:**
+VWAP acts as the institutional fair-value anchor. When price breaks a statistically significant deviation band with volume confirmation, it signals genuine order-flow imbalance. The reversion-to-VWAP exit captures the mean-reverting tendency while the volume filter reduces false breakouts.

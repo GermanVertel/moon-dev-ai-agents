@@ -1,0 +1,77 @@
+STRATEGY_NAME: LiquidityHeikin
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy exploits the tendency of price to reverse when it approaches zones of concentrated liquidation orders (where many leveraged positions would be force-closed), but only when the 4-hour Heikin-Ashi trend structure confirms a flip and market volatility is compressed. The combination of liquidation cluster magnetism + Heikin-Ashi trend flip + low volatility regime creates a high-probability counter-trend reversal setup.
+
+---
+
+**1. Key Strategy Components**
+
+- **Liquidation Cluster Mapping:** Aggregate order book / liquidation heatmap data to identify price zones with high density of liquidation levels (long liquidations below price, short liquidations above price). These act as magnet zones and potential reversal points.
+- **Heikin-Ashi Flip (4H):** Use 4-hour Heikin-Ashi candles to confirm a trend reversal. A flip is defined as a change in HA candle color (bullish → bearish or bearish → bullish) combined with a flat/opposite HA body and wick confirmation.
+- **Volatility Filter:** Only take trades when current volatility (ATR or realized vol) is below its rolling average (e.g., 20-period ATR below 50-period ATR, or Bollinger Band width in bottom quartile).
+- **Swing Extremes for Stops:** Recent swing highs/lows (pivot points) define stop-loss placement.
+
+---
+
+**2. Entry Rules**
+
+**Long Entry (counter-trend reversal from downside):**
+- Price approaches a high-density long-liquidation cluster from above (cluster sits below current price).
+- 4H Heikin-Ashi flips from bearish to bullish (green HA candle after red sequence).
+- Current 4H ATR < 20-period average ATR (below-average volatility).
+- Enter long on the close of the flipping HA candle or on a retest of the cluster zone.
+
+**Short Entry (counter-trend reversal from upside):**
+- Price approaches a high-density short-liquidation cluster from below (cluster sits above current price).
+- 4H Heikin-Ashi flips from bullish to bearish (red HA candle after green sequence).
+- Current 4H ATR < 20-period average ATR.
+- Enter short on the close of the flipping HA candle or on a retest of the cluster zone.
+
+**Confluence Requirement:** All three conditions (liquidation cluster proximity, HA flip, low volatility) must align. Skip trades if any condition is missing.
+
+---
+
+**3. Exit Rules**
+
+- **Take Profit 1:** Nearest opposing liquidity cluster or prior swing high/low (partial 50%).
+- **Take Profit 2:** Next major structural level (e.g., previous range high/low) or trail with HA candle color change.
+- **Trailing Stop:** Exit when HA candle flips back against the position.
+- **Time Stop:** Exit if trade hasn't reached TP1 within 3–5 HA candles (thesis invalidated).
+
+---
+
+**4. Risk Management**
+
+- **Stop-Loss:** Placed just beyond the most recent swing extreme:
+  - Longs: below the most recent swing low (with small buffer, e.g., 0.25–0.5 × ATR).
+  - Shorts: above the most recent swing high (with buffer).
+- **Position Sizing:** Risk 0.5–1% of account per trade. Since this is counter-trend, use smaller size than trend-following systems.
+- **Risk-Reward:** Minimum 1:2 R:R required; target 1:3 when cluster is dense.
+- **Max Concurrent Trades:** 1–2 to avoid correlated exposure during volatile regimes.
+- **Volatility Guard:** Skip trades if ATR suddenly expands above average mid-trade (thesis break).
+
+---
+
+**5. Required Indicators & Data**
+
+- **Heikin-Ashi Candles (4H):** Trend flip detection.
+- **ATR (14 or 20 period, 4H):** Volatility filter and stop buffer.
+- **Liquidation Heatmap / Order Book Depth Data:** Identify high-density liquidation clusters (from exchange liquidation feeds, Coinglass, or aggregated OI data).
+- **Swing High/Low Pivots (e.g., 5-bar fractal):** For stop-loss placement and TP targets.
+- **Optional:** Volume Profile or VWAP for cluster validation.
+
+---
+
+**6. Execution Notes**
+
+- Best suited for crypto perpetual futures (BTC, ETH) where liquidation data is transparent and leveraged clusters are frequent.
+- Avoid trading during major news events or scheduled macro releases (volatility filter will usually block these anyway).
+- Backtest across multiple regimes; counter-trend systems require robust filtering to avoid catching falling knives.
+- Consider confirmation via lower timeframe (1H) HA flip for entry timing precision.
+
+---
+
+**Strategy Edge:** Combines order-flow microstructure (liquidation clusters) with price-action trend confirmation (Heikin-Ashi) and a volatility regime filter — a three-layer confluence that reduces false counter-trend entries and targets the precise moments when forced liquidations create reflexive reversals.

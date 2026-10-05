@@ -1,0 +1,104 @@
+STRATEGY_NAME: SqueezeVolt
+
+STRATEGY_DETAILS:
+
+**Overview**
+SqueezeVolt is a volatility-transition strategy that captures explosive directional moves occurring when a low-volatility consolidation (detected via Keltner Channel contraction) resolves into a volatility expansion (confirmed via Bollinger Bandwidth). The dual confirmation filters out false breakouts that occur when only one volatility measure signals a squeeze.
+
+**Core Concept**
+The strategy exploits the classic "squeeze" setup: Bollinger Bands (which use standard deviation) contract inside the Keltner Channels (which use ATR). When price breaks out of this squeeze zone with a volume surge, it often signals the start of a sustained directional move.
+
+---
+
+**1. Required Indicators**
+
+- **Keltner Channel (KC):**
+  - EMA period: 20
+  - ATR period: 20
+  - ATR multiplier: 1.5 (upper/lower bands = EMA ± 1.5 × ATR)
+
+- **Bollinger Bands (BB):**
+  - SMA period: 20
+  - Standard deviation multiplier: 2.0
+
+- **Bollinger Bandwidth (BBW):**
+  - BBW = (Upper BB − Lower BB) / Middle BB
+  - Track a rolling percentile or a short SMA of BBW (e.g., 20-period) to identify expansion.
+
+- **Volume:**
+  - 20-period volume SMA for surge comparison.
+
+- **ATR (for stops):**
+  - 14-period ATR.
+
+---
+
+**2. Squeeze Detection (Pre-Condition)**
+
+A valid squeeze is defined as:
+- **Contraction:** KC width is in its lowest 20th percentile over the last 100 bars (Keltner Channel contraction).
+- **Compression:** Bollinger Bands are inside (or nearly inside) the Keltner Channel — i.e., BB Upper < KC Upper AND BB Lower > KC Lower.
+- **Bandwidth Low:** BBW is below its 20-period average (confirming low volatility regime).
+
+Track a "squeeze active" state flag. The breakout must occur while squeeze was recently active (within the last 5 bars).
+
+---
+
+**3. Entry Rules**
+
+**Long Entry (first close outside Keltner):**
+1. Squeeze was active within the last 5 bars.
+2. BBW begins expanding: current BBW > previous BBW AND BBW > 20-period BBW SMA.
+3. Price closes ABOVE the upper Keltner Channel (first close outside KC).
+4. Volume surge: current bar volume > 1.5 × 20-period volume SMA.
+5. Optional filter: price also closes above upper Bollinger Band for confirmation.
+
+**Short Entry (mirror):**
+1. Squeeze active within last 5 bars.
+2. BBW expanding.
+3. Price closes BELOW the lower Keltner Channel.
+4. Volume > 1.5 × volume SMA.
+
+**Entry execution:** Enter at the close of the breakout bar or on the next bar's open.
+
+---
+
+**4. Exit Rules**
+
+- **Initial Stop-Loss:** 
+  - Long: entry − (1.5 × ATR(14)), or below the Keltner midline, whichever is tighter.
+  - Short: entry + (1.5 × ATR(14)).
+
+- **Profit Target 1 (partial):** 1.5R — scale out 50%.
+- **Profit Target 2:** Trail using Keltner midline (EMA 20) or a 2× ATR chandelier stop.
+
+- **Time Stop:** Exit if no favorable move within 10 bars and squeeze condition has re-formed.
+
+- **Volatility Reversal Exit:** Close position if BBW contracts sharply (volatility dying) after a breakout, indicating a failed move.
+
+---
+
+**5. Risk Management**
+
+- **Position Sizing:** Risk 1% of equity per trade; size = (0.01 × Equity) / (entry − stop).
+- **Max Concurrent Positions:** 1–2 to avoid correlated volatility trades.
+- **Avoid Choppy Regimes:** Skip signals when ADX < 20 (no trend) unless breakout is very strong.
+- **Slippage Buffer:** Account for slippage on breakout bars since volume surges often cause gaps.
+- **No Re-entry:** After a stop-out, wait for a fresh squeeze to form before re-entering the same direction.
+
+---
+
+**6. Confirmation Checklist (all must be TRUE for entry)**
+
+| Condition | Long | Short |
+|---|---|---|
+| Squeeze active (last 5 bars) | ✔ | ✔ |
+| BBW expanding | ✔ | ✔ |
+| First close outside KC | Above upper | Below lower |
+| Volume > 1.5× SMA | ✔ | ✔ |
+| Trend filter (ADX > 20) | Optional | Optional |
+
+---
+
+**7. Why It Works**
+The dual confirmation eliminates the biggest weakness of single-indicator squeeze systems: false breakouts. Keltner contraction confirms the *setup* (energy stored), while Bollinger Bandwidth expansion confirms the *trigger* (energy released). The volume surge validates real participation rather than a noise-driven spike, giving SqueezeVolt a higher win-rate-to-false-signal ratio than either indicator used alone.

@@ -1,0 +1,61 @@
+STRATEGY_NAME: VolumeDivergentMACD
+
+STRATEGY_DETAILS:
+This strategy combines MACD divergence detection with declining volume confirmation to identify weakening trends, then uses Bollinger Band standard deviation expansion as an exit signal. The core premise is that when price makes a new extreme but MACD fails to confirm it, and volume is simultaneously drying up, the underlying momentum is fading and a reversal is likely. The Bollinger Band exit rule captures the subsequent volatility expansion that typically accompanies the reversal.
+
+KEY STRATEGY COMPONENTS:
+1. MACD Divergence Detection
+   - Bullish divergence: Price makes a lower low, but MACD line (or histogram) makes a higher low
+   - Bearish divergence: Price makes a higher high, but MACD line (or histogram) makes a lower high
+   - Use standard MACD parameters: 12-period EMA, 26-period EMA, 9-period signal line
+   - Confirm divergence across a minimum of 5-20 bars between the two pivots
+
+2. Volume Confirmation
+   - Volume must be declining across the same window as the divergence
+   - Compare average volume of the second pivot region vs. the first pivot region
+   - Require second pivot volume to be at least 10-20% lower than first pivot volume
+   - Optional: use a volume moving average (e.g., 20-period) to smooth noise
+
+3. Bollinger Band Exit Trigger
+   - Standard settings: 20-period SMA, 2 standard deviations
+   - Close long/short when the band width or standard deviation exceeds the 2 SD threshold relative to recent baseline
+   - Interpret as volatility expansion confirming the reversal has played out
+
+ENTRY RULES:
+- Long Entry:
+  a. Identify a bullish MACD divergence (price lower low, MACD higher low)
+  b. Confirm volume at the second low is lower than at the first low
+  c. Enter long on the close of the bar that confirms the divergence (e.g., MACD histogram turning positive or bullish crossover)
+- Short Entry:
+  a. Identify a bearish MACD divergence (price higher high, MACD lower high)
+  b. Confirm volume at the second high is lower than at the first high
+  c. Enter short on the close of the bar that confirms the divergence (MACD histogram turning negative or bearish crossover)
+
+EXIT RULES:
+- Primary Exit: Close the position when Bollinger Band standard deviation (or band width) exceeds 2 standard deviations from its recent mean, signaling volatility expansion
+- Alternative Exit: Fixed stop-loss or take-profit if BB condition is not met within N bars
+- Optional Trailing Stop: Trail using the middle Bollinger Band (20 SMA)
+
+RISK MANAGEMENT:
+- Position sizing: Risk no more than 1-2% of account equity per trade
+- Stop-loss: Place beyond the divergence pivot low/high (e.g., 1 ATR beyond)
+- Take-profit: Consider partial exits at the middle Bollinger Band, remainder on the SD expansion signal
+- Maximum holding period: 30-50 bars to avoid stale positions
+- Avoid trading during low-liquidity sessions where volume signals are unreliable
+
+REQUIRED INDICATORS:
+1. MACD (12, 26, 9) — line, signal, histogram
+2. Volume with 20-period moving average
+3. Bollinger Bands (20, 2) — upper, middle, lower, and band width / standard deviation value
+4. ATR (14) for stop-loss placement
+5. Pivot detection logic (swing highs/lows) to identify divergence points
+
+MARKET CONDITIONS:
+- Best suited for ranging or topping/bottoming markets where momentum exhaustion occurs
+- Less effective in strong trending markets where divergences can persist
+- Works on multiple timeframes; higher timeframes (4H, Daily) tend to produce more reliable signals
+
+CONFIRMATION FILTERS (OPTIONAL):
+- RSI divergence as a secondary confirmation
+- Candlestick reversal patterns (engulfing, hammer, shooting star) at the second pivot
+- Price rejection at key support/resistance zones

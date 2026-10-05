@@ -1,0 +1,56 @@
+STRATEGY_NAME: VolatilityDivergence
+
+STRATEGY_DETAILS:
+This strategy combines MACD bearish divergence with VIX volatility spikes to identify high-probability short entries, then uses implied volatility dynamics and volume behavior for exits. It is a contrarian-momentum hybrid: price makes higher highs while MACD makes lower highs (bearish divergence), and a VIX spike confirms fear/uncertainty entering the market, increasing the odds of a reversal lower.
+
+1. KEY STRATEGY COMPONENTS
+- Primary signal: Bearish MACD divergence on the chosen timeframe (price higher high, MACD lower high).
+- Confirmation filter: VIX volatility spike (sharp percentage increase over a short lookback, e.g., +10–20% in 1–3 bars, or VIX crossing above a short-term moving average).
+- Direction: Short-only.
+- Exit triggers: Rising implied volatility (IV) after entry, or declining volume that signals fading selling pressure.
+- Market context: Best in equity index futures/ETFs (ES, SPY, QQQ) where VIX is directly relevant; avoid in low-liquidity instruments.
+
+2. ENTRY RULES (SHORT)
+- Identify a bearish MACD divergence:
+  - Price forms two swing highs where the second high is higher than the first.
+  - MACD line (or MACD histogram) forms two corresponding peaks where the second is lower than the first.
+  - Divergence must be confirmed on a closed bar (not intrabar).
+- Require VIX spike confirmation:
+  - VIX rises by at least X% (e.g., 10%) within N bars (e.g., 3), OR
+  - VIX crosses above its short-term SMA (e.g., 5-period) while price is at/near the divergence high.
+- Optional filter: RSI below 70 on the second high (avoiding overextended melt-ups) or bearish reversal candle (shooting star, bearish engulfing).
+- Enter short at the close of the confirmation bar or on a break below the prior bar’s low.
+- Avoid entries within 15 minutes of major scheduled events (FOMC, CPI) unless the strategy is explicitly event-driven.
+
+3. EXIT RULES
+- Primary exit: Rising implied volatility after entry.
+  - If IV (or VIX as proxy) continues to rise sharply while price does NOT make new lows, exit — this suggests hedging demand rather than directional selling, raising squeeze risk.
+  - Concretely: exit if VIX increases by another Y% (e.g., 15%) from entry VIX without a corresponding price decline.
+- Volume-decline exit:
+  - If volume on down bars declines for M consecutive bars (e.g., 3) while price stalls, exit — selling pressure is fading.
+  - Alternatively, exit if volume drops below its rolling average (e.g., 20-period) on a down move.
+- Profit target: Optional fixed target at 1.5–3× ATR below entry, or prior support/swing low.
+- Time stop: Exit if trade does not reach target within K bars (e.g., 20), as divergence setups decay.
+- Stop loss: Above the divergence swing high plus a buffer (e.g., 0.5–1× ATR).
+
+4. RISK MANAGEMENT
+- Position sizing: Risk 0.5–1% of equity per trade; volatility-based sizing (smaller size when VIX is elevated).
+- Stop placement: Hard stop above the recent swing high; never widen a stop.
+- Max concurrent shorts: 1 per instrument to avoid correlated exposure.
+- Correlation check: Avoid shorting multiple correlated indices simultaneously.
+- Volatility adjustment: Reduce size when VIX is already extremely high (e.g., > 35) due to whipsaw risk.
+- Daily loss limit: Stop trading after 2–3 consecutive losses or a 2% daily drawdown.
+
+5. REQUIRED INDICATORS
+- MACD (12, 26, 9) — for divergence detection.
+- VIX (or IV data) — for spike confirmation and exit trigger.
+- Volume — for decline-based exits.
+- ATR (14) — for stop and target sizing.
+- Optional: RSI (14) for overbought filtering, 5-period SMA on VIX for spike confirmation.
+- Chart timeframe: 15m–1H for intraday; 4H–Daily for swing shorts.
+
+6. EXECUTION NOTES
+- Confirm all signals on bar close to avoid repainting.
+- Divergence detection can be subjective — codify swing high logic (e.g., fractal pivots) for consistency.
+- VIX spikes can precede further downside (good for shorts) or mark capitulation lows (bad for shorts); the IV-rise exit rule is designed to protect against the latter.
+- Backtest across high-volatility regimes (2008, 2020, 2022) to validate edge.

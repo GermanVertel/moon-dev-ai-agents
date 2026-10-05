@@ -1,0 +1,51 @@
+STRATEGY_NAME: BandedMomentum
+
+STRATEGY_DETAILS:
+
+This strategy combines Bollinger Band dynamics with a volatility-adjusted stop-loss to capture momentum-driven long entries while protecting against adverse moves.
+
+**Core Concept:**
+The strategy capitalizes on Bollinger Band expansion signals. When the upper band pushes above the middle band (20-period MA), it indicates increasing volatility and upward momentum, signaling a potential bullish trend. The lower band acts as a dynamic trailing exit, while ATR provides a hard stop-loss floor.
+
+**Indicators Required:**
+1. Bollinger Bands (20-period, 2 standard deviations)
+   - Upper Band (UB)
+   - Middle Band / 20-period SMA (MB)
+   - Lower Band (LB)
+2. Average True Range (ATR) – 14-period default
+
+**Entry Rules (Long):**
+- Enter long when the Upper Bollinger Band crosses ABOVE the Middle Band (20-period MA).
+- This crossover signals volatility expansion to the upside and a shift in momentum.
+- Confirmation: Only take the signal if price is trading above the Middle Band at the time of crossover.
+- Enter at the close of the candle where the crossover is confirmed.
+
+**Exit Rules:**
+1. **Primary Exit (Band-based):**
+   - Exit long when the Lower Bollinger Band touches or closes below the price (i.e., price touches or closes below the LB).
+   - This acts as a momentum-failure exit, signaling weakening trend strength.
+
+2. **Secondary Exit (Stop-Loss):**
+   - Place a hard stop-loss at 10% of the ATR value below the entry price.
+   - Stop-Loss Price = Entry Price − (0.10 × ATR at entry)
+   - This is a tight, volatility-adjusted stop to limit losses on failed breakouts.
+
+**Risk Management:**
+- Position sizing should be calculated so that the ATR-based stop-loss represents no more than 1–2% of total account equity per trade.
+- Never risk more than the predefined ATR stop; do not widen it mid-trade.
+- Consider trailing the stop upward if price continues to trend and new higher ATR values form.
+- Avoid taking entries during low-volatility chop where Bollinger Bands contract tightly (squeeze), as false crossovers are common.
+
+**Trade Management Notes:**
+- The 10% ATR stop is intentionally tight; it may trigger frequently in volatile markets. Traders may consider scaling to a 1.0× ATR stop for wider tolerance, but the specified rule is 10% of ATR.
+- If the Lower Band exit triggers first, exit at market on the close of that candle.
+- Re-entry is allowed only after a fresh Upper Band / Middle Band crossover occurs.
+
+**Best Market Conditions:**
+- Trending or breakout markets where Bollinger Bands are expanding.
+- Avoid ranging/consolidating markets where bands are flat and crossovers whipsaw.
+
+**Summary Logic:**
+- Long Entry: UB crosses above MB (with price above MB).
+- Long Exit: Price touches/closes below LB OR stop-loss at Entry − (0.10 × ATR).
+- Indicator Stack: Bollinger Bands (20, 2) + ATR (14).

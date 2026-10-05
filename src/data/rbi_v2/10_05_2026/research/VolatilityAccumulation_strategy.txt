@@ -1,0 +1,51 @@
+STRATEGY_NAME: VolatilityAccumulation
+
+STRATEGY_DETAILS:
+This strategy combines statistical volatility analysis with volume-based accumulation signals to identify oversold reversal opportunities. It's designed to catch sharp price drops that are statistically significant while confirming genuine buying interest through On-Balance Volume (OBV) divergence.
+
+**Core Components:**
+
+1. **Volatility Measurement (2 Standard Deviations)**
+   - Calculate historical volatility using a rolling window (e.g., 20-30 days)
+   - Compute the standard deviation of daily returns
+   - Define the "extreme drop threshold" as 2 standard deviations below the mean
+   - Only consider entries when the 3-day cumulative percentage drop exceeds this 2σ threshold
+
+2. **OBV Accumulation Filter**
+   - Calculate On-Balance Volume using standard formula:
+     - If today's close > yesterday's close: OBV = previous OBV + today's volume
+     - If today's close < yesterday's close: OBV = previous OBV - today's volume
+     - If equal: OBV = previous OBV
+   - Confirm accumulation by checking that OBV is rising or holding flat despite the price drop (bullish divergence)
+   - This filters out "falling knife" scenarios where volume confirms selling pressure
+
+3. **Entry Rules**
+   - Trigger a LONG entry when BOTH conditions are met:
+     - 3-day percentage price drop > 2 standard deviations of historical volatility
+     - OBV shows accumulation (rising or flat during the decline)
+   - Enter at market open of the following bar
+
+4. **Exit Rules**
+   - Exit when volatility normalizes to mean levels (price stabilizes within 1 standard deviation)
+   - Alternatively, exit when OBV begins declining (accumulation ends)
+   - Optional: Time-based exit after N bars if neither condition triggers
+
+5. **Risk Management**
+   - Position sizing based on volatility: smaller positions during high-volatility regimes
+   - Stop-loss at 3 standard deviations below entry (catastrophic move protection)
+   - Maximum drawdown limit per trade (e.g., 5-8%)
+   - Avoid entries during earnings announcements or known news events
+
+**Required Indicators:**
+- Rolling standard deviation of daily returns (20-30 period)
+- 3-day rolling percentage change
+- On-Balance Volume (OBV)
+- Optional: ATR for position sizing, moving average for trend context
+
+**Key Edge:**
+The strategy exploits mean reversion after statistically extreme drops, but only when volume analysis confirms that smart money is accumulating rather than distributing. This dual confirmation reduces false signals common in pure mean-reversion strategies.
+
+**Best Markets:**
+- Liquid equities with reliable volume data
+- ETFs and index products
+- Avoid illiquid small-caps where OBV is unreliable

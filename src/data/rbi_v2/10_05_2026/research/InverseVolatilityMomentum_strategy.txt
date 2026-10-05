@@ -1,0 +1,55 @@
+STRATEGY_NAME: InverseVolatilityMomentum
+
+STRATEGY_DETAILS:
+
+**Core Concept:**
+This strategy exploits a divergence between short-term momentum and volatility contraction. It identifies "underbought" (oversold) stocks by looking for a specific inverse relationship: when the 5-day RSI is low (indicating weakness) but ATR is simultaneously contracting from historical highs (indicating diminishing selling pressure). The entry trigger is a 1% drop in ATR relative to its historical high, signaling that the volatility that drove the price down is exhausting.
+
+**Key Strategy Components:**
+
+1. **Momentum Indicator (5-day RSI):**
+   - Use a 5-period RSI (shorter than standard 14-period) to capture very short-term price movement.
+   - "Underbought" condition: RSI(5) below 30 (or a configurable threshold like 25–35).
+   - This identifies stocks that have experienced a sharp, recent sell-off.
+
+2. **Volatility Indicator (ATR):**
+   - Use ATR with a 14-period lookback (standard) or a shorter period (e.g., 10) for responsiveness.
+   - Track the **historical high** of ATR over a defined lookback window (e.g., 20–50 days).
+   - Entry trigger: Current ATR drops by **1% or more** from that historical high.
+   - This contraction indicates that the extreme volatility driving the sell-off is fading.
+
+3. **Inverse Relationship Logic:**
+   - The strategy specifically looks for the combination: **low RSI(5) + contracting ATR from highs**.
+   - This is counter-intuitive to typical momentum strategies (which buy strength), but here we buy weakness when volatility is drying up—a potential reversal signal.
+
+**Entry Rules:**
+- **Condition 1:** RSI(5) < 30 (underbought).
+- **Condition 2:** ATR(14) has dropped at least 1% from its highest value in the last N days (e.g., N=20).
+- **Condition 3:** Price is above a long-term filter (e.g., 200-day SMA) to avoid catching falling knives in structural downtrends (optional but recommended).
+- **Action:** Enter a long position when both conditions are met on the same bar (or within a 1–2 bar window).
+
+**Exit Rules:**
+- **Profit Target:** Exit when RSI(5) crosses above 50 or 70 (momentum has reversed).
+- **Volatility Exit:** Exit if ATR begins expanding again by more than 2% from the entry-level ATR (indicating renewed volatility).
+- **Time Stop:** Exit after 5–10 trading days if neither target nor stop is hit (to avoid dead money).
+- **Stop Loss:** Place a stop at 1.5–2× the entry ATR below the entry price, or at a fixed percentage (e.g., 3–5%).
+
+**Risk Management:**
+- **Position Sizing:** Use ATR-based sizing—risk no more than 1% of account equity per trade. Position size = (Account Risk) / (Entry Price - Stop Price).
+- **Maximum Exposure:** Limit to 3–5 concurrent positions to avoid over-concentration in volatile names.
+- **Market Filter:** Avoid trading during broad market downtrends (e.g., SPY below its 200-day SMA) to reduce systemic risk.
+- **Slippage Buffer:** Since these are volatile stocks, account for slippage in backtests (0.1–0.2% per trade).
+
+**Required Indicators:**
+- RSI (5-period)
+- ATR (14-period, with a rolling maximum over 20–50 days)
+- SMA (200-period) for trend filter (optional)
+- Volume (optional, to confirm capitulation)
+
+**Implementation Notes:**
+- This strategy works best on liquid, high-beta stocks (e.g., NASDAQ 100 components) where short-term volatility contractions often precede mean-reversion bounces.
+- Backtest across different market regimes (bull, bear, sideways) to validate robustness.
+- Consider adding a confirmation candle (e.g., bullish engulfing or hammer) at the entry trigger to reduce false signals.
+
+**Unique Edge:**
+Unlike traditional momentum strategies that buy strength, this approach buys **weakness with fading volatility**—a contrarian twist that captures the exhaustion of selling pressure. The 1% ATR drop from highs is a precise, quantifiable trigger that distinguishes this from generic oversold strategies.

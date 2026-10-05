@@ -1,0 +1,39 @@
+STRATEGY_NAME: VolatilityOversold
+
+STRATEGY_DETAILS:
+This strategy combines a fast oversold oscillator signal with a volatility-based trend filter and volume confirmation, creating a high-probability long-only entry setup. It aims to catch short-term pullbacks within an established bullish structure.
+
+**Key Strategy Components:**
+
+1. **Primary Trigger (2-Period RSI):** The 2-period RSI is an extremely sensitive short-term momentum oscillator. A reading below 10 indicates an extreme, brief oversold condition — the market has been pushed down hard over just the last couple of bars.
+
+2. **Trend/Volatility Filter (20-Day Volatility Envelope):** The 20-day volatility envelope is typically constructed using a 20-period moving average (SMA or EMA) with bands placed at a multiple of the 20-day standard deviation (or ATR). The requirement that price *closes above* the envelope (i.e., above the upper band or above the central line, depending on definition) ensures the broader structure is bullish and the pullback is occurring within an uptrend — not a downtrend collapse.
+
+3. **Volume Confirmation (Declining Volume):** Requiring declining volume across the prior 3 candles signals that selling pressure is exhausting. A pullback on fading volume is more likely to reverse than one on rising volume (which would suggest genuine distribution).
+
+**Entry Rules (Long Only):**
+- Condition A: 2-period RSI crosses below 10 (the cross event is the trigger — not merely being below 10).
+- Condition B: The current candle closes above the 20-day volatility envelope (bullish structure intact).
+- Condition C: Volume declined on each of the prior 3 candles (V[1] < V[2] < V[3] < V[4], or strictly decreasing over the last three bars).
+- All three conditions must be true simultaneously on the signal bar. Enter long at the close of the signal candle (or on the next bar's open).
+
+**Exit Rules:**
+- **Profit Target:** Exit when unrealized gain reaches +5%.
+- **Trailing Stop:** Exit on a 2% trailing stop from the highest price reached since entry.
+- Whichever triggers first closes the position.
+
+**Risk Management:**
+- Fixed profit target (5%) and tight trailing stop (2%) define a favorable reward-to-risk ratio of roughly 2.5:1 at minimum.
+- The 2% trailing stop locks in gains as the trade moves favorably and caps downside on failed setups.
+- Position sizing should account for the tight stop — risk per trade should be a fixed fraction of equity (e.g., 1%).
+- Because the 2-period RSI is very noisy, the volatility-envelope and volume filters are essential to avoid entering during genuine breakdowns.
+
+**Required Indicators:**
+- 2-period RSI (Wilder's smoothing or simple, applied to close).
+- 20-day Volatility Envelope (20-period SMA/EMA ± standard-deviation or ATR-based bands).
+- Volume (with a check for 3 consecutive declining bars).
+
+**Notes / Practical Considerations:**
+- This is a mean-reversion entry dressed with a trend filter — best suited to instruments in confirmed uptrends.
+- The 2-period RSI cross-below-10 event can fire frequently; the envelope and volume filters dramatically reduce false signals.
+- Backtest slippage and gap risk, since the trailing stop is tight and may be triggered by intrabar noise.

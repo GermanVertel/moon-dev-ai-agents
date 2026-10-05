@@ -3,214 +3,149 @@ import pandas as pd
 import talib
 from backtesting import Backtest, Strategy
 
-# Load data
+# Load and clean data
 data = pd.read_csv('/Users/germandavidvertelnarvaez/Developer/MoonDev/moon-dev-ai-agents/src/data/rbi/BTC-USD-15m.csv')
-
-# Clean column names
 data.columns = data.columns.str.strip().str.lower()
 data = data.drop(columns=[col for col in data.columns if 'unnamed' in col.lower()])
-
-# Map columns to proper case
-data = data.rename(columns={
-    'datetime': 'Datetime',
-    'open': 'Open',
-    'high': 'High',
-    'low': 'Low',
-    'close': 'Close',
-    'volume': 'Volume'
-})
-
-data['Datetime'] = pd.to_datetime(data['Datetime'])
-data = data.set_index('Datetime')
-
-print("🌙✨ Moon Dev VolumetricDivergence Backtest Loading... 🚀")
-print(f"📊 Data shape: {data.shape}")
-print(f"📅 Date range: {data.index[0]} to {data.index[-1]}")
-
+data = data.rename(columns={'open': 'Open', 'high': 'High', 'low': 'Low', 'close': 'Close', 'volume': 'Volume'})
+data['datetime'] = pd.to_datetime(data['datetime'])
+data = data.set_index('datetime')
+data = data[['Open', 'High', 'Low', 'Close', 'Volume']]
+print("🌙✨ Moon Dev Data Loaded:", data.shape, "rows |", data.index[0], "->", data.index[-1])
 
 class VolumetricDivergence(Strategy):
-    # Strategy parameters
-    stoch_period = 14
-    stoch_smooth_k = 3
-    stoch_smooth_d = 3
-    volume_ma_period = 20
-    volume_multiplier = 1.5
-    swing_lookback = 20
     atr_period = 14
+    rsi_period = 14
+    vol_roc_period = 14
+    zscore_window = 50
+    div_std_window = 50
+    threshold_mult = 1.5
+    atr_avg_period = 20
     risk_pct = 0.01
-    rr_ratio = 2.0
-    time_exit_bars = 5
+    stop_atr_mult = 1.5
+    time_stop_bars = 10
 
     def init(self):
-        print("🌙 Initializing Moon Dev VolumetricDivergence indicators...")
-
-        # Stochastic Oscillator (14, 3, 3)
-        self.stoch_k, self.stoch_d = self.I(
-            talib.STOCH,
-            self.data.High,
-            self.data.Low,
-            self.data.Close,
-            fastk_period=self.stoch_period,
-            slowk_period=self.stoch_smooth_k,
-            slowk_matype=0,
-            slowd_period=self.stoch_smooth_d,
-            slowd_matype=0
-        )
-
-        # Volume Moving Average (20-period)
-        self.vol_ma = self.I(talib.SMA, self.data.Volume, timeperiod=self.volume_ma_period)
-
-        # Swing highs/lows
-        self.swing_high = self.I(talib.MAX, self.data.High, timeperiod=self.swing_lookback)
-        self.swing_low = self.I(talib.MIN, self.data.Low, timeperiod=self.swing_lookback)
-
-        # ATR for dynamic stops
+        # ATR for volatility regime & stops
         self.atr = self.I(talib.ATR, self.data.High, self.data.Low, self.data.Close, timeperiod=self.atr_period)
+        self.atr_avg = self.I(talib.SMA, self.atr, timeperiod=self.atr_avg_period)
 
-        # Track bars in trade
-        self.bars_in_trade = 0
-        self.entry_price = 0
-        self.stop_price = 0
-        self.tp_price = 0
-        self.trade_direction = None
+        # Price oscillator: RSI
+        self.rsi = self.I(talib.RSI, self.data.Close, timeperiod=self.rsi_period)
 
-        print("✨ Indicators ready! Let's find those divergences... 🚀")
+        # Volume oscillator: ROC of volume
+        self.vol_roc = self.I(talib.ROC, self.data.Volume, timeperiod=self.vol_roc_period)
+
+        # Z-score normalization helpers
+        def zscore(arr, window):
+            s = pd.Series(arr)
+            m = s.rolling(window).mean()
+            sd = s.rolling(window).std()
+            return ((s - m) / sd).values
+
+        self.rsi_z = self.I(zscore, self.rsi, self.zscore_window)
+        self.vol_z = self.I(zscore, self.vol_roc, self.zscore_window)
+
+        # Divergence distance = vol_z - rsi_z (positive => volume strength exceeds price)
+        self.div = self.I(lambda a, b: a - b, self.vol_z, self.rsi_z)
+
+        # Rolling std of divergence for dynamic threshold
+        self.div_std = self.I(lambda x: pd.Series(x).rolling(self.div_std_window).std().values, self.div)
+
+        # Track entry bar for time stop
+        self.entry_bar = None
+
+        print("🌙 Indicators initialized: ATR, RSI, VolROC, Z-scores, Divergence, DivStd ✨")
 
     def next(self):
-        # Skip if not enough data
-        if len(self.data) < max(self.swing_lookback, self.volume_ma_period, self.stoch_period) + 5:
-            return
-
         price = self.data.Close[-1]
-        high = self.data.High[-1]
-        low = self.data.Low[-1]
-        volume = self.data.Volume[-1]
-        vol_avg = self.vol_ma[-1]
-        k = self.stoch_k[-1]
-        d = self.stoch_d[-1]
+        atr = self.atr[-1]
+        atr_avg = self.atr_avg[-1]
+        div = self.div[-1]
+        div_std = self.div_std[-1]
+        rsi_z = self.rsi_z[-1]
+        vol_z = self.vol_z[-1]
 
-        # Volume confirmation
-        volume_surge = volume > (vol_avg * self.volume_multiplier)
+        if np.isnan(div_std) or np.isnan(atr_avg) or np.isnan(rsi_z) or np.isnan(vol_z):
+            return
 
-        # Wick detection - skip if large wick (trap)
-        body = abs(self.data.Close[-1] - self.data.Open[-1])
-        upper_wick = high - max(self.data.Close[-1], self.data.Open[-1])
-        lower_wick = min(self.data.Close[-1], self.data.Open[-1]) - low
-        large_wick = (upper_wick > body * 2) or (lower_wick > body * 2)
+        vol_filter = atr > atr_avg
+        upper = self.threshold_mult * div_std
+        lower = -self.threshold_mult * div_std
 
-        # Manage existing position
+        # Manage open position
         if self.position:
-            self.bars_in_trade += 1
+            entry_price = self.trades[-1].entry_price
+            is_long = self.position.is_long
+            bars_held = len(self.data) - 1 - self.entry_bar
 
-            if self.trade_direction == 'long':
-                # Trailing exit: stochastic overbought while price stalls
-                if k > 80 and self.data.Close[-1] <= self.data.Close[-2]:
-                    new_stop = max(self.stop_price, self.entry_price)
-                    if new_stop > self.stop_price:
-                        self.stop_price = new_stop
-                        print(f"🌙 Tightening long stop to breakeven: {self.stop_price:.2f}")
-
-                # Time-based exit
-                if self.bars_in_trade >= self.time_exit_bars:
-                    if price < self.entry_price:
-                        print(f"⏰ Time exit - long closed at {price:.2f} (no follow-through)")
-                        self.position.close()
-                        self._reset_trade()
-                        return
-
-                # Stop loss / take profit handled by bracket orders
-
-            elif self.trade_direction == 'short':
-                # Trailing exit: stochastic oversold while price stalls
-                if k < 20 and self.data.Close[-1] >= self.data.Close[-2]:
-                    new_stop = min(self.stop_price, self.entry_price)
-                    if new_stop < self.stop_price:
-                        self.stop_price = new_stop
-                        print(f"🌙 Tightening short stop to breakeven: {self.stop_price:.2f}")
-
-                # Time-based exit
-                if self.bars_in_trade >= self.time_exit_bars:
-                    if price > self.entry_price:
-                        print(f"⏰ Time exit - short closed at {price:.2f} (no follow-through)")
-                        self.position.close()
-                        self._reset_trade()
-                        return
-
-            # Update stop if changed
-            if self.trade_direction == 'long':
-                self.orders.set_stop(self.stop_price)
+            # Stop loss: 1.5x ATR from entry
+            if is_long:
+                stop_price = entry_price - self.stop_atr_mult * atr
+                if price <= stop_price:
+                    self.position.close()
+                    print(f"🛑 LONG STOP hit @ {price:.2f} | ATR stop {stop_price:.2f} 🌙")
+                    self.entry_bar = None
+                    return
             else:
-                self.orders.set_stop(self.stop_price)
+                stop_price = entry_price + self.stop_atr_mult * atr
+                if price >= stop_price:
+                    self.position.close()
+                    print(f"🛑 SHORT STOP hit @ {price:.2f} | ATR stop {stop_price:.2f} 🌙")
+                    self.entry_bar = None
+                    return
+
+            # Profit target: divergence reverts to zero
+            if is_long and div <= 0:
+                self.position.close()
+                print(f"🎯 LONG TARGET: divergence reverted to {div:.3f} @ {price:.2f} 🚀")
+                self.entry_bar = None
+                return
+            if not is_long and div >= 0:
+                self.position.close()
+                print(f"🎯 SHORT TARGET: divergence reverted to {div:.3f} @ {price:.2f} 🚀")
+                self.entry_bar = None
+                return
+
+            # Time stop
+            if bars_held >= self.time_stop_bars:
+                self.position.close()
+                print(f"⏰ TIME STOP after {bars_held} bars @ {price:.2f} 🌙")
+                self.entry_bar = None
+                return
 
             return
 
-        # --- Entry Logic ---
+        # No position — look for entries
+        if not vol_filter:
+            return
 
-        # Bullish divergence: price makes lower low, stochastic makes higher low
-        if len(self.data) >= self.swing_lookback + 2:
-            recent_low = self.data.Low[-1]
-            prev_low = self.data.Low[-self.swing_lookback]
-            recent_k = k
-            prev_k = self.stoch_k[-self.swing_lookback]
+        # Long entry
+        if rsi_z < 0 and vol_z > 0 and div > upper:
+            stop_dist = self.stop_atr_mult * atr
+            if stop_dist <= 0:
+                return
+            risk_amount = self.equity * self.risk_pct
+            size = int(round(risk_amount / stop_dist))
+            if size > 0:
+                self.buy(size=size)
+                self.entry_bar = len(self.data) - 1
+                print(f"🌙🚀 LONG ENTRY @ {price:.2f} | div={div:.3f} > {upper:.3f} | rsi_z={rsi_z:.2f} vol_z={vol_z:.2f} | size={size}")
 
-            bullish_div = (recent_low < prev_low) and (recent_k > prev_k) and (recent_k < 30)
-            bearish_div = (high > self.data.High[-self.swing_lookback]) and (recent_k < self.stoch_k[-self.swing_lookback]) and (recent_k > 70)
-
-            # Long entry
-            if bullish_div and volume_surge and not large_wick:
-                range_high = self.swing_high[-2]
-                if price > range_high:
-                    range_low = self.swing_low[-2]
-                    range_height = range_high - range_low
-                    stop = low * 0.995
-                    risk = price - stop
-                    if risk > 0:
-                        tp = price + (range_height * 1.0)
-                        # Ensure minimum RR 1:2
-                        if (tp - price) / risk >= self.rr_ratio:
-                            size = int(round(1_000_000 / price))
-                            print(f"🚀 MOON DEV LONG SIGNAL! Price: {price:.2f}, Divergence + Volume Surge ({volume/vol_avg:.2f}x)")
-                            print(f"   Stop: {stop:.2f}, TP: {tp:.2f}, Size: {size}")
-                            self.buy(size=size, sl=stop, tp=tp)
-                            self.entry_price = price
-                            self.stop_price = stop
-                            self.tp_price = tp
-                            self.trade_direction = 'long'
-                            self.bars_in_trade = 0
-
-            # Short entry
-            elif bearish_div and volume_surge and not large_wick:
-                range_low = self.swing_low[-2]
-                if price < range_low:
-                    range_high = self.swing_high[-2]
-                    range_height = range_high - range_low
-                    stop = high * 1.005
-                    risk = stop - price
-                    if risk > 0:
-                        tp = price - (range_height * 1.0)
-                        if (price - tp) / risk >= self.rr_ratio:
-                            size = int(round(1_000_000 / price))
-                            print(f"🌙 MOON DEV SHORT SIGNAL! Price: {price:.2f}, Divergence + Volume Surge ({volume/vol_avg:.2f}x)")
-                            print(f"   Stop: {stop:.2f}, TP: {tp:.2f}, Size: {size}")
-                            self.sell(size=size, sl=stop, tp=tp)
-                            self.entry_price = price
-                            self.stop_price = stop
-                            self.tp_price = tp
-                            self.trade_direction = 'short'
-                            self.bars_in_trade = 0
-
-    def _reset_trade(self):
-        self.bars_in_trade = 0
-        self.entry_price = 0
-        self.stop_price = 0
-        self.tp_price = 0
-        self.trade_direction = None
+        # Short entry
+        elif rsi_z > 0 and vol_z < 0 and div < lower:
+            stop_dist = self.stop_atr_mult * atr
+            if stop_dist <= 0:
+                return
+            risk_amount = self.equity * self.risk_pct
+            size = int(round(risk_amount / stop_dist))
+            if size > 0:
+                self.sell(size=size)
+                self.entry_bar = len(self.data) - 1
+                print(f"🌙🔻 SHORT ENTRY @ {price:.2f} | div={div:.3f} < {lower:.3f} | rsi_z={rsi_z:.2f} vol_z={vol_z:.2f} | size={size}")
 
 
-# Run backtest
-print("🌙🚀 Starting Moon Dev VolumetricDivergence Backtest...")
-bt = Backtest(data, VolumetricDivergence, cash=1_000_000, commission=0.002)
+bt = Backtest(data, VolumetricDivergence, cash=1_000_000, commission=0.0002)
 stats = bt.run()
 print(stats)
 print(stats._strategy)
-print("✨ Moon Dev Backtest Complete! 🌙")

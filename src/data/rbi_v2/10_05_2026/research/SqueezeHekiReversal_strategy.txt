@@ -1,0 +1,91 @@
+STRATEGY_NAME: SqueezeHeki Reversal
+
+STRATEGY_DETAILS:
+This strategy targets explosive moves that follow periods of abnormally low volatility. It combines a statistical volatility filter (Bollinger Band width percentile), a candle-based momentum trigger (Heikin-Ashi flip), and a volume/flow confirmation (VWAP). The core thesis: when price coils into a tight range, energy builds; the first clean breakout with momentum and volume tends to run.
+
+1) KEY STRATEGY COMPONENTS
+- Volatility Compression Filter (Bollinger Band Width Percentile)
+  - Compute Bollinger Bands: Basis = SMA(Close, 20); Upper/Lower = Basis ± 2 × StdDev(Close, 20).
+  - Band Width (BBW) = (Upper − Lower) / Basis.
+  - BBW Percentile = percentile rank of current BBW over a lookback (e.g., 100–252 bars).
+  - Squeeze condition: BBW Percentile < 20 (or < 15 for stricter). Optionally require N consecutive bars in squeeze (e.g., 3–5).
+- Momentum Confirmation (Heikin-Ashi Flip)
+  - Compute Heikin-Ashi candles:
+    - HA_Close = (O+H+L+C)/4
+    - HA_Open = (prev HA_Open + prev HA_Close)/2
+    - HA_High = max(High, HA_Open, HA_Close)
+    - HA_Low = min(Low, HA_Open, HA_Close)
+  - Bullish flip: previous HA candle was bearish (HA_Close < HA_Open) and current HA candle is bullish (HA_Close > HA_Open).
+  - Bearish flip: inverse.
+  - Optional strength filter: require HA body size > ATR(14) × 0.3 to avoid doji-like flips.
+- Breakout Trigger
+  - Long: Close > Upper Bollinger Band (or > recent range high, e.g., highest high of last 10–20 bars).
+  - Short: Close < Lower Bollinger Band (or < recent range low).
+  - The breakout should occur on the same or next bar after the HA flip.
+- Volume/Flow Confirmation (VWAP)
+  - Session or anchored VWAP (e.g., anchored to session open or to the squeeze start).
+  - Long confirmation: Close > VWAP AND Volume > 1.5 × SMA(Volume, 20).
+  - Short confirmation: Close < VWAP AND Volume > 1.5 × SMA(Volume, 20).
+  - Optional: require price to cross VWAP in the direction of the trade on the trigger bar.
+
+2) ENTRY RULES
+Long Entry (all must be true):
+- Squeeze active: BBW Percentile < 20 (and/or ≥3 bars in squeeze).
+- HA flip bullish on current or previous bar.
+- Close > Upper Bollinger Band (breakout).
+- Close > VWAP.
+- Volume > 1.5 × SMA(Volume, 20).
+- Optional regime filter: price above 200-period EMA (trend alignment).
+Entry: market/stop order at next bar open, or stop-buy at Upper Band + small buffer (e.g., +0.1 × ATR).
+
+Short Entry (all must be true):
+- Squeeze active: BBW Percentile < 20.
+- HA flip bearish on current or previous bar.
+- Close < Lower Bollinger Band.
+- Close < VWAP.
+- Volume > 1.5 × SMA(Volume, 20).
+- Optional regime filter: price below 200-period EMA.
+Entry: market/stop order at next bar open, or stop-sell at Lower Band − small buffer.
+
+3) EXIT RULES
+- Initial Stop Loss:
+  - Long: below squeeze low or below HA flip candle low, whichever is lower; or ATR-based stop = entry − 1.5 × ATR(14).
+  - Short: above squeeze high or above HA flip candle high; or entry + 1.5 × ATR(14).
+- Profit Targets:
+  - Target 1: 1.5 × ATR from entry (scale out 50%).
+  - Target 2: 3.0 × ATR from entry or opposite Bollinger Band.
+  - Optional measured move: height of the squeeze range projected from breakout point.
+- Trailing Stop:
+  - Trail using Chandelier Exit (highest high − 3 × ATR) for longs, or HA candle flip against position.
+  - Exit if HA flips against position after being in profit.
+- Time Stop:
+  - If neither target nor stop hit within X bars (e.g., 10), exit at market to avoid chop.
+- VWAP Exit:
+  - Long: exit if Close < VWAP for 2 consecutive bars.
+  - Short: exit if Close > VWAP for 2 consecutive bars.
+
+4) RISK MANAGEMENT
+- Position Sizing: risk 0.5–1% of equity per trade; size = (Account × Risk%) / (Entry − Stop).
+- Max concurrent positions: 1–2 to avoid correlated breakout risk.
+- Avoid trading during major news/earnings unless volume filter is adjusted.
+- Slippage buffer: use limit orders where possible; account for spread on low-liquidity assets.
+- Regime filter: skip trades when BBW Percentile is rising but price is range-bound (false squeeze).
+- Cooldown: after a losing trade, wait 1–2 bars or require a new squeeze formation before re-entry.
+- Correlation check: do not take multiple longs in highly correlated instruments simultaneously.
+
+5) REQUIRED INDICATORS
+- Bollinger Bands (20, 2) and Band Width
+- BBW Percentile (lookback 100–252)
+- Heikin-Ashi candles (derived from OHLC)
+- ATR(14) for stops/targets and body-strength filter
+- VWAP (session or anchored)
+- Volume SMA(20) for volume confirmation
+- Optional: EMA(200) for trend alignment, Chandelier Exit for trailing
+
+6) IMPLEMENTATION NOTES
+- Timeframe: works best on 15m–4H for intraday/swing; 1D for positional.
+- Confirm squeeze percentile on closed bars only to avoid repainting.
+- HA flip should be evaluated on closed candles; if using intrabar, accept higher false-positive rate.
+- Backtest across regimes: trending, ranging, and high-volatility periods to validate edge.
+- Log squeeze duration, BBW percentile at entry, and volume ratio to refine thresholds.
+- Consider parameter sweeps: BBW percentile (10–30), volume multiplier (1.2–2.0), ATR stop (1.0–2.5).

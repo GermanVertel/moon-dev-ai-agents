@@ -1,0 +1,40 @@
+STRATEGY_NAME: VolatilityBand Reversal
+
+STRATEGY_DETAILS:
+This strategy trades VIX futures by identifying extreme volatility pricing dislocations through the VIX/VVIX ratio, confirmed by SPX options volume. It targets volatility regime reversals — fading stretched conditions when the ratio breaks its statistical envelope.
+
+1. CORE STRATEGY COMPONENTS
+- Primary Signal: VIX/VVIX ratio (VIX = 30-day implied vol of SPX; VVIX = implied vol of VIX options). This ratio measures how "expensive" volatility-of-volatility is relative to spot volatility.
+- Statistical Envelope: 30-day Bollinger Bands on the VIX/VVIX ratio (20-period SMA ± 2 standard deviations). Bands adapt to recent regime, so breakouts flag genuine dislocations rather than static thresholds.
+- Confirmation Filter: SPX options activity (volume/OI skew, put/call volume ratio, or total SPX options volume vs. 20-day average) to validate that the ratio move reflects real positioning, not a thin/liquidity artifact.
+- Instrument: VIX futures (front or second month), sized for roll and contango/backwardation effects.
+
+2. ENTRY RULES
+- SHORT VOLATILITY ENTRY (fade a vol spike): VIX/VVIX ratio closes ABOVE the upper Bollinger Band (ratio stretched high — VIX rich vs. VVIX) AND SPX options volume confirms elevated hedging/panic (e.g., SPX put volume > 1.5x 20-day average). Enter SHORT VIX futures, betting the ratio mean-reverts lower.
+- LONG VOLATILITY ENTRY (fade complacency): VIX/VVIX ratio closes BELOW the lower Bollinger Band (ratio compressed — VIX cheap vs. VVIX) AND SPX options volume is subdued (e.g., total volume < 0.75x 20-day average), signaling complacency. Enter LONG VIX futures.
+- Wait for the daily close to confirm the band break — avoid intraday whipsaws.
+
+3. EXIT RULES
+- Profit target: ratio reverts to the 20-period SMA (middle band).
+- Stop loss: ratio moves 1.5x the band width beyond entry, or a fixed % adverse move in the VIX futures price.
+- Time stop: exit after N days (e.g., 5–10) if neither target nor stop is hit, to avoid decay/roll drag.
+- Optional trailing stop once the ratio crosses back inside the band.
+
+4. RISK MANAGEMENT
+- Position sizing: risk fixed % of equity per trade (e.g., 1–2%); VIX futures are volatile, so size conservatively.
+- Respect futures term structure: avoid holding long VIX futures deep into contango (roll cost); prefer shorter holding periods.
+- Cap concurrent exposure; do not stack correlated vol trades.
+- Account for VIX futures contract multiplier ($1000) and margin requirements.
+- Consider a volatility filter: skip signals when VVIX itself is at an extreme (regime too unstable).
+
+5. REQUIRED INDICATORS / DATA
+- VIX index level (daily close).
+- VVIX index level (daily close) — compute VIX/VVIX ratio.
+- 20-period SMA and 2x standard deviation bands (30-day lookback) on the ratio.
+- SPX options volume (total and/or put/call) with 20-day average for confirmation.
+- VIX futures front/second-month prices and term structure (contango/backwardation).
+
+6. NOTES / EDGE
+- The VIX/VVIX ratio is a mean-reverting relative-value measure; Bollinger breakouts isolate statistically rare extremes.
+- SPX options volume confirmation reduces false signals from illiquid VVIX prints.
+- Best suited to short holding periods given futures roll dynamics; backtest across high- and low-vol regimes before live deployment.

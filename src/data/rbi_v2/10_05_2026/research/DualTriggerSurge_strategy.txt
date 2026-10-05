@@ -1,0 +1,72 @@
+STRATEGY_NAME: DualTrigger Surge
+
+STRATEGY_DETAILS:
+The DualTrigger Surge strategy is a breakout system that requires two independent confirmation triggers before entering a trade, designed to filter out false breakouts and low-conviction moves. Below is a complete specification.
+
+1. CORE CONCEPT
+- The strategy waits for price to break a defined reference level (e.g., prior day's high/low, opening range high/low, or a swing pivot).
+- A breakout alone is NOT sufficient. A second, independent trigger must confirm the move before entry.
+- The dual-trigger requirement reduces whipsaws and improves signal quality at the cost of occasionally entering slightly later.
+
+2. KEY STRATEGY COMPONENTS
+- Reference Level: Prior session high/low, opening range (e.g., first 15-30 min), or recent swing high/low.
+- Trigger 1 (Price Breakout): Close (not just wick) beyond the reference level.
+- Trigger 2 (Confirmation): One of the following, selected by the trader:
+   a) Volume expansion — breakout bar volume exceeds N-period average (e.g., 1.5x the 20-bar average).
+   b) Momentum confirmation — RSI crosses above 55 (long) / below 45 (short), or MACD histogram flips positive/negative.
+   c) Retest hold — price pulls back to the broken level and holds it as new support/resistance.
+- Optional Trigger 3 (Trend Filter): Price above/below a higher-timeframe moving average (e.g., 200 EMA) to align with the dominant trend.
+
+3. ENTRY RULES
+Long Entry:
+- Price closes above the reference high.
+- Volume on the breakout bar ≥ 1.5x the 20-period average volume.
+- RSI(14) > 55 OR MACD histogram > 0.
+- (Optional) Price above 200 EMA.
+- Enter at the close of the confirming bar or on the next bar's open.
+
+Short Entry:
+- Price closes below the reference low.
+- Volume on the breakout bar ≥ 1.5x the 20-period average volume.
+- RSI(14) < 45 OR MACD histogram < 0.
+- (Optional) Price below 200 EMA.
+- Enter at the close of the confirming bar or on the next bar's open.
+
+4. EXIT RULES
+- Initial Stop Loss:
+   Long: below the breakout bar's low or the broken reference level (whichever is tighter).
+   Short: above the breakout bar's high or the broken reference level (whichever is tighter).
+- Profit Targets:
+   Target 1: 1R (risk-reward 1:1) — take partial profits (e.g., 50%).
+   Target 2: 2R–3R — trail the remainder using a structure-based stop (e.g., prior swing low/high or ATR trailing stop).
+- Time Stop: Exit if the trade does not reach 1R within a set number of bars (e.g., 10 bars).
+- Trailing Stop: Use ATR(14) × 1.5 or the most recent swing point to lock in gains.
+
+5. RISK MANAGEMENT
+- Position sizing: risk no more than 0.5%–1% of account equity per trade.
+- Risk per trade = |Entry − Stop Loss|. Position size = (Account × Risk%) / Risk per trade.
+- Maximum concurrent positions: 2–3 to limit correlated exposure.
+- Daily loss limit: stop trading after −2R or −3% of equity in a day.
+- Avoid trading during major news events or illiquid sessions unless the setup is on a higher timeframe.
+
+6. REQUIRED INDICATORS
+- Volume (with 20-period moving average for the volume expansion filter).
+- RSI(14) — momentum confirmation.
+- MACD (12, 26, 9) — alternative momentum confirmation.
+- EMA(200) — optional trend filter.
+- ATR(14) — volatility-based stops and trailing.
+- Reference level tool: prior day high/low, opening range, or swing pivot detection.
+
+7. BEST MARKETS & TIMEFRAMES
+- Markets: liquid instruments — index futures (ES, NQ), major FX pairs, large-cap equities, crypto majors.
+- Timeframes: 5-min to 1-hour for intraday; 4-hour to daily for swing trading.
+- Works best in trending or expanding-volatility regimes; underperforms in tight ranges.
+
+8. COMMON PITFALLS TO AVOID
+- Entering on a wick-only breakout without a confirming close.
+- Ignoring volume — the second trigger is what gives the strategy its edge.
+- Chasing entries far beyond the breakout level (wait for a retest if price extends >1 ATR).
+- Using the same reference level across all sessions without adjusting for volatility.
+
+SUMMARY:
+DualTrigger Surge is a confirmation-based breakout system that pairs a price breakout with an independent momentum/volume trigger, applies ATR-based risk controls, and scales out at 1R and 2R–3R targets. Its edge comes from filtering weak breakouts through the mandatory second trigger.

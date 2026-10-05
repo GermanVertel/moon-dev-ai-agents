@@ -1,0 +1,56 @@
+STRATEGY_NAME: VolumeCascade
+
+STRATEGY_DETAILS:
+This strategy combines dual moving average crossover signals with volume confirmation and ATR-based exits to capture sustained trends while filtering out weak, low-conviction moves.
+
+**Core Components:**
+
+1. **Trend Identification (Dual MA Crossover)**
+   - Fast MA: 10-period Simple Moving Average (SMA) of closing prices
+   - Slow MA: 50-period Simple Moving Average (SMA) of closing prices
+   - The 10/50 spread creates a responsive yet stable trend signal that reduces whipsaws common in single-MA systems.
+
+2. **Volume Confirmation Filter**
+   - A crossover signal is only valid if the current bar's volume exceeds its 20-period volume SMA (or an alternative threshold, e.g., 1.5x average volume).
+   - This filters out crossovers driven by low-liquidity noise, ensuring institutional participation backs the move.
+
+**Entry Rules:**
+
+- **Long Entry:** 10-period MA crosses ABOVE the 50-period MA AND current volume > 20-period average volume.
+- **Short Entry:** 10-period MA crosses BELOW the 50-period MA AND current volume > 20-period average volume.
+- Enter at the close of the confirmation bar (or next bar open to avoid lookahead bias).
+
+**Exit Rules (ATR-Based):**
+
+- Compute ATR using a 14-period lookback.
+- **Initial Stop-Loss:** Entry price ± (2.0 × ATR) — 2× ATR below entry for longs, 2× ATR above for shorts.
+- **Trailing Stop:** As price moves favorably, trail the stop at (2.0 × ATR) from the highest high (longs) or lowest low (shorts) since entry.
+- **Profit Target (optional):** Take partial profits at 3× ATR, letting the remainder run with the trailing stop.
+- **Signal Exit:** Also exit if the 10-period MA crosses back through the 50-period MA in the opposite direction.
+
+**Risk Management:**
+
+- **Position Sizing:** Risk a fixed percentage of equity (e.g., 1–2%) per trade. Position size = (Account Risk $) / (2 × ATR). This normalizes risk across varying volatility regimes.
+- **Max Concurrent Positions:** Limit to 3–5 uncorrelated instruments to avoid overexposure.
+- **Volatility Guard:** Skip entries when ATR is in the top 5% of its 100-period range (extreme volatility) or bottom 10% (dead markets).
+- **Time Stop:** Exit if the trade hasn't reached 1× ATR profit within 10 bars — signals a failed breakout.
+
+**Required Indicators:**
+
+| Indicator | Period | Purpose |
+|-----------|--------|---------|
+| SMA (Fast) | 10 | Trend signal |
+| SMA (Slow) | 50 | Trend signal |
+| Volume SMA | 20 | Volume confirmation |
+| ATR | 14 | Stop-loss, trailing, sizing |
+
+**Strengths:**
+- Volume filter significantly reduces false crossovers in choppy markets.
+- ATR-based stops adapt to changing volatility, avoiding premature exits in volatile trends and overly wide stops in calm markets.
+
+**Weaknesses & Mitigations:**
+- Whipsaws in ranging markets → mitigated by volume filter and time stop.
+- Lagging entries → acceptable trade-off for higher win-rate on sustained trends.
+- Best suited for trending instruments (indices, commodities, large-cap equities) on 1H–Daily timeframes.
+
+**Recommended Timeframes:** 1-hour, 4-hour, or daily charts. Avoid sub-15-minute timeframes where volume noise dominates.

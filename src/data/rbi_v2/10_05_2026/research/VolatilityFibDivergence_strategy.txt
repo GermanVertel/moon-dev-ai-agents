@@ -1,0 +1,53 @@
+STRATEGY_NAME: VolatilityFibDivergence
+
+STRATEGY_DETAILS:
+This strategy combines volatility regime analysis, Fibonacci price targeting, and momentum divergence to time entries and exits around implied volatility (IV) breakouts.
+
+**Core Concept:**
+The strategy waits for implied volatility to breach a defined resistance level (signaling an expansion in volatility regime), then looks for a strong bullish divergence to confirm a directional entry. Fibonacci retracement levels are used as profit targets, while volatility bars govern exits.
+
+**Key Components:**
+
+1. **Volatility Regime Filter (IV Breakout)**
+   - Track Implied Volatility (IV) via VIX, IV rank, or an IV proxy (e.g., ATR percentile).
+   - Define IV resistance as a rolling high (e.g., 20-period high of IV) or a fixed percentile threshold (e.g., 75th percentile of IV rank).
+   - Signal triggers only when IV closes above this resistance — confirming a volatility expansion regime.
+
+2. **Divergence Detection (Entry Trigger)**
+   - Use RSI or MACD on price.
+   - Bullish divergence = price makes a lower low while RSI/MACD makes a higher low.
+   - Require "strong" divergence: minimum 2 swing points, magnitude threshold (e.g., RSI delta > 5 points), and confirmation on candle close.
+   - Entry only when divergence coincides with or immediately follows the IV breakout.
+
+3. **Fibonacci Retracement Targets**
+   - Anchor Fib levels to the most recent significant swing high/low.
+   - Use 0.382, 0.5, 0.618 as intermediate targets; 1.0 or 1.618 extension as final target.
+   - Targets serve as take-profit zones, not entries.
+
+4. **Volatility Bar Exit**
+   - Exit when a volatility bar (e.g., ATR-based bar, or a bar whose range exceeds 1.5× ATR) prints in the opposite direction of the trade.
+   - Also exit if IV collapses back below its prior resistance level (regime invalidation).
+
+**Entry Rules:**
+- IV closes above resistance level.
+- Bullish divergence confirmed on RSI/MACD at a swing low.
+- Enter long on the close of the divergence confirmation candle (or next bar open).
+
+**Exit Rules:**
+- Scale out at Fib 0.382, 0.5, 0.618.
+- Final exit at Fib 1.0/1.618 or on opposing volatility bar.
+- Hard stop: below the divergence swing low or 1.5× ATR, whichever is tighter.
+- Time stop: exit if no Fib target hit within N bars (e.g., 20).
+
+**Risk Management:**
+- Position size based on ATR (volatility-adjusted sizing).
+- Max risk per trade: 1–2% of equity.
+- Reduce size when IV is already extended (IV rank > 90) to avoid buying peak volatility.
+- Avoid trades during low-liquidity sessions.
+
+**Required Indicators:**
+- Implied Volatility (VIX / IV rank / ATR percentile proxy)
+- RSI or MACD (for divergence)
+- ATR (for volatility bars and stops)
+- Fibonacci retracement tool (swing-anchored)
+- Volume (optional confirmation filter)
