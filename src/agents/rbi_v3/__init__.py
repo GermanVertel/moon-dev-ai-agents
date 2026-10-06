@@ -8,3 +8,4 @@ from .evaluator import StrategyEvaluator
 from .data_manager import DataManager
 from .code_checks import validate_strategy_code
 from .leaderboard import LeaderboardManager
+from .idea_generator import IdeaGeneratorV3

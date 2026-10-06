@@ -46,6 +46,15 @@ RBI_MAX_IDEAS=5 python -m src.agents.rbi_agent_v3
 python -m src.agents.rbi_agent_v3
 ```
 
+### Idea Generation (RBI v3 Dedicated)
+```bash
+# Generate batch of 5 new actionable OHLCV ideas
+python -m src.agents.rbi_v3.idea_generator --count 5
+
+# Continuous loop generating ideas periodically
+python -m src.agents.rbi_v3.idea_generator --continuous --interval 20
+```
+
 ### Data Management Only
 ```bash
 # Download and partition market data (BTC/ETH/SOL, 15m/1h)
