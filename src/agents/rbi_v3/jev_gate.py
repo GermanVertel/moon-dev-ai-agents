@@ -1,6 +1,6 @@
 """
 🌙 Moon Dev's RBI v3 Jev Gatekeeper
-Integrates TypeSafe Jev (typesafe/jev-1.13 via OpenRouter) for ultra-fast, cheap deterministic decisions.
+Integrates TypeSafe Jev (typesafe/jev-1.13 via OpenRouter Decisions API) for ultra-fast, cheap deterministic decisions.
 Filters ideas in Phase 0 (<150ms) and classifies strategy types for Leaderboard tagging.
 """
 
@@ -10,7 +10,7 @@ import requests
 from typing import Tuple
 from termcolor import cprint
 
-OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_DECISIONS_URL = "https://openrouter.ai/api/alpha/decisions"
 JEV_MODEL = "typesafe/jev-1.13"
 
 UNAVAILABLE_DATA_PATTERN = (
@@ -21,17 +21,17 @@ UNAVAILABLE_DATA_PATTERN = (
 
 
 class JevGatekeeper:
-    """Uses TypeSafe Jev System-1 decision engine via OpenRouter."""
+    """Uses TypeSafe Jev System-1 decision engine via OpenRouter Decisions API."""
 
     def __init__(self, api_key: str = None):
-        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
+        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENROUTER_KEY")
         if not self.api_key:
             cprint("ℹ️ OPENROUTER_API_KEY not found; Jev will use local heuristic fallback.", "yellow")
 
-    def _call_jev(self, system_instruction: str, user_prompt: str) -> str:
-        """Call Jev via OpenRouter chat completions endpoint."""
+    def _call_jev_decisions(self, state: str, questions: dict) -> dict:
+        """Call OpenRouter alpha decisions endpoint."""
         if not self.api_key:
-            return ""
+            return {}
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -42,26 +42,25 @@ class JevGatekeeper:
 
         payload = {
             "model": JEV_MODEL,
-            "messages": [
-                {"role": "system", "content": system_instruction},
-                {"role": "user", "content": user_prompt}
-            ],
-            "temperature": 0.0
+            "state": state,
+            "questions": questions
         }
 
         try:
-            res = requests.post(OPENROUTER_API_URL, headers=headers, json=payload, timeout=8)
+            res = requests.post(OPENROUTER_DECISIONS_URL, headers=headers, json=payload, timeout=8)
             if res.status_code == 200:
                 data = res.json()
-                return data["choices"][0]["message"]["content"].strip()
+                return data.get("answers", {})
+            else:
+                cprint(f"⚠️ Jev API returned {res.status_code}: {res.text[:120]}", "yellow")
         except Exception as e:
-            pass
-        return ""
+            cprint(f"⚠️ Jev connection error: {str(e)[:80]}", "yellow")
+        return {}
 
     def is_actionable_idea(self, idea_text: str) -> Tuple[bool, str]:
         """Classify whether a raw idea line contains an actionable trading strategy thesis."""
         idea_clean = idea_text.strip()
-        
+
         # Fast local heuristic check first
         if len(idea_clean) < 15:
             return False, "Idea too short (<15 chars)"
@@ -73,14 +72,21 @@ class JevGatekeeper:
         if re.search(UNAVAILABLE_DATA_PATTERN, idea_clean, re.IGNORECASE):
             return False, "Needs data not in OHLCV feed (VIX/sentiment/funding/order book/on-chain)"
 
-        # If Jev API is available, ask Jev for fast deterministic classification
+        # If Jev API is available, ask Jev for fast deterministic classification via Decisions API
         if self.api_key:
-            system = "Classify if the input text describes an actionable trading strategy idea with indicators, entry/exit logic, or technical setup. Respond with only YES or NO."
-            result = self._call_jev(system, f"Idea: {idea_clean}")
-            if "YES" in result.upper():
-                return True, "Jev Approved (Actionable Strategy)"
-            elif "NO" in result.upper():
-                return False, "Jev Rejected (Non-actionable / Junk)"
+            questions = {
+                "is_actionable": {
+                    "type": "noul",
+                    "instructions": "Does this text describe an actionable quantitative trading strategy idea with indicators, entry/exit rules or technical setup?"
+                }
+            }
+            answers = self._call_jev_decisions(idea_clean, questions)
+            if "is_actionable" in answers:
+                score = answers["is_actionable"].get("noul", 0.0)
+                if score >= 0.55:
+                    return True, f"Jev Approved (Score: {score:.2f})"
+                else:
+                    return False, f"Jev Rejected (Score: {score:.2f})"
 
         # Fallback keyword validation
         keywords = ["rsi", "ma", "ema", "sma", "macd", "stoch", "breakout", "reversion", 
@@ -94,11 +100,23 @@ class JevGatekeeper:
     def classify_strategy_type(self, strategy_text: str) -> str:
         """Classify strategy into a quantitative style tag."""
         if self.api_key:
-            system = "Classify the strategy into exactly one of: [Trend-Following, Mean-Reversion, Volatility-Breakout, Liquidity-Scalp, Momentum]. Output only the category name."
-            result = self._call_jev(system, strategy_text[:800])
-            for cat in ["Trend-Following", "Mean-Reversion", "Volatility-Breakout", "Liquidity-Scalp", "Momentum"]:
-                if cat.lower() in result.lower():
-                    return cat
+            questions = {
+                "strategy_type": {
+                    "type": "choice",
+                    "instructions": "Which quantitative category best fits this strategy?",
+                    "criteria": {
+                        "Trend-Following": "Follows prevailing trend or moving average direction",
+                        "Mean-Reversion": "Trades counter-trend or bounces from oversold/overbought",
+                        "Volatility-Breakout": "Trades channel or band expansion",
+                        "Momentum": "Trades directional acceleration"
+                    }
+                }
+            }
+            answers = self._call_jev_decisions(strategy_text[:800], questions)
+            if "strategy_type" in answers:
+                choice = answers["strategy_type"].get("choice")
+                if choice:
+                    return choice
 
         # Local fallback heuristic
         text_lower = strategy_text.lower()
