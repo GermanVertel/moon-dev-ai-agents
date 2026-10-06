@@ -13,6 +13,12 @@ from termcolor import cprint
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 JEV_MODEL = "typesafe/jev-1.13"
 
+UNAVAILABLE_DATA_PATTERN = (
+    r"\bvix\b|\bvxn\b|\bvvix\b|sentiment|fear\s*(and|&)\s*greed|funding\s*rate|open\s*interest|order\s*book|"
+    r"\bdepth\b|on-?chain|whale|liquidation|put/?call|options?\s+(flow|chain|iv)|implied\s+vol|news|earnings|"
+    r"\bcot\b|dxy|treasury|yield\s*curve|google\s*trends|social\s*media|twitter"
+)
+
 
 class JevGatekeeper:
     """Uses TypeSafe Jev System-1 decision engine via OpenRouter."""
@@ -63,6 +69,9 @@ class JevGatekeeper:
             return False, "Section header or comment"
         if re.search(r"^(generate|create|write)\s+one\s+unique", idea_clean, re.IGNORECASE):
             return False, "Generic prompt artifact"
+
+        if re.search(UNAVAILABLE_DATA_PATTERN, idea_clean, re.IGNORECASE):
+            return False, "Needs data not in OHLCV feed (VIX/sentiment/funding/order book/on-chain)"
 
         # If Jev API is available, ask Jev for fast deterministic classification
         if self.api_key:

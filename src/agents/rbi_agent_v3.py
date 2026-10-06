@@ -40,7 +40,7 @@ from src.agents.rbi_v3.harness import run_backtest_harness
 from src.agents.rbi_v3.evaluator import StrategyEvaluator
 from src.agents.rbi_v3.jev_gate import JevGatekeeper
 from src.agents.rbi_v3.leaderboard import LeaderboardManager
-from src.agents.rbi_v3.prompts import RESEARCH_PROMPT, STRATEGY_CODE_PROMPT, DEBUG_PROMPT
+from src.agents.rbi_v3.prompts import RESEARCH_PROMPT, STRATEGY_CODE_PROMPT, DEBUG_PROMPT, LOOSEN_PROMPT
 
 # Output Directories
 RBI_V3_DATA_DIR = PROJECT_ROOT / "src" / "data" / "rbi_v3"
@@ -67,13 +67,15 @@ ESCALATION_MODEL_NAME = os.getenv("RBI_ESCALATION_MODEL", DEFAULT_ESCALATION)
 ESCALATION_TYPE = "openrouter" if ("/" in ESCALATION_MODEL_NAME or HAS_OPENROUTER_KEY) else "openai"
 
 ESCALATION_MODEL_CONFIG = {
-    "type": ESCALATION_MODEL_TYPE,
+    "type": ESCALATION_TYPE,
     "name": ESCALATION_MODEL_NAME
 }
 
 MAX_DEBUG_ITERATIONS = 4        # Reduced from 5 for efficiency
 ESCALATE_ON_ATTEMPT = 3         # Escalate to OpenRouter/GPT-4o/Claude after 2 failed base attempts
-GLOBAL_MODEL_TIMEOUT = 90       # Timeout for LLM calls (seconds)
+LOW_TRADES_THRESHOLD = 100      # Matches min_trades gate; below this, try loosening passes
+LOOSEN_MAX_PASSES = 2
+GLOBAL_MODEL_TIMEOUT =90       # Timeout for LLM calls (seconds)
 
 
 class RBIEngineV3:
@@ -173,7 +175,7 @@ class RBIEngineV3:
         if not is_actionable:
             cprint(f"⏭️ Phase 0 Skipped by Jev: {triage_reason}", "yellow")
             self._log_state(idea_hash, "Skipped", "JEV_REJECTED", {"reason": triage_reason})
-            return
+            return False
 
         cprint(f"✅ Phase 0 Jev Triage: {triage_reason}", "green")
 
@@ -258,6 +260,39 @@ class RBIEngineV3:
             debug_input = DEBUG_PROMPT.format(error_message=err_msg, failed_code=current_code)
             fixed_code_raw = self._call_model("You are an expert Python algorithmic debug assistant.", debug_input, active_model)
             current_code = self._clean_code_output(fixed_code_raw)
+
+        # Low-trade rescue: up to LOOSEN_MAX_PASSES loosening passes before rejecting
+        for loosen_pass in range(1, LOOSEN_MAX_PASSES + 1):
+            low_trades = harness_result.get("trades", 0)
+            if not harness_result.get("success") or low_trades >= LOW_TRADES_THRESHOLD:
+                break
+            cprint(f"🪄 Only {low_trades} trades (<{LOW_TRADES_THRESHOLD}); loosening pass {loosen_pass}/{LOOSEN_MAX_PASSES}...", "yellow")
+            try:
+                loosen_input = LOOSEN_PROMPT.format(trades=low_trades, failed_code=current_code)
+                loosened_code = self._clean_code_output(
+                    self._call_model("You are an expert quantitative strategy tuner.", loosen_input, BASE_MODEL_CONFIG)
+                )
+                loosened_check = validate_strategy_code(loosened_code)
+                if not loosened_check.is_valid:
+                    cprint("⚠️ Loosened code failed lint; keeping previous version", "yellow")
+                    break
+                loosened_result = run_backtest_harness(
+                    strategy_code=loosened_code,
+                    class_name=loosened_check.class_name or validated_class_name,
+                    data_path=btc_is_data_path,
+                    conda_env="tflow"
+                )
+                if loosened_result.get("success") and loosened_result.get("trades", 0) > low_trades:
+                    cprint(f"✨ Loosened version trades more: {low_trades} -> {loosened_result['trades']}", "green")
+                    current_code = loosened_code
+                    harness_result = loosened_result
+                    validated_class_name = loosened_check.class_name or validated_class_name
+                else:
+                    cprint("⚠️ Loosened version did not improve trade count; keeping previous version", "yellow")
+                    break
+            except Exception as e:
+                cprint(f"⚠️ Loosening pass failed ({str(e)[:80]}); keeping previous version", "yellow")
+                break
 
         # Save working strategy code file
         strategy_file = STRATEGIES_DIR / f"{strategy_name}_{idea_hash}.py"
@@ -404,10 +439,11 @@ class RBIEngineV3:
                 continue
 
             try:
-                self.process_idea(idea, idx, total_ideas)
-                processed_count += 1
+                result = self.process_idea(idea, idx, total_ideas)
                 consecutive_errors = 0  # Reset error counter on success
-                if max_ideas and processed_count >= max_ideas:
+                if result is not False:  # Jev-skipped ideas do not use up the RBI_MAX_IDEAS budget
+                    processed_count += 1
+                if max_ideas and processed_count >= max_ideas and processed_count >= max_ideas:
                     cprint(f"\n🛑 Reached RBI_MAX_IDEAS limit ({max_ideas}). Stopping.", "yellow")
                     break
             except Exception as e:
